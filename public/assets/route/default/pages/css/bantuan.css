@@ -1,0 +1,90 @@
+.logo {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.logo img {
+    width: 150px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.app-image.image-background {
+    height: 420px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.app-image.image-background:hover {
+    background-size: 105%;
+    opacity: 0.8;
+}
+
+.box-donasi-info {
+    margin-top: -130px !important;
+    z-index: 3;
+}
+
+/* .d-grid.box {
+    grid-template-columns: repeat(auto-fill, 200px);
+} */
+
+/* .d-grid.box>.d-grid {
+    grid-template-columns: auto 1fr;
+} */
+
+/* .d-grid.prog {
+    row-gap: 0px !important;
+} */
+
+/* .d-grid .box-other {
+    grid-column: 1/span 2;
+} */
+
+@media (max-width: 1024px) and (min-width: 768px) {
+    .row.bantuan .container {
+        padding: 0px !important;
+    }
+
+    /* .app-image .d-grid.box {
+        grid-template-columns: repeat(5, 1fr);
+    } */
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+    /* .app-image .d-grid.box {
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-flow: dense;
+    } */
+}
+
+@media (max-width: 768px) {
+    .box-donasi-info {
+        margin-top: 0px !important;
+    }
+}
+
+@media (max-width: 767px) {
+
+    .row.bantuan .container>.row {
+        gap: 3em;
+    }
+
+    /* .row.bantuan .container>.d-grid {
+        grid-template-columns: 1fr 1fr;
+    } */
+
+    .row {
+        text-align: center;
+    }
+
+    .app-image.image-background {
+        height: 340px !important;
+    }
+}

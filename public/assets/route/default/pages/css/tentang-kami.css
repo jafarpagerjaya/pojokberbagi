@@ -1,0 +1,179 @@
+@keyframes firstImage {
+    from {
+        transform: translate(0%, 0%);
+    }
+
+    to {
+        transform: translate(-30%, -30%);
+    }
+}
+
+@keyframes secondImage {
+    from {
+        transform: translate(0%, 0%);
+    }
+
+    to {
+        transform: translate(30%, 30%);
+    }
+}
+
+.header.navbar-area.position-absolute {
+    background-color: #fff;
+}
+
+.profil {
+    padding-top: 92px;
+    min-height: 400px;
+    transition: all 0.3s ease-in-out;
+}
+
+.profil #tentang-kami .box {
+    width: 100%;
+    height: 100%;
+}
+
+.profil #tentang-kami img {
+    max-width: 300px;
+    transition: all 0.3s ease-in-out;
+}
+
+.profil #tentang-kami img:first-of-type {
+    animation: firstImage 1s linear 0.5s forwards;
+}
+
+.profil #tentang-kami img:last-of-type {
+    animation: secondImage 1s linear 0.5s forwards;
+}
+
+.profil #navbar-about {
+    top: 0;
+    z-index: 1;
+}
+
+.profil .head .text-black-50:hover,
+.profil #navbar-about a.active {
+    color: var(--green) !important;
+}
+
+.profil #legalitas,
+.profil #tim-pojokberbagi {
+    padding-top: 7em !important;
+    padding-bottom: 7em !important;
+}
+
+.profil #legalitas .num {
+    width: 40px !important;
+    height: 40px !important;
+    transition: all 0.3s ease;
+}
+
+.profil #legalitas #legal-list>*:hover .num {
+    background-color: var(--orange) !important;
+}
+
+.profil #legalitas svg {
+    transition: all 0.3s ease !important;
+}
+
+.profil #tim>* .job-title {
+    color: var(--green);
+    transition: color 0.3s ease !important;
+}
+
+.profil #tim>*:hover .job-title {
+    color: var(--orange);
+}
+
+.tim {
+    height: 170px;
+    width: 170px;
+    background-size: 100%;
+    background-position: center;
+    margin: 0 auto;
+    transition: all 0.3s ease !important;
+}
+
+.profil #tim>* .tim.rounded-circle {
+    background-position: center;
+}
+
+.profil #tim>*:hover .tim.rounded-circle {
+    opacity: 0.95;
+    background-size: 105%;
+    box-shadow: 0px -20px 0px 20px var(--green);
+}
+
+@media (max-width: 1024px) {
+    .profil #tentang-kami .box {
+        min-height: 350px;
+    }
+
+    .profil #tentang-kami img {
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 992px) {
+    @keyframes firstImage {
+        from {
+            transform: translate(0%, 0%);
+        }
+
+        to {
+            transform: translate(-20%, -40%);
+        }
+    }
+
+    @keyframes secondImage {
+        from {
+            transform: translate(0%, 0%);
+        }
+
+        to {
+            transform: translate(10%, 40%);
+        }
+    }
+
+    .profil #tentang-kami .box {
+        min-height: 350px;
+    }
+
+    .profil #tentang-kami img {
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 767px) {
+    .profil #tentang-kami img {
+        max-width: 250px;
+    }
+
+    .profil #tentang-kami img:first-of-type {
+        transform: translate(-30%, -30%);
+    }
+
+    .profil #tentang-kami img:last-of-type {
+        transform: translate(30%, 30%);
+    }
+
+    .profil #legalitas svg {
+        height: 75vw;
+    }
+
+    .profil #navbar-about .nav>.nav-item {
+        width: 199%;
+    }
+
+    .profil #navbar-about .nav>.nav-item a {
+        text-align: center;
+    }
+
+    .profil #tim {
+        row-gap: 3em;
+    }
+
+    .profil #legal-list p {
+        width: 100% !important;
+    }
+}

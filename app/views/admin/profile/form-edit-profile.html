@@ -1,0 +1,118 @@
+<div class="row">
+    <div class="col-xl-4 order-xl-2">
+        <div class="card card-profile bg-white">
+            <img src="/assets/images/img-1-1000x600.jpg" alt="Image placeholder" class="card-img-top">
+            <div class="row justify-content-center">
+                <div class="col-lg-3 order-lg-2">
+                    <div class="card-profile-image">
+                        <a href="#">
+                            <img src="<?= $data['gambar']->path_gambar; ?>" class="rounded-circle">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body pt-5">
+                <div class="text-center">
+                    <h5 class="h3 pt-5">
+                        <?= $data['pegawai']->nama ?>
+                        <span class="font-weight-light"><?= Output::timeToLocal($data['pegawai']->create_at) ?></span>
+                    </h5>
+                    <div class="h5 font-weight-300">
+                        <i class="ni location_pin mr-2"></i>Bandung
+                    </div>
+                    <div class="h5 mt-4">
+                        <i class="ni business_briefcase-24 mr-2"></i><?= $data['jabatan']->nama ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-8 order-xl-1">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h3 class="mb-0">Profil Anda</h3>
+                    </div>
+                    <div class="col-4 text-right">
+                        <!-- Example single danger button -->
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                Settings
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="/admin/profile/#kelola-password">Ganti Password</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Ganti Foto</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <?php if (Session::exists('error_feedback')) {
+                    $data_error_feedback = Session::flash('error_feedback');
+                } ?>
+                <form method="post" action="/admin/profile/update">
+                    <h6 class="heading-small text-muted mb-4">Informasi Akun</h6>
+                    <div class="pl-lg-4">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="input-username">Username</label>
+                                    <input name="username" type="text" id="input-username" class="form-control" placeholder="Username" value="<?= isset($data_error_feedback['username']['value']) ? $data_error_feedback['username']['value'] :  $data['akun']->username; ?>">
+                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['username']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['username']['feedback']) ?></div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="input-email">Alamat Email</label>
+                                    <input name="email" type="email" id="input-email" class="form-control" placeholder="Contoh emailku@gmail.com" value="<?= isset($data_error_feedback['email']['value']) ? $data_error_feedback['email']['value'] :  $data['akun']->email; ?>">
+                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['email']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['email']['feedback']) ?></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="input-name">Nama Pegawai</label>
+                                    <input name="nama" type="text" id="input-name" class="form-control" placeholder="Nama Lengkap" value="<?= isset($data_error_feedback['nama']['value']) ? $data_error_feedback['nama']['value'] :  $data['pegawai']->nama; ?>">
+                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['nama']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['nama']['feedback']) ?></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="my-4">
+                    <!-- Address -->
+                    <h6 class="heading-small text-muted mb-4">Informasi Kontak</h6>
+                    <div class="pl-lg-4">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="input-address">Alamat</label>
+                                    <input name="alamat" id="input-address" class="form-control" placeholder="Alamat Tinggal" value="<?= isset($data_error_feedback['alamat']['value']) ? $data_error_feedback['alamat']['value'] :  $data['pegawai']->alamat; ?>" type="text">
+                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['alamat']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['alamat']['feedback']) ?></div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="input-kontak">No Kontak</label>
+                                    <input name="kontak" type="text" id="input-kontak" class="form-control" placeholder="Kontak Yang Bisa Dihubungi" value="<?= isset($data_error_feedback['kontak']['value']) ? $data_error_feedback['kontak']['value'] :  $data['pegawai']->kontak; ?>">
+                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['kontak']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['kontak']['feedback']) ?></div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 d-flex align-items-center">
+                                <div class="form-group mb-0 mt-2">
+                                    <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                                    <button type="submit" class="btn btn-primary">Ubah</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="token" value="<?= Token::generate() ?>">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

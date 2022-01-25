@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,300;1,400;1,600;1,700;1,800;1,900&display=swap');
+
+/* ROOT */
+:root {
+    --orange: #FE5000;
+    --green: #97D700;
+}
+
+/* html {
+    width: 100vw;
+} */
+
+/* Akhir ROOT */
+
+.button .signup {
+    background-color: var(--orange);
+    color: #fff;
+}
+
+.button .signup:hover {
+    color: var(--orange);
+    background-color: var(--bs-white);
+}
+
+/* Header Auth Button */
+.header .button .signin {
+    color: var(--green);
+}
+
+.header:not(.sticky) .button .signin:hover {
+    color: var(--bs-orange);
+}
+
+.header.sticky .button .signin {
+    color: var(--bs-secondary);
+}
+
+.header.sticky .button .signin:hover {
+    color: var(--green);
+}
+
+/* Akhir Header Auth Button */
+
+.button.donasi,
+.button.button-outline-green:hover,
+.btn.donasi,
+.btn.btn-outline-green:hover {
+    background-color: var(--green);
+    color: #fff;
+}
+
+.button.donasi:hover,
+.button.button-outline-orange:hover,
+.btn.donasi:hover,
+.btn.btn-outline-orange:hover {
+    background-color: var(--orange);
+    color: #fff;
+}
+
+.button.button-outline-green,
+.btn.btn-outline-green {
+    background-color: white;
+    color: var(--green);
+    border: 1px solid var(--green);
+    transition: all .3s ease-in-out !important;
+}
+
+.button.button-outline-orange,
+.btn.btn-outline-orange {
+    background-color: white;
+    color: var(--orange);
+    border: 1px solid var(--orange);
+    transition: all .3s ease-in-out !important;
+}
+
+.bg-orange {
+    background-color: var(--orange) !important;
+}
+
+.bg-green {
+    background-color: var(--green) !important;
+}
+
+.bg-light-opacity {
+    background-color: #f8f9fad6;
+}
+
+.rounded-box {
+    border-radius: 15px;
+}
+
+.scroll-top {
+    background-color: var(--green);
+}
+
+.text-green {
+    color: var(--green);
+}
+
+.text-orange {
+    color: var(--orange);
+}
+
+.border-orange {
+    border-color: var(--orange);
+}
+
+.border-green {
+    border-color: var(--green);
+}
+
+textarea {
+    resize: vertical;
+    max-height: 200px;
+}
+
+.form-floating.input_textarea2>.form-control:focus~label,
+.form-floating.input_textarea2>.form-control:not(:placeholder-shown)~label {
+    display: block;
+    height: auto !important;
+    opacity: 1;
+    color: rgba(33, 37, 41, .5);
+    width: calc(100% + 15% - .9rem) !important;
+}
+
+.form-floating.input_textarea2>.form-control:focus~label::before,
+.form-floating.input_textarea2>.form-control:not(:placeholder-shown)~label::before {
+    content: '';
+    position: absolute;
+    bottom: 1rem;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 1.5rem + .5px);
+    background-color: white;
+    z-index: -1;
+    box-shadow: 0 5px 8px 0 #fff;
+}
+
+@media only screen and (max-width: 2560px) {
+
+    .form-floating.input_textarea2.touch>.form-control:focus~label,
+    .form-floating.input_textarea2.touch>.form-control:not(:placeholder-shown)~label {
+        width: calc(100% + 15%) !important;
+    }
+}
+
+.form-floating.input_textarea2:not(.touch) textarea {
+    cursor: auto;
+}
+
+.form-floating.input_textarea2:not(.touch) textarea::-webkit-scrollbar {
+    width: 1rem;
+}
+
+.form-floating.input_textarea2:not(.touch) textarea::-webkit-scrollbar-track {
+    background-color: transparent;
+    border-radius: 0 inherit 0 0;
+}
+
+.form-floating.input_textarea2:not(.touch) textarea::-webkit-scrollbar-thumb {
+    border-radius: 100px;
+    border: 6px solid transparent;
+    background-clip: content-box;
+    background-color: #6c757d70;
+}
+
+.form-floating.input_textarea2:not(.touch) textarea::-webkit-scrollbar-thumb:hover {
+    background-color: #6c757dab;
+}

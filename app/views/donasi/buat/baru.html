@@ -1,0 +1,83 @@
+<!-- <?php if (Session::exists('error_feedback')) {
+    $data_error_feedback = Session::flash('error_feedback');
+    Debug::pr($data_error_feedback);
+} ?> -->
+<!-- Header -->
+<section class="header text-center py-3 sticky">
+    <div class="container d-flex gap-md-5 gap-2 justify-content-md-center align-items-md-center">
+        <a href="/bantuan/detil/<?= $data['bantuan']->id_bantuan; ?>">
+            <i class="lni lni-chevron-left fw-bolder fs-5 text-warning"></i>
+        </a>
+        <h5 class="mb-0"><span class="fw-lighter">Donasi</span> <?= $data['bantuan']->nama ?></h5>
+    </div>
+</section>
+<!-- End Header -->
+<!-- Content -->
+<section class="form">
+    <div class="container">
+        <div class="row justify-content-center">
+            <form class="col col-md-9 col-lg-6" autocomplete="off" method="post" action="/donasi/pembayaran/index/<?= $data['bantuan']->id_bantuan ?>">
+                <div class="row g-0 g-md-3">
+                    <div class="col-12 col-md-6">
+                        <div class="form-floating mb-3<?= (!empty($data_error_feedback['jumlah_donasi']['rule']) ? ' text-danger' : '') ?>">
+                            <input min="<?= $data['bantuan']->min_donasi ?>" type="text" class="form-control" id="floatingInputDonasi" placeholder="Jumlah Donasi"
+                                name="jumlah_donasi" required>
+                            <label for="floatingInputDonasi">Nominal Donasi<?= (!empty($data_error_feedback['jumlah_donasi']['rule']) ? ' <span>' . str_ireplace('jumlah_donasi', '', $data_error_feedback['jumlah_donasi']['feedback']) . '</span>' : '') ?></label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-floating select-dd mb-3<?= (!empty($data_error_feedback['metode_pembayaran']['rule']) ? ' text-danger' : '') ?>">
+                            <select class="form-select selectpicker" id="floatingSelectMPembayaran" aria-label="Metode Pembayaran" name="metode_pembayaran">
+                                <option value="">Pilih Metode Pembayaran</option>
+                                <option value="1" data-image="/assets/images/partners/bjb.png">Transfer Bank BJB</option>
+                                <option value="2" data-image="/assets/images/partners/ovo.png" disabled="disabled">Transfer Bank BCA (Segera)</option>
+                                <option value="2" data-image="/assets/images/partners/ovo.png" disabled="disabled">Transfer Bank BSI (Segera)</option>
+                                <option value="2" data-image="/assets/images/partners/ovo.png" disabled="disabled">E-Wallet OVO (Segera)</option>
+                                <option value="2" data-image="/assets/images/partners/ovo.png" disabled="disabled">E-Wallet Go Pay (Segera)</option>
+                            </select>
+                            <label for="floatingSelectMPembayaran">Metode Pembayaran<?= (!empty($data_error_feedback['metode_pembayaran']['rule']) ? ' <span>' . str_ireplace('metode pembayaran', '', $data_error_feedback['metode_pembayaran']['feedback']) . '</span>' : '') ?></label>
+                        </div>
+                    </div>
+                </div>
+                <?php if (!isset($data['donatur'])) { ?>
+                <div class="row align-items-center">
+                    <div class="col-12 text-black-50 text-center d-flex gap-3 align-items-center justify-content-center">Sudah punya akun sahabat berbagi <a href="/auth/signin" class="fw-bolder btn btn-outline-orange">Sign-In</a></div>
+                    <div class="col"><hr></div>
+                    <div class="col-auto">Atau</div>
+                    <div class="col"><hr></div>
+                </div>
+                <?php } ?>
+                <div class="form-floating mb-3<?= (!empty($data_error_feedback['nama']['rule']) ? ' text-danger' : '') ?>">
+                    <input type="text" class="form-control text-uppercase" id="floatingInputNama" placeholder="Nama Lengkap"
+                        name="nama" required <?= (isset($data['donatur']->nama) ? 'value="' . $data['donatur']->nama . '" readonly' : '') ?>>
+                    <label for="floatingInputNama">Nama Lengkap<?= (!empty($data_error_feedback['nama']['rule']) ? ' <span>' . str_ireplace('nama', '', $data_error_feedback['nama']['feedback']) . '</span>' : '') ?></label>
+                </div>
+                <div class="form-floating mb-3<?= (!empty($data_error_feedback['email']['rule']) ? ' text-danger' : '') ?>">
+                    <input type="email" class="form-control text-lowercase" id="floatingInputEmail"
+                        placeholder="Email" name="email" required <?= (isset($data['donatur']->email) ? 'value="' . $data['donatur']->email . '" readonly' : '') ?>>
+                    <label for="floatingInputEmail">Email<?= (!empty($data_error_feedback['email']['rule']) ? ' <span>' . str_ireplace('email', '', $data_error_feedback['email']['feedback']) . '</span>' : '') ?></label>
+                </div>
+                <div class="form-floating mb-3<?= (!empty($data_error_feedback['kontak']['rule']) ? ' text-danger' : '') ?>">
+                    <input type="text" class="form-control" id="floatingInputKontak" placeholder="Kontak WhatsApp"
+                        name="kontak" <?= (isset($data['donatur']->kontak) ? 'value="' . $data['donatur']->kontak . '" readonly' : '') ?>>
+                    <label for="floatingInputKontak">Kontak WhatsApp<?= (!empty($data_error_feedback['kontak']['rule']) ? ' <span>' . str_ireplace('kontak', '', $data_error_feedback['kontak']['feedback']) . '</span>' : '') ?></label>
+                </div>
+                <div class="form-group mb-3">
+                    <div class="form-check form-switch form-select-lg justify-content-between d-flex">
+                        <input name="alias" class="form-check-input" type="checkbox" id="flexSwitchCheckChecked">
+                        <label class="form-check-label text-end" for="flexSwitchCheckChecked">Gunakan nama samaran (<span data-target="samaran"><?= (isset($data['donatur']->samaran) ? $data['donatur']->samaran : 'Sahabat Berbagi') ?></span>)</label>
+                    </div>
+                </div>
+                <div class="form-floating input_textarea2">
+                    <textarea data-max="200" class="form-control textarea" placeholder="Tulis Pesan atau Do'a Anda"
+                        id="floatingTextarea" style="height: 84px; min-height: 84px;" name="pesan_atau_doa"></textarea>
+                    <label for="floatingTextarea">Pesan atau Do'a</label>
+                    <div id="charLeft" class="text-black-50"></div>
+                </div>
+                <input type="hidden" name="token" value="<?= $data[Config::get('session/token_name')] ?>" data-ip="<?= Config::getClientIP(); ?>">
+                <button type="submit" name="metode_bayar" class="btn donasi btn-lg mt-4 w-100">Lanjut
+                    Pembayaran</button>
+            </form>
+        </div>
+    </div>
+</section>

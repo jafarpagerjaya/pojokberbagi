@@ -1,0 +1,144 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v8.3.6,
+* Autoprefixer: v10.3.1
+* Browsers: last 4 version
+*/
+
+/* App Image Bg */
+
+.app-image>.bg-image {
+    height: 326px;
+}
+
+.app-image>[class*="col"] .img-wrapper {
+    border-radius: inherit;
+    height: inherit;
+    width: 100%;
+}
+
+.app-image>[class*="col"].bg-image>.img-wrapper>img,
+.app-image.img-wrapper>img {
+    transform-origin: center;
+    -webkit-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+.app-image>[class*="col"].bg-image:hover>.img-wrapper>img,
+div:hover>.app-image.img-wrapper>img {
+    transform: scale(1.1);
+}
+
+.img-wrapper.zoom-out>img {
+    transform: scale(1.1);
+}
+
+div:hover>.img-wrapper.zoom-out>img {
+    transform: scale(1);
+}
+
+.app-image>[class*="col"].bg-image:hover>.img-wrapper.opacity>img,
+div:hover>.img-wrapper.opacity>img {
+    opacity: .9;
+}
+
+/* End App Image Bg */
+
+/* Footer */
+.kontak .d-grid {
+    grid-auto-flow: column;
+    grid-auto-columns: 50px;
+    gap: 2em;
+}
+
+.kontak a.medsos-icon i {
+    font-size: 50px !important;
+    -webkit-transition: color 0.3s ease-in-out;
+    -o-transition: color 0.3s ease-in-out;
+    transition: color 0.3s ease-in-out;
+}
+
+.kontak a.medsos-icon i[class*="instagram"] {
+    background: #fdf497;
+    background: -o-radial-gradient(30% 107%, circle, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+
+.kontak a.medsos-icon:hover i[class*="instagram"] {
+    color: transparent !important;
+}
+
+.kontak a.medsos-icon:hover i[class*="twitter"] {
+    color: var(--bs-info) !important;
+}
+
+.kontak a.medsos-icon:hover i[class*="whatsapp"] {
+    color: #4FCE5D !important;
+}
+
+/* Akhir Footer */
+
+/* Box Icon */
+.box {
+    gap: 0.5em;
+}
+
+.box-icon {
+    height: 50px;
+    width: 50px;
+    line-height: 50px;
+    border-radius: 15px;
+    color: #fff;
+    text-align: center;
+    font-size: 30px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+}
+
+/* Akhir Box Icon */
+
+/* Media Query */
+@media (max-width: 1024px) {
+    .app-image>.bg-image {
+        height: 314px;
+    }
+
+    .box-icon {
+        height: 40px;
+        width: 40px;
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 767px) {
+    .app-image>[class*="col"] .row {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+        gap: 1em;
+    }
+
+    .box {
+        row-gap: 0.25em;
+    }
+
+    .box-icon {
+        height: 30px;
+        width: 30px;
+    }
+
+    .kontak .d-grid {
+        place-content: center;
+    }
+}
+
+/* Akhir Media Query */

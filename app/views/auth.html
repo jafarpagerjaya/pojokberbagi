@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $this->getTitle() . Config::get('defaults/default_title') ?></title>
+    <link rel="shortcut icon" href="/assets/images/brand/favicon-pojok-icon.ico" type="image/x-icon">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <!-- Icons -->
+    <link href="/vendors/nucleo/css/nucleo.css" rel="stylesheet">
+    <link href="/vendors/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <!-- Argon CSS -->
+    <link type="text/css" href="/assets/main/css/argon.min.css" rel="stylesheet">
+    <!-- Core Style -->
+    <link type="text/css" href="/assets/route/auth/css/style.css" rel="stylesheet">
+    <?= $this->getLinkRel('controller'); ?>
+    <?= $this->getLinkRel('action'); ?>
+</head>
+
+<body class="bg-default" <?= (isset($this->data['uri']) ? 'data-uri="'. $this->data['uri'] .'"' : '') ?>>
+    <!-- Navbar -->
+    <nav id="navbar-main" class="navbar navbar-horizontal navbar-transparent navbar-main navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="/assets/images/brand/pojok-berbagi-white.png">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse"
+                aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse navbar-custom-collapse collapse" id="navbar-collapse">
+                <div class="navbar-collapse-header">
+                    <div class="row">
+                        <div class="col-6 collapse-brand">
+                            <a href="/">
+                                <img src="/assets/images/brand/pojok-berbagi-transparent.png">
+                            </a>
+                        </div>
+                        <div class="col-6 collapse-close">
+                            <button type="button" class="navbar-toggler" data-toggle="collapse"
+                                data-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false"
+                                aria-label="Toggle navigation">
+                                <span></span>
+                                <span></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <ul class="navbar-nav mr-auto">
+                    <?= $this->getNav(); ?>
+                </ul>
+                <hr class="d-lg-none" />
+                <ul class="navbar-nav align-items-lg-center ml-lg-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-icon" href="https://www.facebook.com/pojokberbagi.id"
+                            target="_blank" data-toggle="tooltip" data-original-title="Like us on Facebook">
+                            <i class="fab fa-facebook-square"></i>
+                            <span class="nav-link-inner--text d-lg-none">Facebook</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-icon" href="https://www.instagram.com/pojokberbagi.id"
+                            target="_blank" data-toggle="tooltip" data-original-title="Follow us on Instagram">
+                            <i class="fab fa-instagram"></i>
+                            <span class="nav-link-inner--text d-lg-none">Instagram</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-icon" href="https://twitter.com/pojok_berbagi" target="_blank"
+                            data-toggle="tooltip" data-original-title="Follow us on Twitter">
+                            <i class="fab fa-twitter-square"></i>
+                            <span class="nav-link-inner--text d-lg-none">Twitter</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <?= $this->action_view; ?>
+    <!-- Footer -->
+    <footer class="py-5" id="footer-main">
+        <div class="container">
+            <div class="row align-items-center justify-content-xl-between">
+                <div class="col-xl-6">
+                    <div class="copyright text-center text-xl-left text-muted">
+                        Berdonasi Dengan <i class="fa fa-heart text-red"></i><a href="/" class="font-weight-bold ml-1"
+                            target="_blank">Pojok Berbagi</a>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <ul class="nav nav-footer justify-content-center justify-content-xl-end">
+                        <li class="nav-item">
+                            <a href="/layanan" class="nav-link" target="_blank">Donasi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tentang-kami" class="nav-link" target="_blank">Tentang Kami</a>
+                        </li>
+                        <!-- <li class="nav-item">
+                            <a href="#" class="nav-link" target="_blank">Blog</a>
+                        </li> -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <?php if (Session::exists('notif-pesan')) { ?>
+    <div class="modal fade" id="notif-modal" tabindex="-1" role="dialog" aria-labelledby="notif-modal-label"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Pesan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <?= Session::flash('notif-pesan') ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php } ?>
+</body>
+<script src="/vendors/jquery/dist/jquery.min.js"></script>
+<script src="/vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/vendors/js-cookie/js.cookie.js"></script>
+<script src="/vendors/jquery.scrollbar/jquery.scrollbar.min.js"></script>
+<script src="/vendors/jquery-scroll-lock/dist/jquery-scrollLock.min.js"></script>
+<!-- Argon JS -->
+<script src="/assets/main/js/argon.min.js"></script>
+<!-- Core Script -->
+<script src="/assets/route/auth/js/auth.js"></script>
+<script src="/assets/route/auth/js/script.js"></script>
+<?= $this->getScript('controller'); ?>
+<?= $this->getScript('action'); ?>
+
+</html>

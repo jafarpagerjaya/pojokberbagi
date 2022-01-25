@@ -1,0 +1,53 @@
+.box-curek {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1.5em;
+    padding-bottom: 0px;
+    position: relative;
+}
+
+.box-curek.green {
+    background: linear-gradient(to right, #97d70000 80%, #97D700);
+}
+
+.curek {
+    height: 100px;
+    width: 100px;
+    background-color: white;
+    color: white;
+    border-radius: 50%;
+    position: relative;
+}
+
+.curek::before,
+.curek::after {
+    position: absolute;
+    content: '';
+    height: 50%;
+    width: 50%;
+    background-color: white;
+}
+
+.curek::before {
+    top: 0;
+    right: 0;
+}
+
+.curek::after {
+    bottom: 0;
+    left: 0;
+}
+
+.curek {
+    background-color: white;
+}
+
+.kaki-curek {
+    height: 1.5em;
+    width: 100%;
+    background-color: #FE5000;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}

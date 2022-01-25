@@ -1,0 +1,28 @@
+{
+    "default" : {
+        "donatur" : {
+            "home" : "*",
+            "donasi" : "*"
+        }
+    },
+    "admin" : {
+        "cs" : {
+            "donatur" : "*"
+        },
+        "direktur" : {
+            "pegawai" : "*"
+        },
+        "it" : {
+            "akun" : "*"
+        },
+        "program" : {
+            "bantuan" : "*"
+        },
+        "dm" : {
+            "event" : "*"
+        },
+        "sys" : {
+            "all" : "*"
+        }
+    }
+}

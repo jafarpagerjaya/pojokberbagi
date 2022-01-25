@@ -1,0 +1,92 @@
+<div class="main-content">
+    <!-- Header -->
+    <div class="header bg-gradient-orange py-7 py-lg-8 pt-lg-9">
+        <div class="container">
+            <div class="header-body text-center mb-7">
+                <div class="row justify-content-center">
+                    <div class="col-xl-5 col-lg-6 col-md-8 px-5">
+                        <h1 class="text-white">Daftar akun baru</h1>
+                        <p class="text-lead text-white">Belum punya akun <b>Pojok Berbagi</b>? Buat akunmu dalam hitungan 1 menit saja.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="separator separator-bottom separator-skew zindex-100">
+            <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1"
+                xmlns="http://www.w3.org/2000/svg">
+                <polygon class="fill-default" points="2560 0 2560 100 0 100"></polygon>
+            </svg>
+        </div>
+    </div>
+    <!-- Page content -->
+    <div class="container mt--8 pb-5">
+        <!-- Table -->
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="card bg-secondary border-0">
+                    <div class="card-body px-lg-5 py-lg-5">
+                        <div class="text-center text-muted mb-4">
+                            <small>Buat Akunmu Sekarang</small>
+                        </div>
+                        <form role="form" action="/auth/signup" method="POST" autocomplete="off">
+                            <div class="form-group">
+                                <div class="input-group input-group-merge input-group-alternative mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="ni ni-single-02"></i></span>
+                                    </div>
+                                    <input class="form-control text-capitalize" placeholder="Nama" type="text" name="nama" value="<?= isset($this->data['nameV']) ? $this->data['nameV'] : ''; ?>">
+                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold ' . (!empty($this->data['nameF']) ? 'd-block' : '') ?>"><?= (!empty($this->data['nameF']) ? $this->data['nameF'] : '') ?></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group input-group-merge input-group-alternative mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                                    </div>
+                                    <input class="form-control text-lowercase no-space" placeholder="Email" type="email" name="email" value="<?= isset($this->data['emailV']) ? $this->data['emailV'] : ''; ?>">
+                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold ' . (!empty($this->data['emailF']) ? 'd-block' : '') ?>"><?= (!empty($this->data['emailF']) ? $this->data['emailF'] : '') ?></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group input-group-merge input-group-alternative mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="ni ni-badge"></i></span>
+                                    </div>
+                                    <input class="form-control" placeholder="Username" type="text" name="username" value="<?= isset($this->data['usernameV']) ? $this->data['usernameV'] : ''; ?>">
+                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold ' . (!empty($this->data['usernameF']) ? 'd-block' : '') ?>"><?= (!empty($this->data['usernameF']) ? $this->data['usernameF'] : '') ?></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group input-group-merge input-group-alternative messy-wrapper">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                                    </div>
+                                    <input id="password" class="form-control no-space" placeholder="Password" type="password" name="password" value="<?= isset($this->data['passwordV']) ? $this->data['passwordV'] : ''; ?>">
+                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold ' . (!empty($this->data['passwordF']) ? 'd-block' : '') ?>"><?= (!empty($this->data['passwordF']) ? $this->data['passwordF'] : '') ?></div>
+                                </div>
+                            </div>
+                            <div class="text-muted font-italic d-none" id="password-strength">
+                                <small>password strength: <b class=""></b></small>
+                            </div>
+                            <div class="row my-4">
+                                <div class="col-12">
+                                    <div class="custom-control custom-control-alternative custom-checkbox">
+                                        <input class="custom-control-input" id="customCheckRegister" type="checkbox" name="ketentuan" <?= !empty($this->data['ketentuanV']) ? '' : 'checked'; ?>>
+                                        <label class="custom-control-label green" for="customCheckRegister">
+                                            <span class="text-muted">Saya setuju dengan <a href="#!">Kebijakan Privasi</a></span>
+                                        </label>
+                                        <div class="<?= 'invalid-feedback py-1 ' . (!empty($this->data['ketentuanF']) ? 'd-block' : '') ?>"><?= (!empty($this->data['ketentuanF']) ? $this->data['ketentuanF'] : '') ?></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="token" class="d-hidden" value="<?= $data['token']; ?>">
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-outline-success mt-4">Buat Akun</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

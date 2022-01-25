@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $this->getTitle() . Config::get('defaults/default_title') ?></title>
+    <link rel="shortcut icon" href="/assets/images/brand/favicon-pojok-icon.ico" type="image/x-icon">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Core Style -->
+    <link rel="stylesheet" href="/assets/route/default/core/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/route/default/core/css/LineIcons.3.0.css">
+    <link rel="stylesheet" href="/assets/route/default/core/css/animate.css">
+    <link rel="stylesheet" href="/assets/route/default/core/css/main.css">
+    <?= $this->getLinkRel('controller'); ?>
+    <?= $this->getLinkRel('action'); ?>
+</head>
+<body <?= (isset($this->data['uri']) ? 'data-uri="'. $this->data['uri'] .'"' : '') ?>>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="preloader-inner">
+            <div class="preloader-icon">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+    <!-- /End Preloader -->
+
+    <?= $this->action_view; ?>
+
+    <!-- ========================= scroll-top ========================= -->
+    <a href="#" class="scroll-top">
+        <i class="lni lni-chevron-up"></i>
+    </a>
+    <!-- Vendor Script -->
+    <script src="/vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Core Script -->
+    <script src="/assets/route/auth/js/auth.js"></script>
+    <?= $this->getScript('controller'); ?>
+    <?= $this->getScript('action'); ?>
+</body>
+</html>

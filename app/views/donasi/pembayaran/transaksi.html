@@ -1,0 +1,114 @@
+<!-- Header -->
+<section class="header text-center py-3 sticky">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-7 col-lg-6">
+                <div class="d-flex gap-2 align-items-center">
+                    <a href="/home">
+                        <i class="lni lni-chevron-left fw-bolder fs-5 text-warning"></i>
+                    </a>
+                    <h5 class="m-0">Beranda</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Header -->
+<div class="container">
+    <div class="row justify-content-center" style="margin-top: 60px;">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="row align-items-center bg-white shadow-lg p-3 rounded-box g-3">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-6">
+                            <h5 class="mb-4">Info Donasi</h5>
+                        </div>
+                        <div class="col-6 text-end text-black-50">
+                            <i class="lni lni-world"></i>
+                            <small>Public</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 border-1 rounded-box border-light p-3 bg-light m-0" style="border-style: solid;">
+                    Donasi anda telah kami terima, halaman ini akan kadaluarsa dalam kurun waktu <span></span>. Anda tetap dapat melihat rincian transaksi ini melalui akun Sahabat Berbagi.
+                    <p class="pt-2">
+                    Klik <a href="/auth/signin" class="fw-bold text-green">masuk</a> jika sudah punya akun atau klik <a href="/auth/signup" class="fw-bold text-orange">daftar</a> untuk buat akun baru.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-5 pb-5">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="row align-item-center bg-white shadow-lg p-3 rounded-box g-3">
+                <h6>Rincian Donasi</h6>
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col fw-bold">
+                            Nama 
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <span id="nama_donatur"><?= $data['transaksi_donasi']->nama_donatur; ?></span>
+                            <span id="samaran">(<?= (!is_null($data['transaksi_donasi']->alias) ? $data['transaksi_donasi']->alias : 'Sahabat Berbagi') ?>)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mt-0">
+                    <div class="row">
+                        <div class="col fw-bold">
+                            Nominal Donasi
+                        </div>
+                        <div class="col-12 col-md-6">
+                            Rp. <span id="nominal_donasi"><?= Output::tSparator($data['transaksi_donasi']->jumlah_donasi); ?></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mt-0 mb-1">
+                    <div class="row">
+                        <div class="col fw-bold">
+                            Metode Bayar
+                        </div>
+                        <div class="col-12 col-md-6 align-items-end">
+                            <div id="metode_bayar">Transfer Bank</div>
+                            <div id="nama_cp">
+                                <img class="image-cp img-fluid" src="<?= $data['transaksi_donasi']->path_cp ?>" alt="<?= $data['transaksi_donasi']->nama_cp ?>">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mt-0">
+                    <div class="row">
+                        <div class="col fw-bold">
+                            Status 
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <span id="bayar" class="text-info fw-bold"><?= ($data['transaksi_donasi']->bayar == 1 ? 'Lunas' : 'Belum Lunas') ?></span>
+                            <span id="nama_cp">(<?= Output::timeToLocalFull($data['transaksi_donasi']->waktu_bayar) ?>)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mt-0">
+                    <div class="row">
+                        <div class="col fw-bold">
+                            Bantuan Untuk 
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <span id="nama_bantuan"><?= $data['transaksi_donasi']->nama_bantuan; ?></span>
+                            <?= (isset($data['transaksi_donasi']->nama_penerima) ? '<span id="penerima_bantuan"></span>(' . $data['transaksi_donasi']->nama_penerima . ')</span>' : '') ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mt-5">
+                    <figure class="text-center">
+                        <blockquote class="blockquote">
+                            <p class="fw-bold fs-5">Rabbana taqabbal minna innaka antas sami'ul alim.</p>
+                        </blockquote>
+                        <figcaption class="blockquote-footer">
+                            Artinya: <cite title="Source Title">Wahai Tuhan kami, terimalah (amalan) kami. Sesungguhnya Engkau Maha Mendengar lagi Maha Mengetahui.</cite>
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

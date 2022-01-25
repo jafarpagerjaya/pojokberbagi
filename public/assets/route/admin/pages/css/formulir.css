@@ -1,0 +1,12 @@
+#image-wrapper {
+    height: auto;
+    max-height: 380px;
+    width: 100% !important;
+    overflow: hidden;
+}
+
+#charLeft {
+    bottom: .5em;
+    right: 1.15em;
+    font-size: .65em;
+}

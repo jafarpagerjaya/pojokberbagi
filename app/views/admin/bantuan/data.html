@@ -1,0 +1,144 @@
+<div class="row">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header bg-transparent">
+                <h6 class="text-uppercase text-muted ls-1 mb-1">Overview</h6>
+                <h5 class="h3 mb-0"><?= $data['detil_bantuan']->nama ?></h5>
+            </div>
+            <img src="<?= $data['detil_bantuan']->path_gambar ?>" alt="" class="img-fluid img-center">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h6 class="heading-small text-muted mb-1">Jenis Program</h6>
+                        <h5 class="mb-0"><?= BantuanModel::jenisLayanan($data['detil_bantuan']->layanan) ?></h5>
+                    </div>
+                    <div class="col">
+                        <h6 class="heading-small text-muted mb-1">Waktu Awal</h6>
+                        <h5 class="mb-0"><?= Output::timeToLocal($data['detil_bantuan']->tanggal_awal) ?></h5>
+                    </div>
+                    <div class="col">
+                        <h6 class="heading-small text-muted mb-1">Waktu Akhir</h6>
+                        <h5 class="mb-0"><?= Output::timeNullUnlimited($data['detil_bantuan']->tanggal_akhir) ?></h5>
+                    </div>
+                    <div class="col">
+                        <h6 class="heading-small text-muted mb-1">Target Program</h6>
+                        <h5 class="mb-0"><?= (is_null($data['detil_bantuan']->jumlah_target) ? 'Unlimited' : $data['detil_bantuan']->jumlah_target); ?></h5>
+                    </div>
+                </div>
+                <div class="progress-wrapper">
+                    <div class="progress-info">
+                        <div class="progress-label">
+                            <span>Tersalurkan <?= Output::tSparator($data['detil_bantuan']->jumlah_pelaksanaan).' '.$data['detil_bantuan']->satuan_target ?></span>
+                        </div>
+                        <div class="progress-percentage">
+                            <span><?= $data['detil_bantuan']->persentase_pelaksanaan ?> %</span>
+                        </div>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-yellow" role="progressbar" aria-valuenow="<?= $data['detil_bantuan']->persentase_pelaksanaan ?>" aria-valuemin="0" aria-valuemax="100" <?= 'style="width:'. $data['detil_bantuan']->persentase_pelaksanaan . '%"'?>></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <h6 class="heading-small text-muted mb-0">Deskripsi</h6>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="mb-0"><?= $data['detil_bantuan']->id_pemohon; ?></h6>
+                    </div>
+                    <div class="col">
+                        <p><?= $data['detil_bantuan']->deskripsi ?></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent">
+                <h6 class="text-uppercase text-muted ls-1 mb-1">Transaksi Masuk</h6>
+                <h5 class="h3 mb-0">Donatur <?= $data['detil_bantuan']->nama ?></h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col" class="sort" data-sort="id_donasi">ID Donasi</th>
+                            <th scope="col" class="sort" data-sort="nama">Nama Donatur</th>
+                            <th scope="col" class="sort" data-sort="donasi">Donasi</th>
+                            <th scope="col" class="sort" data-sort="kontak">Kontak</th>
+                            <th scope="col" class="sort" data-sort="tanggal_donasi">Waktu Donasi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!is_null($data['donasi_bantuan'])) {
+                            foreach($data['donasi_bantuan'] as $data_donasi) { ?>
+                        <tr>
+                            <th scope="row">
+                                <div class="media align-items-center">
+                                    <a href="#">
+                                        <span class="name mb-0 text-sm"><?= $data_donasi->id_donasi; ?></span>
+                                    </a>
+                                </div>
+                            </th>
+                            <th scope="row">
+                                <div class="media align-items-center">
+                                    <a href="#<?= $data_donasi->nama; ?>">
+                                        <span class="name mb-0 text-sm"><?= $data_donasi->nama; ?></span>
+                                    </a>
+                                </div>
+                            </th>
+                            <td class="text-right">
+                                <b>Rp. <?= number_format($data_donasi->donasi,0,',','.'); ?></b>
+                            </td>
+                            <td>
+                                <?= $data_donasi->kontak ?>
+                            </td>
+                            <td class="text-center">
+                                <?= date('d-m-Y H:m:s', strtotime($data_donasi->waktu_donasi)) ?>
+                            </td>
+                        </tr>
+                        <?php }} else {
+                            Ui::tableIsNull(5,'Donasi Bantuan Donatur');
+                        } ?>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer py-4">
+                <nav aria-label="...">
+                    <ul class="pagination justify-content-end mb-0">
+                        <?= Ui::pageing($this->data['halaman'], $this->data['record'], 10, $data['detil_bantuan']->id_bantuan); ?>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-header bg-transparent">
+                <h6 class="text-uppercase text-muted ls-1 mb-1">Perkembangan</h6>
+                <div class="h3 mb-0">Donasi Terkini</div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6"><small class="mb-0">Total Donasi</small></div>
+                    <div class="col-6 text-right"><small class="text-light">Rp. <?= Output::tSparator($data['detil_bantuan']->total_donasi) ?></small></div>
+                </div>
+                <div class="row">
+                    <div class="col-6"><small class="mb-0">Tersalurkan</small></div>
+                    <div class="col-6 text-right"><small class="text-light">Rp. <?= Output::tSparator($data['detil_bantuan']->donasi_terlaksana) ?></small></div>
+                </div>
+                <div class="row">
+                    <div class="col-6"><small class="mb-0">Saldo</small></div>
+                    <div class="col-6 text-right"><small class="text-light">Rp. <?= Output::tSparator($data['detil_bantuan']->saldo_donasi) ?></small></div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header bg-transparent">
+                <h6 class="text-uppercase text-muted ls-1 mb-1">Rincian Bantuan</h6>
+                <div class="h3 mb-0">Kedatangan Donatur</div>
+            </div>
+            <div class="card-body">
+                <canvas id="myChart" width="400" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+</div>

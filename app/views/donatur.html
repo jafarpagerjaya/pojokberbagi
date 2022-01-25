@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $this->getTitle() . Config::get('defaults/default_title') ?></title>
+    <link rel="shortcut icon" href="/assets/images/brand/favicon-pojok-icon.ico" type="image/x-icon">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <!-- Icons -->
+    <link href="/vendors/nucleo/css/nucleo.css" rel="stylesheet">
+    <link href="/vendors/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <!-- Argon CSS -->
+    <link type="text/css" href="/assets/main/css/argon.min.css" rel="stylesheet">
+    <!-- Core Style -->
+    <?= $this->getLinkRel('controller'); ?>
+    <?= $this->getLinkRel('action'); ?>
+</head>
+
+<body <?= (isset($this->data['uri']) ? 'data-uri="'. $this->data['uri'] .'"' : '') ?>>
+    <!-- Sidenav -->
+    <nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-light bg-white" id="sidenav-main">
+        <div class="scrollbar-inner">
+            <!-- Brand -->
+            <div class="sidenav-header  align-items-center">
+                <a class="navbar-brand" href="/">
+                    <img src="/assets/images/brand/pojok-berbagi-transparent.png" class="navbar-brand-img"
+                        alt="Pojok Berbagi">
+                </a>
+            </div>
+            <div class="navbar-inner">
+                <!-- Collapse -->
+                <div class="collapse navbar-collapse" id="sidenav-collapse-main">
+                    <!-- Nav items -->
+                    <ul class="navbar-nav">
+                        <?= $this->getNav() ?>
+                    </ul>
+                    <!-- Divider -->
+                    <hr class="my-3">
+                    <!-- Heading -->
+                    <h6 class="navbar-heading p-0 text-muted">
+                        <span class="docs-normal">Pengaturan</span>
+                    </h6>
+                    <!-- Navigation -->
+                    <ul class="navbar-nav mb-md-3">
+                        <li class="nav-item">
+                            <a class="nav-link <?= ($this->getController() == 'profile' ? 'active' : '') ?>" href="/donatur/profile">
+                                <i class="ni ni-single-02 text-yellow"></i>
+                                <span class="nav-link-text">Profile</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active active-pro" href="/auth/signout">
+                                <i class="ni ni-user-run text-dark"></i>
+                                <span class="nav-link-text">Keluar</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Main content -->
+    <div class="main-content" id="panel">
+        <!-- Topnav -->
+        <nav class="navbar navbar-top navbar-expand navbar-dark bg-primary border-bottom">
+            <div class="container-fluid">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <!-- Navbar links -->
+                    <ul class="navbar-nav align-items-center  ml-md-auto ">
+                        <li class="nav-item d-xl-none">
+                            <!-- Sidenav toggler -->
+                            <div class="pr-3 sidenav-toggler sidenav-toggler-dark" data-action="sidenav-pin"
+                                data-target="#sidenav-main">
+                                <div class="sidenav-toggler-inner">
+                                    <i class="sidenav-toggler-line"></i>
+                                    <i class="sidenav-toggler-line"></i>
+                                    <i class="sidenav-toggler-line"></i>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item d-sm-none">
+                            <a class="nav-link" href="#" data-action="search-show" data-target="#navbar-search-main">
+                                <i class="ni ni-zoom-split-in"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav align-items-center  ml-auto ml-md-0 ">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                                <div class="media align-items-center">
+                                    <span class="avatar bg-white avatar-sm rounded-circle">
+                                        <img alt="Avatarku" src="/assets/images/default.png">
+                                    </span>
+                                    <div class="media-body  ml-2  d-none d-lg-block">
+                                        <span class="mb-0 text-sm  font-weight-bold"><?= $data['donatur']->nama ?></span>
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="dropdown-menu  dropdown-menu-right ">
+                                <div class="dropdown-header noti-title">
+                                    <h6 class="text-overflow m-0">Welcome!</h6>
+                                </div>
+                                <?php if ($this->getController() != "profile") {
+                                    echo '<a href="/donatur/profile" class="dropdown-item">
+                                        <i class="ni ni-single-02"></i>
+                                        <span>My profile</span>
+                                    </a>';
+                                } ?>
+                                <div class="dropdown-divider"></div>
+                                <a href="/auth/signout" class="dropdown-item">
+                                    <i class="ni ni-user-run"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Header -->
+        <?php if ($this->getController() == "profile") {
+            Ui::headerProfil($this->data['akun']->username);
+        } else {
+            Ui::headerDefault($this->getRoute());
+        } ?>
+        <!-- Page content -->
+        <div class="container-fluid mt--6">
+            <section id="main-content">
+                <?= $this->action_view; ?>
+            </section>
+            <!-- Footer -->
+            <footer class="footer pt-0">
+                <div class="row align-items-center justify-content-lg-between">
+                    <div class="col-lg-6">
+                        <div class="copyright text-center text-lg-left text-muted align-items-center d-flex">
+                            <i class="ni ni-favourite-28 text-danger"></i>
+                            <a href="/" class="font-weight-bold ml-1" target="_blank">Pojok Berbagi</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+     <!-- Modal -->
+     <?php if (Session::exists('success') || Session::exists('error')) { ?>
+        <div class="modal fade" id="notif-modal" tabindex="-1" role="dialog" aria-labelledby="notif-modal-label"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered <?= ((Session::exists('error')) ? 'modal-danger' : '') ?>" role="document">
+                <div class="modal-content <?= ((Session::exists('error')) ? 'bg-gradient-danger' : '') ?>">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Pesan</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <?php if (Session::exists('success')) { 
+                            echo Session::flash('success');
+                        } else { 
+                            echo Session::flash('error');
+                        } ?>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php } ?>
+    <!-- Vendor Script -->
+    <script src="/vendors/jquery/dist/jquery.min.js"></script>
+    <script src="/vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendors/js-cookie/js.cookie.js"></script>
+    <script src="/vendors/jquery.scrollbar/jquery.scrollbar.min.js"></script>
+    <script src="/vendors/jquery-scroll-lock/dist/jquery-scrollLock.min.js"></script>
+    <!-- Core Script -->
+    <script src="/assets/route/auth/js/auth.js"></script>
+    <script src="/assets/main/js/main.js"></script>
+    <?= $this->getScript('controller'); ?>
+    <?= $this->getScript('action'); ?>
+    <!-- Argon JS -->
+    <script src="/assets/main/js/argon.js"></script>
+</body>
+
+</html>

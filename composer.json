@@ -1,0 +1,5 @@
+{
+    "require": {
+        "foroco/php-browser-detection": "^2.3"
+    }
+}

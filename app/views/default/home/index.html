@@ -1,0 +1,287 @@
+<!-- End Header Area -->
+<!-- Hero Area -->
+<section class="hero-area">
+    <div class="main__circle bg-light shadow-lg"></div>
+    <div class="main__circle2 bg-orange left"></div>
+    <div class="main__circle3 bg-light"></div>
+    <div class="main__circle4 bg-pink"></div>
+    <div id="carousel" class="carousel slide carousel-dark" data-bs-ride="carousel">
+        <!-- <div class="carousel-indicators">
+            <?php if (count($data['banner'])) {
+                $loop = 0;
+                while($loop < count($data['banner'])) {
+            ?>
+            <button type="button" data-bs-target="#carousel" data-bs-slide-to="<?= $loop ?>" <?= ($loop == 0 ? 'class="active" aria-current="true"' : '') ?>  aria-label="Slide <?= $loop ?>"></button>
+            <?php 
+                $loop += 1;
+                }
+            }
+            ?>
+        </div> -->
+        <div class="carousel-inner">
+            <?php if (count($data['banner'])) {
+                $loop = 0;
+                foreach($data['banner'] as $banner) {
+            ?>
+            <div class="carousel-item <?= ($loop == 0 ? 'active' : '') ?>">
+                <div class="container">
+                    <div class="row align-items-center gap-4 gap-lg-0 hero-row">
+                        <div class="col-lg-5 col-md-12 col-12 order-2 order-lg-1">
+                            <div class="hero-content p-0 row flex-lg-column">
+                                <h1 class="col-12 col-md-8 col-lg-12">
+                                    <?php
+                                        $delay = 0.2;
+                                        $time = 0.2;
+                                        $pecah_kategori = explode(' ', $banner->nama_kategori); 
+                                        $loop_kata_kategori = 1;
+                                        foreach($pecah_kategori as $key => $kata_kategori) {
+                                            echo '<span class="wow fadeInUp'. ($loop_kata_kategori < count($pecah_kategori) ? ' mr' : '') .'" data-wow-delay="'. $time .'s">'. $kata_kategori .'</span>';
+                                            $time = $time + $delay; 
+                                            $loop_kata_kategori += 1;
+                                        }
+                                        $delay = $delay*2;
+                                    ?>
+                                    <span class="wow fadeInUp" data-wow-delay="<?php $time += $delay; echo $time; ?>s">
+                                        <?= $banner->layanan ?>
+                                    </span>
+                                    <span class="color2 wow fadeInUp"
+                                        data-wow-delay="<?php $time += $delay; echo $time; ?>s">
+                                        <?= $banner->nama_bantuan ?>
+                                    </span>
+                                </h1>
+                                <p class="wow fadeInUp col col-md-12 order-md-1 order-lg-0"
+                                    data-wow-delay="<?php $time += $delay/2; echo $time; ?>s">
+                                    <?= $banner->deskripsi ?>
+                                </p>
+                                <div class="wow fadeInUp col-12 col-md-4 col-lg-auto text-end mt-3 mt-md-0 mt-lg-3 order-md-0 order-lg-1"
+                                    data-wow-delay="<?= $time ?>s">
+                                    <a href="/donasi/buat/baru/<?= $banner->id_bantuan ?>"
+                                        class="btn btn-lg donasi w-100">Donasi Sekarang</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7 col-12 order-1 order-lg-2 img-box">
+                            <div class="app-image">
+                                <div class="col-12 bg-image bg-white">
+                                    <div
+                                        class="img-wrapper overflow-hidden position-absolute d-flex align-items-center opacity justify-content-center">
+                                        <img src="<?= $banner->path_gambar; ?>" alt="<?= $banner->nama_gambar; ?>"
+                                            class="img-fluid">
+                                    </div>
+                                    <div
+                                        class="col-wrapper mt-1 mt-md-0 gap-3 gap-md-0 position-absolute d-flex flex-column p-md-3">
+                                        <div class="row top order-2 order-md-1 collapse" id="collapse-<?= $loop ?>">
+                                            <div class="col col-md-4 px-0 px-md-2">
+                                                <div class="box bg-light p-3 d-flex">
+                                                    <div class="box-icon bg-primary">
+                                                        <i class="lni lni-wallet"></i>
+                                                    </div>
+                                                    <div class="box-info d-flex justify-content-center flex-column">
+                                                        <h6 class="mb-0" data-target="<?= $banner->total_donasi ?>">
+                                                        </h6>
+                                                        <p><small class="text-muted">Terkumpul</small></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col col-md-4 px-0 px-md-2">
+                                                <div class="box bg-light p-3 d-flex">
+                                                    <div class="box-icon bg-info">
+                                                        <i class="lni lni-handshake"></i>
+                                                    </div>
+                                                    <div class="box-info d-flex justify-content-center flex-column">
+                                                        <h6 class="mb-0" data-target="<?= $banner->jumlah_donatur ?>">
+                                                        </h6>
+                                                        <p><small class="text-muted">Donatur</small></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-4 px-0 px-md-2">
+                                                <div class="box bg-light p-3 d-flex">
+                                                    <div class="box-icon bg-orange">
+                                                        <i class="lni lni-target-customer"></i>
+                                                    </div>
+                                                    <div class="box-info d-flex justify-content-center flex-column">
+                                                        <h6 class="mb-0" <?=(!is_null($banner->jumlah_target) ?
+                                                            'data-target="' . $banner->jumlah_target . '">' :
+                                                            '>Unlimited') ?></h6>
+                                                        <p><small class="text-muted">Target</small></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="row bottom flex-md-column align-items-stretch align-items-md-end gap-md-3 mt-3 pr-3 order-1 order-md-2">
+                                            <div class="col col-md-4 px-0">
+                                                <div class="box bg-light p-3 py-2 d-flex flex-wrap">
+                                                    <small class="w-100 fw-light">
+                                                        <?= $banner->jenis_penyaluran ?>
+                                                    </small>
+                                                    <div class="box-icon bg-green">
+                                                        <i class="lni lni-grow"></i>
+                                                    </div>
+                                                    <div class="box-info d-flex justify-content-center flex-column">
+                                                        <h6 class="mb-0"
+                                                            data-target="<?= $banner->donasi_disalurkan ?>"></h6>
+                                                        <p><small class="text-muted">Tersalurkan</small></p>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="progress" style="height: 5px;">
+                                                            <div class="progress-bar bg-green" role="progressbar"
+                                                                aria-valuenow="<?= $banner->persentase_donasi_dilaksanakan ?>"
+                                                                aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col col-md-4 ps-0 ps-md-3 pe-0 detil">
+                                                <div class="box bg-light p-3 position-relative">
+                                                    <div class="d-grid">
+                                                        <div class="item">
+                                                            <h6 class="mb-0">Sisa Waktu</h6>
+                                                        </div>
+                                                        <div class="item" <?php if (!is_null($banner->sisa_waktu)) {
+                                                            echo 'data-target="'. $banner->sisa_waktu .'">'; } else {
+                                                            echo '>Unlimited'; } ?></div>
+                                                        <div data-target="<?= $loop ?>"
+                                                            class="item position-absolute d-flex justify-content-between text-primary align-items-center d-md-none collapseButton"
+                                                            id="collapseButton-<?= $loop ?>">
+                                                            <span>Lebih detil</span>
+                                                            <i class="lni lni-chevron-down"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php 
+                $loop += 1;
+                }
+            }
+            ?>
+        </div>
+        <button class="carousel-control-prev d-none d-md-flex" type="button" data-bs-target="#carousel"
+            data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next d-none d-md-flex" type="button" data-bs-target="#carousel"
+            data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</section>
+<!-- End Hero Area -->
+<!-- Panel Area -->
+<section class="panel">
+    <div class="container">
+        <div class="row bg-white justify-content-center g-0 rounded-box border-1 border-green shadow-sm text-center">
+            <a class="col pb-2 ps-1 pe-1 pt-1 d-flex flex-column-reverse" href="#">
+                <span class="text-green d-none d-md-block">Lihat lebih lanjut</span>
+                <h6 class="display-6 fs-6">Pojok Berdaya</h6>
+                <i class="text-black-50 lni lni-restaurant"></i>
+            </a>
+            <a class="col pb-2 ps-1 pe-1 pt-1 d-flex flex-column-reverse" href="#">
+                <span class="text-green d-none d-md-block">Lihat lebih lanjut</span>
+                <h6 class="display-6 fs-6">Pojok Peduli</h6>
+                <i class="text-black-50 lni lni-heart"></i>
+            </a>
+            <a class="col pb-2 ps-1 pe-1 pt-1 d-flex flex-column-reverse" href="#">
+                <span class="text-green d-none d-md-block">Lihat lebih lanjut</span>
+                <h6 class="display-6 fs-6">Pojok Yatim</h6>
+                <i class="text-black-50 lni lni-users"></i>
+            </a>
+            <a class="col pb-2 ps-1 pe-1 pt-1 d-flex flex-column-reverse" href="#">
+                <span class="text-green d-none d-md-block">Lihat lebih lanjut</span>
+                <h6 class="display-6 fs-6">Pojok Wakaf</h6>
+                <i class="text-black-50 lni lni-infinite"></i>
+            </a>
+            <a class="col pb-2 ps-1 pe-1 pt-1 d-flex flex-column-reverse" href="#">
+                <span class="text-green d-none d-md-block">Lihat lebih lanjut</span>
+                <h6 class="display-6 fs-6">Pojok Rescue</h6>
+                <i class="text-black-50 lni lni-ambulance"></i>
+            </a>
+        </div>
+    </div>
+</section>
+<!-- End Panel Area -->
+<!-- Start Services Area -->
+<section class="services section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section-title">
+                    <h3 class="wow zoomIn" data-wow-delay=".2s">Program
+                        Donasi Lainnya</h3>
+                    <p class="wow fadeInUp" data-wow-delay=".4s">Sahabat
+                        baik masih banyak saudara kita yang membutuhkan
+                        uluran tanganmu.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <?php if (!is_null($data['list_bantuan'])) {
+                $wow_delay = 0.2;
+                $wow_next = 0.2;
+                foreach($data['list_bantuan'] as $list_bantuan) { 
+                    $wow_delay = $wow_delay + $wow_next; ?>
+            <div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay="<?= $wow_delay ?>s">
+                <!-- Start Single Service -->
+                <div class="single-service">
+                    <div
+                        class="app-image img-wrapper rounded-box overflow-hidden d-flex justify-content-center align-items-center zoom-out opacity">
+                        <img src="<?= $list_bantuan->path_gambar; ?>" alt="<?= $list_bantuan->nama_gambar; ?>">
+                    </div>
+                    <div class="row">
+                        <div class="col-auto">
+                            <div class="service-icon shadow" <?='style="background-color:' . $list_bantuan->warna .'"'
+                                ?>>
+                                <?= BantuanModel::iconLayanan($list_bantuan->layanan); ?>
+                            </div>
+                        </div>
+                        <div class="col text-end align-self-end">
+                            <span class="badge text-wrap <?= (is_null($list_bantuan) ? 'bs-light' : 'bg-light') ?>">
+                                <?= $list_bantuan->pengaju_bantuan ?>
+                            </span>
+                        </div>
+                    </div>
+                    <h6 class="my-3 overflow-hidden title">
+                        <?= $list_bantuan->nama_bantuan ?>
+                    </h6>
+                    <div class="row mb-2 align-items-end">
+                        <div class="col">
+                            <h6>Terkumpul</h6>
+                            <p class="text-muted">Rp.
+                                <?= Output::tSparator($list_bantuan->total_donasi) ?>
+                            </p>
+                        </div>
+                        <div class="col-auto text-end">
+                            <small>
+                                <?= ($list_bantuan->sisa_waktu != 'Unlimited' ? $list_bantuan->sisa_waktu.' hari lagi' : $list_bantuan->sisa_waktu) ?>
+                            </small>
+                        </div>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" <?='style="width:' . $list_bantuan->
+                            persentase_donasi_dilaksanakan .'%"' ?>
+                            aria-valuenow="
+                            <?= $list_bantuan->persentase_donasi_dilaksanakan ?>"
+                            aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <a href="/bantuan/detil/<?= $list_bantuan->id_bantuan ?>" class="mt-3">Lihat lebih lanjut <i
+                            class="lni lni-arrow-right"></i></a>
+                </div>
+                <!-- End Single Service -->
+            </div>
+            <?php }} ?>
+        </div>
+    </div>
+</section>
+<!-- /End Services Area -->

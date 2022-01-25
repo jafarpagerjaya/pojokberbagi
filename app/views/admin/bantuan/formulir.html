@@ -1,0 +1,181 @@
+<div class="row">
+    <div class="col-xl-8 order-xl-1">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h3 class="mb-0">Tambah Program</h3>
+                    </div>
+                </div>
+            </div>
+            <?php if (Session::exists('error_feedback')) {
+                $data_error_feedback = Session::flash('error_feedback');
+                Debug::pr($data_error_feedback);
+            } ?>
+            <div class="card-body">
+                <form action="/admin/bantuan/tambah" method="post" autocomplete="off">
+                    <h6 class="heading-small text-muted mb-4">Informasi Program</h6>
+                    <div class="pl-lg-4">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group" id="nama">
+                                    <label class="form-control-label" for="input-nama-program">Nama Program</label>
+                                    <input spellcheck="false" type="text" id="input-nama-program" class="form-control" placeholder="Program ABC" name="nama" <?= !empty($data_error_feedback['nama']['value']) ? 'value="' . $data_error_feedback['nama']['value'] . '"' : ''; ?>>
+                                    <?= (!empty($data_error_feedback['nama']['feedback']) ? '<div class="invalid-feedback px-2 py-1 font-weight-bold d-flex">' . $data_error_feedback['nama']['feedback'] . '</div>' : '') ?>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group" id="id_jenis">
+                                    <label class="form-control-label" for="input-jenis-bantuan">Jenis Program</label>
+                                    <select class="form-control" id="input-jenis-bantuan" name="id_jenis">
+                                        <?php foreach($this->data['jenis_bantuan'] as $dataJenis) { 
+                                            if ($dataJenis->layanan == 'S') {
+                                                $layanan = 'Sosial';
+                                            } elseif ($dataJenis->layanan == 'E') {
+                                                $layanan = 'Ekonomi';
+                                            } elseif ($dataJenis->layanan == 'D') {
+                                                $layanan = 'Bencana';
+                                            } elseif ($dataJenis->layanan == 'K') {
+                                                $layanan = 'Kesehatan';
+                                            } elseif ($dataJenis->layanan == 'P') {
+                                                $layanan = 'Pendidikan';
+                                            }
+                                        ?>
+                                        <option value="<?= $dataJenis->id_jenis ?>">
+                                            <?= $dataJenis->nama . ' ('. $layanan .')' ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group" id="jumlah_target">
+                                    <label class="form-control-label" for="input-jumlah-target">Jumlah Target</label>
+                                    <input type="text" id="input-jumlah-target" class="form-control" placeholder="Unlimited" name="jumlah_target" <?= !empty($data_error_feedback['jumlah_target']['value']) ? 'value="' . $data_error_feedback['jumlah_target']['value'] .'"' : ''; ?>>
+                                    <?= (!empty($data_error_feedback['jumlah_target']['feedback']) ? '<div class="invalid-feedback px-2 py-1 font-weight-bold d-flex">' . $data_error_feedback['jumlah_target']['feedback'] . '</div>' : '') ?>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group" id="satuan_target">
+                                    <label class="form-control-label" for="input-satuan-target">Satuan Target</label>
+                                    <input spellcheck="false" type="text" id="input-satuan-target" class="form-control" placeholder="Orang/Donasi/Paket" name="satuan_target" <?= !empty($data_error_feedback['satuan_target']['value']) ? 'value="' . $data_error_feedback['satuan_target']['value'] . '"' : ''; ?>>
+                                    <?= (!empty($data_error_feedback['satuan_target']['feedback']) ? '<div class="invalid-feedback px-2 py-1 font-weight-bold d-flex">' . $data_error_feedback['satuan_target']['feedback'] . '</div>' : '') ?>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group" id="total_rab">
+                                    <label class="form-control-label" for="input-rab">Nominal Kebutuhan</label>
+                                    <input spellcheck="false" type="text" id="input-rab" class="form-control" placeholder="Unlimited" name="total_rab" <?= !empty($data_error_feedback['total_rab']['value']) ? 'value="' . $data_error_feedback['total_rab']['value'] . '"' : ''; ?>>
+                                    <?= (!empty($data_error_feedback['total_rab']['feedback']) ? '<div class="invalid-feedback px-2 py-1 font-weight-bold d-flex">' . $data_error_feedback['total_rab']['feedback'] . '</div>' : '') ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group" id="min_donasi">
+                                    <label class="form-control-label" for="input-min-donasi">Minimal Donasi</label>
+                                    <input spellcheck="false" type="text" id="input-min-donasi" class="form-control" placeholder="Tanpa Batas" name="min_donasi" <?= !empty($data_error_feedback['min_donasi']['value']) ? 'value="' . $data_error_feedback['min_donasi']['value'] .'"' : (!empty($data['bantuan']->min_donasi) ? 'value="Rp. '. Output::tSparator($data['bantuan']->min_donasi) . '"' : '') ?>>
+                                    <?= (!empty($data_error_feedback['min_donasi']['feedback']) ? '<div class="invalid-feedback px-2 py-1 font-weight-bold d-flex">' . $data_error_feedback['min_donasi']['feedback'] . '</div>' : '') ?>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Date -->
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group" id="lama_penayangan">
+                                    <label class="form-control-label" for="input-lama-penayangan">Lama Waktu Buka Donasi</label>
+                                    <input data-max="365" spellcheck="false" type="text" id="input-lama-penayangan" class="form-control" placeholder="Tanpa Batas" name="lama_penayangan" <?= !empty($data_error_feedback['lama_penayangan']['value']) ? 'value="' . $data_error_feedback['lama_penayangan']['value'] .'"' : (!empty($data['bantuan']->lama_penayangan) ? 'value="Rp. '. Output::tSparator($data['bantuan']->lama_penayangan) . '"' : '') ?>>
+                                    <?= (!empty($data_error_feedback['lama_penayangan']['feedback']) ? '<div class="invalid-feedback px-2 py-1 font-weight-bold d-flex">' . $data_error_feedback['lama_penayangan']['feedback'] . '</div>' : '') ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="heading-small text-muted mb-4">Deskripsi Program</h6>
+                    <div class="pl-lg-4">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="input-group" id="deskripsi">
+                                        <div class="input-group-prepend align-content-around position-relative">
+                                            <span class="input-group-text align-items-start">Deskripsi Singkat</span>
+                                            <small class="text-gray position-absolute" id="charLeft"><?= (!empty($data_error_feedback['deskripsi']['value']) ? strlen($data_error_feedback['deskripsi']['value']) : '0') ?>/255</small>
+                                        </div>
+                                        <textarea spellcheck="false" maxlength="255" class="form-control textarea" aria-label="With textarea" name="deskripsi"><?= !empty($data_error_feedback['deskripsi']['value']) ? $data_error_feedback['deskripsi']['value'] : ''; ?></textarea>
+                                    </div>
+                                    <?= (!empty($data_error_feedback['deskripsi']['feedback']) ? '<div class="invalid-feedback px-2 py-1 font-weight-bold d-flex">' . $data_error_feedback['deskripsi']['feedback'] . '</div>' : '') ?>                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 d-none" id="column-wrapper">
+                                <div class="card rounded">
+                                    <div id="image-wrapper" class="d-flex justify-content-center">
+                                        <img class="rounded img-fluid" src="" alt="Gambar Banner" id="image">
+                                    </div>
+                                    <div class="card footer pb-0 mb-0 shadow-none">
+                                        <button type="button" class="btn btn-primary" id="crop">Crop</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="file-gambar">Gambar Banner</label>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="file-gambar" name="file_gambar">
+                                        <label class="custom-file-label" for="file-gambar">Pilih file gambar</label>
+                                    </div>
+                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['file_gambar']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['file_gambar']['feedback']) ?></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-secondary" type="clear">Hapus</button>
+                                <button class="btn btn-icon btn-primary" type="submit">
+                                    <span class="btn-inner--icon"><i class="ni ni-check-bold"></i></span>
+                                    <span class="btn-inner--text">Simpan</span>
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="token" value="<?= $data['token'] ?>">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 order-xl-2">
+        <div class="card">
+            <div class="card-header bg-transparent">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h6 class="text-uppercase text-muted ls-1 mb-1">Program</h6>
+                        <h5 class="h3 mb-0">Program Berjalan</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Kategori Program</th>
+                            <th scope="col">Jumlah</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($data['bantuan_berjalan'] as $bantuan_berjalan) { ?>
+                        <tr>
+                            <th scope="row">
+                                <a href="<?= (($bantuan_berjalan->jumlah_kategori_berjalan > 0) ? '/admin/bantuan/berjalan/kategori/' . str_replace(" ",'-', strtolower($bantuan_berjalan->nama)) : '#') ?>" title="Klik Detil Program"><?= $bantuan_berjalan->nama ?></a>
+                            </th>
+                            <td>
+                                <?= number_format($bantuan_berjalan->jumlah_kategori_berjalan, 0, ",", ".") ?>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

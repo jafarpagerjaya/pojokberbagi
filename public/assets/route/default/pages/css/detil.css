@@ -1,0 +1,74 @@
+.bantuan-area {
+    padding: 92px 0px;
+}
+
+.bantuan-area>.app-image.bg-image {
+    height: 420px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.bantuan-area>.app-image.bg-image>img {
+    width: 100%;
+}
+
+.bantuan-area>.box-donasi-info {
+    margin-top: -130px !important;
+}
+
+.bantuan-area>.box-donasi-info .box.prog {
+    row-gap: 0px;
+    column-gap: 1em;
+}
+
+.bantuan-area>.box-donasi-info .box.prog .col-12 {
+    position: relative;
+}
+
+.bantuan-area>.box-donasi-info .box.prog .col-12>.progress {
+    position: absolute;
+    width: 100%;
+    left: auto;
+    right: auto;
+    bottom: -.75em;
+}
+
+.bantuan-area>.box-bantuan-info .logo {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.bantuan-area>.box-bantuan-info .logo img {
+    width: 150px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+@media (min-width: 992px) {
+    .mb-lg-2 {
+        margin-bottom: 0.4585rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-image.bg-image {
+        border-radius: 15px;
+        height: 250px !important;
+        margin: 0px 12px;
+        width: calc(100% - 24px);
+    }
+
+    .bantuan-area>.box-donasi-info {
+        margin-top: 0px !important;
+    }
+
+    .bantuan-area>.box-donasi-info .container>.row.gap-3 {
+        column-gap: 0px !important;
+    }
+}

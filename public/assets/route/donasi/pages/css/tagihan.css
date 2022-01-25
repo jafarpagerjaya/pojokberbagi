@@ -1,0 +1,59 @@
+section.form {
+    padding-top: 92px;
+}
+
+.copy[class*="text-"]:hover {
+    cursor: pointer;
+    color: var(--orange);
+}
+
+.list-group-numbered {
+    list-style-type: none;
+    counter-reset: section;
+}
+
+.list-group-numbered>li::before {
+    content: counters(section, ".") ". ";
+    counter-increment: section;
+}
+
+.list-group-item {
+    display: flex;
+    column-gap: .5em;
+}
+
+/* Accordion */
+.accordion .accordion-header:hover>.accordion-button {
+    background-color: #e7f1ff;
+}
+
+/* Kontak */
+.kontak a.medsos-icon i {
+    -webkit-transition: color 0.3s ease-in-out;
+    -o-transition: color 0.3s ease-in-out;
+    transition: color 0.3s ease-in-out;
+}
+
+.kontak a.medsos-icon i[class*="instagram"],
+.kontak a.medsos-icon i[class*="instagram"]+span {
+    background: #fdf497;
+    background: -o-radial-gradient(30% 107%, circle, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+
+.kontak a.medsos-icon:hover i[class*="instagram"],
+.kontak a.medsos-icon:hover i[class*="instagram"]+span {
+    color: transparent !important;
+}
+
+.kontak a.medsos-icon:hover i[class*="twitter"],
+.kontak a.medsos-icon:hover i[class*="twitter"]+span {
+    color: var(--bs-info) !important;
+}
+
+.kontak a.medsos-icon:hover i[class*="whatsapp"],
+.kontak a.medsos-icon:hover i[class*="whatsapp"]+span {
+    color: #4FCE5D !important;
+}

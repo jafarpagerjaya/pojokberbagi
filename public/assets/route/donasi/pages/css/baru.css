@@ -1,0 +1,98 @@
+section.form {
+    padding-top: 92px;
+    padding-bottom: 46px;
+}
+
+span.selection {
+    width: 100%;
+}
+
+.select2-container--default .select2-selection--single {
+    border-color: #ced4da !important;
+    border-radius: 0.25rem;
+    height: 100%;
+}
+
+.select2-container--default .select2-selection--single[aria-expanded="true"] {
+    border-color: #86b7fe !important;
+}
+
+.select2-container--default .select2-results__option--selected {
+    background-color: #ced4da;
+    display: none;
+}
+
+.select2-selection__rendered {
+    padding-top: 1.625rem;
+    padding-bottom: 0.125rem;
+    padding-left: 0.75rem !important;
+    padding-right: 1rem;
+}
+
+.select2-dropdown.select2-dropdown--below {
+    top: -5px !important;
+    height: calc(auto - 2px);
+    border-color: #86b7fe;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    border-color: #ced4da;
+}
+
+.select2.select2-container.select2-container--default {
+    width: 100% !important;
+}
+
+.select2-results {
+    left: -1px;
+    bottom: -1px;
+    position: relative;
+    width: calc(100% + 2px);
+    border-top: 1px dashed #86b7fe;
+}
+
+.select2-results__options>li:last-child {
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+#charLeft {
+    font-size: 0.8rem !important;
+}
+
+.form-floating.text-danger input,
+.form-floating.text-danger .select2-container--default .select2-selection--single[aria-expanded="false"] {
+    color: var(--bs-danger) !important;
+    border-color: var(--bs-danger) !important;
+}
+
+.form-floating.text-warning input,
+.form-floating.text-warning .select2-container--default .select2-selection--single[aria-expanded="false"] {
+    color: var(--bs-warning) !important;
+    border-color: var(--bs-warning) !important;
+}
+
+.form-floating.text-success input,
+.form-floating.text-success .select2-container--default .select2-selection--single[aria-expanded="false"] {
+    color: var(--bs-success) !important;
+    border-color: var(--bs-success) !important;
+}
+
+.form-floating.text-orange input,
+.form-floating.text-orange .select2-container--default .select2-selection--single[aria-expanded="false"] {
+    color: var(--orange) !important;
+    border-color: var(--orange) !important;
+}
+
+.form-floating.text-green input,
+.form-floating.text-green .select2-container--default .select2-selection--single[aria-expanded="false"] {
+    color: var(--green) !important;
+    border-color: var(--green) !important;
+}
+
+@media (max-width: 500px) {
+    label[for="flexSwitchCheckChecked"] {
+        font-size: .7em;
+        align-self: end;
+    }
+}

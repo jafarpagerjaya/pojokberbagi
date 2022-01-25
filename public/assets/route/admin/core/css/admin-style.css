@@ -1,0 +1,24 @@
+.table .tfoot-light th {
+    color: #8898aa;
+    background-color: #f6f9fc;
+}
+
+table tfoot th {
+    text-transform: uppercase;
+}
+
+table tbody>tr>td,
+table tbody>tr>th {
+    vertical-align: middle !important;
+}
+
+.img-avatar {
+    vertical-align: middle;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.card-profile-image img {
+    background-color: #f7fafc !important;
+}

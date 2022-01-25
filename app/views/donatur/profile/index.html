@@ -1,0 +1,148 @@
+<div class="row">
+    <div class="col-xl-4 order-xl-2">
+        <div class="card card-profile bg-white">
+            <img src="/assets/images/img-1-1000x600.jpg" alt="Image placeholder" class="card-img-top">
+            <div class="row justify-content-center">
+                <div class="col-lg-3 order-lg-2">
+                    <div class="card-profile-image">
+                        <a href="#">
+                            <img src="<?= $data['gambar']->path_gambar; ?>" class="rounded-circle bg-gradient-white">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body pt-5">
+                <div class="text-center">
+                    <h5 class="h3 pt-5">
+                        <?= $data['donatur']->nama ?>
+                        <small class="mt-2 mb-0 d-block">bergabung sejak</small>
+                        <small class="font-weight-light"><?= Output::timeToLocalFull($data['donatur']->create_at) ?></small>
+                    </h5>
+                    <!-- <div class="h5 font-weight-300">
+                        <i class="ni location_pin mr-2"></i>Bandung
+                    </div>
+                    <div class="h5 mt-4">
+                        <i class="ni business_briefcase-24 mr-2"></i><?= $data['donatur']->samaran ?>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-8 order-xl-1">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h3 class="mb-0">Profil Anda</h3>
+                    </div>
+                    <div class="col-4 text-right">
+                        <!-- Example single danger button -->
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                Settings
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item"
+                                    href="<?= '/donatur/profile/unlock/'. Token::generate() ?>">Perbaharui Data</a>
+                                <a class="dropdown-item" data-target="#kelola-password" data-toggle="collapse" href="#kelola-password">Ganti
+                                    Password</a>
+                                <div class="dropdown-divider"></div>
+                                <!-- <a class="dropdown-item" href="#">Ganti Foto</a> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="collapse" id="kelola-password">
+                <h6 class="heading-small text-muted ml-4 mr-4 mb-3 mb-0 pt-4">Ganti Password</h6>
+                <div class="pl-lg-4 ml-4 mr-4 mb-4 pl-4 pr-4 pt-0 pb-4">
+                    <?php if (Session::exists('error_feedback')) {
+                        $data_error_feedback = Session::flash('error_feedback');
+                    } ?>
+                    <form action="/donatur/profile/password/update" method="post">
+                        <div class="form-group">
+                            <label class="form-control-label" for="input-password-baru">Password Baru</label>
+                            <input name="password_baru" type="password" id="input-password-baru" class="form-control no-space" placeholder="Tidak boleh sama dengan yang lama" value="<?= isset($data_error_feedback['password_baru']['value']) ? $data_error_feedback['password_baru']['value'] :  '' ?>">
+                            <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['password_baru']) ? ' d-block' : '') ?>">
+                                <?= ($data_error_feedback['password_baru']['feedback']) ?>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-control-label" for="input-password-baru-ulang">Konfirmasi
+                                Ulang</label>
+                            <input name="konfirmasi_ulang" type="password" id="input-password-baru-ulang" class="form-control no-space" placeholder="Password baru" value="<?= isset($data_error_feedback['konfirmasi_ulang']['value']) ? $data_error_feedback['konfirmasi_ulang']['value'] :  '' ?>">
+                            <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['konfirmasi_ulang']) ? ' d-block' : '') ?>">
+                                <?= ($data_error_feedback['konfirmasi_ulang']['feedback']) ?>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-control-label" for="input-password-lama">Password Lama</label>
+                            <input name="password_lama" type="password" id="input-password-lama" class="form-control no-space" placeholder="Password lama akun" value="<?= isset($data_error_feedback['password_lama']['value']) ? $data_error_feedback['password_lama']['value'] :  '' ?>">
+                            <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['password_lama']) ? ' d-block' : '') ?>">
+                                <?= ($data_error_feedback['password_lama']['feedback']) ?>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 d-flex align-items-center">
+                            <div class="form-group mb-0 mt-2">
+                                <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                                <button type="submit" class="btn btn-primary">Ubah</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card-footer">
+                <h6 class="heading-small text-muted mb-3">Informasi Akun</h6>
+                <div class="pl-lg-4">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="input-username">Username</label>
+                                <input type="text" readonly id="input-username" class="form-control"
+                                    placeholder="Username" value="<?= $data['akun']->username ?>">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="input-email">Alamat Email</label>
+                                <input type="email" readonly id="input-email" class="form-control"
+                                    placeholder="<?= $data['akun']->email ?>">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="input-nama">Nama Lengkap</label>
+                                <input type="text" readonly id="input-nama" class="form-control"
+                                    placeholder="Nama Lengkap" value="<?= $data['donatur']->nama ?>">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="input-samaran">Nama Samaran</label>
+                                <input type="text" readonly id="input-samaran" class="form-control"
+                                    placeholder="Sahabat Berbagi" value="<?= $data['donatur']->samaran ?>">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <!-- Address -->
+                <h6 class="heading-small text-muted mb-4">Informasi Kontak</h6>
+                <div class="pl-lg-4">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="input-kontak">No Kontak</label>
+                                <input type="text" readonly id="input-kontak" class="form-control"
+                                    placeholder="Kontak WA Aktif" value="<?= $data['donatur']->kontak ?>">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

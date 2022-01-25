@@ -1,0 +1,3 @@
+authChannel.postMessage({
+    action: "signin"
+});

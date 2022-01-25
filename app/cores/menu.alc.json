@@ -1,0 +1,208 @@
+{
+	"auth" : {
+		"signin" : {
+			"Home" : {
+				"href" : "/index",
+				"title": "Beranda"
+			},
+			"Signup": {
+				"href" : "/auth/signup",
+				"title": "Daftar"
+			}
+		},
+		"signup" : {
+			"Home" : {
+				"href" : "/index",
+				"title": "Beranda"
+			}, 
+			"Signin": {
+				"href" : "/auth/signin",
+				"title": "Masuk"
+			}
+		},
+		"reset" : {
+			"Home" : {
+				"href" : "/index",
+				"title": "Beranda"
+			}, 
+			"Signin": {
+				"href" : "/auth/signin",
+				"title": "Masuk"
+			},
+			"Signup": {
+				"href" : "/auth/signup",
+				"title": "Daftar"
+			}
+		}
+	},
+	"admin" : {
+		"cr" : {
+			"Home" : {
+				"href" : "/admin",
+				"title": "Beranda"
+			},
+			"Donatur" : {
+				"href" : "/admin/donatur",
+				"title": "Donatur"
+			},
+			"Pemohon" : {
+				"href" : "/admin/pemohon",
+				"title": "Pemohon Bantuan"
+			}
+		},
+		"pro" : {
+			"Home" : {
+				"href" : "/admin",
+				"title": "Beranda"
+			},
+			"Bantuan" : {
+				"href" : "/admin/bantuan",
+				"title": "Program"
+			},
+			"Pemohon" : {
+				"href" : "/admin/pemohon",
+				"title": "Pemohon Bantuan"
+			}
+		},
+		"dm" : {
+			"Home" : {
+				"href" : "/admin",
+				"title": "Beranda"
+			},
+			"Acara" : {
+				"href" : "/admin/acara",
+				"title": "Acara"
+			},
+			"Berita": {
+				"href" : "/admin/berita",
+				"title": "Berita"
+			},
+			"Tiket": {
+				"href" : "admin/tiket",
+				"title": "tiket"
+			},
+			"Donatur" : {
+				"href" : "/admin/donatur",
+				"title": "Donatur"
+			}
+		},
+		"de" : {
+			"Home" : {
+				"href" : "/admin",
+				"title": "Beranda"
+			},
+			"Bantuan" : {
+				"href" : "/admin/bantuan",
+				"title": "Beranda"
+			},
+			"Program" : {
+				"href" : "/admin/program",
+				"title": "Program"
+			},
+			"Pegawai" : {
+				"href" : "/admin/pegawai",
+				"title": "Pegawai"
+			}
+		},
+		"sys" : {
+			"Home" : {
+				"href" : "/admin",
+				"title": "Beranda",
+				"icon" : "ni ni-tv-2 text-primary"
+			},
+			"Akun" : {
+				"href" : "/admin/akun",
+				"title": "Akun",
+				"icon" : "ni ni-badge text-success"
+			},
+			"Bantuan" : {
+				"href" : "/admin/bantuan",
+				"title": "Bantuan",
+				"icon" : "ni ni-bullet-list-67 text-warning"
+			},
+			"Donatur" : {
+				"href" : "/admin/donatur",
+				"title": "Donatur",
+				"icon" : "ni ni-satisfied text-info"
+			}
+		},
+		"it" : {
+			"Home" : {
+				"href" : "/admin",
+				"title": "Beranda"
+			},
+			"Akun" : {
+				"href" : "/admin/akun",
+				"title": "Akun"
+			},
+			"BackupRestore" : {
+				"href" : "/admin/backup-restore",
+				"title": "Backup & Restore"
+			}
+		}
+	},
+	"donatur" : {
+		"donatur" : {
+			"Home": {
+				"href" : "/donatur",
+				"title": "Beranda",
+				"icon" : "ni ni-tv-2 text-primary"
+			},
+			"Tagihan": {
+				"href" : "/donatur/tagihan",
+				"title": "Tagihan",
+				"icon" : "ni ni-cart text-info"
+			}
+		}
+	},
+	"default" : {
+		"guest" : {
+			"Home" : {
+				"href" : "/",
+				"title": "Beranda"
+			},
+			"Program" : {
+				"href" : "/program",
+				"title": "Program"
+			},
+			"Aboutus" : {
+				"href" : "/tentang-kami",
+				"title": "Tentang Kami"
+			},
+			"Berita" : {
+				"href" : "/berita",
+				"title": "Berita"
+			},
+			"Signin" : {
+				"href" : "/auth",
+				"title": "Sign In"
+			},
+			"Signup" : {
+				"href" : "/auth/signup",
+				"title": "Sign Up"
+			}
+		},
+		"donatur" : {
+			"Home" : {
+				"href" : "/donatur",
+				"title": "Beranda"
+			},
+			"Profil" : {
+				"href" : "/default/profile",
+				"title": "Profil"
+			},
+			"Donasi" : {
+				"href" : "/default/donasi",
+				"title": "Donasi"
+			},
+			"Report" : {
+				"href" : "/default/report",
+				"title": "Laporan"
+			},
+			"Signout" : {
+				"href" : "/auth/signout",
+				"title": "Sign Out"
+			}
+		}
+	}
+}
