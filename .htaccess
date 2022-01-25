@@ -1,23 +1,13 @@
 RewriteEngine on
 
-RewriteCond %{HTTP_HOST} ^pojokberbagi.id [NC,OR]
-RewriteCond %{HTTP_HOST} ^www.pojokberbagi.id
-
-## Redirect from from main domain set into folder '/public/' 
-RewriteCond %{REQUEST_URI} !public/
-RewriteRule (.*) /public/$1 [L]
-
-## SSL Redirect
+# www to non www
+RewriteCond %{HTTP_HOST} ^www\.pojokberbagi\.id [NC]
+RewriteRule ^(.*)$ http://pojokberbagi.id/$1 [L,R=301]
+ 
+# http to https
 RewriteCond %{HTTPS} off
-##RewriteRule ^https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-## Redirect from www to non-www with https off
-##RewriteCond %{HTTPS} off
-##RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
-##RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
-
-## Redirect from www to non-www with https on
-RewriteCond %{HTTPS} on
-RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
-RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+# public_html to public '/public/
+RewriteCond %{REQUEST_URI} !public/
+RewriteRule (.*) /public/$1 [L]
