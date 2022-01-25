@@ -15,13 +15,6 @@ class HomeController extends Controller {
 		);
 	}
 
-<<<<<<< HEAD
-=======
-	public function __destruct() {
-// 		$this->setKunjungan();
-	}
-
->>>>>>> f611ab7aefc8a1db8f9fd2871435bab3676fbee5
 	public function index() {
 		$this->rel_action = array(
 			array(

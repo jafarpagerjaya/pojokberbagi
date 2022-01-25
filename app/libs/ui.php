@@ -203,12 +203,7 @@ class Ui {
             </div>
         </div>';
     }
-<<<<<<< HEAD
-
-=======
     
-    // Baru dari sini
->>>>>>> f611ab7aefc8a1db8f9fd2871435bab3676fbee5
     public static function emailNotifDonasiDonatur($params = array()) {
         if (isset($params)) {
             return '<!doctype html>
@@ -389,11 +384,7 @@ class Ui {
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td align="left" style="font-size:0px;padding:15px 15px 15px 15px;word-break:break-word;">
-<<<<<<< HEAD
                                                                                         <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;text-align:left;color:#000000;"><p style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;">Alhamdullilah <strong>'. strip_tags($params["penerima_bantuan"]) .'</strong> akan menapatkan bantuan dari anda, berikut adalah rincian sekilas pembayaran yang dapat anda lakukan melalui <strong>'. strip_tags($params["metode_bayar"]) .'</strong> <strong>'. strip_tags($params["nama_cp"]) .'</strong>.&nbsp;</p></div>
-=======
-                                                                                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;text-align:left;color:#000000;"><p style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;">Alhamdullilah <strong>'. strip_tags($params["penerima_bantuan"]) .'</strong> akan menapatkan bantuan dari anda, berikut adalah rincian sekilas pembayaran yang dapat anda lakukan melalui <strong>'. strip_tags($params["metode_bayar"]) .'</strong> <strong>'. strip_tags($params["nama_partner"]) .'</strong>.&nbsp;</p></div>
->>>>>>> f611ab7aefc8a1db8f9fd2871435bab3676fbee5
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr>
@@ -435,11 +426,7 @@ class Ui {
                                                                         <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
                                                                             <tr>
                                                                                 <td align="left" style="font-size:0px;padding:0px 15px 0px 15px;word-break:break-word;">
-<<<<<<< HEAD
                                                                                     <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;text-align:left;color:#000000;"><p class="partners" style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;"><img style="display: block; margin-left: auto; margin-right: auto;" src="https://pojokberbagi.id'. strip_tags($params["partner_image_url"]) .'" alt="'. strip_tags($params["nama_cp"]) .'" width="69" height="39"></p></div>
-=======
-                                                                                    <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;text-align:left;color:#000000;"><p class="partners" style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;"><img style="display: block; margin-left: auto; margin-right: auto;" src="https://pojokberbagi.id'. strip_tags($params["partner_image_url"]) .'" alt="'. strip_tags($params["nama_partner"]) .'" width="69" height="39"></p></div>
->>>>>>> f611ab7aefc8a1db8f9fd2871435bab3676fbee5
                                                                                 </td>
                                                                             </tr>
                                                                         </table>
@@ -912,11 +899,7 @@ class Ui {
                                             </td>
                                             <td id="transfer">
                                                 <p style="margin-bottom: 0px;">Transfer</p>
-<<<<<<< HEAD
                                                 <strong>'. strip_tags($data["nama_cp"]) .'</strong>
-=======
-                                                <strong>'. strip_tags($data["nama_partner"]) .'</strong>
->>>>>>> f611ab7aefc8a1db8f9fd2871435bab3676fbee5
                                             </td>
                                             <td>
                                                 <img src="https://pojokberbagi.id/assets/images/brand/patern-horizontal.png" alt="Patern Horizontal" style="max-width: 80px; width: 100%; max-height: calc(80px/16*9); height: auto; float:right;">
@@ -937,7 +920,6 @@ class Ui {
         }
         return false;
     }
-<<<<<<< HEAD
 
     public static function emailResetPassword($data = array()) {
         if (isset($data)) {
@@ -1085,6 +1067,4 @@ class Ui {
             </html>';
         }
     }
-=======
->>>>>>> f611ab7aefc8a1db8f9fd2871435bab3676fbee5
 }

@@ -71,11 +71,4 @@ class HomeController extends Controller {
             'jumlah_bantuan' => $this->model->jumlahBantuanAktif()
         );
     }
-<<<<<<< HEAD
-=======
-
-    public function __destruct() {
-        // $this->setKunjungan();
-    }
->>>>>>> f611ab7aefc8a1db8f9fd2871435bab3676fbee5
 }

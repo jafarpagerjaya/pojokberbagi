@@ -47,15 +47,9 @@ class HomeController extends Controller {
         $this->data['donasi_donatur'] = $data_donasi;
         $this->data['halaman'] = 1;
         $this->data['record'] = $this->_donasi->affected();
-<<<<<<< HEAD
+
         // $this->setKunjungan();
 		// Track real path based on return php request for js dom
 		$this->data['uri'] = base64_encode($this->getRealUri());
-=======
-    }
-
-    public function __destruct() {
-        // $this->setKunjungan();
->>>>>>> f611ab7aefc8a1db8f9fd2871435bab3676fbee5
     }
 }

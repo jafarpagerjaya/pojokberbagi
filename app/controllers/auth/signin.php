@@ -65,7 +65,6 @@ class SigninController extends Controller {
 								break;
 						}
 
-						// Debug::vd($route);
 						$this->setClientDeviceID();
 
 						if (!Cookie::exists(Config::get('client/cookie_name'))) {
@@ -187,7 +186,6 @@ class SigninController extends Controller {
 								} while ($found == true);
 							}
 							
-							// Session::put(Config::get('session/device_name'), $device_id);
 							$data_cookie['device_id'] = $device_id;
 							$data_cookie['device_type'] = Config::getCLientDevice('device_type');
 							$data_cookie['os'] = Config::getCLientDevice('os');
@@ -214,11 +212,6 @@ class SigninController extends Controller {
 							'id_akun' => $dataAkun->id_akun,
 							'id_pengunjung' => $id_pengunjung
 						));
-
-						// $hasilCek = $this->_auth->cekAkunPengunjung($id_pengunjung, $dataAkun->id_akun);
-						// if (!$hasilCek) {
-							
-						// }
 
 						if (Session::exists('donasi')) {
 							Redirect::to('donasi/buat/baru/'. Session::flash('donasi'));

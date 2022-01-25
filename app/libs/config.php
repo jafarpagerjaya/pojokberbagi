@@ -2,7 +2,7 @@
 class Config {
 	private static $_device;
 
-	public static function get($path = null) {
+	final public static function get($path = null) {
 		if ($path) {
 			$config = $GLOBALS['config'];
 			$path = explode('/', $path);
@@ -19,30 +19,7 @@ class Config {
 		return false;
 	}
 
-	public static function getClientMac() {
-		$_IP_SERVER = $_SERVER['SERVER_ADDR'];
-		$_IP_ADDRESS = $_SERVER['REMOTE_ADDR'];
-		if ($_IP_ADDRESS == $_IP_SERVER){
-			ob_start();
-			system('ipconfig /all');
-			$_PERINTAH  = ob_get_contents();
-			ob_clean();
-			$_PECAH = strpos($_PERINTAH, "Physical");
-			$_HASIL = substr($_PERINTAH,($_PECAH+36),17); 
-		} else {
-			$_PERINTAH = "arp -a $_IP_ADDRESS";
-			ob_start();
-			system($_PERINTAH);
-			$_HASIL = ob_get_contents();
-			ob_clean();
-			$_PECAH = strstr($_HASIL, $_IP_ADDRESS);
-			$_PECAH_STRING = explode($_IP_ADDRESS, str_replace(" ", "", $_PECAH));
-			$_HASIL = substr($_PECAH_STRING[1], 0, 17);
-		}
-		return $_HASIL;
-	}
-
-	public static function getClientIP() {
+	final public static function getClientIP() {
 		if (isset($_SERVER)) {
 
 			if (isset($_SERVER["HTTP_X_FORWARDED_FOR"]))

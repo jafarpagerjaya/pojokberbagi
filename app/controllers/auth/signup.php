@@ -127,7 +127,7 @@ class SignupController extends Controller {
 									);
 									// Send mail Hook
 									$subject = "Kaitkan Akun Pojok Berbagi";
-									$headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n";
+									$headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: No Replay <no-replay@pojokberbagi.id>' . "\r\n";
 									$headers .= "MIME-Version: 1.0\r\n";
 									$headers .= "Content-Type: text/html; charset=UTF-8\r\n";
 									$message = Ui::emailHookAkun($dataHook);
