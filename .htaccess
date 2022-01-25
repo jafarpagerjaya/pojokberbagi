@@ -10,3 +10,4 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # public_html to public '/public/
 RewriteCond %{REQUEST_URI} !public/
+RewriteRule (.*) /public/$1 [L]
