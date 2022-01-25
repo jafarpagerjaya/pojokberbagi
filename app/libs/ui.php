@@ -855,7 +855,7 @@ class Ui {
                         <tr>
                             <td>
                                 <div id="head-box" class="mt-1 rounded-box">
-                                    <h3>Assalamualaikum, '. strip_tags($data["nama_karyawan"]) .'</h3></>
+                                    <h3>Assalamualaikum, '. strip_tags($data["nama_karyawan"]) .'</h3>
                                     <p>Donatur baru tengah melakukan donasi, mohon untuk difollow-up prihal proses transaksinya.</p>
                                 </div>
                             </td>
