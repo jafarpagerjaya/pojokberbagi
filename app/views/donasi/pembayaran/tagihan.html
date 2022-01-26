@@ -25,11 +25,10 @@
                         <div class="row align-items-center">
                             <div class="col-4">Nominal Trasfer</div>
                             <div class="col">
-                                <h6><?= 'Rp. ' . Output::tSparator($data['tagihan_donasi']->jumlah_donasi) ?></h6>
+                                <h6><?= 'Rp. ' . Output::tSparator($data['tagihan_donasi']->jumlah_donasi); ?></h6>
                             </div>
                         </div>
                     </div>
-                    <?php Debug::pr($data['tagihan_donasi']); die(); ?>
                     <div class="col-12">
                         <div class="row align-items-center">
                             <div class="col-4">Ke Rekening</div>
@@ -105,7 +104,7 @@
                                                     <span>Masukkan no rekening <b>0001000008001</b> jika anda adalah nasabah Bank BJB, dan jika anda bukan nasabah Bank BJB masukan <span class="text-danger">kode transfer bank</span> dan <span class="text-dark">nomor rekening tujuan</span> <span class="text-danger fw-bold">110</span><b>0001000008001</b></span>
                                                 </li>
                                                 <li class="list-group-item px-0">
-                                                    <span>Masukan Nominal Transaksi <b class="text-primary"><?= 'Rp. ' . Output::tSparator($data['tagihan_donasi']->jumlah_donasi) ?></b></span>
+                                                    <span>Masukan Nominal Transaksi <b class="text-primary"><?= 'Rp. ' . Output::tSparator($data['tagihan_donasi']->jumlah_donasi); ?></b></span>
                                                 </li>
                                                 <li class="list-group-item px-0">
                                                     <span>Cek Nominal dan Atas Nama Rekening Tujuan <b>Pojok Berbagi Indonesia.</b></span>

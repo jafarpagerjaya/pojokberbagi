@@ -172,6 +172,7 @@ class PembayaranController extends Controller {
     
         $this->model('Donasi');
         $donasi = $this->model->getDataTagihanDonasi($params[0]);
+        
         if (!$donasi) {
             Session::flash('notifikasi', array(
                 'pesan' => 'Data donasi <b>' . $params[0] . '</b> tidak ditemukan',
@@ -233,7 +234,7 @@ class PembayaranController extends Controller {
             )
         );
 
-        if (!is_null($donasi->notifikasi)) {
+        if (!is_null($donasi->notifikasi) && $donasi->notifikasi == 1) {
             return VIEW_PATH.'donasi'.DS.'pembayaran'.DS.'tagihan.html';
         }
         
