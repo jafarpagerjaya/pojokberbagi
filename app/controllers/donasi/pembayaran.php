@@ -282,13 +282,18 @@ class PembayaranController extends Controller {
 
         // Kirim email
         $subject = "[Info Donasi] Pojok Berbagi";
-        $headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: CR PBI <cr@pojokberbagi.id>' . "\r\n";
+        $headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: CR Pojok Berbagi <cr@pojokberbagi.id>' . "\r\n";
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         $pesan = Ui::emailNotifDonasiDonatur($dataNotif);
 
         if (mail($donasi->email, $subject, $pesan, $headers)) {
-            mail('cr@pojokberbagi.id', $subject, Ui::emailFollowUpDonasi($dataFollow), $headers);
+            $subject = "[Follow Up Donasi] Pojok Berbagi";
+            $headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: No-Replay <no-replay@pojokberbagi.id>' . "\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $pesan = Ui::emailFollowUpDonasi($dataFollow);
+            mail('cr@pojokberbagi.id', $subject, $pesan, $headers);
             $this->model->update('donasi', array(
                 'notifikasi' => '1'
             ), array('id_donasi','=',Sanitize::escape(trim($donasi->id_donasi))));

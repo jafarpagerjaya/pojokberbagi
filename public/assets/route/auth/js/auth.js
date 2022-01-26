@@ -154,12 +154,7 @@ if (typeof jsonClientAuth == 'string' && jsonClientAuth == 'null') {
             let realPath = atob(ur.getAttribute('data-uri'));
             $.post(
                 '/home/kunjungan',
-                {uri : uri, path : realPath},
-                function(data, success) {
-                    if (success) {
-                        console.log(data);
-                    }
-                }
+                {uri : uri, path : realPath}
             );
         }
     }, 0);

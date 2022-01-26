@@ -311,7 +311,7 @@ class Controller {
 		$path = Sanitize::escape(trim($this->getPath($params, $js_path)));
 		$uri = Sanitize::escape(trim($this->getUri($js_uri)));
 
-		$dataHalaman = $db->get('id_halaman','halaman', array('path','=',$path));
+		$dataHalaman = $db->get('id_halaman, track','halaman', array('path','=',$path));
 
 		if (!$dataHalaman->count()) {
 			try {
@@ -326,6 +326,9 @@ class Controller {
 				return $this;
 			}
 		} else {
+			if ($dataHalaman->result()->track != 1) {
+				return false;
+			}
 			$id_halaman = $dataHalaman->result()->id_halaman;
 		}
 

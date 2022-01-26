@@ -11,6 +11,11 @@ span.selection {
     border-color: #ced4da !important;
     border-radius: 0.25rem;
     height: 100%;
+    outline-width: 0px;
+}
+
+.select2-container--default .select2-selection--single:focus-visible {
+    border: 1px solid #86b7fe !important;
 }
 
 .select2-container--default .select2-selection--single[aria-expanded="true"] {

@@ -755,8 +755,8 @@ class Ui {
 
     public static function emailFollowUpDonasi($data = array()) {
         if (isset($data)) {
-            return '<!DOCTYPE html>
-                <html lang="en">
+            return '<!doctype html>
+                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
                 <head>
                     <meta charset="UTF-8">
                     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -890,7 +890,7 @@ class Ui {
                                     <table>
                                         <tr id="nominal">
                                             <td><strong style="font-size: 2rem;">Nominal</strong></td>
-                                            <td style="text-align: right;" colspan="2"><strong style="color:  #FE5000; font-size: 2rem;">Rp. '. strip_tags($data["jumlah_donasi"]) .'</strong></></td>
+                                            <td style="text-align: right;" colspan="2"><strong style="color:  #FE5000; font-size: 2rem;">Rp. '. strip_tags($data["jumlah_donasi"]) .'</strong></td>
                                         </tr>
                                         <tr>
                                             <td>
@@ -923,7 +923,7 @@ class Ui {
 
     public static function emailResetPassword($data = array()) {
         if (isset($data)) {
-            return '<!DOCTYPE html>
+            return '<!doctype html>
             <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
             <head>
                 <meta charset="UTF-8">
@@ -998,7 +998,7 @@ class Ui {
 
     public static function emailHookAkun($data = array()) {
         if (isset($data)) {
-            return '<!DOCTYPE html>
+            return '<!doctype html>
             <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
             <head>
                 <meta charset="UTF-8">
