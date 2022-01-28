@@ -212,9 +212,6 @@ class Ui {
                         <title>
                         Notif Donasi Donatur
                         </title>
-                        <!--[if !mso]><!-- -->
-                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                        <!--<![endif]-->
                         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1">
                         <style type="text/css">
@@ -426,7 +423,7 @@ class Ui {
                                                                         <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
                                                                             <tr>
                                                                                 <td align="left" style="font-size:0px;padding:0px 15px 0px 15px;word-break:break-word;">
-                                                                                    <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;text-align:left;color:#000000;"><p class="partners" style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;"><img style="display: block; margin-left: auto; margin-right: auto;" src="https://pojokberbagi.id'. strip_tags($params["partner_image_url"]) .'" alt="'. strip_tags($params["nama_cp"]) .'" width="69" height="39"></p></div>
+                                                                                    <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;text-align:left;color:#000000;"><p class="partners" style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;"><img style="display: block; margin-left: auto; margin-right: auto;" src="https://pojokberbagi.id'. strip_tags($params["path_gambar_cp"]) .'" alt="'. strip_tags($params["nama_cp"]) .'" width="69" height="39"></p></div>
                                                                                 </td>
                                                                             </tr>
                                                                         </table>
@@ -756,167 +753,166 @@ class Ui {
     public static function emailFollowUpDonasi($data = array()) {
         if (isset($data)) {
             return '<!doctype html>
-                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Notif Donasi CR</title>
-                    <style>
-                        @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap");
-                        * {
-                            font-family: "Nunito";
-                            font-size: 14px;
-                        }
-                        table {
-                            width: 100%;
-                            max-width: 600px;
-                            margin: auto;
-                        }
-                        #logo {
-                            width: 96px;
-                            height: auto;
-                        }
-                        .rounded-box {
-                            border-radius: 20px;
-                        }
-                        #head-box,
-                        #body-box,
-                        #foot-box {
-                            padding: 1em;
-                            margin-right: 1em;
-                            margin-left: 1em;
-                        }
-                        #head-box {
-                            background-color: white;
-                            position: relative;
-                        }
-                        #head-box::before,
-                        #head-box::after {
-                            position: absolute;
-                            content: "";
-                            height: 40px;
-                            width: 40px;
-                            z-index: -1;
-                        }
-                        #head-box::before {
-                            top: -.5em;
-                            right: -.5em;
-                            background-color: #FE5000;
-                        }
-                        #head-box::after {
-                            bottom: -.5em;
-                            left: -.5em;
-                            background-color: #97D700;
-                        }
-                        #body-box {
-                            box-shadow: 0px 0px 10px 0px whitesmoke;
-                            background-color: whitesmoke;
-                        }
-                        .pt-1 {
-                            padding-top: 1em;
-                        }
-                        .mt-1 {
-                            margin-top: 1em;
-                        }
-                        .mt-2 {
-                            margin-top: 2em;
-                        }
-                        @media screen and (max-width: 480px) {
-                            #nominal strong {
-                                font-size: 1.25rem !important;
+                    <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+                    <head>
+                        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Notif Donasi CR</title>
+                        <style>
+                            @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap");
+                            * {
+                                font-family: "Nunito";
+                                font-size: 14px;
                             }
-
+                            table {
+                                width: 100%;
+                                max-width: 600px;
+                                margin: auto;
+                            }
+                            #logo {
+                                width: 96px;
+                                height: auto;
+                            }
+                            .rounded-box {
+                                border-radius: 20px;
+                            }
+                            #head-box,
                             #body-box,
                             #foot-box {
-                                margin-left: 0px;
-                                margin-right: 0px;
+                                padding: 1em;
+                                margin-right: 1em;
+                                margin-left: 1em;
                             }
+                            #head-box {
+                                background-color: white;
+                                position: relative;
+                            }
+                            #head-box::before,
+                            #head-box::after {
+                                position: absolute;
+                                content: "";
+                                height: 40px;
+                                width: 40px;
+                                z-index: -1;
+                            }
+                            #head-box::before {
+                                top: -.5em;
+                                right: -.5em;
+                                background-color: #FE5000;
+                            }
+                            #head-box::after {
+                                bottom: -.5em;
+                                left: -.5em;
+                                background-color: #97D700;
+                            }
+                            #body-box {
+                                box-shadow: 0px 0px 10px 0px whitesmoke;
+                                background-color: whitesmoke;
+                            }
+                            .pt-1 {
+                                padding-top: 1em;
+                            }
+                            .mt-1 {
+                                margin-top: 1em;
+                            }
+                            .mt-2 {
+                                margin-top: 2em;
+                            }
+                            @media screen and (max-width: 480px) {
+                                #nominal strong {
+                                    font-size: 1.25rem !important;
+                                }
 
-                            #foot-box {
-                                padding-left: 0px;
-                                padding-right: 0px;
+                                #body-box,
+                                #foot-box {
+                                    margin-left: 0px;
+                                    margin-right: 0px;
+                                }
+
+                                #foot-box {
+                                    padding-left: 0px;
+                                    padding-right: 0px;
+                                }
+                                #copy small {
+                                    padding-left: 0px !important;
+                                    padding-right: 0px !important;
+                                    margin: 0px !important;
+                                }
                             }
-                            #copy small {
-                                padding-left: 0px !important;
-                                padding-right: 0px !important;
-                                margin: 0px !important;
-                            }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <table>
-                        <tr>
-                            <td>
-                                <center><a href="https://pojokberbagi.id"><img src="https://pojokberbagi.id/assets/images/brand/pojok-berbagi-transparent.png" alt="Pojok Berbagi" id="logo"></a></center>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div id="head-box" class="mt-1 rounded-box">
-                                    <h3>Assalamualaikum, '. strip_tags($data["nama_karyawan"]) .'</h3>
-                                    <p>Donatur baru tengah melakukan donasi, mohon untuk difollow-up prihal proses transaksinya.</p>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div id="body-box" class="rounded-box mt-2">
-                                    <table>
-                                        <tr style="vertical-align: text-top;">
-                                            <td style="width: 50%;">
-                                                <h4 style="margin: 0px; opacity: .5; margin-bottom: 1rem;">Data Donatur</h4>
-                                                <b style="margin: .25rem 0px; opacity: .5; display: block;">Nama</b>
-                                                <b style="margin: 0rem 0px; display: block;">'. strip_tags($data["nama_donatur"]) .'</b>
-                                                <b style="margin: .25rem 0px; opacity: .5; display: block; padding-top: .25rem;">Kontak</b>
-                                                <b style="margin: 0rem 0px; display: block;">'. strip_tags($data["kontak_donatur"]) .'</b>
-                                                <b style="margin: .25rem 0px; opacity: .5; display: block; padding-top: .25rem;">Email</b>
-                                                <b style="margin: 0rem 0px; display: block;">'. strip_tags($data["email_donatur"]) .'</b>
-                                            </td>
-                                            <td style="width: 50%;">
-                                                <h4 style="margin: 0px; opacity: .5; margin-bottom: 1rem;">'. strip_tags($data["nama_bantuan"]) .'</h4>
-                                                <b style="margin: .25rem 0px; display: block;">'. strip_tags($data["penerima_donasi"]) .'</b>
-                                                '. (isset($data["doa_dan_pesan"]) ? '<p style="margin: .25rem 0px; opacity: .75; display: block;">'. strip_tags($data["doa_dan_pesan"]) .' </p>' : 'Tidak ada pesan dari donatur' ) .'
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div id="foot-box">
-                                    <table>
-                                        <tr id="nominal">
-                                            <td><strong style="font-size: 2rem;">Nominal</strong></td>
-                                            <td style="text-align: right;" colspan="2"><strong style="color:  #FE5000; font-size: 2rem;">Rp. '. strip_tags($data["jumlah_donasi"]) .'</strong></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <p style="margin-bottom: 0px;">NOMOR DONASI</p>
-                                                <strong>NDPBI-'. strip_tags($data["id_donasi"]) .'</strong>
-                                            </td>
-                                            <td id="transfer">
-                                                <p style="margin-bottom: 0px;">Transfer</p>
-                                                <strong>'. strip_tags($data["nama_cp"]) .'</strong>
-                                            </td>
-                                            <td>
-                                                <img src="https://pojokberbagi.id/assets/images/brand/patern-horizontal.png" alt="Patern Horizontal" style="max-width: 80px; width: 100%; max-height: calc(80px/16*9); height: auto; float:right;">
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr id="copy">
-                            <td>
-                                <small style="margin: 1em; padding: 0px 1em; opacity: .75;">&copy; 2022. All Trade Right Reserve Pojok Berbagi.</small>
-                            </td>
-                        </tr>
-                    </table>
-                </body>
-                </html>';
+                        </style>
+                    </head>
+                    <body>
+                        <table>
+                            <tr>
+                                <td>
+                                    <center><a href="https://pojokberbagi.id"><img src="https://pojokberbagi.id/assets/images/brand/pojok-berbagi-transparent.png" alt="Pojok Berbagi" id="logo"></a></center>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="head-box" class="mt-1 rounded-box">
+                                        <h3>Assalamualaikum, '. strip_tags($data["nama_karyawan"]) .'</h3>
+                                        <p>Donatur baru tengah melakukan donasi, mohon untuk difollow-up prihal proses transaksinya.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="body-box" class="rounded-box mt-2">
+                                        <table>
+                                            <tr style="vertical-align: text-top;">
+                                                <td style="width: 50%;">
+                                                    <h4 style="margin: 0px; opacity: .5; margin-bottom: 1rem;">Data Donatur</h4>
+                                                    <b style="margin: .25rem 0px; opacity: .5; display: block;">Nama</b>
+                                                    <b style="margin: 0rem 0px; display: block;">'. strip_tags($data["nama_donatur"]) .'</b>
+                                                    <b style="margin: .25rem 0px; opacity: .5; display: block; padding-top: .25rem;">Kontak</b>
+                                                    <b style="margin: 0rem 0px; display: block;">'. strip_tags($data["kontak_donatur"]) .'</b>
+                                                    <b style="margin: .25rem 0px; opacity: .5; display: block; padding-top: .25rem;">Email</b>
+                                                    <b style="margin: 0rem 0px; display: block;">'. strip_tags($data["email_donatur"]) .'</b>
+                                                </td>
+                                                <td style="width: 50%;">
+                                                    <h4 style="margin: 0px; opacity: .5; margin-bottom: 1rem;">'. strip_tags($data["nama_bantuan"]) .'</h4>
+                                                    <b style="margin: .25rem 0px; display: block;">'. strip_tags($data["penerima_donasi"]) .'</b>
+                                                    '. (isset($data["doa_dan_pesan"]) ? '<p style="margin: .25rem 0px; opacity: .75; display: block;">'. strip_tags($data["doa_dan_pesan"]) .' </p>' : 'Tidak ada pesan dari donatur' ) .'
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="foot-box">
+                                        <table>
+                                            <tr id="nominal">
+                                                <td><strong style="font-size: 2rem;">Nominal</strong></td>
+                                                <td style="text-align: right;" colspan="2"><strong style="color:  #FE5000; font-size: 2rem;">Rp. '. strip_tags($data["jumlah_donasi"]) .'</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <p style="margin-bottom: 0px;">NOMOR DONASI</p>
+                                                    <strong>NDPBI-'. strip_tags($data["id_donasi"]) .'</strong>
+                                                </td>
+                                                <td id="transfer">
+                                                    <p style="margin-bottom: 0px;">Transfer</p>
+                                                    <strong>'. strip_tags($data["nama_cp"]) .'</strong>
+                                                </td>
+                                                <td>
+                                                    <img src="https://pojokberbagi.id/assets/images/brand/patern-horizontal.png" alt="Patern Horizontal" style="max-width: 80px; width: 100%; max-height: calc(80px/16*9); height: auto; float:right;">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr id="copy">
+                                <td>
+                                    <small style="margin: 1em; padding: 0px 1em; opacity: .75;">&copy; 2022. All Trade Right Reserve Pojok Berbagi.</small>
+                                </td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>';
         }
         return false;
     }
@@ -924,147 +920,147 @@ class Ui {
     public static function emailResetPassword($data = array()) {
         if (isset($data)) {
             return '<!doctype html>
-            <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Ubah Password</title>
-                <style>
-                    @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap");
-                    * {
-                        font-family: "Nunito", sans-serif;
-                    }
-                    a:hover {
-                        opacity: .9;
-                    }
-                </style>
-            </head>
-            <body>
-                <table style="max-width: 500px; margin: auto;">
-                    <tr>
-                        <td style="text-align: center;">
-                            <img src="https://pojokberbagi.id/assets/images/brand/pojok-berbagi-transparent.png" alt="Pojok berbagi" style="max-width: 100px; margin-bottom: 1em;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div style="padding: 1.5em; border-radius: 20px; background-color: aliceblue;">
-                                <h3>
-                                    Hi '. strip_tags($data["nama"]) .',
-                                </h3>
-                                <p>
-                                    Kami menerima permintaan untuk mengubah password!
-                                </p>
-                                <p>
-                                    Jika anda merasa tidak melakukan permintaan tersebut, lupakan email ini.
-                                </p>
-                                <p>
-                                    Jika sebaliknya, silahkan klik tombol berikut untuk mengganti password anda: 
-                                </p>
-                                <table style="width: 100%;">
-                                    <tr>
-                                        <td>
-                                            <a href="'. strip_tags($data["link"]) .'" style="padding: 0.75em; border-radius: 10px; background-color: #FE5000; color: white; text-decoration: none;">
-                                                Reset Password
-                                            </a>
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <p style="font-size: 14px;">
-                                                Kadaluarsa pada: '. strip_tags($data["expiry"]) .'
-                                            </p>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 1.5em; text-align: center">
-                            <small>
-                                <span>
-                                    Jl. Kuningan Raya No. 86, Kel. Antapani Kidul, Kec. Antapani, Kota Bandung, Provinsi Jawa Barat.
-                                </span>
-                                <div style="color: lightslategrey; display: flex; gap: 0.5rem; justify-content: center;">
-                                    <span>Telepon 022 21210292 - WA 0821 1113 3331</span>
-                                </div>
-                            </small>
-                        </td>
-                    </tr>
-                </table>
-            </body>
-            </html>';
+                    <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+                    <head>
+                        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Ubah Password</title>
+                        <style>
+                            @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap");
+                            * {
+                                font-family: "Nunito", sans-serif;
+                            }
+                            a:hover {
+                                opacity: .9;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <table style="max-width: 500px; margin: auto;">
+                            <tr>
+                                <td style="text-align: center;">
+                                    <img src="https://pojokberbagi.id/assets/images/brand/pojok-berbagi-transparent.png" alt="Pojok berbagi" style="max-width: 100px; margin-bottom: 1em;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="padding: 1.5em; border-radius: 20px; background-color: aliceblue;">
+                                        <h3>
+                                            Hi '. strip_tags($data["nama"]) .',
+                                        </h3>
+                                        <p>
+                                            Kami menerima permintaan untuk mengubah password!
+                                        </p>
+                                        <p>
+                                            Jika anda merasa tidak melakukan permintaan tersebut, lupakan email ini.
+                                        </p>
+                                        <p>
+                                            Jika sebaliknya, silahkan klik tombol berikut untuk mengganti password anda: 
+                                        </p>
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td>
+                                                    <a href="'. strip_tags($data["link"]) .'" style="padding: 0.75em; border-radius: 10px; background-color: #FE5000; color: white; text-decoration: none;">
+                                                        Reset Password
+                                                    </a>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <p style="font-size: 14px;">
+                                                        Kadaluarsa pada: '. strip_tags($data["expiry"]) .'
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 1.5em; text-align: center">
+                                    <small>
+                                        <span>
+                                            Jl. Kuningan Raya No. 86, Kel. Antapani Kidul, Kec. Antapani, Kota Bandung, Provinsi Jawa Barat.
+                                        </span>
+                                        <div style="color: lightslategrey; display: flex; gap: 0.5rem; justify-content: center;">
+                                            <span>Telepon 022 21210292 - WA 0821 1113 3331</span>
+                                        </div>
+                                    </small>
+                                </td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>';
         }
     }
 
     public static function emailHookAkun($data = array()) {
         if (isset($data)) {
             return '<!doctype html>
-            <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Kaitkan Akun</title>
-                <style>
-                    @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap");
-                    * {
-                        font-family: "Nunito", sans-serif;
-                    }
-                    a:hover {
-                        opacity: .9;
-                    }
-                </style>
-            </head>
-            <body>
-                <table style="max-width: 500px; margin: auto;">
-                    <tr>
-                        <td style="text-align: center;">
-                            <img src="https://pojokberbagi.id/assets/images/brand/pojok-berbagi-transparent.png" alt="Pojok berbagi" style="max-width: 100px; margin-bottom: 1em;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div style="padding: 1.5em; border-radius: 20px; background-color: aliceblue;">
-                                <h3>
-                                    Hi '. strip_tags($data["nama"]) .',
-                                </h3>
-                                <p>
-                                    Kami menerima permintaan untuk mengkaitkan akun anda!
-                                </p>
-                                <p>
-                                    Jika anda merasa tidak melakukan permintaan tersebut, lupakan email ini.
-                                </p>
-                                <p>
-                                    Jika sebaliknya, silahkan klik tombol <strong>Kaitkan Akun</strong> untuk kaitkan akun dengan donasi anda.
-                                </p>
-                                <table style="width: 100%;">
-                                    <tr>
-                                        <td>
-                                            <center>
-                                                <a href="'. strip_tags($data["link"]) .'" style="padding: 0.75em; border-radius: 10px; background-color: #FE5000; color: white; text-decoration: none; margin: auto;">
-                                                    Kaitkan Akun
-                                                </a>
-                                            </center>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 1.5em; text-align: center">
-                            <small>
-                                <span>
-                                    Jl. Kuningan Raya No. 86, Kel. Antapani Kidul, Kec. Antapani, Kota Bandung, Provinsi Jawa Barat.
-                                </span>
-                                <div style="color: lightslategrey; display: flex; gap: 0.5rem; justify-content: center;">
-                                    <span>Telepon 022 21210292 - WA 0821 1113 3331</span>
-                                </div>
-                            </small>
-                        </td>
-                    </tr>
-                </table>
-            </body>
-            </html>';
+                    <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+                    <head>
+                        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Kaitkan Akun</title>
+                        <style>
+                            @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap");
+                            * {
+                                font-family: "Nunito", sans-serif;
+                            }
+                            a:hover {
+                                opacity: .9;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <table style="max-width: 500px; margin: auto;">
+                            <tr>
+                                <td style="text-align: center;">
+                                    <img src="https://pojokberbagi.id/assets/images/brand/pojok-berbagi-transparent.png" alt="Pojok berbagi" style="max-width: 100px; margin-bottom: 1em;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="padding: 1.5em; border-radius: 20px; background-color: aliceblue;">
+                                        <h3>
+                                            Hi '. strip_tags($data["nama"]) .',
+                                        </h3>
+                                        <p>
+                                            Kami menerima permintaan untuk mengkaitkan akun anda!
+                                        </p>
+                                        <p>
+                                            Jika anda merasa tidak melakukan permintaan tersebut, lupakan email ini.
+                                        </p>
+                                        <p>
+                                            Jika sebaliknya, silahkan klik tombol <strong>Kaitkan Akun</strong> untuk kaitkan akun dengan donasi anda.
+                                        </p>
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td>
+                                                    <center>
+                                                        <a href="'. strip_tags($data["link"]) .'" style="padding: 0.75em; border-radius: 10px; background-color: #FE5000; color: white; text-decoration: none; margin: auto;">
+                                                            Kaitkan Akun
+                                                        </a>
+                                                    </center>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 1.5em; text-align: center">
+                                    <small>
+                                        <span>
+                                            Jl. Kuningan Raya No. 86, Kel. Antapani Kidul, Kec. Antapani, Kota Bandung, Provinsi Jawa Barat.
+                                        </span>
+                                        <div style="color: lightslategrey; display: flex; gap: 0.5rem; justify-content: center;">
+                                            <span>Telepon 022 21210292 - WA 0821 1113 3331</span>
+                                        </div>
+                                    </small>
+                                </td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>';
         }
     }
 }

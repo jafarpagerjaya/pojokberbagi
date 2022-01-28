@@ -38,7 +38,7 @@ class DonasiModel extends HomeModel {
 
     public function getDataTagihanDonasi($id_donasi) {
         $this->db->query('SELECT donasi.*, donatur.nama nama_donatur, donatur.email, channel_payment.jenis, 
-        channel_payment.nama nama_cp, channel_payment.nomor, channel_payment.atas_nama, gambar.path_gambar partner_image_url
+        channel_payment.nama nama_cp, channel_payment.kode, channel_payment.nomor, channel_payment.atas_nama, gambar.path_gambar path_gambar_cp
         FROM donasi JOIN donatur USING(id_donatur) JOIN channel_payment USING(id_cp) LEFT JOIN gambar ON(gambar.id_gambar = channel_payment.id_gambar)
         WHERE donasi.id_donasi = ?', array('donasi.id_donasi' => Sanitize::escape(trim($id_donasi))));
         if ($this->db->count()) {

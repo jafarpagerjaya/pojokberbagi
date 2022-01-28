@@ -18,7 +18,7 @@
 <section class="form">
     <div class="container">
         <div class="row justify-content-center">
-            <div id="bjb" class="col-12 col-md-8 col-lg-6">
+            <div id="<?= $data['tagihan_donasi']->jenis; ?>" class="col-12 col-md-8 col-lg-6">
                 <div class="row align-items-center bg-white shadow-lg p-3 rounded-box g-3">
                     <h5 class="mb-4">Instruksi Pembayaran</h5>
                     <div class="col-12">
@@ -33,14 +33,14 @@
                         <div class="row align-items-center">
                             <div class="col-4">Ke Rekening</div>
                             <div class="col d-flex align-items-center gap-3">
-                                <img src="/assets/images/partners/bjb.png" alt="BJB" class="img-fluid" style="width: 60px;">
+                                <img src="<?= $data['tagihan_donasi']->path_gambar_cp; ?>" alt="<?= $data['tagihan_donasi']->nama_cp; ?>" class="img-fluid" style="width: 60px;">
                                 <div class="row">
                                     <div class="col d-flex justify-content-between">
-                                        <div id="no-rek">0001000008001</div>
+                                        <div id="no-rek"><?= $data['tagihan_donasi']->nomor; ?></div>
                                         <div id="myTooltip" class="button fw-bolder text-green copy"
                                             data-target="no-rek" data-bs-title="Rekening Tersalin">Salin</div>
                                     </div>
-                                    <div class="col-12"><small id="an"><b>A/N</b> Pojok Berbagi Indonesia</small>
+                                    <div class="col-12"><small id="an"><b>A/N</b> <?= ucwords(strtolower($data['tagihan_donasi']->atas_nama)); ?></small>
                                     </div>
                                 </div>
                             </div>
@@ -49,7 +49,7 @@
                                 <div class="row kontak">
                                     <a target="_blank" href="https://bit.ly/pojok-berbagi-indonesia" class="medsos-icon fw-bold text-secondary col-6 col-md-auto">
                                         <i class="lni lni-whatsapp text-secondary"></i> 
-                                        <span>0812 1113 3331</span>
+                                        <span>0812 1333 1113</span>
                                     </a>
                                     <a target="_blank" href="https://twitter.com/pojok_berbagi" class="medsos-icon fw-bold text-secondary col-6 col-md-auto">
                                         <i class="lni lni-twitter-filled text-secondary"></i> 
@@ -63,7 +63,7 @@
                             </div>
                             <?php if (isset($data['bantuan']->tanggal_akhir)) { ?>
                                 <div class="col-12 border-1 rounded-box border-orange py-2 bg-orange mt-4 text-white" style="border-style: solid;">
-                                    Transfer sebelum tanggal <b><?= $data['tagihan_donasi']->max_pembayaran ?></b> atau donasi anda otomatis dibatalkan
+                                    Transfer sebelum tanggal <b><?= $data['tagihan_donasi']->max_pembayaran; ?></b> atau donasi anda otomatis dibatalkan
                                     oleh sistem.
                                 </div>
                             <?php } ?>
@@ -98,16 +98,16 @@
                                                     <span>Pilih menu Transfer.</span>
                                                 </li>
                                                 <li class="list-group-item px-0">
-                                                    <span>Pilih <span class="text-primary text-uppercase">sesama bank</span> jika kartu atm anda adalah BJB, pilih <span class="text-danger text-uppercase">bank lain.</span> jika kartu atm anda adalah bank lain.</span>
+                                                    <span>Pilih <span class="text-primary text-uppercase">sesama bank</span> jika kartu atm anda adalah <?= $data['tagihan_donasi']->nama_cp; ?>, pilih <span class="text-danger text-uppercase">bank lain.</span> jika kartu atm anda adalah bank lain.</span>
                                                 </li>
                                                 <li class="list-group-item px-0">
-                                                    <span>Masukkan no rekening <b>0001000008001</b> jika anda adalah nasabah Bank BJB, dan jika anda bukan nasabah Bank BJB masukan <span class="text-danger">kode transfer bank</span> dan <span class="text-dark">nomor rekening tujuan</span> <span class="text-danger fw-bold">110</span><b>0001000008001</b></span>
+                                                    <span>Masukkan no rekening <b><?= $data['tagihan_donasi']->nomor; ?></b> jika anda adalah nasabah <?= $data['tagihan_donasi']->nama_cp; ?>, dan jika anda bukan nasabah <?= $data['tagihan_donasi']->nama_cp; ?> masukan <span class="text-danger">kode transfer bank</span> dan <span class="text-dark">nomor rekening tujuan</span> <span class="text-danger fw-bold"><?= $data['tagihan_donasi']->kode; ?></span><b><?= $data['tagihan_donasi']->nomor; ?></b></span>
                                                 </li>
                                                 <li class="list-group-item px-0">
                                                     <span>Masukan Nominal Transaksi <b class="text-primary"><?= 'Rp. ' . Output::tSparator($data['tagihan_donasi']->jumlah_donasi); ?></b></span>
                                                 </li>
                                                 <li class="list-group-item px-0">
-                                                    <span>Cek Nominal dan Atas Nama Rekening Tujuan <b>Pojok Berbagi Indonesia.</b></span>
+                                                    <span>Cek Nominal dan Atas Nama Rekening Tujuan <b><?= ucwords(strtolower($data['tagihan_donasi']->atas_nama)); ?>.</b></span>
                                                 </li>
                                                 <li class="list-group-item px-0">
                                                     <span>Pilih "<b>Ya</b>" jika sudah benar.</span>

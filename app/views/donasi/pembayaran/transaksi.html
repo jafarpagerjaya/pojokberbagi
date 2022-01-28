@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div class="col-12 border-1 rounded-box border-light p-3 bg-light m-0" style="border-style: solid;">
-                    Donasi anda telah kami terima, halaman ini akan kadaluarsa dalam kurun waktu <span></span>. Anda tetap dapat melihat rincian transaksi ini melalui akun Sahabat Berbagi.
+                    Donasi anda telah kami terima, halaman ini akan kadaluarsa dalam kurun waktu <span id="msInterval" data-interval="<?= $data['transaksi_donasi']->interval; ?>" class="fw-bold"><?= $data['transaksi_donasi']->kurun_waktu ?></span>. Anda tetap dapat melihat rincian transaksi ini melalui akun Sahabat Berbagi.
                     <p class="pt-2">
                     Klik <a href="/auth/signin" class="fw-bold text-green">masuk</a> jika sudah punya akun atau klik <a href="/auth/signup" class="fw-bold text-orange">daftar</a> untuk buat akun baru.
                     </p>
@@ -83,7 +83,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <span id="bayar" class="text-info fw-bold"><?= ($data['transaksi_donasi']->bayar == 1 ? 'Lunas' : 'Belum Lunas') ?></span>
-                            <span id="nama_cp">(<?= Output::timeToLocalFull($data['transaksi_donasi']->waktu_bayar) ?>)</span>
+                            <span id="nama_cp">(<?= (isset($data['transaksi_donasi']->waktu_bayar) ? Output::timeToLocalFull($data['transaksi_donasi']->waktu_bayar) : 'perlu verivikasi') ?>)</span>
                         </div>
                     </div>
                 </div>

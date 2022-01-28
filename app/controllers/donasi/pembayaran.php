@@ -123,6 +123,17 @@ class PembayaranController extends Controller {
             'id_cp' => Sanitize::escape(trim(Input::get('metode_pembayaran')))
         );
 
+        $dataCP = $this->model->getData('LOWER(jenis) jenis_payment','channel_payment', array('id_cp','=',$dataDonasi['id_cp']));
+        if ($dataCP == false) {
+            Session::put('notifikasi', array(
+                'pesan' => 'Metode pembayaran tidak ditemukan mohon pilih metode lainnya',
+                'state' => 'error'
+            ));
+            Redirect::to('donasi/buat/baru/' . $params[0]);
+        }
+
+        $jenis_payment = $dataCP->jenis_payment;
+
         // Jika input alias tidak dicentang
         if (Input::get('alias') != true) {
             $samaran = ucwords(strtolower(trim(Input::get('nama'))));
@@ -162,20 +173,28 @@ class PembayaranController extends Controller {
             'state' => 'success'
         ));
         $id_donasi = $this->model->lastIID();
-        Redirect::to('donasi/pembayaran/tagihan/' . $id_donasi);
+        Redirect::to('donasi/pembayaran/tagihan/' . $jenis_payment . '/' . $id_donasi);
     }
 
     public function tagihan($params) {
-        if (count($params) < 1) {
+        if (count($params) < 2) {
+            Redirect::to('home');
+        }
+
+        if (!file_exists(VIEW_PATH.'donasi'.DS.'pembayaran'. DS . $params[0] . '.html')) {
+            Session::flash('notifikasi', array(
+                'pesan' => 'Halaman tagihan yang anda cari tidak ditemukan',
+                'state' => 'danger'
+            ));
             Redirect::to('home');
         }
     
         $this->model('Donasi');
-        $donasi = $this->model->getDataTagihanDonasi($params[0]);
+        $donasi = $this->model->getDataTagihanDonasi($params[1]);
         
         if (!$donasi) {
             Session::flash('notifikasi', array(
-                'pesan' => 'Data donasi <b>' . $params[0] . '</b> tidak ditemukan',
+                'pesan' => 'Data donasi <b>' . $params[1] . '</b> tidak ditemukan',
                 'state' => 'danger'
             ));
             Redirect::to('home');
@@ -186,14 +205,14 @@ class PembayaranController extends Controller {
                 'pesan' => 'Donasi sudah dibayar',
                 'state' => 'success'
             ));
-            Redirect::to('donasi/pembayaran/transaksi/' . $params[0]);
+            Redirect::to('donasi/pembayaran/transaksi/' . $params[1]);
         }
 
         // Jika sudah lebih dari 24 jam
         // $expiry = strtotime($donasi->create_at) + 86400;
         // if ($expiry < time()) {
         //     Session::flash('warning','Tagihan tidak valid sudah lebih dari 24 jam');
-        //     Redirect::to('donasi/pembayaran/dibatalkan/' . $params[0]);
+        //     Redirect::to('donasi/pembayaran/dibatalkan/' . $params[1]);
         // }
 
         $bantuan = $this->model->getData('id_bantuan, nama, nama_penerima, tanggal_akhir', 'bantuan', array('id_bantuan', '=', $donasi->id_bantuan));
@@ -205,10 +224,10 @@ class PembayaranController extends Controller {
             $expiry = strtotime($bantuan->tanggal_akhir);
             if ($maxPembayaran <= date('Y-m-d', time())) {
                 Session::flash('notifikasi', array(
-                    'pesan' => 'Tagihan tidak valid sudah lebih dari batas max open donasi',
+                    'pesan' => 'Mohon maaf Donasi bantuan '. $bantuan->nama .' sudah berakhir.',
                     'state' => 'warning'
                 ));
-                Redirect::to('donasi/pembayaran/dibatalkan/' . $params[0]);
+                Redirect::to('donasi/pembayaran/dibatalkan/' . $params[1]);
             }
         }
         $this->data['tagihan_donasi'] = $donasi;
@@ -235,7 +254,7 @@ class PembayaranController extends Controller {
         );
 
         if (!is_null($donasi->notifikasi) && $donasi->notifikasi == 1) {
-            return VIEW_PATH.'donasi'.DS.'pembayaran'.DS.'tagihan.html';
+            return VIEW_PATH.'donasi'.DS.'pembayaran'. DS . $params[0] . '.html';
         }
         
         if ($donasi->jenis == 'TB') {
@@ -260,7 +279,7 @@ class PembayaranController extends Controller {
             'penerima_bantuan' => $bantuan->nama_penerima,
             'metode_bayar' => $metode_bayar,
             'nama_cp' => $donasi->nama_cp,
-            'partner_image_url' => $donasi->partner_image_url,
+            'path_gambar_cp' => $donasi->path_gambar_cp,
             'nomor_tujuan_bayar' => $donasi->nomor,
             'atas_nama_tujuan_bayar' => $donasi->atas_nama,
             'samaran' => 'Sahabat Berbagi',
@@ -287,17 +306,30 @@ class PembayaranController extends Controller {
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         $pesan = Ui::emailNotifDonasiDonatur($dataNotif);
 
+        $this->mailSended = false;
+        
         if (mail($donasi->email, $subject, $pesan, $headers)) {
+            $this->mailSended = true;
+            $this->model->update('donasi', array(
+                'notifikasi' => '1'
+            ), array('id_donasi','=',Sanitize::escape2($donasi->id_donasi)));
+        } else {
+            Session::flash('notifikasi', array(
+                'pesan' => 'Email ' . $donasi->email . ' tidak valid, mohon maaf anda tidak akan mendapatkan notifikasi info donasi',
+                'state' => 'danger'
+            ));
+        }
+
+        if ($this->mailSended == true) {
             $subject = "[Follow Up Donasi] Pojok Berbagi";
             $headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: No-Replay <no-replay@pojokberbagi.id>' . "\r\n";
             $headers .= "MIME-Version: 1.0\r\n";
             $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
             $pesan = Ui::emailFollowUpDonasi($dataFollow);
             mail('cr@pojokberbagi.id', $subject, $pesan, $headers);
-            $this->model->update('donasi', array(
-                'notifikasi' => '1'
-            ), array('id_donasi','=',Sanitize::escape(trim($donasi->id_donasi))));
         }
+
+        return VIEW_PATH.'donasi'.DS.'pembayaran'. DS . $params[0] . '.html';
     }
 
     public function transaksi($params) {
@@ -318,26 +350,52 @@ class PembayaranController extends Controller {
 
         $this->title = 'Transaksi';
         // Jika sudah lebih dari 1 minggu link ini akan ditutup
-        $expiry = strtotime($donasi->create_at) + 86400*7;
-        if ($expiry < time()) {
-            Session::flash('notifikasi', array(
+        $expiry_time = strtotime($donasi->create_at) + 86400*7;
+        if ($expiry_time < time()) {
+            Session::put('notifikasi', array(
                 'pesan' => 'Donasi anda telah kami terima silahkan cek history transaksi pada akun anda',
                 'state' => 'success'
             ));
             Redirect::to('home');
         }
 
+        $now = new DateTime(date('Y-m-d H:i:s'));
+        $expiry = new DateTime(date('Y-m-d H:i:s', $expiry_time));
+        $msInterval = $expiry->diff($now);
+        $inInterval = $expiry_time - strtotime(date('Y-m-d H:i:s', time()));
+
+        $format = array();
+        if ($msInterval->y > 0) {
+            array_push($format,"%y tahun");
+        } else
+        if ($msInterval->m > 0) {
+            array_push($format,"%m bulan");
+        } else
+        if ($msInterval->d > 0) {
+            array_push($format,"%d hari");
+        } else
+        if ($msInterval->h > 0) {
+            array_push($format,"%h jam");
+        } else
+        if ($msInterval->i > 0) {
+            array_push($format,"(%I : %S)");
+        }
+        $format = implode(' ', $format);
+        
+        $donasi->interval = $inInterval;
+        $donasi->kurun_waktu = $msInterval->format($format);
+
         $this->data['transaksi_donasi'] = $donasi;
 
-        // $this->script_action = array(
-        //     array(
-        //         'src' => 'https://cdn.jsdelivr.net/gh/robbmj/simple-js-countdown-timer@master/countdowntimer.js',
-        //         'source' => 'trushworty'
-        //     ),
-        //     array(
-        //         'src' => '/assets/route/auth/js/transaksi.js'
-        //     )
-        // );
+        $this->script_action = array(
+            array(
+                'src' => 'https://cdn.jsdelivr.net/gh/robbmj/simple-js-countdown-timer@master/countdowntimer.js',
+                'source' => 'trushworty'
+            ),
+            array(
+                'src' => '/assets/route/donasi/pages/js/transaksi.js'
+            )
+        );
     }
 
     public function notif($params) {
@@ -347,7 +405,7 @@ class PembayaranController extends Controller {
             'penerima_donasi' => "Raska",
             'metode_bayar' => "Transfer",
             'nama_partner' => "Bank BJB",
-            'partner_image_url' => "/assets/images/partners/bjb.png",
+            'path_gambar_cp' => "/assets/images/partners/bjb.png",
             'nomor_tujuan_bayar' => "0001000080001",
             'atas_nama_tujuan_bayar' => "Pojok Berbagi Indonesia",
             'samaran' => "Haji Arief",
