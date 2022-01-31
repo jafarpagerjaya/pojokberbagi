@@ -33,4 +33,8 @@ class Utility {
         }
         return $metode_bayar;
     }
+
+    public static function contackToLocal($kontak) {
+        return preg_replace('/^0/', '+62', $kontak);
+    }
 }

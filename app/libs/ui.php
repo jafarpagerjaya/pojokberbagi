@@ -866,7 +866,7 @@ class Ui {
                                                     <b style="margin: .25rem 0px; opacity: .5; display: block;">Nama</b>
                                                     <b style="margin: 0rem 0px; display: block;">'. strip_tags($data["nama_donatur"]) .'</b>
                                                     <b style="margin: .25rem 0px; opacity: .5; display: block; padding-top: .25rem;">Kontak</b>
-                                                    <b style="margin: 0rem 0px; display: block;">'. strip_tags($data["kontak_donatur"]) .'</b>
+                                                    <b style="margin: 0rem 0px; display: block;">'. (isset($data["kontak_donatur"]) ? '<a href="https://wa.me/'. Utility::contackToLocal(strip_tags($data["kontak_donatur"])) .'" style="color:#97D700">'. strip_tags($data["kontak_donatur"]) .'</a>' : 'Tidak Ada Kontak' ) . '</b>
                                                     <b style="margin: .25rem 0px; opacity: .5; display: block; padding-top: .25rem;">Email</b>
                                                     <b style="margin: 0rem 0px; display: block;">'. strip_tags($data["email_donatur"]) .'</b>
                                                 </td>

@@ -293,7 +293,7 @@ class PembayaranController extends Controller {
         $dataFollow = array(
             'nama_karyawan' => 'Dinda',
             'nama_donatur' => $donasi->nama_donatur,
-            'kontak_donatur' => (!is_null($donasi->kontak) ? $donasi->kontak : 'Tidak Ada Kontak'),
+            'kontak_donatur' => $donasi->kontak,
             'email_donatur' => $donasi->email,
             'nama_bantuan' => $bantuan->nama,
             'penerima_donasi' => $bantuan->nama_penerima,
@@ -408,7 +408,7 @@ class PembayaranController extends Controller {
             'jumlah_donasi' => Output::tSparator(1500000),
             'penerima_donasi' => "Raska",
             'metode_bayar' => "Transfer",
-            'nama_partner' => "Bank BJB",
+            'nama_cp' => "Bank BJB",
             'path_gambar_cp' => "/assets/images/partners/bjb.png",
             'nomor_tujuan_bayar' => "0001000080001",
             'atas_nama_tujuan_bayar' => "Pojok Berbagi Indonesia",
@@ -419,10 +419,10 @@ class PembayaranController extends Controller {
         $kontak = "085322661186";
         $email = "arifriandi834@gmail.com";
         
-        
+
         $arrayFollow = array(
             'nama_karyawan' => 'Dinda',
-            'kontak_donatur' => (!is_null($kontak) ? $kontak : 'Tidak Ada Kontak'),
+            'kontak_donatur' => $kontak,
             'email_donatur' => $email,
             'doa_dan_pesan' => "Semoga razka dapat tersenyum kembali dan dapat bermain lagi dengan kakanya. Sang kaka (teteh Razka) semoga kamu dapat menggapai semua impianmu dimasa depan kelah amin. Jagain terus ya razkanya",
             'id_donasi' => 10
