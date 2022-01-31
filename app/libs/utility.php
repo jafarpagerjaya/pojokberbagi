@@ -14,4 +14,23 @@ class Utility {
         } 
         return $status;
     }
+
+    public static function keteranganJenisChannelPayment($params) {
+        if ($params == 'TB') {
+            $metode_bayar = "Transfer";
+        } else if ($params == 'RQ') {
+            $metode_bayar = "QRIS";
+        } else if ($params == 'EW') {
+            $metode_bayar = "E-Wallet";
+        } else if ($params == 'VA') {
+            $metode_bayar = "Virtual Akun";
+        } else if ($params == 'GM') {
+            $metode_bayar = "Gerai Mart";
+        } else if ($params == 'GI') {
+            $metode_bayar = "Giro";
+        } else {
+            $metode_bayar = "Unknown";
+        }
+        return $metode_bayar;
+    }
 }

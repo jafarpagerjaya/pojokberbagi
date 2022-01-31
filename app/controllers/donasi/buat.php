@@ -96,6 +96,9 @@ class BuatController extends Controller {
         Session::put('donasi', $id_bantuan);
         $this->data['bantuan'] = $data_bantuan;
         $this->data[Config::get('session/token_name')] = Token::generate();
+
+        $dataCP = $this->_home->query('SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar FROM channel_payment cp LEFT JOIN gambar USING(id_gambar)', array());
+        $this->data['metode_pembayaran'] = $this->_home->readAllData();
     }
 
     public function ajax() {

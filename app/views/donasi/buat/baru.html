@@ -28,11 +28,9 @@
                         <div class="form-floating select-dd mb-3<?= (!empty($data_error_feedback['metode_pembayaran']['rule']) ? ' text-danger' : '') ?>">
                             <select class="form-select selectpicker" id="floatingSelectMPembayaran" aria-label="Metode Pembayaran" name="metode_pembayaran">
                                 <option value="">Pilih Metode Pembayaran</option>
-                                <option value="1" data-image="/assets/images/partners/bjb.png">Transfer Bank BJB</option>
-                                <option value="2" data-image="/assets/images/partners/ovo.png" disabled="disabled">Transfer Bank BCA (Segera)</option>
-                                <option value="2" data-image="/assets/images/partners/ovo.png" disabled="disabled">Transfer Bank BSI (Segera)</option>
-                                <option value="2" data-image="/assets/images/partners/ovo.png" disabled="disabled">E-Wallet OVO (Segera)</option>
-                                <option value="2" data-image="/assets/images/partners/ovo.png" disabled="disabled">E-Wallet Go Pay (Segera)</option>
+                                <?php foreach($data['metode_pembayaran'] as $data_cp) { ?>
+                                    <option value="<?= $data_cp->id_cp; ?>" data-image="<?= $data_cp->path_gambar; ?>"><?= (isset($data_cp->jenis) ? Utility::keteranganJenisChannelPayment($data_cp->jenis) : '') .' '. $data_cp->nama; ?></option>
+                                <?php } ?>
                             </select>
                             <label for="floatingSelectMPembayaran">Metode Pembayaran<?= (!empty($data_error_feedback['metode_pembayaran']['rule']) ? ' <span>' . str_ireplace('metode pembayaran', '', $data_error_feedback['metode_pembayaran']['feedback']) . '</span>' : '') ?></label>
                         </div>

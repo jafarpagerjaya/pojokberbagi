@@ -178,6 +178,10 @@ class PembayaranController extends Controller {
 
     public function tagihan($params) {
         if (count($params) < 2) {
+            Session::flash('notifikasi', array(
+                'pesan' => 'Parameter tidak cocok',
+                'state' => 'error'
+            ));
             Redirect::to('home');
         }
 
