@@ -308,7 +308,7 @@ class PembayaranController extends Controller {
         $headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: CR Pojok Berbagi <cr@pojokberbagi.id>' . "\r\n";
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $pesan = Ui::emailNotifDonasiDonatur($dataNotif);
+        $pesan = wordwrap(Ui::emailNotifDonasiDonatur($dataNotif), 70, "\r\n");
 
         $this->mailSended = false;
         
@@ -329,7 +329,7 @@ class PembayaranController extends Controller {
             $headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: No-Replay <no-replay@pojokberbagi.id>' . "\r\n";
             $headers .= "MIME-Version: 1.0\r\n";
             $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-            $pesan = Ui::emailFollowUpDonasi($dataFollow);
+            $pesan = wordwrap(Ui::emailFollowUpDonasi($dataFollow), 70, "\r\n");
             mail('cr@pojokberbagi.id', $subject, $pesan, $headers);
         }
 
