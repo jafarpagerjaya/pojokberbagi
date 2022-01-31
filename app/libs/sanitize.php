@@ -21,14 +21,14 @@ class Sanitize {
 	}
 
 	public static function noSpace2($string){
-		return Self::escape2(preg_replace('/\s+/', '', $string));
+		return self::escape2(preg_replace('/\s+/', '', $string));
 	}
 
 	public static function noDblSpace2($string){
-		return Self::escape2(preg_replace('/\s+/', ' ', $string));
+		return self::escape2(preg_replace('/\s+/', ' ', $string));
 	}
 
 	public static function toInt2($string) {
-		return Self::escape2(preg_replace("/[^0-9]/", '', $string));
+		return self::escape2(preg_replace("/[^0-9]/", '', $string));
 	}
 }
