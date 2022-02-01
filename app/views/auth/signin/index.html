@@ -34,7 +34,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="ni ni-email-83"></i></span>
                                         </div>
-                                        <input class="form-control" placeholder="Email atau Username" type="text" name="email_username" value="<?= isset($this->data['email_usernameV']) ? $this->data['email_usernameV'] : 'Pojok Berbagi'; ?>">
+                                        <input class="form-control" placeholder="Email atau Username" type="text" name="email_username" value="<?= isset($this->data['email_usernameV']) ? $this->data['email_usernameV'] : ''; ?>">
                                         <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold ' . (!empty($this->data['email_usernameF']) ? 'd-block' : '') ?>"><?= (!empty($this->data['email_usernameF']) ? $this->data['email_usernameF'] : '') ?></div>
                                     </div>
                                 </div>
@@ -43,7 +43,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
                                         </div>
-                                        <input class="form-control no-space" placeholder="Password" type="password" name="password" value="<?= isset($this->data['passwordV']) ? $this->data['passwordV'] : 'Passpojokberbagi@21'; ?>">
+                                        <input class="form-control no-space" placeholder="Password" type="password" name="password" value="<?= isset($this->data['passwordV']) ? $this->data['passwordV'] : ''; ?>">
                                         <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold ' . (!empty($this->data['passwordF']) ? 'd-block' : '') ?>"><?= (!empty($this->data['passwordF']) ? $this->data['passwordF'] : '') ?></div>
                                     </div>
                                 </div>
