@@ -1,3 +1,56 @@
+const formControl = document.querySelectorAll('.form-control');
+formControl.forEach(el => {
+    el.addEventListener('keypress', function(e) {
+        let ceret = e.target.selectionStart;
+        if (ceret == 0 && e.keyCode == 32) {
+            e.preventDefault();
+        }
+        if (e.keyCode == 32 && e.target.selectionStart != 0 && e.target.value.indexOf(' ') >= 0 && this.value.substring(e.target.selectionStart, e.target.selectionStart-1) == ' ' && e.target.value.charCodeAt(e.target.selectionStart-1) == 32) {
+            e.preventDefault();
+        }
+    });
+
+    el.addEventListener('paste', function(e) {
+        setTimeout(()=>{
+            if (el.classList.contains('no-space')) {
+                if (e.target.value.indexOf(' ') >= 0) {
+                    e.target.value = e.target.value.trim().replace(/\s+/g, "");
+                }
+            }
+            if (e.target.value.indexOf('  ') >= 0) {
+                let ceret = e.target.selectionStart;
+                e.target.value = e.target.value.trim().replace(/\s+/g, " ");
+                e.target.selectionEnd = ceret-1;
+            }
+        }, 0);
+    });
+});
+
+const noSpace = function(event) {
+    if (event.keyCode === 32) {
+        event.preventDefault();
+    }
+}
+
+let inputNoSpace = document.querySelectorAll('.no-space');
+inputNoSpace.forEach(el => {
+    el.addEventListener('keypress', function(e) {
+        noSpace(e);
+    });
+});
+
+function preventNonNumbersInInput(event){
+    let characters = String.fromCharCode(event.which);
+    if(!(/[0-9]/.test(characters))){
+        event.preventDefault();
+    }
+};
+
+function restrictNumber () {  
+    var newValue = this.value.replace(new RegExp(/[^\d]/,'ig'), "");
+    this.value = newValue;
+};
+
 let textarea = document.querySelector(".textarea");
 
 textarea.addEventListener('input', autoResize, false);
@@ -9,6 +62,8 @@ nominalDonasi.addEventListener('keydown', function (e) {
         e.preventDefault();
     }
 });
+
+nominalDonasi.addEventListener('keypress', preventNonNumbersInInput);
 
 nominalDonasi.addEventListener('keyup', function (e) {
     this.value = formatTSparator(this.value, 'Rp. ');
@@ -29,8 +84,10 @@ nominalDonasi.addEventListener('change', function (e) {
 
     if (price_to_number(this.value) < minDonasi) {
         this.value = minDonasi;
-        this.value = formatTSparator(this.value, 'Rp. ');
+    } else {
+        this.value = price_to_number(this.value);
     }
+    this.value = formatTSparator(this.value, 'Rp. ');
 });
 
 $('.selectpicker').select2({
@@ -102,6 +159,9 @@ $('form').on('change', '[name]', function () {
     }
     if (this.name == 'metode_pembayaran') {
         fieldsGlobal[this.name] = this.value;
+        if (this.closest('.form-floating').classList.contains('text-danger')) {
+            this.closest('.form-floating').classList.remove('text-danger');
+        }
     }
 
     let json = JSON.stringify(fields),
@@ -136,6 +196,11 @@ emailDonatur.addEventListener('change', function(e) {
         }
     });
 });
+
+let kontakDonatur = document.getElementById('floatingInputKontak');
+kontakDonatur.addEventListener('keypress',preventNonNumbersInInput);
+// paste also restricted
+kontakDonatur.addEventListener('input', restrictNumber);
 
 let charLeft = document.getElementById('charLeft');
 const maxChar = textarea.getAttribute('data-max');
@@ -173,13 +238,13 @@ if (client) {
     }
 }
 
-const submit = document.querySelector('[type="submit"]:not(.disabled)');
+// const submit = document.querySelector('[type="submit"]:not(.disabled)');
 
-submit.addEventListener("click", function(e) {
-    if (getCookie('donasi-pojokberbagi')) {
-        eraseCookie('donasi-pojokberbagi', window.location.pathname);
-    }
-});
+// submit.addEventListener("click", function(e) {
+//     if (getCookie('donasi-pojokberbagi')) {
+//         eraseCookie('donasi-pojokberbagi', window.location.pathname);
+//     }
+// });
 
 function isTouchDevice() {
     return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
@@ -209,7 +274,7 @@ window.addEventListener('resize', function onResize() {
             }
         });
     }, 50);
-})
+});
 
 
 

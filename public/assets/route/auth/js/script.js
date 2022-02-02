@@ -19,6 +19,11 @@ formControl.forEach(el => {
 
     el.addEventListener('paste', function(e) {
         setTimeout(()=>{
+            if (el.classList.contains('no-space')) {
+                if (e.target.value.indexOf(' ') >= 0) {
+                    e.target.value = e.target.value.trim().replace(/\s+/g, "");
+                }
+            }
             if (e.target.value.indexOf('  ') >= 0) {
                 let ceret = e.target.selectionStart;
                 e.target.value = e.target.value.trim().replace(/\s+/g, " ");

@@ -15,12 +15,12 @@
 <section class="form">
     <div class="container">
         <div class="row justify-content-center">
-            <form class="col col-md-9 col-lg-6" autocomplete="off" method="post" action="/donasi/pembayaran/index/<?= $data['bantuan']->id_bantuan ?>">
+            <form spellcheck="false" class="col col-md-9 col-lg-6" autocomplete="off" method="post" action="/donasi/pembayaran/index/<?= $data['bantuan']->id_bantuan ?>">
                 <div class="row g-0 g-md-3">
                     <div class="col-12 col-md-6">
                         <div class="form-floating mb-3<?= (!empty($data_error_feedback['jumlah_donasi']['rule']) ? ' text-danger' : '') ?>">
                             <input min="<?= $data['bantuan']->min_donasi ?>" type="text" class="form-control" id="floatingInputDonasi" placeholder="Jumlah Donasi"
-                                name="jumlah_donasi" required>
+                                name="jumlah_donasi" required <?= (!empty($data_error_feedback['jumlah_donasi']['value']) ? 'value="' . $data_error_feedback['jumlah_donasi']['value'] .'"' : '') ?>>
                             <label for="floatingInputDonasi">Nominal Donasi<?= (!empty($data_error_feedback['jumlah_donasi']['rule']) ? ' <span>' . str_ireplace('jumlah_donasi', '', $data_error_feedback['jumlah_donasi']['feedback']) . '</span>' : '') ?></label>
                         </div>
                     </div>
@@ -46,18 +46,18 @@
                 <?php } ?>
                 <div class="form-floating mb-3<?= (!empty($data_error_feedback['nama']['rule']) ? ' text-danger' : '') ?>">
                     <input type="text" class="form-control text-uppercase" id="floatingInputNama" placeholder="Nama Lengkap"
-                        name="nama" required <?= (isset($data['donatur']->nama) ? 'value="' . $data['donatur']->nama . '" readonly' : '') ?>>
+                        name="nama" required <?= (isset($data['donatur']->nama) ? 'value="' . $data['donatur']->nama . '" readonly' : (!empty($data_error_feedback['nama']['value']) ? 'value="' . $data_error_feedback['nama']['value'] .'"' : '')) ?>>
                     <label for="floatingInputNama">Nama Lengkap<?= (!empty($data_error_feedback['nama']['rule']) ? ' <span>' . str_ireplace('nama', '', $data_error_feedback['nama']['feedback']) . '</span>' : '') ?></label>
                 </div>
                 <div class="form-floating mb-3<?= (!empty($data_error_feedback['email']['rule']) ? ' text-danger' : '') ?>">
-                    <input type="email" class="form-control text-lowercase" id="floatingInputEmail"
-                        placeholder="Email" name="email" required <?= (isset($data['donatur']->email) ? 'value="' . $data['donatur']->email . '" readonly' : '') ?>>
+                    <input type="email" class="form-control text-lowercase no-space" id="floatingInputEmail"
+                        placeholder="Email" name="email" required <?= (isset($data['donatur']->email) ? 'value="' . $data['donatur']->email . '" readonly' : (!empty($data_error_feedback['email']['value']) ? 'value="' . $data_error_feedback['email']['value'] .'"' : '')) ?>>
                     <label for="floatingInputEmail">Email<?= (!empty($data_error_feedback['email']['rule']) ? ' <span>' . str_ireplace('email', '', $data_error_feedback['email']['feedback']) . '</span>' : '') ?></label>
                 </div>
                 <div class="form-floating mb-3<?= (!empty($data_error_feedback['kontak']['rule']) ? ' text-danger' : '') ?>">
-                    <input type="text" class="form-control" id="floatingInputKontak" placeholder="Kontak WhatsApp"
+                    <input type="text" class="form-control no-space" id="floatingInputKontak" placeholder="Kontak WhatsApp"
                         name="kontak" <?= (isset($data['donatur']->kontak) ? 'value="' . $data['donatur']->kontak . '" readonly' : '') ?>>
-                    <label for="floatingInputKontak">Kontak WhatsApp<?= (!empty($data_error_feedback['kontak']['rule']) ? ' <span>' . str_ireplace('kontak', '', $data_error_feedback['kontak']['feedback']) . '</span>' : '') ?></label>
+                    <label for="floatingInputKontak">Kontak WhatsApp<?= (!empty($data_error_feedback['kontak']['rule']) ? ' <span>' . str_ireplace('kontak', '', $data_error_feedback['kontak']['feedback']) . '</span>' : (!empty($data_error_feedback['kontak']['value']) ? 'value="' . $data_error_feedback['kontak']['value'] .'"' : '')) ?></label>
                 </div>
                 <div class="form-group mb-3">
                     <div class="form-check form-switch form-select-lg justify-content-between d-flex">
@@ -66,8 +66,7 @@
                     </div>
                 </div>
                 <div class="form-floating input_textarea2">
-                    <textarea data-max="200" class="form-control textarea" placeholder="Tulis Pesan atau Do'a Anda"
-                        id="floatingTextarea" style="height: 84px; min-height: 84px;" name="pesan_atau_doa"></textarea>
+                    <textarea data-max="200" class="form-control textarea" placeholder="Tulis Pesan atau Do'a Anda" id="floatingTextarea" style="height: 84px; min-height: 84px;" name="pesan_atau_doa"><?= (!empty($data_error_feedback['pesan_atau_doa']['value']) ? $data_error_feedback['pesan_atau_doa']['value'] : '') ?></textarea>
                     <label for="floatingTextarea">Pesan atau Do'a</label>
                     <div id="charLeft" class="text-black-50"></div>
                 </div>

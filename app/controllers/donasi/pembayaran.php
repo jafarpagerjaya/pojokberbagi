@@ -64,6 +64,9 @@ class PembayaranController extends Controller {
                 'min' => 11,
                 'max' => 13,
                 'unique' => 'donatur'
+            ),
+            'pesan_atau_doa' => array(
+                'max' => 200
             )
         ), array('LOWER(email)', '!=', strtolower(Input::get('email'))));
         if (!$validate->passed()) {
@@ -168,6 +171,9 @@ class PembayaranController extends Controller {
             ));
             Redirect::to('donasi/buat/baru/' . $params[0]);
         }
+
+        Cookie::update(Config::get('donasi/cookie_name'),'',-1,'/donasi/buat/baru/'. $params[0]);
+
         Session::put('notifikasi', array(
             'pesan' => 'Berhasil Create Donasi',
             'state' => 'success'
