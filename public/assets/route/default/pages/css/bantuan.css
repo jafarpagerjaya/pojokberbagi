@@ -15,6 +15,20 @@
     margin: auto;
 }
 
+.bantuan-area {
+    padding: 92px 0px;
+}
+
+.bantuan-area>.app-image.bg-image {
+    height: 420px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.bantuan-area>.app-image.bg-image>img {
+    width: 100%;
+}
+
 .app-image.image-background {
     height: 420px;
     display: flex;
@@ -29,6 +43,22 @@
 .box-donasi-info {
     margin-top: -130px !important;
     z-index: 3;
+}
+
+/* List Service */
+.single-service>.app-image.img-wrapper.rounded-box {
+    max-height: 166.5px;
+    margin: -1.5rem;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.single-service .app-image.img-wrapper+.row {
+    position: relative;
+}
+
+.single-service .progress {
+    height: 5px;
 }
 
 /* .d-grid.box {
@@ -46,6 +76,76 @@
 /* .d-grid .box-other {
     grid-column: 1/span 2;
 } */
+
+
+/* Media Query */
+
+@media (min-width: 375px) {
+
+    /* List Service */
+    .single-service>.app-image.img-wrapper.rounded-box {
+        max-height: 197.62px;
+    }
+}
+
+@media (min-width: 425px) {
+
+    /* List Service */
+    .single-service>.app-image.img-wrapper.rounded-box {
+        max-height: 255.74px;
+    }
+}
+
+@media (min-width: 480px) {
+
+    /* List Service */
+    .single-service>.app-image.img-wrapper.rounded-box {
+        max-height: 239.625px;
+    }
+}
+
+@media (min-width: 767px) {
+
+    /* List Service */
+    .single-service>.app-image.img-wrapper.rounded-box {
+        max-height: 290.25px;
+    }
+}
+
+@media (min-width: 768px) {
+
+    /* List Service */
+    .single-service>.app-image.img-wrapper.rounded-box {
+        max-height: 189px;
+    }
+}
+
+@media (min-width: 992px) {
+
+    /* List Service */
+    .single-service>.app-image.img-wrapper.rounded-box {
+        max-height: 166.5px;
+    }
+}
+
+@media (min-width: 1200px) {
+
+    /* List Service */
+    .single-service>.app-image.img-wrapper.rounded-box {
+        max-height: 200.24px;
+    }
+}
+
+/* List Service */
+@media (min-width: 1400px) {
+    .single-service>.app-image.img-wrapper.rounded-box {
+        max-height: 234px;
+    }
+}
+
+
+
+
 
 @media (max-width: 1024px) and (min-width: 768px) {
     .row.bantuan .container {
@@ -65,6 +165,13 @@
 }
 
 @media (max-width: 768px) {
+    .app-image.bg-image {
+        border-radius: 15px;
+        height: 250px !important;
+        margin: 0px 12px;
+        width: calc(100% - 24px);
+    }
+
     .box-donasi-info {
         margin-top: 0px !important;
     }

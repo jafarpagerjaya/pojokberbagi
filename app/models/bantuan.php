@@ -247,6 +247,49 @@ class BantuanModel extends HomeModel {
         return false;
     }
 
+    public function getListBantuanKategori($nama_kategori = null) {
+        $dataParams = array();
+        $arrayLSQL = array("SELECT b.id_bantuan, s.id_sektor layanan, b.nama nama_bantuan, g.path_gambar, g.nama nama_gambar, s.nama nama_sektor, k.nama nama_kategori, IF(k.warna IS NULL, '#e9ecef', k.warna) warna,
+                            IF(p2.nama IS NULL, 'Pojok Berbagi Indonesia', p2.nama) pengaju_bantuan,
+                            SUM(CASE WHEN d.bayar = 1 THEN d.jumlah_donasi ELSE 0 END) total_donasi,
+                            SUM(CASE WHEN d.bayar = 1 AND d.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi ELSE 0 END) donasi_disalurkan,
+                            IF(TIMESTAMPDIFF(DAY,b.tanggal_akhir, NOW()) IS NULL, 'Unlimited', TIMESTAMPDIFF(DAY,b.tanggal_akhir, NOW())) sisa_waktu,
+                            IF(b.jumlah_target IS NULL,
+                            IF(TRUNCATE((SUM(IF(d.id_pelaksanaan IS NULL, 0, d.jumlah_donasi))/IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)))*100,1) IS NULL, 0, TRUNCATE((SUM(IF(d.id_pelaksanaan IS NULL, 0, d.jumlah_donasi))/IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)))*100,1))
+                            , IF(TRUNCATE((SUM(p1.jumlah_pelaksanaan)/b.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p1.jumlah_pelaksanaan)/b.jumlah_target)*100,1))) persentase_donasi_dilaksanakan
+                            FROM bantuan b LEFT JOIN donasi d USING(id_bantuan)
+                            LEFT JOIN pelaksanaan p1 USING(id_pelaksanaan)
+                            JOIN gambar g USING(id_gambar)
+                            LEFT JOIN pemohon p2 USING(id_pemohon) 
+                            LEFT JOIN sektor s USING(id_sektor)
+                            LEFT JOIN kategori k USING(id_kategori)
+                            WHERE b.blokir IS NULL");
+        
+        if (isset($this->_status)) {
+            array_push($arrayLSQL, "AND b.status = ?");
+            array_push($dataParams, $this->_status);
+        }
+
+        if (!is_null($nama_kategori)) {
+            array_push($arrayLSQL, "AND LOWER(k.nama) = LOWER(?)");
+            array_push($dataParams, $nama_kategori);
+        }
+
+        if (isset($this->_halaman)) {
+            array_push($arrayLSQL, "AND b.id_bantuan BETWEEN ? AND ? GROUP BY b.id_bantuan ORDER BY {$this->_order} {$this->_order_direction} LIMIT 10");
+            array_push($dataParams, $this->getHalaman()[0], $this->getHalaman()[1]);
+        }
+
+        $sql = implode(' ', $arrayLSQL);
+
+        $this->db->query($sql, $dataParams);
+        if (!$this->db->count()) {
+            return false;
+        }
+        $this->data = $this->db->results();
+        return $this->data;
+    }
+
     public function getBanner() {
         $data = $this->db->query("SELECT b.id_bantuan, b.jumlah_target, b.deskripsi, b.nama nama_bantuan, g.path_gambar, g.nama nama_gambar, k.nama nama_kategori,
         CASE WHEN b.id_sektor = 'S' THEN 'Sosial Kemanusiaan' WHEN b.id_sektor = 'P' THEN 'Pendidikan Umat' WHEN b.id_sektor = 'E' THEN 'Pemandirian Ekonomi' WHEN b.id_sektor = 'K' THEN 'Kesehatan Masyarakat' WHEN b.id_sektor = 'L' THEN 'Lingkungan Asri' WHEN b.id_sektor = 'B' THEN 'Tanggap Bencana' END layanan,
@@ -270,5 +313,22 @@ class BantuanModel extends HomeModel {
             return $this->data;
         }
         return false;
+    }
+    
+    public function getResumeKategoriBantuan($nama_kategori) {
+        $this->db->query("SELECT COUNT(id_bantuan) jumlah_bantuan_dibuka,
+        IFNULL(SUM(IF(bantuan.status = 'D', 1, 0)), 0) jumlah_bantuan_berjalan,
+        IFNULL(SUM(IF(bantuan.status = 'S', 1, 0)), 0) jumlah_bantuan_selesai,
+        kategori.nama nama_kategori,
+        kategori.warna
+        FROM bantuan RIGHT JOIN kategori USING(id_kategori) 
+        WHERE LOWER(kategori.nama) = LOWER(?)
+        GROUP BY kategori.id_kategori", array('kategori.nama' => $nama_kategori));
+        if (!$this->db->count()) {
+            // nama_kategori unrecognize
+            return false;
+        }
+        $this->data = $this->db->result();
+        return $this->data;
     }
 }
