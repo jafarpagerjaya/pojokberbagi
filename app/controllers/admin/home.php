@@ -46,8 +46,8 @@ class HomeController extends Controller {
             break;
             
             default:
-                Session::flash('error','Anda bukan admin');
-                Redirect::to('auth/signout');
+                Session::flash('error','Assalamualaikum, '. ucwords(strtolower($this->data['pegawai']->nama)) .' [PBI-'. $this->data['pegawai']->id_pegawai .']');
+                Redirect::to('donatur');
                 # code...
             break;
         }

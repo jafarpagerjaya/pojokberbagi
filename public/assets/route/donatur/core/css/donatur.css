@@ -1,0 +1,16 @@
+.table tbody>tr>* {
+    vertical-align: baseline;
+}
+
+.table .channel-payment {
+    gap: .5rem;
+}
+
+.table .channel-payment>p {
+    font-size: 0.8rem;
+    line-height: 1.2;
+}
+
+.table .channel-payment>img {
+    max-width: 50px;
+}

@@ -8,9 +8,6 @@ class BantuanController extends Controller {
         $this->rel_controller = array(
             array(
                 'href' => '/assets/pojok-berbagi-style.css'
-            ),
-            array(
-                'href' => '/assets/route/default/pages/css/bantuan.css'
             )
         );
         $this->script_controller = array(
@@ -19,6 +16,22 @@ class BantuanController extends Controller {
             )
         );
         $this->_bantuan = $this->model('Bantuan');
+    }
+
+    private function kategori() {
+        $this->rel_action = array(
+            array(
+                'href' => '/assets/route/default/pages/css/kategori.css'
+            ),
+            array(
+                'href' => '/assets/route/default/core/css/services.css'
+            )
+        );
+        $this->script_action = array(
+            array(
+                'src' => '/assets/route/default/pages/js/kategori.js'
+            )
+        );
     }
 
     public function index() {
@@ -39,8 +52,6 @@ class BantuanController extends Controller {
                 )
             );
 
-            // $this->setKunjungan();
-
             $this->model('Bantuan');
             $this->setKunjungan($params);
             $this->model->getDetilBantuan($params[0]);
@@ -52,6 +63,8 @@ class BantuanController extends Controller {
 
     public function berdaya($params = array()) {
         $this->title = 'Berdaya';
+        $this->kategori();
+
         $program = Sanitize::escape2('Pojok Berdaya');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
         $this->_bantuan->getListBantuanKategori($program);
@@ -69,6 +82,8 @@ class BantuanController extends Controller {
 
     public function peduli_berbagi($params = array()) {
         $this->title = 'Peduli Berbagi';
+        $this->kategori();
+
         $program = Sanitize::escape2('Pojok Peduli Berbagi');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
         $this->_bantuan->getListBantuanKategori($program);
@@ -86,6 +101,8 @@ class BantuanController extends Controller {
 
     public function wakaf($params = array()) {
         $this->title = 'Wakaf';
+        $this->kategori();
+
         $program = Sanitize::escape2('Pojok Wakaf');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
         $this->_bantuan->getListBantuanKategori($program);
@@ -103,6 +120,8 @@ class BantuanController extends Controller {
 
     public function peduli_yatim($params = array()) {
         $this->title = 'Yatim';
+        $this->kategori();
+
         $program = Sanitize::escape2('Pojok Peduli Yatim');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
         $this->_bantuan->getListBantuanKategori($program);
@@ -120,6 +139,8 @@ class BantuanController extends Controller {
 
     public function rescue($params = array()) {
         $this->title = 'Rescue';
+        $this->kategori();
+
         $program = Sanitize::escape2('Pojok Rescue');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
         $this->_bantuan->getListBantuanKategori($program);

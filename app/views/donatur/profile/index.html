@@ -14,9 +14,9 @@
             <div class="card-body pt-5">
                 <div class="text-center">
                     <h5 class="h3 pt-5">
-                        <?= $data['donatur']->nama ?>
+                        <?= ucwords(strtolower($data['donatur']->nama)) ?>
                         <small class="mt-2 mb-0 d-block">bergabung sejak</small>
-                        <small class="font-weight-light"><?= Output::timeToLocalFull($data['donatur']->create_at) ?></small>
+                        <small class="font-weight-light"><?= Output::strToFullLocalDate($data['donatur']->create_at) ?></small>
                     </h5>
                     <!-- <div class="h5 font-weight-300">
                         <i class="ni location_pin mr-2"></i>Bandung

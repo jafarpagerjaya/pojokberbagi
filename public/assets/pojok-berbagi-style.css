@@ -1,6 +1,10 @@
+/* pojok-berbagi-style.css */
+/* Author: Jafar Pager Jaya */
+/* Create at 2021-2022 */
+
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,300;1,400;1,600;1,700;1,800;1,900&display=swap');
 
-/* ROOT */
+/* Utilitas, Reset & Root */
 :root {
     --orange: #FE5000;
     --green: #97D700;
@@ -10,36 +14,18 @@
     width: 100vw;
 } */
 
-/* Akhir ROOT */
-
-.button .signup {
-    background-color: var(--orange);
-    color: #fff;
+body {
+    font-family: "Nunito", Roboto, sans-serif;
 }
 
-.button .signup:hover {
-    color: var(--orange);
-    background-color: var(--bs-white);
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: inherit !important;
 }
-
-/* Header Auth Button */
-.header .button .signin {
-    color: var(--green);
-}
-
-.header:not(.sticky) .button .signin:hover {
-    color: var(--bs-orange);
-}
-
-.header.sticky .button .signin {
-    color: var(--bs-secondary);
-}
-
-.header.sticky .button .signin:hover {
-    color: var(--green);
-}
-
-/* Akhir Header Auth Button */
 
 .button.donasi,
 .button.button-outline-green:hover,
@@ -86,11 +72,32 @@
 }
 
 .rounded-box {
-    border-radius: 15px;
+    border-radius: 0.5rem;
 }
 
 .scroll-top {
     background-color: var(--green);
+}
+
+.box {
+    gap: 0.5em;
+    padding: .75em !important;
+}
+
+.box-icon {
+    height: 25px;
+    width: 25px;
+    border-radius: 15px;
+    color: #fff;
+    text-align: center;
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.box-icon i {
+    font-size: 0.75rem;
 }
 
 .text-green {
@@ -109,10 +116,21 @@
     border-color: var(--green);
 }
 
-textarea {
-    resize: vertical;
-    max-height: 200px;
+.border-solid {
+    border-style: solid;
 }
+
+.progress {
+    height: 5px;
+}
+
+.broken-image {
+    padding: 1em;
+}
+
+/* Akhir Utilitas, Reset & Root */
+
+/* Form */
 
 .form-floating.input_textarea2>.form-control:focus~label,
 .form-floating.input_textarea2>.form-control:not(:placeholder-shown)~label {
@@ -136,12 +154,14 @@ textarea {
     box-shadow: 0 5px 8px 0 #fff;
 }
 
-@media only screen and (max-width: 2560px) {
+.form-floating.input_textarea2.touch>.form-control:focus~label,
+.form-floating.input_textarea2.touch>.form-control:not(:placeholder-shown)~label {
+    width: calc(100% + 15%) !important;
+}
 
-    .form-floating.input_textarea2.touch>.form-control:focus~label,
-    .form-floating.input_textarea2.touch>.form-control:not(:placeholder-shown)~label {
-        width: calc(100% + 15%) !important;
-    }
+textarea {
+    resize: vertical;
+    max-height: 200px;
 }
 
 .form-floating.input_textarea2:not(.touch) textarea {
@@ -167,3 +187,124 @@ textarea {
 .form-floating.input_textarea2:not(.touch) textarea::-webkit-scrollbar-thumb:hover {
     background-color: #6c757dab;
 }
+
+/* Akhir Form */
+
+/* Footer */
+.kontak a.medsos-icon i {
+    font-size: 50px !important;
+    transition: color 0.3s ease-in-out;
+}
+
+.kontak a.medsos-icon i[class*="instagram"] {
+    background: #fdf497;
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+
+.kontak a.medsos-icon:hover i[class*="instagram"] {
+    color: transparent !important;
+}
+
+.kontak a.medsos-icon:hover i[class*="twitter"] {
+    color: var(--bs-info) !important;
+}
+
+.kontak a.medsos-icon:hover i[class*="whatsapp"] {
+    color: #4FCE5D !important;
+}
+
+/* Akhir Footer */
+
+@media (min-width: 375px) {
+
+    .box-icon {
+        height: 35px;
+        width: 35px;
+        border-radius: 15px;
+    }
+
+    .box-icon i {
+        font-size: 1.15rem;
+    }
+}
+
+@media (min-width: 425px) {
+
+    .box-icon {
+        height: 40px;
+        width: 40px;
+    }
+
+    .box-icon i {
+        font-size: 1.25rem;
+    }
+}
+
+@media (min-width: 480px) {}
+
+@media (min-width: 767px) {
+
+    .box {
+        padding: 0.85em !important;
+    }
+
+    .rounded-box {
+        border-radius: .75rem !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .box {
+        padding: 1em !important;
+    }
+
+    .kontak .d-grid {
+        justify-content: start;
+    }
+}
+
+@media (min-width: 992px) {
+    .rounded-box {
+        border-radius: 1rem !important;
+    }
+}
+
+@media (min-width: 1200px) {
+
+    .box-icon {
+        height: 50px;
+        width: 50px;
+    }
+
+    .box-icon i {
+        font-size: 1.5rem;
+    }
+}
+
+/* List Service */
+@media (min-width: 1400px) {}
+
+/* App Image Bg Kemungkinan Tidak akan dipakai tapi disimpan dulu mungkin untuk img besar sebagai bg cover */
+.app-image>[class*="col"].bg-image,
+.app-image.bg-image {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-size: 100%;
+    transition: all 0.3s ease-in-out;
+}
+
+.animation .app-image>[class*="col"].bg-image:hover,
+.animation .app-image.bg-image:hover {
+    background-size: 110%;
+    transition: all 0.3s ease-in-out;
+}
+
+.app-image>[class*="col"].bg-image *,
+.app-image.bg-image * {
+    transition: all 0.3s ease-in-out;
+}
+
+/* End App Image Bg */

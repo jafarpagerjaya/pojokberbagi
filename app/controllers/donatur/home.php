@@ -9,6 +9,9 @@ class HomeController extends Controller {
         $this->rel_controller = array(
             array(
                 'href' => '/assets/pojok-berbagi-style.css'
+			),
+            array(
+                'href' => '/assets/route/donatur/core/css/donatur.css'
 			)
         );
 

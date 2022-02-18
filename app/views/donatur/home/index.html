@@ -91,9 +91,10 @@
                     <thead class="thead-light">
                         <tr>
                             <th scope="col" class="sort" data-sort="budget">Nama Bantuan</th>
-                            <th scope="col" class="sort" data-sort="nominal_donasi">Donasi</th>
-                            <th scope="col" class="sort" data-sort="status">Status Bayar</th>
-                            <th scope="col" class="sort" data-sort="status">Dibuat Sejak</th>
+                            <th scope="col" class="sort" data-sort="nominal_donasi">Nominal</th>
+                            <th scope="col" class="sort" data-sort="status">Status</th>
+                            <th scope="col" class="sort" data-sort="id_cp">Metode Pembayaran Dipilih</th>
+                            <th scope="col" class="sort" data-sort="create_at">Dibuat Pada</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
@@ -108,14 +109,21 @@
                                     </a>
                                 </div>
                             </th>
-                            <td>
-                                <b><?= $data_donasi->jumlah_donasi; ?></b>
+                            <td class="text-right">
+                                <b><?= Output::tSparator($data_donasi->jumlah_donasi); ?></b>
                             </td>
                             <td>
                                 <?= '<span class="badge badge-pill ' . ($data_donasi->bayar != 1 ? 'badge-warning">Belum Bayar' : 'badge-success">Sudah Bayar') . '</span>'; ?>
                             </td>
                             <td>
-                                <?= Output::timeToLocal($data_donasi->create_at); ?>
+                                <?= '<div class="channel-payment d-flex justify-content-center align-items-end">
+                                        <p class="text-info m-0">'. Utility::keteranganJenisChannelPayment($data_donasi->jenis) .'</p>
+                                        <img class="img-fluid" src="'. $data_donasi->path_gambar .'" alt="'. $data_donasi->nama_cp .'">
+                                    </div>'; 
+                                ?>
+                            </td>
+                            <td>
+                                <?= Output::strToFullLocalDateTime($data_donasi->create_at); ?>
                             </td>
                             <td class="text-right">
                                 <div class="dropdown">
@@ -124,8 +132,8 @@
                                         <i class="fas fa-ellipsis-v"></i>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                        <a class="dropdown-item" href="/donatur/donasi/data/<?= $data_donasi->id_donasi; ?>">Lihat Data</a>
-                                        <?= ($data_donasi->bayar != 1 ? '<a class="dropdown-item" href="/donatur/donasi/formulir/<?= $data_donasi->id_donasi; ?>">Ganti Metode Bayar</a>' : '') ?>
+                                        <a class="dropdown-item" href="<?= '/donatur/donasi/data/'. $data_donasi->id_donasi ?>">Lihat Data</a>
+                                        <?= ($data_donasi->bayar != 1 ? '<a class="dropdown-item" href="/donatur/donasi/formulir/'. $data_donasi->id_donasi .'">Ganti Metode Bayar</a>' : '') ?>
                                     </div>
                                 </div>
                             </td>

@@ -2,6 +2,7 @@
 class Ui {
     public static function pageing($dataHalaman, $dataRecord, $limit = 10, $deep_params = null, $controller = null) {
         if (is_null($controller)) {
+            $route = App::getRouter()->getRoute();
             $controller = App::getRouter()->getController();
             $action = App::getRouter()->getAction();
             $params = App::getRouter()->getParams();
@@ -52,18 +53,18 @@ class Ui {
             $y = 1;
         }
         $button = '<li class="page-item '. (($dataHalaman == 1) ? 'disabled':'') .'">
-                        <a class="page-link" href="/admin/'. $controller .'/'. $action . '/'. ((count($params)) ? implode('/', $params) : (!is_null($deep_params) ? $deep_params .'/' : '') . $prevHref ).'" tabindex="-1">
+                        <a class="page-link" href="/'. $route .'/'. $controller .'/'. $action . '/'. ((count($params)) ? implode('/', $params) : (!is_null($deep_params) ? $deep_params .'/' : '') . $prevHref ).'" tabindex="-1">
                             <i class="fas fa-angle-left"></i>
                             <span class="sr-only">Previous</span>
                         </a>
                     </li>';
         for ($x = $y; $x <= $jumlah_halaman; $x++) {
             $button .= '<li class="page-item '. (($dataHalaman == $x) ? 'active' : '') .'">
-                            <a class="page-link" href="/admin/'. $controller .'/'. $action . '/'. ((count($params)) ? implode('/', $params).'/'.$x : (!is_null($deep_params) ? $deep_params .'/' : '') . $x) .'">'. $x .'</a>
+                            <a class="page-link" href="/'. $route .'/'. $controller .'/'. $action . '/'. ((count($params)) ? implode('/', $params).'/'.$x : (!is_null($deep_params) ? $deep_params .'/' : '') . $x) .'">'. $x .'</a>
                         </li>';
         }
         $button .= '<li class="page-item '. (($dataHalaman == $batas_halaman) ? 'disabled':'') .'">
-                        <a class="page-link" href="/admin/'. $controller .'/'. $action . '/'. ((count($params)) ? implode('/', $params) : (!is_null($deep_params) ? $deep_params .'/' : '') . $nextHref) .'">
+                        <a class="page-link" href="/'. $route .'/'. $controller .'/'. $action . '/'. ((count($params)) ? implode('/', $params) : (!is_null($deep_params) ? $deep_params .'/' : '') . $nextHref) .'">
                             <i class="fas fa-angle-right"></i>
                             <span class="sr-only">Next</span>
                         </a>

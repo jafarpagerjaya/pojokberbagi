@@ -1,12 +1,21 @@
 <?php
 class TagihanController extends Controller {
     public function __construct() {
-		$this->title = 'Tagihan';
 
         $this->_auth = $this->model("Auth");
         if (!$this->_auth->hasPermission('donatur')) {
             Redirect::to('home');
         }
+
+        $this->title = 'Tagihan';
+        $this->rel_controller = array(
+            array(
+                'href' => '/assets/pojok-berbagi-style.css'
+			),
+            array(
+                'href' => '/assets/route/donatur/core/css/donatur.css'
+			)
+        );
 
         $this->data['akun'] = $this->_auth->data();
 

@@ -138,7 +138,7 @@ class AuthModel {
 	}
 
 	public function getDataAkun($param1 = 1, $param2 = 10) {
-		$this->_db->query("SELECT id_akun, username, email, aktivasi as status, gambar.path_gambar as avatar, akses.nama FROM akun JOIN gambar ON(gambar.id_gambar = akun.id_gambar) JOIN akses ON(akses.hak_akses = akun.hak_akses) WHERE id_akun BETWEEN ? AND ? ORDER BY id_akun ASC LIMIT 10", array($param1, $param2));
+		$this->_db->query("SELECT donatur.nama, akun.id_akun, akun.username, akun.email, akun.aktivasi as status, gambar.nama nama_avatar, gambar.path_gambar path_avatar, akses.nama akses_utama FROM donatur JOIN akun USING(id_akun) JOIN gambar ON(gambar.id_gambar = akun.id_gambar) JOIN akses ON(akses.hak_akses = akun.hak_akses) WHERE id_akun BETWEEN ? AND ? ORDER BY id_akun ASC LIMIT 10", array($param1, $param2));
 		if ($this->_db->count()) {
 			$this->_data = $this->_db->results();
 			return $this->_data;

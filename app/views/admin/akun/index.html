@@ -12,7 +12,7 @@
                             <th scope="col" class="sort" data-sort="budget">Email</th>
                             <th scope="col" class="sort" data-sort="status">Status</th>
                             <th scope="col">Foto</th>
-                            <th scope="col" class="sort" data-sort="completion">Hak Akses</th>
+                            <th scope="col" class="sort" data-sort="hak_akses">Akses Utama</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
@@ -43,20 +43,20 @@
                             </td>
                             <td>
                                 <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip"
-                                    data-original-title="Ryan Tompson">
-                                    <img alt="" src="<?= $data_akun->avatar; ?>">
+                                    data-original-title="<?= ucwords(strtolower($data_akun->nama)); ?>">
+                                    <img alt="<?= $data_akun->nama_avatar; ?>" src="<?= $data_akun->path_avatar; ?>">
                                 </a>
                             </td>
                             <td>
-                                <?php if(strtolower($data_akun->nama) == 'admin') {
+                                <?php if(strtolower($data_akun->akses_utama) == 'admin') {
                                     $class = 'badge-danger';
-                                } elseif (strtolower($data_akun->nama) == 'donatur') {
+                                } elseif (strtolower($data_akun->akses_utama) == 'donatur') {
                                     $class = 'badge-success';
                                 } else {
                                     $class = 'badge-primary'; 
                                 } ?>
                                 <span class="badge badge-pill <?= $class; ?>">
-                                    <span class="status"><?= $data_akun->nama; ?></span>
+                                    <span class="status"><?= $data_akun->akses_utama; ?></span>
                                 </span>
                             </td>
                             <td class="text-right">

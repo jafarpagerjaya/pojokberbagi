@@ -96,7 +96,7 @@
                                         <img alt="Avatarku" src="/assets/images/default.png">
                                     </span>
                                     <div class="media-body  ml-2  d-none d-lg-block">
-                                        <span class="mb-0 text-sm  font-weight-bold"><?= $data['donatur']->nama ?></span>
+                                        <span class="mb-0 text-sm  font-weight-bold"><?= ucwords(strtolower($data['donatur']->nama)) ?></span>
                                     </div>
                                 </div>
                             </a>
@@ -171,6 +171,20 @@
             </div>
         </div>
         <?php } ?>
+    <!-- Internal Script -->
+    <script>
+        const imgOnErrorList = document.querySelectorAll('img[alt]');
+        imgOnErrorList.forEach(errorImg => {
+            errorImg.addEventListener('error', function(e) {
+                let altValue = '(Gambar Rusak) '+this.getAttribute('alt'),
+                    alt = document.createTextNode(altValue);
+                if (alt.length > 0) {
+                    this.parentNode.insertBefore(alt,this);
+                    this.parentNode.removeChild(this);
+                }
+            });
+        });
+    </script>
     <!-- Vendor Script -->
     <script src="/vendors/jquery/dist/jquery.min.js"></script>
     <script src="/vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

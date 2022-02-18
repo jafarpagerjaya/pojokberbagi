@@ -15,4 +15,16 @@ class Output {
     public static function timeToLocalFull($time) {
         return date('d F Y',strtotime($time));
     }
+
+    public static function strToLocalDate($time) {
+        return strftime("%d-%b-%Y", strtotime($time));
+    }
+
+    public static function strToFullLocalDate($time) {
+        return strftime("%A, %d %B %Y", strtotime($time));
+    }
+
+    public static function strToFullLocalDateTime($time) {
+        return strftime("%A, %d %B %Y %H:%M:%S", strtotime($time));
+    }
 }

@@ -35,6 +35,20 @@
     <a href="#" class="scroll-top">
         <i class="lni lni-chevron-up"></i>
     </a>
+    <!-- Internal Script -->
+    <script>
+        const imgOnErrorList = document.querySelectorAll('img[alt]');
+        imgOnErrorList.forEach(errorImg => {
+            errorImg.addEventListener('error', function(e) {
+                let altValue = '(Gambar Rusak) '+this.getAttribute('alt'),
+                    alt = document.createTextNode(altValue);
+                if (alt.length > 0) {
+                    this.parentNode.insertBefore(alt,this);
+                    this.parentNode.removeChild(this);
+                }
+            });
+        });
+    </script>
     <!-- Vendor Script -->
     <script src="/vendors/jquery/dist/jquery.min.js"></script>
     <!-- Core Script -->

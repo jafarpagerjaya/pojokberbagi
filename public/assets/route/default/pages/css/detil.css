@@ -1,54 +1,170 @@
-.bantuan-area>.box-donasi-info {
-    margin-top: -130px !important;
+/* New */
+.d-grid.progress-box,
+.d-grid.timeup {
+    grid-template-columns: auto 1fr;
 }
 
-.bantuan-area>.box-donasi-info .box.prog {
-    row-gap: 0px;
-    column-gap: 1em;
+.row.custom-for-col-md-6 {
+    transition: all 0.3s ease !important;
 }
 
-.bantuan-area>.box-donasi-info .box.prog .col-12 {
-    position: relative;
+.custom-for-col-md-6 .col-md-6 {
+    width: calc(100% / 2 - 0.54em) !important;
 }
 
-.bantuan-area>.box-donasi-info .box.prog .col-12>.progress {
-    position: absolute;
-    width: 100%;
-    left: auto;
-    right: auto;
-    bottom: -.75em;
+.box h6 {
+    font-size: small;
 }
 
-.bantuan-area>.box-bantuan-info .logo {
-    width: 200px;
-    height: 200px;
+.box p {
+    line-height: 1.25;
+}
+
+.box h6+p {
+    font-size: x-small;
+    line-height: 1;
+}
+
+.box .collapseButton {
+    font-size: xx-small;
+}
+
+#detil-banner-area .row#commit-bantuan-area {
+    flex-direction: column;
+}
+
+#detil-banner-area .row#commit-bantuan-area>.col.d-flex.rounded-box {
+    padding: 1.5em 0px;
+}
+
+#detil-banner-area .row#commit-bantuan-area .logo {
+    --avatar-wh: 100px;
+    width: var(--avatar-wh);
+    height: var(--avatar-wh);
     overflow: hidden;
     position: relative;
+    margin: auto;
+    display: grid;
+    place-items: center;
 }
 
-.bantuan-area>.box-bantuan-info .logo img {
-    width: 150px;
+#detil-banner-area .row#commit-bantuan-area .logo img {
+    width: calc(var(--avatar-wh)/3*2);
+    max-width: var(--avatar-wh);
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
     margin: auto;
 }
 
-@media (min-width: 992px) {
-    .mb-lg-2 {
-        margin-bottom: 0.4585rem !important;
+#commit-bantuan-area .button.donasi.btn-lg {
+    font-size: 1rem;
+}
+
+@media (min-width: 320px) {
+
+    #detil-banner-area .app-image.img-wrapper {
+        max-height: 166.5px;
     }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 321px) {
 
-    .bantuan-area>.box-donasi-info {
-        margin-top: 0px !important;
+    #detil-banner-area .app-image.img-wrapper {
+        max-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
+    }
+}
+
+@media (min-width: 375px) {
+
+    #detil-banner-area .app-image.img-wrapper {
+        max-height: 197.62px;
     }
 
-    .bantuan-area>.box-donasi-info .container>.row.gap-3 {
-        column-gap: 0px !important;
+    #commit-bantuan-area .button.donasi.btn-lg {
+        font-size: 1.25rem;
+    }
+
+    #detil-banner-area .row#commit-bantuan-area {
+        flex-direction: row;
+    }
+
+    #detil-banner-area .row#commit-bantuan-area>.col.d-flex.rounded-box {
+        padding: 0px;
+    }
+}
+
+@media (min-width: 376px) {
+
+    #detil-banner-area .app-image.img-wrapper {
+        max-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
+    }
+}
+
+@media (min-width: 425px) {
+
+    #detil-banner-area .app-image.img-wrapper {
+        max-height: 225.748px;
+    }
+}
+
+@media (min-width: 426px) {
+
+    #detil-banner-area .app-image.img-wrapper {
+        max-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
+    }
+}
+
+@media (min-width: 480px) {
+
+    #detil-banner-area .app-image.img-wrapper {
+        max-height: 239.625px;
+    }
+}
+
+@media (min-width: 767px) {
+
+    #detil-banner-area .app-image.img-wrapper {
+        max-height: 290.25px;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .box h6 {
+        font-size: 16px;
+    }
+
+    .box h6+p {
+        font-size: small;
+        line-height: 1;
+    }
+
+    #detil-banner-area .app-image.img-wrapper {
+        max-height: none;
+    }
+
+    #detil-banner-area .row#commit-bantuan-area .logo {
+        --avatar-wh: 125px;
+    }
+}
+
+@media (min-width: 992px) {
+    #detil-banner-area .row#commit-bantuan-area .logo {
+        --avatar-wh: 150px;
+    }
+
+    #detil-banner-area .app-image.img-wrapper {
+        max-height: calc((569px / 1913) * 936);
+    }
+}
+
+@media (min-width: 1200px) {
+    #detil-banner-area .app-image.img-wrapper {
+        max-height: calc((569px / 1913) * 1116);
+    }
+}
+
+@media (min-width: 1400px) {
+    #detil-banner-area .app-image.img-wrapper {
+        max-height: calc((569px / 1913) * 1296);
     }
 }

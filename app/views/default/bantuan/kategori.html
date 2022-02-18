@@ -1,111 +1,97 @@
-<section class="bantuan-area">
-    <center>
-        <h2 class="my-5"><?= (isset($data['resume_kb']->nama_kategori) ? $data['resume_kb']->nama_kategori : 'Pojok Tanpa Judul') ?></h2>
-    </center>
-    <div class="col app-image bg-image overflow-hidden align-items-center justify-content-center" <?= 'style="background-color:' . (isset($data['resume_kb']->warna) ? $data['resume_kb']->warna : 'bg-light') .'"' ?>>
+<!-- Kategori Area -->
+<section class="kategori-area section pb-0" <?= 'style="--kategori-color: ' . (isset($data['resume_kb']->warna) ? $data['resume_kb']->warna : 'var(--bs-light)') .'"' ?>>
+    <div class="section-title my-3">
+        <h2 class="border-2 rounded-pill d-inline-block border-solid"><?= (isset($data['resume_kb']->nama_kategori) ? $data['resume_kb']->nama_kategori : '(>_<) Pojok Tanpa Judul') ?></h3>
+    </div>
+    <div class="app-image bg-image bg-color d-flex justify-content-center align-items-center">
         <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-10">
-                    <p class="text-white fs-5 lead text-center">
-                        <?= (isset($data['resume_kb']->deskripsi) ? $data['resume_kb']->deskripsi : 'Program ini belum mengisi deskripsi pada actionnya') ?>
+            <div class="row py-3">
+                <div class="col py-4">
+                    <p class="text-white lead fs-6">
+                        <?= (isset($data['resume_kb']->deskripsi) ? $data['resume_kb']->deskripsi : '(>_<) Program ini belum mengisi deskripsi pada actionnya...') ?>
                     </p>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<div class="bantuan-list">
-    <div class="container" style="padding-bottom: 72px;">
-        <div class="row">
-            <div class="col">
-                <h3>Daftar Program</h3>
+<!-- End Kategori Area -->
+<div class="bg-white py-3 py-md-4 py-lg-5" id="resume-kategori">
+    <div class="container">
+        <div class="row gap-3 gap-md-0">
+            <div class="col-12 col-md-6">
+                <h3 class="text-kategori">Daftar Program</h3>
             </div>
-            <div class="col">
+            <div class="col-12 col-md-6">
                 <div class="row">
                     <div class="col">
-                        <h5 class="text-black-50">Dibuka</h5>
-                        <p class="text-muted"><?= (isset($data['resume_kb']->jumlah_bantuan_dibuka) ? $data['resume_kb']->jumlah_bantuan_dibuka : '0') ?></p>
+                        <h5 class="text-black-50 fw-bold">Dibuka</h5>
+                        <p class="text-muted" data-count-up-value="<?= (isset($data['resume_kb']->jumlah_bantuan_dibuka) ? $data['resume_kb']->jumlah_bantuan_dibuka : '0') ?>"></p>
                     </div>
                     <div class="col">
-                        <h5 class="text-black-50">Berjalan</h5>
-                        <p class="text-muted"><?= (isset($data['resume_kb']->jumlah_bantuan_berjalan) ? $data['resume_kb']->jumlah_bantuan_berjalan : '0') ?></p>
+                        <h5 class="text-dark fw-bold">Berjalan</h5>
+                        <p class="text-muted" data-count-up-value="<?= (isset($data['resume_kb']->jumlah_bantuan_berjalan) ? $data['resume_kb']->jumlah_bantuan_berjalan : '0') ?>"></p>
                     </div>
                     <div class="col">
-                        <h5 class="text-black-50">Selesai</h5>
-                        <p class="text-muted"><?= (isset($data['resume_kb']->jumlah_bantuan_selesai) ? $data['resume_kb']->jumlah_bantuan_selesai : '0') ?></p>
+                        <h5 class="text-black-50 fw-bold">Selesai</h5>
+                        <p class="text-muted" data-count-up-value="<?= (isset($data['resume_kb']->jumlah_bantuan_selesai) ? $data['resume_kb']->jumlah_bantuan_selesai : '0') ?>"></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Start Services Area -->
-    <section class="services section">
-        <div class="container">
-            <div class="row">
-                <?php if (!is_null($data['list_bantuan'])) {
-                    $wow_delay = 0.2;
-                    $wow_next = 0.2;
-                    foreach($data['list_bantuan'] as $list_bantuan) { 
-                        $wow_delay = $wow_delay + $wow_next; ?>
-                <div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay="<?= $wow_delay ?>s">
-                    <!-- Start Single Service -->
-                    <div class="single-service p-4">
-                        <div
-                            class="app-image img-wrapper rounded-box overflow-hidden d-flex justify-content-center align-items-center opacity">
-                            <img src="<?= $list_bantuan->path_gambar; ?>" alt="<?= $list_bantuan->nama_gambar; ?>" class="img-fluid">
-                        </div>
-                        <div class="row">
-                            <div class="col-auto">
-                                <div class="service-icon shadow" <?='style="background-color:' . $list_bantuan->warna .'"'
-                                    ?>>
+</div>
+ <!-- Service Kategori -->
+ <section class="services section">
+    <div class="container">
+        <div class="row">
+            <?php 
+            if (!is_null($data['list_bantuan'])) {
+                $delay_card = 0.2;
+                $time_card = 0.2;
+                foreach($data['list_bantuan'] as $list_bantuan) { 
+                    $delay_card = $delay_card + $time_card; 
+            ?>
+                    <div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay="<?= $delay_card.'s'; ?>">
+                        <!-- Start Single Service -->
+                        <div class="p-4 single-service animation">
+                            <div class="app-image img-wrapper rounded-box top overflow-hidden d-flex justify-content-center align-items-center position-relative mb-3">
+                                <img src="<?= $list_bantuan->path_gambar; ?>" alt="<?= $list_bantuan->nama_gambar; ?>" class="img-fluid opacity" data-animation-name="zoom-in">
+                                <div class="service-logo shadow bg-white d-flex justify-content-center align-items-center p-2 position-absolute top right margin-right" data-animation-name="slide">
+                                    <img src="<?= $list_bantuan->path_gambar_pengaju; ?>" alt="<?= $list_bantuan->pengaju_bantuan; ?>">
+                                </div>
+                                <div class="service-icon shadow d-flex justify-content-center align-items-center position-absolute bottom left" data-animation-name="slide" data-animation-start="backward" <?= (isset($list_bantuan->warna) ? 'style="background-color:' . $list_bantuan->warna .'"' : '') ?>>
                                     <?= BantuanModel::iconLayanan($list_bantuan->layanan); ?>
                                 </div>
                             </div>
-                            <div class="col text-end align-self-end">
-                                <span class="badge text-wrap <?= (is_null($list_bantuan) ? 'bs-light' : 'bg-light') ?> text-black-50">
-                                    <?= $list_bantuan->pengaju_bantuan ?>
-                                </span>
+                            <h6 class="my-3 overflow-hidden title"><?= $list_bantuan->nama_bantuan ?></h6>
+                            <div class="row mb-2 align-items-end">
+                                <div class="col">
+                                    <h6>Terkumpul</h6>
+                                    <p class="text-muted">Rp. <?= Output::tSparator($list_bantuan->total_donasi); ?></p>
+                                </div>
+                                <div class="col-auto text-end">
+                                    <small>
+                                        <?= ($list_bantuan->sisa_waktu != 'Unlimited' ? $list_bantuan->sisa_waktu.' hari lagi' : $list_bantuan->sisa_waktu) ?>
+                                    </small>
+                                </div>
                             </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?= $list_bantuan->persentase_donasi_dilaksanakan; ?>" <?= 'style="width: '. $list_bantuan->persentase_donasi_dilaksanakan .'%"'; ?>></div>
+                            </div>
+                            <a href="<?= '/bantuan/detil/'. $list_bantuan->id_bantuan; ?>" class="mt-3" <?= (isset($list_bantuan->warna) ? 'style="color:' . $list_bantuan->warna .'"' : '') ?>>Lihat lebih lanjut <i class="lni lni-arrow-right"></i></a>
                         </div>
-                        <h6 class="my-3 overflow-hidden title">
-                            <?= $list_bantuan->nama_bantuan ?>
-                        </h6>
-                        <div class="row mb-2 align-items-end">
-                            <div class="col">
-                                <h6>Terkumpul</h6>
-                                <p class="text-muted">Rp.
-                                    <?= Output::tSparator($list_bantuan->total_donasi) ?>
-                                </p>
-                            </div>
-                            <div class="col-auto text-end">
-                                <small>
-                                    <?= ($list_bantuan->sisa_waktu != 'Unlimited' ? $list_bantuan->sisa_waktu.' hari lagi' : $list_bantuan->sisa_waktu) ?>
-                                </small>
-                            </div>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" <?='style="width:' . $list_bantuan->
-                                persentase_donasi_dilaksanakan .'%"' ?>
-                                aria-valuenow="
-                                <?= $list_bantuan->persentase_donasi_dilaksanakan ?>"
-                                aria-valuemin="0" aria-valuemax="100">
-                            </div>
-                        </div>
-                        <a href="/bantuan/detil/<?= $list_bantuan->id_bantuan ?>" class="mt-3">Lihat lebih lanjut <i
-                                class="lni lni-arrow-right"></i></a>
+                        <!-- End Single Service -->
                     </div>
-                    <!-- End Single Service -->
-                </div>
-                <?php }} else { ?>
+            <?php }} else { ?>
                     <div class="col-12 col-md-8 mx-auto">
                         <center>
                             <h5 class="text-black-50">Opps, Belum ada program bantuan <b><?= (isset($data['resume_kb']->nama_kategori) ? $data['resume_kb']->nama_kategori : 'Pojok Tanpa Judul') ?></b> yang <?= ($data['resume_kb']->jumlah_bantuan_dibuka == 0 ? 'ditambahkan' : 'dibuka terkini') ?>.</h5>
                             <object data="/assets/svg/empty.svg" width="250" height="250"> </object>
                         </center>
                     </div>
-                <?php } ?>
-            </div>
+            <?php } ?>
         </div>
-    </section>
-    <!-- /End Services Area -->
-</div>
+    </div>
+</section>
+<!-- Akhir Service Kategori -->

@@ -1,142 +1,318 @@
-let counterTarget = document.querySelectorAll('.carousel-item.active .box-info h6[data-target]'),
-    counterSpeed = 2000;
+let resetTab = false,
+    resetNotATab = false,
+    resetTamob = false,
+    resetCoLep = false,
+    lastWidth,
+    lock = false;
 
-counterUpSup(counterTarget, counterSpeed);
+function wowReset() {
+    const delay = 0.2,
+          elTargetRowColTextImgList = document.querySelectorAll('.hero-area .container>.row'),
+          elTargetRowCustomColList = document.querySelectorAll('.custom-for-col-md-6');
 
-let progressBar = document.querySelectorAll('.carousel-item.active .app-image .progress-bar');
-counterUpProgress(progressBar, counterSpeed);
+    let h = 0;
+    elTargetRowColTextImgList.forEach(elTargetRowColTextImg => {
+        const elTargetRowColList = elTargetRowColTextImg.querySelectorAll('.wow-delay-shuffle-parent');
 
-var checkWOWJsReset = function () {
-    var resetWOWJsAnimation = function () {
-        var $that = $(this);
+        let newOrder,
+            firstOrder = [],
+            secondOrder = [],
+            start = parseFloat(elTargetRowColTextImg.getAttribute('data-start-delay-wow'));
+        
+        elTargetRowColList.forEach(elTargetRowCol => {
+            let elmentComputedStyle = getComputedStyle(elTargetRowCol);
 
-        // determine if container is in viewport
-        // you might pass an offset in pixel - a negative offset will trigger loading earlier, a postive value later
-        // credits @ https://stackoverflow.com/a/33979503/2379196
-        var isInViewport = function ($container, offset) {
-            var containerTop = $container.offset().top;
-            var containerBottom = containerTop + $container.outerHeight();
+            if (!firstOrder.length || !secondOrder.length) {
+                if (elmentComputedStyle.getPropertyValue('order') == 0) {
+                    firstOrder.push(elTargetRowCol);
+                } else {
+                    secondOrder.push(elTargetRowCol);
+                }
+            }
+        });
 
-            var viewportTop = $(window).scrollTop();
-            var viewportBottom = viewportTop + $(window).height();
-
-            return containerBottom > viewportTop && containerTop + offset < viewportBottom;
-        };
-
-        // only reset animation when no long in viewport and already animated (but not running)
-        // you might want to use a different offset for isInViewport()
-        if (!isInViewport($that, 0) && $that.css('animation-name') != 'none' && !$that.hasClass('animated')) {
-            $that.css({
-                'visibility': 'hidden',
-                'animation-name': 'none'
-            }); // reset animation
-            wow.addBox(this);
+        let reset = false;
+        
+        if (detectTab()) {
+            newOrder = firstOrder.concat(secondOrder);
+            if (!resetTab) {
+                resetNotATab = reset;
+                reset = true;
+                resetTab = reset;
+                lastWidth = window.innerWidth;
+                lock = false;
+            }
+            if (h > 0 && resetTab && window.innerWidth == lastWidth && lock == false) {
+                reset = true;
+            }
+            if (h == elTargetRowColTextImgList.length-1) {
+                lock = true;
+            }
+        } else {
+            if (!resetNotATab) {
+                resetTab = reset;
+                reset = true;
+                resetNotATab = reset;
+                lastWidth = window.innerWidth;
+                lock = false;
+            }
+            if (h > 0 && resetNotATab && window.innerWidth == lastWidth && lock == false) {
+                reset = true;
+            }
+            if (h == elTargetRowColTextImgList.length-1) {
+                lock = true;
+            }
+            newOrder = secondOrder.concat(firstOrder);
         }
-    };
-    $('.wow').each(resetWOWJsAnimation); // check if reset is necessary for any element
+        
+        if (reset) {
+            newOrder.forEach(elCol => {
+                elCol.querySelector('.wow').setAttribute('data-wow-delay', start+'s');
+                elCol.querySelector('.wow').style.animationDelay = start+'s';
+                start += delay;
+            }); 
+        }
+
+        h++;
+    });
+
+    let i = 0;
+    elTargetRowCustomColList.forEach(elTargetRowCustomCol => {
+        let start = parseFloat(elTargetRowCustomCol.getAttribute('data-start-delay-wow')),
+            newOrder,
+            firstOrder = [],
+            secondOrder = [];
+        
+        if (!firstOrder.length || !secondOrder.length) {
+            let colBox = elTargetRowCustomCol.querySelectorAll('.box.wow');
+    
+            colBox.forEach(elCol => {
+                if (elCol.classList.contains('order-0')) {
+                    firstOrder.push(elCol);
+                } else {
+                    secondOrder.push(elCol);
+                }
+            });
+        }
+
+        let reset = false;
+
+        if (detectMob()) {
+            newOrder = firstOrder.concat(secondOrder);
+            if (!resetTamob) {
+                resetCoLep = reset;
+                reset = true;
+                resetTamob = reset;
+                lastWidth = window.innerWidth;
+                lock = false;
+            }
+            if (i > 0 && resetTamob && window.innerWidth == lastWidth && lock == false) {
+                reset = true;
+            }
+            if (i == elTargetRowCustomColList.length-1) {
+                lock = true;
+            }
+        } else {
+            if (!resetCoLep) {
+                resetTamob = reset;
+                reset = true;
+                resetCoLep = reset;
+                lastWidth = window.innerWidth;
+                lock = false;
+            }
+            if (i > 0 && resetCoLep && window.innerWidth == lastWidth && lock == false) {
+                reset = true;
+            }
+            if (i == elTargetRowCustomColList.length-1) {
+                lock = true;
+            }
+            newOrder = secondOrder.concat(firstOrder);
+        }
+
+        if (reset) {
+            newOrder.forEach(elCol => {
+                elCol.setAttribute('data-wow-delay', start+'s');
+                elCol.style.animationDelay = start+'s';
+                start += delay;
+            }); 
+        }
+
+        i++;
+    });
 };
 
-// $(window).on('resize scroll', checkWOWJsReset); // check on resize and scroll events
+function setBeforeAfterBgColor(el) {
+    setTimeout(() => {
+        const elTargetImgList = el.querySelectorAll('a>img');
 
-let myCarousel = document.getElementById('carousel');
+        elTargetImgList.forEach(elTargetImg => {
+            let canvas = document.createElement('canvas');
 
-myCarousel.addEventListener('slide.bs.carousel', function (e) {
-    progressBar = e.relatedTarget.querySelectorAll('.progress-bar');
-    counterTarget = e.relatedTarget.querySelectorAll('.box-info h6[data-target]');
-    counterUpProgress(progressBar, counterSpeed);
-    counterUpSup(counterTarget, counterSpeed);
-    $(e.relatedTarget).each(function () {
-        $(this).siblings('.carousel-item').find('.wow').addClass('d-invisivle');
-        $(this).siblings('.carousel-item').find('.progress-bar').removeAttr('style');
-        $(this).find('.wow').removeClass('d-invisivle');
-    });
-    var $animatingElems = $(e.relatedTarget).find(".wow");
-    doAnimations($animatingElems);
-});
+            canvas.width = elTargetImg.width;
+            canvas.height = elTargetImg.height;
+            canvas.getContext('2d').drawImage(elTargetImg, 0, 0, elTargetImg.width, elTargetImg.height);
+
+            let rgbaBefore = canvas.getContext('2d').getImageData(3, elTargetImg.height-3, 1, 1).data.join(),
+                rgbaAfter = canvas.getContext('2d').getImageData(elTargetImg.width-3, elTargetImg.height-3, 1, 1).data.join();
+            
+            elTargetImg.closest('.app-image').setAttribute('data-bg-color-before', rgbaBefore);
+            elTargetImg.closest('.app-image').setAttribute('data-bg-color-after', rgbaAfter);
+
+            elTargetImg.closest('.app-image').style.setProperty('--data-bg-color-before', 'rgba('+rgbaBefore+')');
+            elTargetImg.closest('.app-image').style.setProperty('--data-bg-color-after', 'rgba('+rgbaAfter+')');
+        });
+    }, 0);
+};
+
+const heroArea = document.querySelector('.hero-area');
+
+setBeforeAfterBgColor(heroArea);
+setHeight(heroArea, detectMob());
+wowReset();
+
+let resizeTimeout;
+function reportWindowWidth() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(()=> {
+        setHeight(heroArea, detectMob());
+        wowReset();
+    }, 50);
+};
+
+window.addEventListener('resize', reportWindowWidth);
 
 let buttonCollapse = document.querySelectorAll('.collapseButton'),
-    collapse = document.querySelectorAll('.app-image .collapse'),
-    pushRow = document.querySelectorAll('.hero-content');
-
-let defaultMTpushRow,
-    resizeTimeout,
-    rowHolderHeight;
-
-let addColDescMargin = function (collapse, window) {
-    collapse.forEach(elemCollapse => {
-        pushRow = elemCollapse.closest('.hero-row').querySelector('.hero-content');
-        if (window.outerWidth < 768) {
-            if (elemCollapse.nextElementSibling.offsetHeight > 0) {
-                rowHolderHeight = elemCollapse.nextElementSibling.offsetHeight;
-            }
-            defaultMTpushRow = pushRow.style.marginTop = rowHolderHeight + parseInt(window.getComputedStyle(elemCollapse.nextElementSibling).marginTop) + 'px';
-            elemCollapse.classList.remove('show');
-        } else {
-            pushRow.style.removeProperty('margin-top');
-            elemCollapse.classList.add('show');
-        }
-    });
-}
-
-addColDescMargin(collapse, window);
-
-window.addEventListener('resize', function () {
-    clearTimeout(resizeTimeout)
-    resizeTimeout = setTimeout(() => {
-        addColDescMargin(collapse, window);
-    }, 50);
-});
-
-let collapsableRow = [];
-
-collapse.forEach(elemCollapse => {
-    objectCollapse = new bootstrap.Collapse(elemCollapse, { toggle: false })
-    collapsableRow.push(objectCollapse);
-
-    elemCollapse.addEventListener('show.bs.collapse', function (e) {
-        let nextCollapseSibling = this.nextElementSibling,
-            nextCollapseSiblingHeight = nextCollapseSibling.offsetHeight,
-            nextCollapseSiblingMT = parseInt(window.getComputedStyle(elemCollapse.nextElementSibling).marginTop);
-
-        pushRow = this.closest('.hero-row').querySelector('.hero-content');
-        pushRow.style.marginTop = 165 + nextCollapseSiblingHeight + nextCollapseSiblingMT * 2 + "px";
-        pushRow.style.transition = "margin .3s";
-    });
-
-    elemCollapse.addEventListener('hide.bs.collapse', function () {
-        pushRow = this.closest('.hero-row').querySelector('.hero-content');
-        pushRow.style.marginTop = defaultMTpushRow;
-    });
-});
-
-let click;
+    buttonCollapseClicked;
 
 buttonCollapse.forEach(elemButton => {
     elemButton.addEventListener('click', function (e) {
-        if (click) {
+        if (!e.which || buttonCollapseClicked) {
             return false;
         }
         if (window.outerWidth < 768) {
-            collapsableRow[this.getAttribute('data-target')].toggle();
-            let span = this.children[0],
-                icon = this.children[1];
-            if (span.innerText === "Lebih detil") {
-                span.innerText = "Sembunyikan detil";
-                icon.style.transform = "rotate(90deg)";
-                icon.style.transition = "transform .3s";
-            } else {
-                span.innerText = "Lebih detil";
-                icon.style.transform = "rotate(0deg)";
-            }
-            click = true;
+            const elTargetList = document.querySelectorAll('.row.custom-for-col-md-6'),
+                  elTargetSetter = this.closest('.order-0');
+            let i = 0,
+                height;
+
+            elTargetList.forEach(elTarget => {
+                let elTargetSetterHeight;
+
+                let span = buttonCollapse[i].children[0],
+                    icon = buttonCollapse[i].children[1];
+
+                elTarget.classList.toggle('toggle');
+                if (elTarget.classList.contains('toggle')) {
+                    span.innerText = "Sembunyikan detil";
+                    icon.style.transform = "rotate(90deg)";
+                    icon.style.transition = "transform .3s";
+                    elTarget.setAttribute('style','height: '+elTarget.getAttribute('data-height'));
+                } else {
+                    span.innerText = "Lebih detil";
+                    icon.style.transform = "rotate(0deg)";
+                    elTargetSetterHeight = elTargetSetter.offsetHeight;
+                    if (elTargetSetterHeight == 0) {
+                        elTargetSetterHeight = height;
+                    } else {
+                        height = elTargetSetterHeight;
+                    }
+                    elTarget.setAttribute('style','height: '+elTargetSetterHeight+'px;');                
+                }
+                i++;
+            });
+
+            buttonCollapseClicked = e.which;
             setTimeout(() => {
-                click = false;
+                buttonCollapseClicked = false;
             }, 350);
         }
     });
 });
-// Model Via JS 
+
+const counterTarget = document.querySelectorAll('.carousel-item.active .box-info h6[data-count-up-value]'),
+      progressBar = document.querySelectorAll('.carousel-item.active .progress-bar'),
+      counterSpeed = 4000;
+
+counterUpSup(counterTarget, counterSpeed);
+counterUpProgress(progressBar, counterSpeed);
+
+// Not Sure To Be Use Yet
+// ###################################
+let checkWOWJsReset = function () {
+    let resetWOWJsAnimation = function (el, index) {
+        let $that = el,
+            brat;
+        // determine if container is in viewport
+        // you might pass an offset in pixel - a negative offset will trigger loading earlier, a postive value later
+        // credits @ https://stackoverflow.com/a/33979503/2379196
+        let isInViewport = function ($container) {
+            const dataDelay = $container.closest('[data-start-delay-wow]');
+            let viewportTop = document.documentElement.scrollTop,
+                viewportBottom = viewportTop + window.innerHeight,
+                container,
+                containerTop,
+                containerBottom;
+
+            if (dataDelay != null) {
+                container = dataDelay.getBoundingClientRect();
+                containerTop = container.top;
+                containerBottom = container.bottom;
+
+                return containerBottom < 0 || viewportBottom < containerTop;
+            }
+        };
+
+        if (isInViewport($that) != undefined) {
+            brat = isInViewport($that);
+        } else {
+            return false;
+        }
+
+        if (brat == true && getComputedStyle($that).getPropertyValue('animation-name') != 'none' && !$that.classList.contains('animated')) {
+            
+            let dataBefore,
+                dataAfter;
+
+            if ($that.getAttribute('data-bg-color-before')) {
+                dataBefore = $that.getAttribute('data-bg-color-before');
+            }
+
+            if ($that.getAttribute('data-bg-color-after')) {
+                dataAfter = $that.getAttribute('data-bg-color-after');
+            }
+            $that.setAttribute(
+                'style',
+                'visibility: hidden; animation-name: none; animation-delay: '+$that.getAttribute('data-wow-delay')+';'+(dataBefore != undefined ? '--data-bg-color-before: rgba('+dataBefore+'); ' : '')+(dataAfter != undefined ? '--data-bg-color-after: rgba('+dataAfter+');' : '')
+            );
+            wow.addBox($that);
+        }
+    };
+    let elWowList = document.querySelectorAll('.wow'),
+        index = 0;
+        elWowList.forEach(elWow => {
+            resetWOWJsAnimation(elWow, index);
+            index++;
+        });
+};
+
+// window.addEventListener('scroll', checkWOWJsReset);
+// window.addEventListener('resize', checkWOWJsReset);
+// ################################### 
+
+const bannerCarousel = document.getElementById('banner-carousel');
+// Carousel BS 
+bannerCarousel.addEventListener('slide.bs.carousel', function (e) {
+    let progressBarCarouselActive = e.relatedTarget.querySelectorAll('.progress-bar'),
+        counterTargetCarouselActive = e.relatedTarget.querySelectorAll('.box-info h6[data-count-up-value]'),
+        counterSpeed = 1600;
+
+    counterUpProgress(progressBarCarouselActive, counterSpeed);
+    counterUpSup(counterTargetCarouselActive, counterSpeed);
+    doAnimations(e.relatedTarget.querySelectorAll('.wow'));
+});
+
 const notifikasiModalEl = document.getElementById('notifikasi');
+// Modal BS
 if (notifikasiModalEl != null) {
     var myModal = new bootstrap.Modal(notifikasiModalEl, {
         backdrop: 'static', 

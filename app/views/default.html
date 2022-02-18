@@ -11,13 +11,12 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600&display=swap" rel="stylesheet">
     <!-- Core Style -->
     <link rel="stylesheet" href="/assets/route/default/core/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/route/default/core/css/LineIcons.3.0.css">
     <link rel="stylesheet" href="/assets/route/default/core/css/animate.css">
-    <link rel="stylesheet" href="/assets/route/default/core/css/tiny-slider.css">
-    <link rel="stylesheet" href="/assets/route/default/core/css/glightbox.min.css">
+    <!-- <link rel="stylesheet" href="/assets/route/default/core/css/tiny-slider.css"> -->
+    <!-- <link rel="stylesheet" href="/assets/route/default/core/css/glightbox.min.css"> -->
     <link rel="stylesheet" href="/assets/route/default/core/css/main.css">
     <link rel="stylesheet" href="/assets/route/default/core/css/default.css">
     <?= $this->getLinkRel('controller'); ?>
@@ -35,7 +34,7 @@
     </div>
     <!-- /End Preloader -->
     <!-- Start Header Area -->
-    <header class="header navbar-area">
+    <header class="header navbar-area d-flex align-items-center">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-12">
@@ -45,7 +44,7 @@
                             <a class="navbar-brand" href="/">
                                 <img src="/assets/images/brand/pojok-berbagi-transparent.png" alt="Logo">
                             </a>
-                            <button class="navbar-toggler mobile-menu-btn" type="button" data-bs-toggle="collapse"
+                            <button class="navbar-toggler mobile-menu-btn rounded-circle" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                                 aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="toggler-icon"></span>
@@ -69,14 +68,14 @@
                                     </li>
                                     <!-- <li class="nav-item">
                                         <a href="/home/layanan" aria-label="Toggle navigation">Layanan</a>
-                                    </li> -->
-                                    <!-- <li class="nav-item">
-                                        <a href="http://blog.pojokberbagi.id" aria-label="Toggle navigation">Blog</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="blog.pojokberbagi.id" aria-label="Toggle navigation">Blog</a>
                                     </li> -->
                                 </ul>
                             </div> <!-- navbar collapse -->
                             <div class="button">
-                                <a href="/auth/signin" class="signin">Masuk</a>
+                                <a href="/auth/signin" class="signin fw-bold">Masuk</a>
                                 <a href="/auth/signup" class="signup">Daftar</a>
                             </div>
                         </nav>
@@ -184,15 +183,30 @@
         </div>
       </div>
     <?php } ?>
+    <!-- Internal Script -->
+    <script>
+        const imgOnErrorList = document.querySelectorAll('img[alt]');
+        imgOnErrorList.forEach(errorImg => {
+            errorImg.addEventListener('error', function(e) {
+                let altValue = '(Gambar Rusak) '+this.getAttribute('alt'),
+                    alt = document.createTextNode(altValue);
+                if (alt.length > 0) {
+                    this.parentNode.insertBefore(alt,this);
+                    this.parentNode.removeChild(this);
+                }
+            });
+        });
+    </script>
     <!-- Vendor Script -->
     <script src="/vendors/jquery/dist/jquery.min.js"></script>
     <script src="/assets/route/default/core/js/bootstrap.min.js"></script>
     <script src="/assets/route/default/core/js/wow.min.js"></script>
-    <script src="/assets/route/default/core/js/tiny-slider.js"></script>
-    <script src="/assets/route/default/core/js/glightbox.min.js"></script>
-    <script src="/assets/route/default/core/js/count-up.min.js"></script>
+    <!-- <script src="/assets/route/default/core/js/tiny-slider.js"></script> -->
+    <!-- <script src="/assets/route/default/core/js/glightbox.min.js"></script> -->
+    <!-- <script src="/assets/route/default/core/js/count-up.min.js"></script> -->
     <script src="/assets/route/default/core/js/main.js"></script>
     <!-- Core Script -->
+    <script src="/assets/route/default/core/js/default.js"></script>
     <script src="/assets/route/auth/js/auth.js"></script>
     <?= $this->getScript('controller'); ?>
     <?= $this->getScript('action'); ?>

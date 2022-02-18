@@ -194,18 +194,18 @@ class BantuanModel extends HomeModel {
         return $layanan;
     }
 
-    public static function iconLayanan($layanan) {
-        if ($layanan == 'S') {
+    public static function iconLayanan($id_sector) {
+        if ($id_sector == 'S') {
             $icon = '<i class="lni lni-heart"></i>';
-        } elseif ($layanan == 'E') {
+        } elseif ($id_sector == 'E') {
             $icon = '<i class="lni lni-bar-chart"></i>';
-        } elseif ($layanan == 'D') {
+        } elseif ($id_sector == 'B') {
             $icon = '<i class="lni lni-warning"></i>';
-        } elseif ($layanan == 'K') {
+        } elseif ($id_sector == 'K') {
             $icon = '<i class="lni lni-sthethoscope"></i>';
-        } elseif ($layanan == 'P') {
+        } elseif ($id_sector == 'P') {
             $icon = '<i class="lni lni-graduation"></i>';
-        } elseif ($layanan == 'L') {
+        } elseif ($id_sector == 'L') {
             $icon = '<i class="lni lni-sprout"></i>';
         } else {
             $icon = '<i class="lni lni-support"></i>';
@@ -223,6 +223,7 @@ class BantuanModel extends HomeModel {
 
     public function getListBantuan() {
         $data = $this->db->query("SELECT b.id_bantuan, s.id_sektor layanan, b.nama nama_bantuan, g.path_gambar, g.nama nama_gambar, s.nama nama_sektor, k.nama nama_kategori, IF(k.warna IS NULL, '#e9ecef', k.warna) warna,
+        IF(p2.id_gambar IS NULL, '/assets/images/brand/pojok-berbagi-transparent.png', gp2.path_gambar) path_gambar_pengaju,
         IF(p2.nama IS NULL, 'Pojok Berbagi Indonesia', p2.nama) pengaju_bantuan,
         SUM(CASE WHEN d.bayar = 1 THEN d.jumlah_donasi ELSE 0 END) total_donasi,
         SUM(CASE WHEN d.bayar = 1 AND d.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi ELSE 0 END) donasi_disalurkan,
@@ -233,7 +234,8 @@ class BantuanModel extends HomeModel {
         FROM bantuan b LEFT JOIN donasi d USING(id_bantuan)
         LEFT JOIN pelaksanaan p1 USING(id_pelaksanaan)
         JOIN gambar g USING(id_gambar)
-        LEFT JOIN pemohon p2 USING(id_pemohon) 
+        LEFT JOIN pemohon p2 USING(id_pemohon)
+        LEFT JOIN gambar gp2 ON (gp2.id_gambar = p2.id_gambar)
         LEFT JOIN sektor s USING(id_sektor)
         LEFT JOIN kategori k USING(id_kategori)
         WHERE b.blokir IS NULL AND b.status = 'D'
@@ -250,6 +252,7 @@ class BantuanModel extends HomeModel {
     public function getListBantuanKategori($nama_kategori = null) {
         $dataParams = array();
         $arrayLSQL = array("SELECT b.id_bantuan, s.id_sektor layanan, b.nama nama_bantuan, g.path_gambar, g.nama nama_gambar, s.nama nama_sektor, k.nama nama_kategori, IF(k.warna IS NULL, '#e9ecef', k.warna) warna,
+                            IF(p2.nama IS NULL, '/assets/images/brand/pojok-berbagi-transparent.png', g2.path_gambar) path_gambar_pengaju,
                             IF(p2.nama IS NULL, 'Pojok Berbagi Indonesia', p2.nama) pengaju_bantuan,
                             SUM(CASE WHEN d.bayar = 1 THEN d.jumlah_donasi ELSE 0 END) total_donasi,
                             SUM(CASE WHEN d.bayar = 1 AND d.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi ELSE 0 END) donasi_disalurkan,
@@ -260,7 +263,8 @@ class BantuanModel extends HomeModel {
                             FROM bantuan b LEFT JOIN donasi d USING(id_bantuan)
                             LEFT JOIN pelaksanaan p1 USING(id_pelaksanaan)
                             JOIN gambar g USING(id_gambar)
-                            LEFT JOIN pemohon p2 USING(id_pemohon) 
+                            LEFT JOIN pemohon p2 USING(id_pemohon)
+                            LEFT JOIN gambar g2 ON (g2.id_gambar = p2.id_gambar)
                             LEFT JOIN sektor s USING(id_sektor)
                             LEFT JOIN kategori k USING(id_kategori)
                             WHERE b.blokir IS NULL");
@@ -296,7 +300,7 @@ class BantuanModel extends HomeModel {
 		  TIMESTAMPDIFF(DAY,b.tanggal_akhir, NOW()) sisa_waktu,
         IF(b.id_bantuan = 1, COUNT(d.id_donatur)+1999, COUNT(d.id_donatur)) jumlah_donatur,
         SUM(CASE WHEN d.bayar = 1 THEN d.jumlah_donasi ELSE 0 END) total_donasi,
-        IF(b.jumlah_target IS NULL, 'Donasi (Rp)', b.satuan_target) jenis_penyaluran,
+        IF(b.jumlah_target IS NULL, 'Donasi', b.satuan_target) jenis_penyaluran,
         IF(b.jumlah_target IS NULL, SUM(CASE WHEN d.bayar = 1 AND d.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi ELSE 0 END), IF(SUM(p.jumlah_pelaksanaan) IS NULL, 0, SUM(p.jumlah_pelaksanaan))) donasi_disalurkan,
         IF(b.jumlah_target IS NULL,
           IF(TRUNCATE((SUM(IF(d.id_pelaksanaan IS NULL, 0, d.jumlah_donasi))/IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)))*100,1) IS NULL, 0, TRUNCATE((SUM(IF(d.id_pelaksanaan IS NULL, 0, d.jumlah_donasi))/IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)))*100,1))

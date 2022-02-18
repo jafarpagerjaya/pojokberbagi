@@ -19,7 +19,10 @@ class HomeController extends Controller {
 		$this->rel_action = array(
 			array(
 				'href' => '/assets/route/default/pages/css/home.css'
-			)
+			),
+			array(
+                'href' => '/assets/route/default/core/css/services.css'
+            )
 		);
 
 		$this->script_action = array(
