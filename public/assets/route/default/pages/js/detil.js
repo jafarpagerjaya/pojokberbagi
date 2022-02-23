@@ -6,27 +6,29 @@ buttonCollapse.forEach(elemButton => {
             return false;
         }
         if (window.outerWidth < 768) {
-            const elTargetList = document.querySelectorAll('.row.custom-for-col-md-6'),
+            const elTargetList = document.querySelectorAll('.row.custom-height-setter'),
                   elTargetSetter = this.closest('.order-0');
             let i = 0,
                 height;
 
             elTargetList.forEach(elTarget => {
-                let elTargetSetterHeight;
+                let elTargetSetterHeight,
+                    elTargetSetterHeightPTNext = elTarget.nextElementSibling;
 
                 let span = buttonCollapse[i].children[0],
                     icon = buttonCollapse[i].children[1];
 
-                elTarget.classList.toggle('toggle');
-                if (elTarget.classList.contains('toggle')) {
+                if (!elTarget.classList.contains('toggle')) {
+                    elTarget.classList.add('toggle');
                     span.innerText = "Sembunyikan detil";
                     icon.style.transform = "rotate(90deg)";
                     icon.style.transition = "transform .3s";
                     elTarget.setAttribute('style','height: '+elTarget.getAttribute('data-height'));
                 } else {
+                    elTarget.classList.remove('toggle');
                     span.innerText = "Lebih detil";
                     icon.style.transform = "rotate(0deg)";
-                    elTargetSetterHeight = elTargetSetter.offsetHeight;
+                    elTargetSetterHeight = elTargetSetter.offsetHeight + parseFloat(getComputedStyle(elTargetSetterHeightPTNext).paddingTop);
                     if (elTargetSetterHeight == 0) {
                         elTargetSetterHeight = height;
                     } else {
@@ -34,6 +36,7 @@ buttonCollapse.forEach(elemButton => {
                     }
                     elTarget.setAttribute('style','height: '+elTargetSetterHeight+'px;');                
                 }
+                this.classList.toggle('toggle');
                 i++;
             });
 
@@ -47,14 +50,14 @@ buttonCollapse.forEach(elemButton => {
 
 let resetTab = false,
     resetNotATab = false,
-    resetTamob = false,
+    resetMob = false,
     resetCoLep = false;
 
 function wowReset() {
     const delay = 0.2,
           elTargetCBAList = document.querySelectorAll('#commit-bantuan-area>.wow'),
-          elTargetRowCustomColList = document.querySelectorAll('.custom-for-col-md-6');
-
+          elTargetRowCustomColList = document.querySelectorAll('.custom-height-setter');
+    // ColBox
     elTargetRowCustomColList.forEach(elTargetRowCustomCol => {
         let start = parseFloat(elTargetRowCustomCol.getAttribute('data-start-delay-wow')),
             newOrder,
@@ -63,9 +66,8 @@ function wowReset() {
         
         if (!firstOrder.length || !secondOrder.length) {
             let colBox = elTargetRowCustomCol.querySelectorAll('.box.wow');
-    
             colBox.forEach(elCol => {
-                if (elCol.classList.contains('order-0')) {
+                if (getComputedStyle(elCol).order == 0) {
                     firstOrder.push(elCol);
                 } else {
                     secondOrder.push(elCol);
@@ -75,16 +77,23 @@ function wowReset() {
 
         let reset = false;
 
-        if (detectMob()) {
+        if (detectTab() && !detectMob()) {
             newOrder = firstOrder.concat(secondOrder);
-            if (!resetTamob) {
+            resetCoLep = reset;
+            reset = true;
+            resetMob = false;
+        } else if (detectMob()) {
+            newOrder = firstOrder.concat(secondOrder);
+            if (!resetMob) {
                 resetCoLep = reset;
                 reset = true;
-                resetTamob = reset;
+                resetMob = reset;
+            } else {
+                reset = false;
             }
         } else {
             if (!resetCoLep) {
-                resetTamob = reset;
+                resetMob = reset;
                 reset = true;
                 resetCoLep = reset;
             }
@@ -103,7 +112,7 @@ function wowReset() {
         newOrder,
         firstOrder = [],
         secondOrder = [];
-
+    // Commit Bantuan Area
     elTargetCBAList.forEach(elCba => {
         if (!firstOrder.length || !secondOrder.length) {
             start = parseFloat(elCba.closest('[data-start-delay-wow]').getAttribute('data-start-delay-wow'));
@@ -153,7 +162,7 @@ let resizeTimeout;
 function reportWindowWidth() {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(()=> {
-        setHeight(dBArea, detectMob());
+        setHeight(dBArea, detectMob(), reverse);
         wowReset();
     }, 50);
 };

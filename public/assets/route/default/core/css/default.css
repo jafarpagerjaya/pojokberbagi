@@ -45,6 +45,11 @@ div.animation:hover>.app-image.img-wrapper img.opacity {
     color: var(--orange) !important;
 }
 
+.header .navbar-collapse .button .signup,
+.header .navbar-collapse .button a.signup:hover {
+    color: #fff !important;
+}
+
 .header .mobile-menu-btn .toggler-icon {
     width: 20px;
     margin: 5px auto;
@@ -77,9 +82,10 @@ header.header+* {
 
 /* Footer */
 .kontak .d-grid {
+    width: 100%;
     grid-auto-flow: column;
     grid-auto-columns: 50px;
-    gap: 2em;
+    gap: 1.25em;
 }
 
 .kontak .d-grid {
@@ -88,7 +94,77 @@ header.header+* {
 
 /* Akhir Footer */
 
-@media (min-width: 767px) {}
+@media (min-width: 767px) and (max-width: 768px) {
+    .header .navbar-collapse {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        z-index: 9;
+        box-shadow: 0px 15px 20px 0px rgb(0 0 0 / 10%);
+        padding: 10px 20px;
+        overflow-y: scroll;
+        border-top: 1px solid #eee;
+        border-radius: 8px;
+        top: 56px !important;
+    }
+
+    .navbar-nav .nav-item {
+        margin-right: 0px;
+    }
+
+    .header .navbar-nav .nav-item a {
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        -webkit-box-pack: justify;
+    }
+
+    .header .navbar-nav .nav-item a::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .navbar-nav .nav-item a.dd-menu::after {
+        top: 18px;
+        right: 0;
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+
+    .navbar-nav .nav-item a.collapsed::after {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    .header .navbar-nav .nav-item .sub-menu {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+        padding: 0;
+        border: none;
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+
+    .navbar-nav .nav-item .sub-menu.collapse:not(.show) {
+        display: none;
+    }
+
+    .header .navbar-nav .nav-item .sub-menu .nav-item {
+        margin: 0px;
+    }
+
+    .header .navbar-nav .nav-item .sub-menu .nav-item a {
+        padding: 10px 12px !important;
+    }
+}
+
+@media (min-width: 767px) {
+    .header .navbar-collapse .d-md-none.d-767-none {
+        display: none;
+    }
+}
 
 @media (min-width: 768px) {
     .header {
@@ -106,5 +182,11 @@ header.header+* {
 
     header.header+* {
         padding: 80px 0px;
+    }
+}
+
+@media (min-width: 992px) {
+    .kontak .d-grid {
+        gap: 2em;
     }
 }

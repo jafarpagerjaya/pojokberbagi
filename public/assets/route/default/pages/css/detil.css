@@ -1,15 +1,21 @@
 /* New */
-.d-grid.progress-box,
-.d-grid.timeup {
-    grid-template-columns: auto 1fr;
-}
 
-.row.custom-for-col-md-6 {
+.custom-height-setter {
     transition: all 0.3s ease !important;
 }
 
-.custom-for-col-md-6 .col-md-6 {
-    width: calc(100% / 2 - 0.54em) !important;
+.row.custom-gap {
+    --c-gap: 1em;
+    gap: var(--c-gap);
+}
+
+.custom-gap .col-6 {
+    width: calc(100% / 2 - var(--c-gap)/2) !important;
+}
+
+.d-grid.progress-box,
+.d-grid.timeup {
+    grid-template-columns: auto 1fr;
 }
 
 .box h6 {
@@ -29,34 +35,33 @@
     font-size: xx-small;
 }
 
-#detil-banner-area .row#commit-bantuan-area {
+#commit-bantuan-area {
     flex-direction: column;
 }
 
-#detil-banner-area .row#commit-bantuan-area>.col.d-flex.rounded-box {
-    padding: 1.5em 0px;
+#commit-bantuan-area p {
+    font-size: .75rem;
 }
 
-#detil-banner-area .row#commit-bantuan-area .logo {
+#commit-bantuan-area .logo {
     --avatar-wh: 100px;
     width: var(--avatar-wh);
     height: var(--avatar-wh);
-    overflow: hidden;
-    position: relative;
-    margin: auto;
-    display: grid;
-    place-items: center;
 }
 
-#detil-banner-area .row#commit-bantuan-area .logo img {
+#commit-bantuan-area .logo img {
     width: calc(var(--avatar-wh)/3*2);
     max-width: var(--avatar-wh);
-    position: absolute;
-    margin: auto;
 }
+
 
 #commit-bantuan-area .button.donasi.btn-lg {
     font-size: 1rem;
+}
+
+
+#info-berita-area .content .app-image.img-wrapper {
+    max-height: calc((100% - var(--bs-gutter-x)) / 16 * 9);
 }
 
 @media (min-width: 320px) {
@@ -79,16 +84,12 @@
         max-height: 197.62px;
     }
 
-    #commit-bantuan-area .button.donasi.btn-lg {
-        font-size: 1.25rem;
-    }
-
-    #detil-banner-area .row#commit-bantuan-area {
+    #commit-bantuan-area {
         flex-direction: row;
     }
 
-    #detil-banner-area .row#commit-bantuan-area>.col.d-flex.rounded-box {
-        padding: 0px;
+    #commit-bantuan-area p {
+        font-size: .8rem;
     }
 }
 
@@ -104,6 +105,14 @@
     #detil-banner-area .app-image.img-wrapper {
         max-height: 225.748px;
     }
+
+    #commit-bantuan-area .button.donasi.btn-lg {
+        font-size: 1.25rem;
+    }
+
+    #commit-bantuan-area p {
+        font-size: .85rem;
+    }
 }
 
 @media (min-width: 426px) {
@@ -118,6 +127,10 @@
     #detil-banner-area .app-image.img-wrapper {
         max-height: 239.625px;
     }
+
+    #commit-bantuan-area p {
+        font-size: .9rem;
+    }
 }
 
 @media (min-width: 767px) {
@@ -128,6 +141,10 @@
 }
 
 @media (min-width: 768px) {
+
+    .custom-gap .col-md-12 {
+        width: 100% !important;
+    }
 
     .box h6 {
         font-size: 16px;
@@ -142,18 +159,27 @@
         max-height: none;
     }
 
-    #detil-banner-area .row#commit-bantuan-area .logo {
+    #commit-bantuan-area .logo {
         --avatar-wh: 125px;
     }
 }
 
 @media (min-width: 992px) {
-    #detil-banner-area .row#commit-bantuan-area .logo {
-        --avatar-wh: 150px;
-    }
 
     #detil-banner-area .app-image.img-wrapper {
         max-height: calc((569px / 1913) * 936);
+    }
+
+    #commit-bantuan-area p {
+        font-size: 1rem;
+    }
+
+    #commit-bantuan-area .logo {
+        --avatar-wh: 150px;
+    }
+
+    .row.custom-gap {
+        --c-gap: 1.5em;
     }
 }
 

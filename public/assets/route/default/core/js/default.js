@@ -23,14 +23,16 @@ function calculaterowPerGridHeight(item) {
     return [totalHeight,row];
 };
 
-function setHeight(el, tablet, reverse = undefined) {
-    const elTargetList = el.querySelectorAll('.row.custom-for-col-md-6');
+function setHeight(el, deviceChangeOn, reverse = undefined) {
+    const elTargetList = el.querySelectorAll('.row.custom-height-setter');
     let dataHeight,
-        setterHeight;
+        setterHeight,
+        elResetList = [];
 
+    let loop = 0;
     elTargetList.forEach(elTarget => {
         let elCollapseButton = elTarget.querySelector('.collapseButton');
-        if (tablet) {
+        if (deviceChangeOn) {
             if (!elCollapseButton.classList.contains('toggle') && reverse == undefined) {
                 const gap = parseFloat(getComputedStyle(elTarget).gap);
 
@@ -41,6 +43,11 @@ function setHeight(el, tablet, reverse = undefined) {
                     height = dataHeight;
                 } else {
                     dataHeight = height;
+                }
+
+                if (dataHeight == undefined) {
+                    elResetList.push(elTarget);
+                    return;
                 }
 
                 elTarget.setAttribute('data-height', height+'px');
@@ -55,15 +62,45 @@ function setHeight(el, tablet, reverse = undefined) {
                         setterHeight = elTargetSetterHeight;
                     }
                     elTarget.setAttribute('style','height: '+elTargetSetterHeight+'px;');
+                    if (loop == elTargetList.length-1 && elResetList.length > 0) {
+                        elResetList.forEach(elToSet => {
+                            elToSet.setAttribute('style','height: '+setterHeight+'px;');
+                        });
+                        elResetList = [];
+                    }
                 }, 0);
             } else {
                 if (reverse) {
-                    elTarget.setAttribute('data-height', elTarget.offsetHeight+'px');
+                    let height;
+                    if (elCollapseButton.classList.contains('toggle')) {
+                        elTarget.style.removeProperty('height');
+                        elTarget.setAttribute('data-height', elTarget.offsetHeight+'px');
+                        height = elTarget.offsetHeight;
+                    } else {
+                        height = elCollapseButton.closest('.order-0.col-6').offsetHeight;
+                        height += parseInt(getComputedStyle(elTarget).paddingBottom);
+
+                        const gap = parseFloat(getComputedStyle(elTarget).gap);
+
+                        let arrayCalculate = calculaterowPerGridHeight(elTarget.children),
+                            dataHeight = arrayCalculate[0] + arrayCalculate[1]*gap + parseInt(getComputedStyle(elTarget).paddingBottom);
+                        elTarget.setAttribute('data-height', dataHeight+'px');
+                    }
+                    elTarget.setAttribute('style','height: '+height+'px');
+                } else {
+                    elTarget.setAttribute('style','height: '+elTarget.getAttribute('data-height'));
                 }
-                elTarget.setAttribute('style','height: '+elTarget.getAttribute('data-height'));
             }
         } else {
             elTarget.style.removeProperty('height');
         }
+        loop++;
     });
 };
+
+WOW.prototype.addBox = function (element) {
+    this.boxes.push(element);
+};
+
+wow = new WOW();
+wow.init();

@@ -38,6 +38,7 @@ header.header+.hero-area {
 .hero-area .hero-content h1>div:last-child {
     text-overflow: ellipsis;
     overflow: hidden;
+    width: 100%;
 }
 
 .hero-area .hero-content h1>div,
@@ -63,8 +64,17 @@ header.header+.hero-area {
     margin-top: 0px;
 }
 
-.hero-area .row.custom-for-col-md-6 {
+.custom-height-setter {
     transition: all 0.3s ease !important;
+}
+
+.row.custom-gap {
+    --c-gap: 1em;
+    gap: var(--c-gap);
+}
+
+.custom-gap .col-6 {
+    width: calc(100% / 2 - var(--c-gap)/2) !important;
 }
 
 .d-grid.progress-box,
@@ -87,10 +97,6 @@ header.header+.hero-area {
 
 .box .collapseButton {
     font-size: xx-small;
-}
-
-.custom-for-col-md-6 .col-md-6 {
-    width: calc(100% / 2 - 0.54em) !important;
 }
 
 .hero-area+*::before {
@@ -139,6 +145,7 @@ header.header+.hero-area {
 @media (min-width: 320px) {
 
     .hero-area .app-image .img-wrapper {
+        min-height: 166.5px;
         max-height: 166.5px;
     }
 }
@@ -146,6 +153,7 @@ header.header+.hero-area {
 @media (min-width: 321px) {
 
     .hero-area .app-image .img-wrapper {
+        min-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
         max-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
     }
 }
@@ -153,6 +161,7 @@ header.header+.hero-area {
 @media (min-width: 375px) {
 
     .hero-area .app-image .img-wrapper {
+        min-height: 197.62px;
         max-height: 197.62px;
     }
 }
@@ -160,6 +169,7 @@ header.header+.hero-area {
 @media (min-width: 376px) {
 
     .hero-area .app-image .img-wrapper {
+        min-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
         max-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
     }
 }
@@ -167,6 +177,7 @@ header.header+.hero-area {
 @media (min-width: 425px) {
 
     .hero-area .app-image .img-wrapper {
+        min-height: 225.748px;
         max-height: 225.748px;
     }
 }
@@ -174,6 +185,7 @@ header.header+.hero-area {
 @media (min-width: 426px) {
 
     .hero-area .app-image .img-wrapper {
+        min-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
         max-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
     }
 }
@@ -181,6 +193,7 @@ header.header+.hero-area {
 @media (min-width: 480px) {
 
     .hero-area .app-image .img-wrapper {
+        min-height: 239.625px;
         max-height: 239.625px;
     }
 }
@@ -194,6 +207,7 @@ header.header+.hero-area {
     }
 
     .hero-area .app-image .img-wrapper {
+        min-height: 290.25px;
         max-height: 290.25px;
     }
 }
@@ -222,6 +236,10 @@ header.header+.hero-area {
         font-size: 14px;
     }
 
+    .custom-gap .col-md-12 {
+        width: 100% !important;
+    }
+
     .box h6 {
         font-size: 16px;
     }
@@ -231,6 +249,7 @@ header.header+.hero-area {
     }
 
     .hero-area .app-image .img-wrapper {
+        min-height: 391.5px;
         max-height: 391.5px;
     }
 
@@ -327,6 +346,7 @@ header.header+.hero-area {
     }
 
     .hero-area .app-image .img-wrapper {
+        min-height: auto;
         max-height: 301.5px;
     }
 }

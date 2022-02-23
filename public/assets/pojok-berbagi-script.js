@@ -106,12 +106,6 @@ let counterUpProgress = function (counterTarget, counterSpeed) {
     });
 };
 
-// WOW.prototype.addBox = function (element) {
-//     this.boxes.push(element);
-// };
-// wow = new WOW();
-// wow.init();
-
 const doAnimations = function(elems) {
     elems.forEach(el => {
         let animationType = 'animated';
