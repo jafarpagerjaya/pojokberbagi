@@ -12,7 +12,7 @@ class BantuanController extends Controller {
         );
         $this->script_controller = array(
             array(
-                'src' => '/assets/pojok-berbagi-script.js?v=1'
+                'src' => '/assets/pojok-berbagi-script.js'
             )
         );
         $this->_bantuan = $this->model('Bantuan');
@@ -48,7 +48,7 @@ class BantuanController extends Controller {
 
             $this->script_action = array(
                 array(
-                    'src' => '/assets/route/default/pages/js/detil.js?v=1'
+                    'src' => '/assets/route/default/pages/js/detil.js'
                 )
             );
 

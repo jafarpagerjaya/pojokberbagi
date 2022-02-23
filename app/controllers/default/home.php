@@ -10,7 +10,7 @@ class HomeController extends Controller {
         );
 		$this->script_controller = array(
 			array(
-				'src' => '/assets/pojok-berbagi-script.js?v=1'
+				'src' => '/assets/pojok-berbagi-script.js'
 			)
 		);
 	}
@@ -27,7 +27,7 @@ class HomeController extends Controller {
 
 		$this->script_action = array(
 			array(
-				'src' => '/assets/route/default/pages/js/home.js?v=1'
+				'src' => '/assets/route/default/pages/js/home.js'
 			)
 		);
 		
