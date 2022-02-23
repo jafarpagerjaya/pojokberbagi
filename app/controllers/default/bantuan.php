@@ -7,12 +7,12 @@ class BantuanController extends Controller {
         $this->title = "Bantuan";
         $this->rel_controller = array(
             array(
-                'href' => '/assets/pojok-berbagi-style.css'
+                'href' => '/assets/pojok-berbagi-style.css?=v1'
             )
         );
         $this->script_controller = array(
             array(
-                'src' => '/assets/pojok-berbagi-script.js'
+                'src' => '/assets/pojok-berbagi-script.js?=v1'
             )
         );
         $this->_bantuan = $this->model('Bantuan');
@@ -24,7 +24,7 @@ class BantuanController extends Controller {
                 'href' => '/assets/route/default/pages/css/kategori.css'
             ),
             array(
-                'href' => '/assets/route/default/core/css/services.css'
+                'href' => '/assets/route/default/core/css/services.css?=v1'
             )
         );
         $this->script_action = array(
@@ -42,13 +42,13 @@ class BantuanController extends Controller {
         if (count($params)) {
             $this->rel_action = array(
                 array(
-                    'href' => '/assets/route/default/pages/css/detil.css'
+                    'href' => '/assets/route/default/pages/css/detil.css?=v1'
                 )
             );
 
             $this->script_action = array(
                 array(
-                    'src' => '/assets/route/default/pages/js/detil.js'
+                    'src' => '/assets/route/default/pages/js/detil.js?=v1'
                 )
             );
 
