@@ -27,11 +27,21 @@ section.form {
     background-color: #e7f1ff;
 }
 
+.accordion-item:last-of-type .accordion-collapse {
+    border-radius: 0px;
+}
+
 /* Kontak */
+.pesan,
+.kontak a.medsos-icon {
+    font-size: .8rem;
+}
+
 .kontak a.medsos-icon i {
     -webkit-transition: color 0.3s ease-in-out;
     -o-transition: color 0.3s ease-in-out;
     transition: color 0.3s ease-in-out;
+    font-size: .8rem !important;
 }
 
 .kontak a.medsos-icon i[class*="instagram"],
@@ -56,4 +66,22 @@ section.form {
 .kontak a.medsos-icon:hover i[class*="whatsapp"],
 .kontak a.medsos-icon:hover i[class*="whatsapp"]+span {
     color: #4FCE5D !important;
+}
+
+@media (min-width: 375px) {
+
+    .pesan,
+    .kontak a.medsos-icon,
+    .kontak a.medsos-icon i {
+        font-size: .9rem !important;
+    }
+}
+
+@media (min-width: 425px) {
+
+    .pesan,
+    .kontak a.medsos-icon,
+    .kontak a.medsos-icon i {
+        font-size: 1rem !important;
+    }
 }

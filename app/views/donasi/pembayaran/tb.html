@@ -2,7 +2,7 @@
 <section class="header text-center py-3 sticky">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-12 col-md-7 col-lg-6">
+            <div class="col-12 col-md-9 col-lg-6">
                 <div class="d-flex gap-2 align-items-center">
                     <a href="/home">
                         <i class="lni lni-chevron-left fw-bolder fs-5 text-warning"></i>
@@ -18,12 +18,12 @@
 <section class="form">
     <div class="container">
         <div class="row justify-content-center">
-            <div id="<?= $data['tagihan_donasi']->jenis; ?>" class="col-12 col-md-8 col-lg-6">
+            <div id="<?= $data['tagihan_donasi']->jenis; ?>" class="col-12 col-md-9 col-lg-6">
                 <div class="row align-items-center bg-white shadow-lg p-3 rounded-box g-3">
                     <h5 class="mb-4">Instruksi Pembayaran</h5>
                     <div class="col-12">
                         <div class="row align-items-center">
-                            <div class="col-4">Nominal Trasfer</div>
+                            <div class="col-md-4">Nominal Trasfer</div>
                             <div class="col">
                                 <h6><?= 'Rp. ' . Output::tSparator($data['tagihan_donasi']->jumlah_donasi); ?></h6>
                             </div>
@@ -31,7 +31,7 @@
                     </div>
                     <div class="col-12">
                         <div class="row align-items-center">
-                            <div class="col-4">Ke Rekening</div>
+                            <div class="col-md-4">Ke Rekening</div>
                             <div class="col d-flex align-items-center gap-3">
                                 <img src="<?= $data['tagihan_donasi']->path_gambar_cp; ?>" alt="<?= $data['tagihan_donasi']->nama_cp; ?>" class="img-fluid" style="width: 60px;">
                                 <div class="row">
@@ -44,7 +44,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 border-1 rounded-box border-light py-2 bg-light mt-4" style="border-style: solid;">
+                            <div class="pesan col-12 border-1 rounded-box border-light py-2 bg-light mt-4" style="border-style: solid;">
                                 Mohon untuk mengirim bukti tranfer agar dapat melakukan dilakukan akad sesuai dengan syar'i. Akad donasi dapat dilakukan melalui :
                                 <div class="row kontak">
                                     <a target="_blank" href="https://bit.ly/pojok-berbagi-indonesia" class="medsos-icon fw-bold text-secondary col-6 col-md-auto">
@@ -62,7 +62,7 @@
                                 </div>
                             </div>
                             <?php if (isset($data['bantuan']->tanggal_akhir)) { ?>
-                                <div class="col-12 border-1 rounded-box border-orange py-2 bg-orange mt-4 text-white" style="border-style: solid;">
+                                <div class="pesan col-12 border-1 rounded-box border-orange py-2 bg-orange mt-4 text-white" style="border-style: solid;">
                                     Transfer sebelum tanggal <b><?= $data['tagihan_donasi']->max_pembayaran; ?></b> atau donasi anda otomatis dibatalkan
                                     oleh sistem.
                                 </div>
@@ -73,22 +73,22 @@
             </div>
         </div>
         <div class="row justify-content-center mt-5 pb-5">
-            <div class="col-12 col-md-8 col-lg-6">
+            <div class="col-12 col-md-9 col-lg-6">
                 <div class="row align-item-center bg-white shadow-lg p-3 rounded-box g-3">
                     <h6>Petunjuk Pembayaran</h6>
                     <div class="col-12">
-                        <div class="accordion accordion-flush" id="accordionFlushExample">
+                        <div class="accordion accordion-flush" id="accordionFlush">
                             <div class="accordion-item">
                                 <div class="accordion-header" id="flush-headingOne">
-                                    <button class="accordion-button collapsed" type="button"
+                                    <button class="accordion-button collapsed p-2 p-md-3" type="button"
                                         data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
                                         aria-expanded="false" aria-controls="flush-collapseOne">
                                         Transfer ATM
                                     </button>
                                 </div>
                                 <div id="flush-collapseOne" class="accordion-collapse collapse"
-                                    aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-                                    <div class="accordion-body">
+                                    aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlush">
+                                    <div class="accordion-body px-2 py-0 px-md-3">
                                         <small>
                                             <ol class="list-group list-group-flush list-group-numbered">
                                                 <li class="list-group-item px-0">

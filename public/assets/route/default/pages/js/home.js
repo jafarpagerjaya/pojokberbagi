@@ -180,7 +180,7 @@ function setBeforeAfterBgColor(el) {
 
 const heroArea = document.querySelector('.hero-area');
 
-setBeforeAfterBgColor(heroArea);
+// setBeforeAfterBgColor(heroArea);
 setHeight(heroArea, detectMob());
 wowReset();
 
