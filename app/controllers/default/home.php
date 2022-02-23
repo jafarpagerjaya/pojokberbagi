@@ -5,12 +5,12 @@ class HomeController extends Controller {
 		$this->title = 'Home';
 		$this->rel_controller = array(
             array(
-                'href' => '/assets/pojok-berbagi-style.css'
+                'href' => '/assets/pojok-berbagi-style.css?v=1'
 			)
         );
 		$this->script_controller = array(
 			array(
-				'src' => '/assets/pojok-berbagi-script.js'
+				'src' => '/assets/pojok-berbagi-script.js?v=1'
 			)
 		);
 	}
@@ -18,16 +18,16 @@ class HomeController extends Controller {
 	public function index() {
 		$this->rel_action = array(
 			array(
-				'href' => '/assets/route/default/pages/css/home.css'
+				'href' => '/assets/route/default/pages/css/home.css?v=1'
 			),
 			array(
-                'href' => '/assets/route/default/core/css/services.css'
+                'href' => '/assets/route/default/core/css/services.css?v=1'
             )
 		);
 
 		$this->script_action = array(
 			array(
-				'src' => '/assets/route/default/pages/js/home.js'
+				'src' => '/assets/route/default/pages/js/home.js?v=1'
 			)
 		);
 		
