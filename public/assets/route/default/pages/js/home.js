@@ -1,6 +1,6 @@
 let resetTab = false,
     resetNotATab = false,
-    resetTamob = false,
+    resetMob = false,
     resetCoLep = false,
     lastWidth,
     lock = false;
@@ -8,7 +8,7 @@ let resetTab = false,
 function wowReset() {
     const delay = 0.2,
           elTargetRowColTextImgList = document.querySelectorAll('.hero-area .container>.row'),
-          elTargetRowCustomColList = document.querySelectorAll('.custom-for-col-md-6');
+          elTargetRowCustomColList = document.querySelectorAll('.custom-height-setter');
 
     let h = 0;
     elTargetRowColTextImgList.forEach(elTargetRowColTextImg => {
@@ -87,7 +87,7 @@ function wowReset() {
             let colBox = elTargetRowCustomCol.querySelectorAll('.box.wow');
     
             colBox.forEach(elCol => {
-                if (elCol.classList.contains('order-0')) {
+                if (getComputedStyle(elCol).order == 0) {
                     firstOrder.push(elCol);
                 } else {
                     secondOrder.push(elCol);
@@ -97,16 +97,30 @@ function wowReset() {
 
         let reset = false;
 
-        if (detectMob()) {
+        if (detectTab() && !detectMob()) {
             newOrder = firstOrder.concat(secondOrder);
-            if (!resetTamob) {
+            resetCoLep = reset;
+            reset = true;
+            resetMob = false;
+            lastWidth = window.innerWidth;
+            lock = false;
+
+            if (i > 0 && resetMob && window.innerWidth == lastWidth && lock == false) {
+                reset = true;
+            }
+            if (i == elTargetRowCustomColList.length-1) {
+                lock = true;
+            }
+        } else if (detectMob()) {
+            newOrder = firstOrder.concat(secondOrder);
+            if (!resetMob) {
                 resetCoLep = reset;
                 reset = true;
-                resetTamob = reset;
+                resetMob = reset;
                 lastWidth = window.innerWidth;
                 lock = false;
             }
-            if (i > 0 && resetTamob && window.innerWidth == lastWidth && lock == false) {
+            if (i > 0 && resetMob && window.innerWidth == lastWidth && lock == false) {
                 reset = true;
             }
             if (i == elTargetRowCustomColList.length-1) {
@@ -114,7 +128,7 @@ function wowReset() {
             }
         } else {
             if (!resetCoLep) {
-                resetTamob = reset;
+                resetMob = reset;
                 reset = true;
                 resetCoLep = reset;
                 lastWidth = window.innerWidth;
@@ -190,7 +204,7 @@ buttonCollapse.forEach(elemButton => {
             return false;
         }
         if (window.outerWidth < 768) {
-            const elTargetList = document.querySelectorAll('.row.custom-for-col-md-6'),
+            const elTargetList = document.querySelectorAll('.row.custom-height-setter'),
                   elTargetSetter = this.closest('.order-0');
             let i = 0,
                 height;
@@ -201,13 +215,14 @@ buttonCollapse.forEach(elemButton => {
                 let span = buttonCollapse[i].children[0],
                     icon = buttonCollapse[i].children[1];
 
-                elTarget.classList.toggle('toggle');
-                if (elTarget.classList.contains('toggle')) {
+                if (!elTarget.classList.contains('toggle')) {
+                    elTarget.classList.add('toggle');
                     span.innerText = "Sembunyikan detil";
                     icon.style.transform = "rotate(90deg)";
                     icon.style.transition = "transform .3s";
                     elTarget.setAttribute('style','height: '+elTarget.getAttribute('data-height'));
                 } else {
+                    elTarget.classList.remove('toggle');
                     span.innerText = "Lebih detil";
                     icon.style.transform = "rotate(0deg)";
                     elTargetSetterHeight = elTargetSetter.offsetHeight;
@@ -218,6 +233,7 @@ buttonCollapse.forEach(elemButton => {
                     }
                     elTarget.setAttribute('style','height: '+elTargetSetterHeight+'px;');                
                 }
+                elTarget.querySelector('.collapseButton').classList.toggle('toggle');
                 i++;
             });
 
@@ -304,7 +320,7 @@ const bannerCarousel = document.getElementById('banner-carousel');
 bannerCarousel.addEventListener('slide.bs.carousel', function (e) {
     let progressBarCarouselActive = e.relatedTarget.querySelectorAll('.progress-bar'),
         counterTargetCarouselActive = e.relatedTarget.querySelectorAll('.box-info h6[data-count-up-value]'),
-        counterSpeed = 1600;
+        counterSpeed = 2000;
 
     counterUpProgress(progressBarCarouselActive, counterSpeed);
     counterUpSup(counterTargetCarouselActive, counterSpeed);
@@ -322,4 +338,3 @@ if (notifikasiModalEl != null) {
         myModal.toggle();
     }, 500);
 }
-console.log(1);
