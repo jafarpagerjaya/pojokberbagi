@@ -104,7 +104,7 @@
                                                     <span>Masukkan no rekening <b><?= $data['tagihan_donasi']->nomor; ?></b> jika anda adalah nasabah <?= $data['tagihan_donasi']->nama_cp; ?>, dan jika anda bukan nasabah <?= $data['tagihan_donasi']->nama_cp; ?> masukan <span class="text-danger">kode transfer bank</span> dan <span class="text-dark">nomor rekening tujuan</span> <span class="text-danger fw-bold"><?= $data['tagihan_donasi']->kode; ?></span><b><?= $data['tagihan_donasi']->nomor; ?></b></span>
                                                 </li>
                                                 <li class="list-group-item px-0">
-                                                    <span>Masukan Nominal Transaksi <b class="text-primary"><?= 'Rp. ' . Output::tSparator($data['tagihan_donasi']->jumlah_donasi); ?></b></span>
+                                                    <span>Masukan Nominal Transaksi <b class="text-primary"><span><?= 'Rp. ' . Output::tSparator($data['tagihan_donasi']->jumlah_donasi); ?></span></b></span>
                                                 </li>
                                                 <li class="list-group-item px-0">
                                                     <span>Masukan nomor referensi <b class="text-primary"><?= $data['tagihan_donasi']->id_donasi; ?></b> atau bisa juga dikosongkan</span>
