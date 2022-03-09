@@ -93,6 +93,9 @@ class View {
 						}
 					}
 				}
+
+				$href = $this->autoVersion($href);
+
 				$link = '<link rel="' . $rel . '" type="' . $type . '" href="' . $href . '"';
 				if (!empty($media)) {
 					$link .= ' media="' . $media . '"';
@@ -109,6 +112,17 @@ class View {
 				echo $link .= '>';
 			}
 		}
+	}
+
+	private function autoVersion($file) {
+		// if it is not a valid path (example: a CDN url)
+		if (strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file)) return $file;
+	
+		// retrieving the file modification time
+		// https://www.php.net/manual/en/function.filemtime.php
+		$mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+	
+		return sprintf("%s?v=%d", $file, $mtime);
 	}
 	
 	private function getScript($property_param) {
@@ -150,6 +164,9 @@ class View {
 					if (!file_exists(BASEURL.$src) && $source != 'trushworty') {
 						exit("<pre/>Javascript file not found in path ".$src);
 					}
+					
+					$src = $this->autoVersion($src);
+
 					$script = '<script type="' . $type . '" src="' . $src . '"';
 					if (!empty($charset)) {
 						$script .= ' charset="' . $charset . '"';
