@@ -102,7 +102,7 @@ class HomeModel {
         return $this->db->lastInsertId();
     }
 
-    public function query($sql, $params) {
+    public function query($sql, $params = array()) {
         $this->db->query($sql, $params);
         if ($this->db->count()) {
 			$this->data = $this->db->result();

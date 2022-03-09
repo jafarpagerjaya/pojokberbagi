@@ -1,7 +1,7 @@
 const counterTarget = document.querySelectorAll('.counter-card'),
       counterSpeed = 2000;
 
-counterUp(counterTarget, counterSpeed);
+counterUpSup(counterTarget, counterSpeed);
 
 let jsonClient = atob(decodeURIComponent(getCookie('client-pojokberbagi'))),
     client = JSON.parse(jsonClient);

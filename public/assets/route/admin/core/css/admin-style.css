@@ -22,3 +22,12 @@ table tbody>tr>th {
 .card-profile-image img {
     background-color: #f7fafc !important;
 }
+
+.gap-x-2 {
+    column-gap: .5em;
+}
+
+/* Toast */
+.d-flex>.toast {
+    flex-basis: auto;
+}

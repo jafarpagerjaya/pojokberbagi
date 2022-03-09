@@ -1,0 +1,78 @@
+.gap-3 {
+    --gap-x: 1em;
+    gap: var(--gap-x);
+}
+
+.border-2 {
+    border-width: 2px !important;
+}
+
+.border-3 {
+    border-width: 3px !important;
+}
+
+.border-4 {
+    border-width: 4px !important;
+}
+
+.border-5 {
+    border-width: 5px !important;
+}
+
+.modal {
+    padding: 0px !important;
+    overflow-y: auto !important;
+}
+
+.modal.fade.in .modal-dialog {
+    -moz-transform: none !important;
+    -ms-transform: none !important;
+    -o-transform: none !important;
+    -webkit-transform: none !important;
+    transform: none !important;
+}
+
+.modal .modal-dialog.fullscreen {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+
+.modal .modal-dialog.fullscreen .modal-content {
+    min-height: 100vh;
+    border: 0;
+    border-radius: 0;
+}
+
+.modal:not(.show) .modal-dialog.fullscreen .modal-content.scaleIn>* {
+    transform: scale(0.9);
+    transition: all .15s ease-out;
+}
+
+.modal.show .modal-dialog.fullscreen .modal-content.scaleIn>* {
+    transform: scale(1);
+    transition: all .15s ease-out;
+}
+
+@media (min-width: 425px) {
+
+    .modal .d-flex.buttons {
+        flex-direction: row !important;
+        align-items: flex-start !important;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .modal .d-flex.buttons {
+        flex-direction: column !important;
+        align-items: flex-end !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .modal .d-flex.buttons {
+        flex-direction: row !important;
+        align-items: flex-start !important;
+    }
+}

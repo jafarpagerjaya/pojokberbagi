@@ -10,7 +10,7 @@ class DonasiModel extends HomeModel {
     }
 
     public function dataDonasi($id_donatur) {
-        $this->db->get('bantuan.nama, donasi.id_donasi, donasi.jumlah_donasi, donasi.bayar, donasi.create_at, channel_payment.nama nama_cp, channel_payment.jenis, gambar.path_gambar','bantuan JOIN donasi USING(id_bantuan) LEFT JOIN channel_payment USING(id_cp) JOIN gambar ON (channel_payment.id_gambar = gambar.id_gambar)', array('donasi.id_donatur','=', Sanitize::escape($id_donatur)));
+        $this->db->get('bantuan.id_bantuan, bantuan.nama, donasi.id_donasi, donasi.jumlah_donasi, donasi.bayar, donasi.create_at, channel_payment.id_cp, channel_payment.nama nama_cp, channel_payment.jenis, gambar.path_gambar','bantuan JOIN donasi USING(id_bantuan) LEFT JOIN channel_payment USING(id_cp) JOIN gambar ON (channel_payment.id_gambar = gambar.id_gambar)', array('donasi.id_donatur','=', Sanitize::escape($id_donatur)));
         if ($this->db->count()) {
             $this->data = $this->db->results();
             return $this->data;

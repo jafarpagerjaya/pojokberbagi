@@ -2,11 +2,18 @@
 class HomeController extends Controller {
     public function __construct() {
         $this->title = 'Admin';
+
+        $this->script_controller = array(
+			array(
+				'type' => 'text/javascript',
+                'src' => '/assets/pojok-berbagi-script.js'
+			)
+		);
         
         $this->script_action = array(
 			array(
 				'type' => 'text/javascript',
-                'src' => ASSET_PATH . 'route' . DS . basename(dirname(__FILE__)).DS.'pages'.DS.'js'.DS.'home.js'
+                'src' => '/assets/route/admin/pages/js/home.js'
 			)
 		);
         

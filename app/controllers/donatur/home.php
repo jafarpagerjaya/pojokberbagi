@@ -9,16 +9,17 @@ class HomeController extends Controller {
         $this->rel_controller = array(
             array(
                 'href' => '/assets/pojok-berbagi-style.css'
-			),
-            array(
-                'href' => '/assets/route/donatur/core/css/donatur.css'
 			)
         );
 
-        $this->script_action = array(
+        $this->script_controller = array(
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/pojok-berbagi-script.js'
+			),
 			array(
 				'type' => 'text/javascript',
-                'src' => ASSET_PATH . 'route' . DS . basename(dirname(__FILE__)).DS.'pages'.DS.'js'.DS.'home.js'
+                'src' => '/assets/route/donatur/pages/js/home.js'
 			)
 		);
 
@@ -37,6 +38,24 @@ class HomeController extends Controller {
 	}
 
     public function index() {
+        $this->rel_action = array(
+            array(
+                'href' => '/assets/main/css/utility.css'
+			),
+            array(
+                'href' => '/assets/main/css/inputGroup.css'
+			),
+            array(
+                'href' => '/assets/route/donatur/core/css/donatur.css'
+			)
+        );
+
+        $this->script_action = array (
+            array(
+                'src' => '/assets/route/donatur/core/js/donatur.js'
+            )
+        );
+
         $this->model('Donatur');
         $this->data['info-card'] = array(
             'jumlah_tagihan_unpaid' => $this->model->countJumlahTagihan('0', $this->data['donatur']->id_donatur)->jumlah_tagihan,
@@ -51,6 +70,12 @@ class HomeController extends Controller {
         $this->data['halaman'] = 1;
         $this->data['record'] = $this->_donasi->affected();
 
+        $this->_donasi->query("SELECT cp.id_cp, cp.nama nama_cp, cp.jenis jenis_cp, g.path_gambar  FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
+        $this->data['channel_payment'] = $this->model->readAllData();
+
+        // TToken for fetch
+        $this->data[Config::get('session/token_name')] = Token::generate();
+        
         // $this->setKunjungan();
 		// Track real path based on return php request for js dom
 		$this->data['uri'] = base64_encode($this->getRealUri());
