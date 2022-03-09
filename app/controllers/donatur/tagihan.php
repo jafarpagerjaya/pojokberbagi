@@ -27,11 +27,26 @@ class TagihanController extends Controller {
 	}
 
     public function index() {
-        // $this->rel_action = array(
-        //     array(
-        //         'href' => '/assets/route/donatur/pages/css/tagihan.css'
-        //     )
-        // );
+        $this->rel_action = array(
+            array(
+                'href' => '/assets/main/css/utility.css'
+			),
+            array(
+                'href' => '/assets/main/css/inputGroup.css'
+			),
+            array(
+                'href' => '/assets/route/donatur/core/css/donatur.css'
+			)
+        );
+
+        $this->script_action = array (
+            array(
+                'src' => '/assets/route/donatur/core/js/donatur.js'
+            )
+            // array(
+                //         'href' => '/assets/route/donatur/pages/css/tagihan.css'
+                //     )
+        );
 
         $this->_donasi = $this->model('Donasi');
         $dataTagihanUnpaid = $this->_donasi->dataTagihan($this->data['donatur']->id_donatur, '0');
@@ -41,6 +56,7 @@ class TagihanController extends Controller {
             'data' => $dataTagihanUnpaid,
             'record' => $dataTagihanUnpaidRecord
         );
+
         $dataTagihanPaid = $this->_donasi->dataTagihan($this->data['donatur']->id_donatur, '1');
         $dataTagihanPaidRecord = $this->_donasi->countRecordTagihan($this->data['donatur']->id_donatur, '0')->jumlah_record;
         $this->data['tagihan_paid'] = array(
@@ -49,7 +65,10 @@ class TagihanController extends Controller {
             'record' => $dataTagihanPaidRecord
         );
 
-        // Debug::pr($this->data);
-        // die();
+        $this->_donasi->query("SELECT cp.id_cp, cp.nama nama_cp, cp.jenis jenis_cp, g.path_gambar  FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
+        $this->data['channel_payment'] = $this->model->readAllData();
+
+        // Token for fetch
+        $this->data[Config::get('session/token_name')] = Token::generate();
     }
 }

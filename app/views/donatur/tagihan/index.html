@@ -36,23 +36,22 @@
                                 <tr>
                                     <th scope="row">
                                         <div class="media align-items-center">
-                                            <a href="#">
+                                            <a target="_blank" href="<?= '/bantuan/detil/'. $data_unpaid->id_bantuan; ?>" data-nama-bantuan="<?= $data_unpaid->nama; ?>">
                                                 <span class="name mb-0 text-sm"><?= $data_unpaid->nama; ?></span>
                                             </a>
                                         </div>
                                     </th>
                                     <td class="text-right">
-                                        <b><?= Output::tSparator($data_unpaid->jumlah_donasi); ?></b>
+                                        <b data-id-donasi="<?= $data_unpaid->id_donasi; ?>"><?= Output::tSparator($data_unpaid->jumlah_donasi); ?></b>
                                     </td>
                                     <td>
                                         <?= '<span class="badge badge-pill ' . ($data_unpaid->bayar != 1 ? 'badge-warning">Belum Bayar' : 'badge-success">Sudah Bayar') . '</span>'; ?>
                                     </td>
                                     <td>
-                                        <?= '<div class="channel-payment d-flex justify-content-center align-items-end">
-                                            <p class="text-info m-0">'. Utility::keteranganJenisChannelPayment($data_unpaid->jenis) .'</p>
-                                            <img class="img-fluid" src="'. $data_unpaid->path_gambar .'" alt="'. $data_unpaid->nama_cp .'">
-                                        </div>'; 
-                                    ?>
+                                        <div class="channel-payment d-flex justify-content-center align-items-end">
+                                            <p class="text-info m-0" data-jenis-cp="<?= $data_unpaid->jenis; ?>"><?= Utility::keteranganJenisChannelPayment($data_unpaid->jenis); ?></p>
+                                            <img class="img-fluid" src="<?= $data_unpaid->path_gambar; ?>" alt="<?= $data_unpaid->nama_cp; ?>">
+                                        </div>
                                     </td>
                                     <td>
                                         <?= Output::strToFullLocalDateTime($data_unpaid->create_at); ?>
@@ -64,9 +63,10 @@
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                                <a class="dropdown-item" href="<?= '/donatur/donasi/data/'. $data_unpaid->id_donasi; ?>">Lihat Data</a>
-                                                <?= ($data_unpaid->bayar != 1 ? '<a class="dropdown-item" href="/donatur/donasi/formulir/'. $data_unpaid->id_donasi .'">Ganti Metode Bayar</a>' : '') ?>
-
+                                                <!-- <a class="dropdown-item font-weight-600 text-green" href="<?= '/donatur/donasi/data/'. $data_unpaid->id_donasi ?>">Lihat Lebih Detil</a> -->
+                                                <?php if ($data_unpaid->bayar != 1 && isset($data_unpaid->id_cp)) { ?>
+                                                    <a href="javascript:;"class="dropdown-item text-warning font-weight-bolder" role="button" data-toggle="modal" data-target="#modalGantiMetodePembayaran" data-cp="<?= $data_unpaid->id_cp; ?>">Ganti Metode Bayar</a>
+                                                <?php } ?>
                                             </div>
                                         </div>
                                     </td>
@@ -157,6 +157,106 @@
                 </div>
             </div>
             
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade in" id="modalGantiMetodePembayaran" tabindex="-1" role="dialog" aria-labelledby="modalGantiMetodePembayaranLabel" aria-hidden="true">
+    <div class="modal-dialog fullscreen d-block" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container p-0 py-md-3 py-lg-5 px-lg-3">
+                <div class="modal-header px-3 p-md-4 d-flex align-items-center">
+                    <h5 class="modal-title" id="modalGantiMetodePembayaranLabel">Ganti Metode Pembayaran <a target="_blank" class="text-orange">Nama Bantuan</a></h5>
+                    <button type="button fs-5" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body px-3 p-md-4">
+                    <div class="row m-0 gap-3">
+                        <div class="col-12 col-md p-0">
+                            <div class="row radio-box p-0 gap-3 m-0">
+                                <div class="col-12 p-0">
+                                    <h5>Transfer manual</h5>
+                                </div>
+                                <?php 
+                                    if (!is_null($data['channel_payment'])) {
+                                        foreach($data['channel_payment'] as $data_cp) {
+                                        ?>
+                                        <div class="item p-3 d-flex flex-column justify-content-center align-items-center border rounded border-3">
+                                            <div class="inputGroup">
+                                                <input id="radio2" value="<?= $data_cp->id_cp; ?>" name="id_cp" type="radio" />
+                                                <label for="radio2"><?= $data_cp->nama_cp; ?></label>
+                                            </div>
+                                            <div class="overflow-hidden d-flex justify-content-center align-items-center h-100">
+                                                <img src="<?= $data_cp->path_gambar; ?>" alt="<?= $data_cp->nama_cp; ?>" class="img-fluid" data-jenis-cp="<?= $data_cp->jenis_cp; ?>">
+                                            </div>
+                                            <h6 class="m-0"><?= $data_cp->nama_cp; ?></h6>
+                                        </div>
+                                        <?php
+                                        }
+                                    }
+                                ?>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5 px-0 order-first order-md-1">
+                            <div class="position-sticky">
+                                <p class="bg-lighter p-3 rounded">Metode pembayaran terpilih sebelumnya adalah <b class="text-warning"><span class="jenis-cp">Jenis_CP</span> - <span class="nama-cp">Nama_CP</span></b>, silahkan pilih salah satu metode pembayaran yang tersedia dan konfirmasi perubahan tersebut.</p>
+                                <div class="d-flex flex-column align-items-end buttons mt-md-5" id="sticky-on-mob">
+                                    <button type="button" class="btn btn-link m-0" data-dismiss="modal">Batal</button>
+                                    <button type="button" class="btn btn-primary ml-auto m-0 w-100 w-425-auto disabled" data-toggle="modal" data-target="#modalKonfirmasiGantiMetodePembayaran">Simpan Perubahan Metode Bayar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade in" tabindex="-2" id="modalKonfirmasiGantiMetodePembayaran" role="dialog" aria-labelledby="modalKonfirmasiGantiMetodePembayaranLabel" aria-hidden="true">
+    <div class="modal-dialog modal-danger modal-dialog-centered fullscreen">
+        <div class="modal-content bg-gradient-danger d-flex justify-content-center">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalKonfirmasiGantiMetodePembayaranLabel">Konfirmasi Perubahan</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="py-3 text-center">
+                                <i class="ni ni-bell-55 ni-3x"></i>
+                                <h4 class="heading mt-4">Anda harus baca ini!</h4>
+                                <p class="font-weight-lighter">Apakah anda yakin mengubah metode pembayaran donasi <a target="_blank" class="font-weight-bolder text-underline badge badge-primary p-2" id="nama-bantuan">nama_bantuan</a> menjadi <span class="jenis-cp font-weight-bolder"></span> - <span class="nama-cp font-weight-bolder"></span>?</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-link text-white mr-auto" data-dismiss="modal">Tidak</button>
+                            <!-- <a type="button" class="btn btn-secondary font-weight-bolder" href="<?= '/donatur/donasi/formulir/'. $data_donasi->id_donasi; ?>">Ya</a> -->
+                            <button type="submit" class="btn btn-secondary font-weight-bolder">Ya</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Akhir Modal -->
+<!-- Toast -->
+<div aria-live="polite" aria-atomic="true" class="position-fixed d-flex justify-content-end flex-column align-items-end">
+    <div class="toast w-100 fade bg-white" role="alert" aria-live="assertive" aria-atomic="true" data-delay="10000">
+        <div class="toast-header d-flex gap-x-2 justify-content-center align-items-center">
+            <div class="small-box rounded bg-danger p-2 ailgn-items-center"></div>
+            <strong class="mr-auto"></strong>
+            <small class="text-muted time-passed">Kapan</small>
+            <button type="button" class="close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            Isi pesan toast
         </div>
     </div>
 </div>
