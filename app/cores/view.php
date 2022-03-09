@@ -187,7 +187,7 @@ class View {
 					if (empty($source)) {
 						$src_version = $this->auto_version($src);
 						if ($src_version == false) {
-							echo '<!-- There is no file => '. $href . ' -->';
+							echo '<!-- There is no file => '. $src . ' -->';
 						} else {
 							$src = $src_version;
 						}
