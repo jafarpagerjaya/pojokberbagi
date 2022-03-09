@@ -1,0 +1,77 @@
+.inputGroup {
+    background-color: transparent;
+    display: block;
+    position: relative;
+    width: 100%;
+}
+
+.inputGroup input[type="radio"]+label,
+.inputGroup input[type="checkbox"]+label {
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+    width: 100%;
+}
+
+.inputGroup input[type="radio"]+label,
+.inputGroup input[type="checkbox"]+label {
+    font-weight: bolder;
+    height: 100%;
+}
+
+.inputGroup input[type="radio"]+label,
+.inputGroup input[type="radio"]+label:after,
+.inputGroup input[type="checkbox"]+label,
+.inputGroup input[type="checkbox"]+label:after {
+    z-index: 2;
+    transition: all .2s ease-in;
+}
+
+.inputGroup input[type="radio"]+label:after,
+.inputGroup input[type="checkbox"]+label:after,
+.inputGroup input[type="radio"],
+.inputGroup input[type="checkbox"] {
+    --inputGroup-size: 1rem;
+    width: var(--inputGroup-size);
+    height: var(--inputGroup-size);
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+}
+
+.inputGroup input[type="radio"]+label:after,
+.inputGroup input[type="checkbox"]+label:after {
+    content: '';
+    border: 2px solid #D1D7DC;
+    background-color: #fff;
+    border-radius: 50%;
+    background-image: url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.414 11L4 12.414l5.414 5.414L20.828 6.414 19.414 5l-10 10z' fill='%23fff' fill-rule='nonzero'/%3E%3C/svg%3E ");
+    background-repeat: no-repeat;
+    background-position: 0px 0.75px;
+    background-size: var(--inputGroup-size);
+}
+
+.inputGroup input[type="checkbox"]+label:after {
+    border-radius: .25em;
+}
+
+.inputGroup input[type="radio"],
+.inputGroup input[type="checkbox"] {
+    visibility: hidden;
+}
+
+.inputGroup input[type="radio"]:checked+label:after,
+.inputGroup input[type="checkbox"]:checked+label:after {
+    background-color: #21ba45;
+    border-color: #21ba45;
+    color: #fff;
+}
+
+@media (min-width: 425px) {
+
+    .inputGroup input[type="radio"],
+    .inputGroup input[type="radio"]+label:after {
+        --inputGroup-size: 1.25rem;
+    }
+}

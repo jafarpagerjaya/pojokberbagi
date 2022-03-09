@@ -55,10 +55,10 @@
                 <div class="box-info d-flex flex-column">
                     <h6 class="mb-0" <?= ((strtolower($data['detil_bantuan']->sisa_waktu) != 'unlimited') ? 'data-count-up-value="' . $data['detil_bantuan']->sisa_waktu .'" data-count-up-date="true">' : '>' . $data['detil_bantuan']->sisa_waktu); ?></h6>
                     <p><small class="text-muted">Sisa Waktu</small></p>
-                    <div class="d-flex justify-content-between text-primary align-items-center d-md-none collapseButton mt-1 toggle">
+                    <a role="button" class="d-flex justify-content-between text-primary align-items-center d-md-none collapseButton mt-1 toggle">
                         <span>Sembunyikan detil</span>
                         <i class="lni lni-chevron-down" style="transform: rotate(90deg); transition: transform 0.3s ease 0s;"></i>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>

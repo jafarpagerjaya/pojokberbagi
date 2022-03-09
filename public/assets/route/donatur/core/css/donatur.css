@@ -1,3 +1,7 @@
+p {
+    font-size: 0.75rem !important;
+}
+
 .table tbody>tr>* {
     vertical-align: baseline;
 }
@@ -13,4 +17,162 @@
 
 .table .channel-payment>img {
     max-width: 50px;
+}
+
+.modal .modal-body>.row {
+    row-gap: 2em;
+}
+
+/*  Radio-Box */
+.radio-box>.item {
+    --img-wrapper: 100vw;
+    width: calc(var(--img-wrapper)/3 - (1em + var(--gap-x)/3));
+    height: calc(var(--img-wrapper)/3 - (1em + var(--gap-x)/3));
+    padding: .5em !important;
+}
+
+.radio-box>.item {
+    transition: all .15s ease-out;
+    opacity: .5;
+}
+
+.radio-box>.item.selected {
+    border-color: var(--warning) !important;
+}
+
+.radio-box>.item.selected:hover,
+.radio-box>.item.selected:hover input[type="radio"]+label:after {
+    cursor: not-allowed;
+}
+
+.radio-box>.item:not(.selected):hover {
+    border-color: var(--success) !important;
+    opacity: .75;
+    cursor: pointer;
+}
+
+.radio-box>.item.selected>.inputGroup input[type="radio"]:checked+label:after {
+    background-color: var(--warning);
+    border-color: var(--warning);
+}
+
+.radio-box>.item.selected>.inputGroup input[type="radio"] {
+    pointer-events: none !important;
+}
+
+.radio-box>.item>.inputGroup input[type="radio"],
+.radio-box>.item>.inputGroup input[type="radio"]+label:after {
+    top: -0.25rem;
+    right: -0.25rem;
+}
+
+.radio-box>.item>.inputGroup input[type="radio"]+label {
+    height: 0px;
+    margin: 0px;
+}
+
+.radio-box>.item .d-flex.h-100 {
+    font-size: .5rem;
+}
+
+/* Toast */
+[aria-live="polite"].d-flex {
+    --batas: .25em;
+    right: 0em;
+    bottom: var(--batas);
+    margin-left: var(--batas);
+    margin-right: var(--batas);
+    z-index: 1000;
+}
+
+@media (min-width: 360px) {
+    p {
+        font-size: 0.775rem !important;
+    }
+
+    .radio-box>.item .d-flex.h-100 {
+        font-size: .5rem;
+    }
+}
+
+@media (min-width: 375px) {
+    p {
+        font-size: 0.8rem !important;
+    }
+
+    .radio-box>.item .d-flex.h-100 {
+        font-size: .625rem;
+    }
+
+    [aria-live="polite"].d-flex {
+        --batas: .75em;
+    }
+}
+
+@media (min-width: 425px) {
+    p {
+        font-size: 0.825rem !important;
+    }
+
+    .modal .btn.w-425-auto {
+        width: auto !important;
+    }
+
+    .radio-box>.item .d-flex.h-100 {
+        font-size: .65rem;
+    }
+}
+
+@media (min-width: 576px) {
+    .modal .modal-body .radio-box>.item {
+        --img-wrapper: 508px;
+        width: calc(var(--img-wrapper)/4 - var(--gap-x)*3/4);
+        height: calc(var(--img-wrapper)/4 - var(--gap-x)*3/4);
+    }
+}
+
+@media (min-width: 768px) {
+    p {
+        font-size: 0.85rem !important;
+    }
+
+    .modal .modal-body .position-sticky {
+        top: 1em;
+    }
+
+    .modal .modal-body .radio-box>.item {
+        --img-wrapper: 376px;
+        width: calc(var(--img-wrapper)/3 - var(--gap-x)*2/3);
+        height: calc(var(--img-wrapper)/3 - var(--gap-x)*2/3);
+    }
+
+    .radio-box>.item .d-flex.h-100 {
+        font-size: .675rem;
+    }
+}
+
+@media (min-width: 992px) {
+    p {
+        font-size: 0.9rem !important;
+    }
+
+    .modal .modal-body .radio-box>.item {
+        --img-wrapper: 497.33px;
+        width: calc(var(--img-wrapper)/4 - var(--gap-x)*3/4);
+        height: calc(var(--img-wrapper)/4 - var(--gap-x)*3/4);
+    }
+
+    .radio-box>.item .d-flex.h-100 {
+        font-size: .7rem;
+    }
+
+    [aria-live="polite"].d-flex {
+        --batas: 1em;
+    }
+}
+
+@media (min-width: 1200px) {
+    p {
+        font-size: 1rem !important;
+    }
 }

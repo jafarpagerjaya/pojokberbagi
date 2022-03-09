@@ -12,14 +12,17 @@
     <!-- Icons -->
     <link href="/vendors/nucleo/css/nucleo.css" rel="stylesheet">
     <link href="/vendors/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <!-- Vendor -->
+    <link href="/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Argon CSS -->
     <link type="text/css" href="/assets/main/css/argon.min.css" rel="stylesheet">
     <!-- Core Style -->
+    <link type="text/css" href="/assets/route/admin/core/css/admin-style.css" rel="stylesheet">
     <?= $this->getLinkRel('controller'); ?>
     <?= $this->getLinkRel('action'); ?>
 </head>
 
-<body <?= (isset($this->data['uri']) ? 'data-uri="'. $this->data['uri'] .'"' : '') ?>>
+<body <?= (isset($this->data['uri']) ? 'data-uri="'. $this->data['uri'] .'"' : '') ?> <?= (isset($this->data[Config::get('session/token_name')]) ? 'data-token="'. $this->data[Config::get('session/token_name')] .'"' : '') ?>>
     <!-- Sidenav -->
     <nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-light bg-white" id="sidenav-main">
         <div class="scrollbar-inner">

@@ -17,7 +17,7 @@ class Utility {
 
     public static function keteranganJenisChannelPayment($params) {
         if ($params == 'TB') {
-            $metode_bayar = "Transfer";
+            $metode_bayar = "Transfer Bank";
         } else if ($params == 'RQ') {
             $metode_bayar = "QRIS";
         } else if ($params == 'EW') {
@@ -29,7 +29,7 @@ class Utility {
         } else if ($params == 'GI') {
             $metode_bayar = "Giro";
         } else {
-            $metode_bayar = "Unknown";
+            $metode_bayar = "Unrecognize (Payment Method)";
         }
         return $metode_bayar;
     }

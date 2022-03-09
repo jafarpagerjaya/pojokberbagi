@@ -30,7 +30,7 @@ const noSpace = function(event) {
     if (event.keyCode === 32) {
         event.preventDefault();
     }
-}
+};
 
 let inputNoSpace = document.querySelectorAll('.no-space');
 inputNoSpace.forEach(el => {

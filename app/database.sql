@@ -330,7 +330,7 @@ CREATE TABLE channel_payment (
     kode CHAR(3) DEFAULT NULL,
     nomor VARCHAR(30) NOT NULL,
     atas_nama VARCHAR(30) NOT NULL,
-    jenis ENUM('TB','VA','EW','QR','GM','GI'),
+    jenis ENUM('TB','VA','EW','QR','GM','GI') NOT NULL,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     id_gambar INT UNSIGNED,

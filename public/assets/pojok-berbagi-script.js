@@ -40,6 +40,12 @@ let counterUpSup = function (counterTarget, counterSpeed, date = false) {
         // Initial values
         counterTarget.innerHTML = '0';
         const finalValue = parseInt(numberElem.getAttribute('data-count-up-value'), 10);
+
+        if (isNaN(finalValue)) {
+            console.log('[data-count-up-value] tidak ditemukan pada ', numberElem);
+            return false;
+        }
+        
         const animTime = counterSpeed;
         let date;
         // data-count-up-date => true or false
