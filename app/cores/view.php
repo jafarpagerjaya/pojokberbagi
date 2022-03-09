@@ -87,6 +87,15 @@ class View {
 							case 'charset':
 								$charset = $items_value;
 							break;
+							case 'source':
+								$source = $items_value;
+							break;
+							case 'integrity':
+								$integrity = $items_value;
+							break;
+							case 'crossorigin':
+								$crossorigin = $items_value;
+							break;
 							default:
 							die('Key Item ' . $items . ' Are Not Recognized');
 							break;
@@ -108,6 +117,12 @@ class View {
 				}
 				if (!empty($charset)) {
 					$link .= ' charset="' . $charset . '"';
+				}
+				if (!empty($integrity)) {
+					$link .= ' integrity="' . $integrity . '"';
+				}
+				if (!empty($crossorigin)) {
+					$link .= ' crossorigin="' . $crossorigin . '"';
 				}
 				echo $link .= '>';
 			}
@@ -164,10 +179,11 @@ class View {
 					if (!file_exists(BASEURL.$src) && $source != 'trushworty') {
 						exit("<pre/>Javascript file not found in path ".$src);
 					}
-					
+
 					$src = $this->autoVersion($src);
 
 					$script = '<script type="' . $type . '" src="' . $src . '"';
+					
 					if (!empty($charset)) {
 						$script .= ' charset="' . $charset . '"';
 					}
