@@ -87,10 +87,27 @@ class View {
 							case 'charset':
 								$charset = $items_value;
 							break;
+							case 'source':
+								$source = $items_value;
+							break;
+							case 'integrity':
+								$integrity = $items_value;
+							break;
+							case 'crossorigin':
+								$crossorigin = $items_value;
+							break;
 							default:
 							die('Key Item ' . $items . ' Are Not Recognized');
 							break;
 						}
+					}
+				}
+				if (empty($source)) {
+					$href_version = $this->auto_version($href);
+					if ($href_version == false) {
+						echo '<!-- There is no file => '. $href . ' -->';
+					} else {
+						$href = $href_version;
 					}
 				}
 				$link = '<link rel="' . $rel . '" type="' . $type . '" href="' . $href . '"';
@@ -106,9 +123,26 @@ class View {
 				if (!empty($charset)) {
 					$link .= ' charset="' . $charset . '"';
 				}
+				if (!empty($integrity)) {
+					$link .= ' integrity="' . $integrity . '"';
+				}
+				if (!empty($crossorigin)) {
+					$link .= ' crossorigin="' . $crossorigin . '"';
+				}
 				echo $link .= '>';
 			}
 		}
+	}
+
+	private function auto_version($file) {
+		// if it is not a valid path (example: a CDN url)
+		if (strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file)) return false;
+	
+		// retrieving the file modification time
+		// https://www.php.net/manual/en/function.filemtime.php
+		$mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+	
+		return sprintf("%s?v=%d", $file, $mtime);
 	}
 	
 	private function getScript($property_param) {
@@ -150,7 +184,15 @@ class View {
 					if (!file_exists(BASEURL.$src) && $source != 'trushworty') {
 						exit("<pre/>Javascript file not found in path ".$src);
 					}
-					$script = '<script type="' . $type . '" src="' . $src . '"';
+					if (empty($source)) {
+						$src_version = $this->auto_version($src);
+						if ($src_version == false) {
+							echo '<!-- There is no file => '. $href . ' -->';
+						} else {
+							$src = $src_version;
+						}
+					}
+					$script = '<script type="' . $type . '" src="' . $src .'"';
 					if (!empty($charset)) {
 						$script .= ' charset="' . $charset . '"';
 					}
