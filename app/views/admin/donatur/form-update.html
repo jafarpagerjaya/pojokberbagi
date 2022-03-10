@@ -2,7 +2,6 @@
     <div class="col-lg-6">
         <div class="card">
             <form action="/admin/donatur/update/<?= $data['data_donatur']->id_donatur ?>" method="post" autocomplete="off">
-                <input type="hidden" name="id_donatur" value="<?= $data['data_donatur']->id_donatur ?>">
                 <div class="card-header">
                     <h6 class="heading-small text-muted mb-0">Informasi Donatur</h6>
                 </div>
@@ -29,6 +28,7 @@
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="id_donatur" value="<?= $data['data_donatur']->id_donatur ?>">
                     <input name="token" type="hidden" value="<?= $data['token']; ?>">
                 </div>
                 <div class="card-footer">

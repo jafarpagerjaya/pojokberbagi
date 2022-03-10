@@ -19,6 +19,14 @@ table tbody>tr>th {
     border-radius: 50%;
 }
 
+a.disabled {
+    cursor: not-allowed;
+}
+
+.card-stats .card-body .col .counter-card[data-count-up-value] {
+    font-size: 1.24em;
+}
+
 .card-profile-image img {
     background-color: #f7fafc !important;
 }

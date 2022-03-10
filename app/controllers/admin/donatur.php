@@ -5,9 +5,16 @@ class DonaturController extends Controller {
     public function __construct() {
         $this->rel_controller = array(
             array(
-                'href' => ASSET_PATH . basename(dirname(__FILE__)) . DS . 'core' . DS . 'css' . DS . 'admin-style.css'
+                'href' => ASSET_PATH . 'route' . DS . basename(dirname(__FILE__)) . DS . 'core' . DS . 'css' . DS . 'admin-style.css'
             )
         );
+
+        $this->script_controller = array(
+			array(
+				'type' => 'text/javascript',
+                'src' => '/assets/pojok-berbagi-script.js'
+			)
+		);
 
         $this->title = 'Donatur';
         $auth = $this->model('Auth');
@@ -28,6 +35,13 @@ class DonaturController extends Controller {
     }
 
     public function index() {
+        $this->script_action = array(
+			array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/core/js/admin-script.js'
+			)
+		);
+
         switch (strtoupper($this->data['admin_alias'])) {
             case 'SYS':
                 $this->sys();
@@ -50,6 +64,13 @@ class DonaturController extends Controller {
 
     public function sys() {
         $this->title = 'Donatur By Sys';
+        
+        $this->model('Sys');
+        $this->data['info-card'] = array(
+            'jumlah_donatur' => $this->model->jumlahDonatur(),
+            'jumlah_akun' => $this->model->jumlahAkun(),
+        );
+
         $this->_donatur->dataDonatur();
         $this->data['donatur'] = $this->_donatur->data();
         $this->_donatur->countData('donatur');
@@ -128,9 +149,9 @@ class DonaturController extends Controller {
                             ), array('id_donatur','=', Sanitize::escape(Input::get('id_donatur')))
                         );
                         if ($result) {
-                            Session::flash('success', 'Data Bantuan Berhasil Diupdate');
+                            Session::flash('success', 'Data donatur dengan [ID] <b>'. Sanitize::escape2(Input::get('id_donatur')) .'</b> berhasil diupdate.');
                         } else {
-                            Session::flash('error', 'Data Bantuan Gagal Diupdate');
+                            Session::flash('error', 'Data donatur dengan [ID] <b>'. Sanitize::escape2(Input::get('id_donatur')) .'</b> gagal diupdate.');
                         }
                         Redirect::to('admin/donatur');
                     }

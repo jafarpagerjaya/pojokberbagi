@@ -3,18 +3,17 @@ class HomeController extends Controller {
     public function __construct() {
         $this->title = 'Admin';
 
+        $this->rel_controller = array(
+            array(
+                'href' => '/assets/route/admin/core/css/admin-style.css'
+			)
+        );
+
         $this->script_controller = array(
 			array(
 				'type' => 'text/javascript',
                 'src' => '/assets/pojok-berbagi-script.js'
-			)
-		);
-        
-        $this->script_action = array(
-			array(
-				'type' => 'text/javascript',
-                'src' => '/assets/route/admin/pages/js/home.js'
-			)
+            )
 		);
         
         $this->model("Auth");
@@ -34,6 +33,12 @@ class HomeController extends Controller {
     }
 
     public function index() {
+        $this->script_action = array(
+			array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/pages/js/home.js'
+			)
+		);
         // $this->setKunjungan();
         // Track real path based on return php request for js dom
 		$this->data['uri'] = base64_encode($this->getRealUri());

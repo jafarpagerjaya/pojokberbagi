@@ -28,6 +28,29 @@ class AkunController extends Controller {
     }
 
     public function index() {
+        $this->rel_action = array(
+            array(
+                'href' => '/assets/route/admin/pages/css/akun.css'
+            )
+        );
+
+        $this->script_action = array(
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/pojok-berbagi-script.js'
+			),
+            array(
+                'src' => '/assets/route/admin/core/js/admin-script.js'
+            )
+        );
+
+        $this->model('Sys');
+        $this->data['info-card'] = array(
+            'jumlah_akun' => $this->model->jumlahAkun(),
+            'jumlah_akun_terblocok' => $this->model->jumlahAkunTerblock(),
+            'jumlah_akun_admin' => $this->model->jumlahAkunAdmin()
+        );
+
         $dataAkun = $this->_auth->getDataAkun();
         $this->data['halaman'] = 1;
         $this->data['record'] = $this->_auth->countData();

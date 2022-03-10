@@ -172,7 +172,7 @@ class View {
 								$crossorigin = $items_value;
 							break;
 							default:
-								die('Key Item ' . $items . ' Are Not Recognized');
+								die('Key Item ' . $items . ' Are Not Recognized => ' . $items_value);
 							break;
 						}
 					}
