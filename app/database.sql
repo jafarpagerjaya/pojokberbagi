@@ -68,15 +68,19 @@ BEFORE UPDATE ON gambar
 FOR EACH ROW
   SET NEW.gembok = IF(NEW.gembok = 1, NEW.gembok, NULL);
 
-INSERT INTO gambar(id_gambar,nama,path_gambar, label, gembok) VALUES(1,'default','/assets/images/default.png','avatar','1'),
-(2,'female-avatar','/assets/images/female-avatar.jpg','avatar','1'),
-(3,'male-avatar','/assets/images/male-avatar.jpg','avatar','1'),
-(4,'bantuan','/assets/images/bantuan/bantuan.jpg','bantuan','1'),
-(5,'satu-juta-sembako-1','/uploads/images/bantuan/satu-juta-sembako-1.jpg','bantuan', NULL),
-(6,'geber-1','/uploads/images/bantuan/geber-1.jpg','bantuan', NULL),
-(7,'semeru-1','/uploads/images/bantuan/semeru-1.jpg','bantuan', NULL),
-(8,'razka-1','/uploads/images/bantuan/raska-1.jpg','bantuan', NULL),
-(9,'bank-bjb','/assets/images/partners/bjb.png','partner','1');
+INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES('default','/assets/images/default.png','avatar','1'),
+('female-avatar','/assets/images/female-avatar.jpg','avatar','1'),
+('male-avatar','/assets/images/male-avatar.jpg','avatar','1'),
+('bank-bjb','/assets/images/partners/bjb.png','partner','1'),
+('bank-bsi','/assets/images/partners/bsi.png','partner','1'),
+('bank-bri','/assets/images/partners/bri.png','partner','1'),
+('satu-juta-sembako','/uploads/images/bantuan/medium/satu-juta-sembako.jpg','bantuan', NULL),
+('satu-juta-sembako-wide','/uploads/images/bantuan/wide/satu-juta-sembako-wide.png','bantuan', NULL),
+('geberr','/uploads/images/bantuan/medium/geberr.jpg','bantuan', NULL),
+('geberr-wide','/uploads/images/bantuan/wide/geberr-wide.png','bantuan', NULL),
+('razka','/uploads/images/bantuan/medium/raska.jpg','bantuan', NULL);
+('razka-wide','/uploads/images/bantuan/wide/raska-wide.jpg','bantuan', NULL);
+
 
 CREATE TABLE akses (
     hak_akses CHAR(1) NOT NULL PRIMARY KEY,
@@ -274,7 +278,8 @@ CREATE TABLE bantuan (
     deskripsi VARCHAR(255) NOT NULL,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    id_gambar INT UNSIGNED,
+    id_gambar_medium INT UNSIGNED,
+    id_gambar_wide INT UNSIGNED,
     id_sektor CHAR(1),
     id_kategori TINYINT UNSIGNED,
     id_jenis SMALLINT UNSIGNED,
@@ -282,7 +287,8 @@ CREATE TABLE bantuan (
     id_pengawas SMALLINT UNSIGNED,
     CONSTRAINT UN_NAMA_BANTUAN UNIQUE(nama),
     CONSTRAINT F_ID_PEMOHON_BANTUAN_ODR FOREIGN KEY(id_pemohon) REFERENCES pemohon(id_pemohon) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT F_ID_GAMBAR_BANTUAN_ODN FOREIGN KEY(id_gambar) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_ID_GAMBAR_BANTUAN_MEDIUM_ODN FOREIGN KEY(id_gambar_medium) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_ID_GAMBAR_BANTUAN_WIDE_ODN FOREIGN KEY(id_gambar_wide) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT F_ID_SEKTOR_BANTUAN_ODR FOREIGN KEY(id_sektor) REFERENCES sektor(id_sektor) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT F_ID_KATEGORI_BANTUAN_ODR FOREIGN KEY(id_kategori) REFERENCES kategori(id_kategori) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT F_ID_JENIS_BANTUAN_ODR FOREIGN KEY(id_jenis) REFERENCES jenis(id_jenis) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -290,11 +296,48 @@ CREATE TABLE bantuan (
     CONSTRAINT F_ID_PENGAWAS_BANTUAN_ODN FOREIGN KEY(id_pengawas) REFERENCES pegawai(id_pegawai) ON DELETE SET NULL ON UPDATE CASCADE
 )ENGINE=INNODB;
 
+-- Catatan baris ini wajib dihapus jika sudah db host disesuaikan;
+--
+-- this query must run on host then delete it
+--
+delete from gambar;
+alter table gambar AUTO_INCREMENT = 0;
+INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES('default','/assets/images/default.png','avatar','1'),
+('female-avatar','/assets/images/female-avatar.jpg','avatar','1'),
+('male-avatar','/assets/images/male-avatar.jpg','avatar','1'),
+('bank-bjb','/assets/images/partners/bjb.png','partner','1'),
+('bank-bsi','/assets/images/partners/bsi.png','partner','1'),
+('bank-bri','/assets/images/partners/bri.png','partner','1'),
+('satu-juta-sembako','/uploads/images/bantuan/medium/satu-juta-sembako.jpg','bantuan', NULL),
+('satu-juta-sembako-wide','/uploads/images/bantuan/wide/satu-juta-sembako-wide.png','bantuan', NULL),
+('geberr','/uploads/images/bantuan/medium/geberr.png','bantuan', NULL),
+('geberr-wide','/uploads/images/bantuan/wide/geberr-wide.png','bantuan', NULL),
+('semeru','/uploads/images/bantuan/medium/semeru.jpg','bantuan', NULL),
+('semeru-wide','/uploads/images/bantuan/wide/semeru-wide.png','bantuan', NULL),
+('razka','/uploads/images/bantuan/medium/razka.jpg','bantuan', NULL),
+('razka-wide','/uploads/images/bantuan/wide/razka-wide.png','bantuan', NULL),
+('single-wonder-mom','/uploads/images/bantuan/medium/single-wonder-mom.jpeg','bantuan', NULL),
+('single-wonder-mom-wide','/uploads/images/bantuan/wide/single-wonder-mom-wide.png','bantuan', NULL);
+--
+
+alter table bantuan drop foreign key F_ID_GAMBAR_BANTUAN_ODN;
+ALTER TABLE bantuan CHANGE id_gambar id_gambar_medium int unsigned;
+alter table bantuan add CONSTRAINT F_ID_GAMBAR_MEDIUM_BANTUAN_ODN FOREIGN KEY(id_gambar_medium) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE;
+alter table bantuan add column id_gambar_wide INT UNSIGNED AFTER id_gambar_medium;
+alter table bantuan add CONSTRAINT F_ID_GAMBAR_WIDE_BANTUAN_ODN FOREIGN KEY(id_gambar_wide) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE;
+--
+
+update bantuan set id_gambar_medium = 7, id_gambar_wide = 8 where id_bantuan = 1;
+update bantuan set id_gambar_medium = 9, id_gambar_wide = 10 where id_bantuan = 2;
+update bantuan set id_gambar_medium = 11, id_gambar_wide = 12 where id_bantuan = 3;
+update bantuan set id_gambar_medium = 13, id_gambar_wide = 14 where id_bantuan = 4;
+update bantuan set id_gambar_medium = 15, id_gambar_wide = 16 where id_bantuan = 5;
+
 -- status tabel bantuan B = Belum Disetujui, T = Tidak Disetujui, D = Disetujui, S = Proyek Bantuan sudah selesai
 -- satuan_target = menyatakan sasaran dari jumlah target. contoh paket sembako
 
 INSERT INTO bantuan(nama,status,satuan_target,jumlah_target,tanggal_awal,deskripsi,id_jenis,id_kategori,id_sektor,id_gambar) VALUES('Satu Juta Sembako','D','Paket Sembako',1000000,'2021-08-01','Berbagi Sembako Bagi Masyarakat Terdampak COVID-19',1, '3', 'S',5),
-('Geber','D',NULL,NULL,NULL,"Gerakan Berbagi Nasi Untuk Orang Lapar di Hari Jum'at Berkah",2, '3', 'S',6),
+('Geberr','D',NULL,NULL,NULL,"Gerakan Berbagi Nasi Untuk Orang Lapar di Hari Jum'at Berkah",2, '3', 'S',6),
 ('Peduli Semeru','D',NULL,NULL,NULL,'Bantuan Bencana Bagi Masyarakat Terdampak Letusan Gunung Semeru',1, '5', 'B',7),
 ('Peduli Razka','D',NULL,NULL,NULL,'Bantuan Untuk Razka Pendrita Miningitis Berusia 6thn',4, '3', 'K',8);
 

@@ -7,7 +7,7 @@ class BantuanController extends Controller {
     public function __construct() {
         $this->rel_controller = array(
             array(
-                'href' => ASSET_PATH . basename(dirname(__FILE__)) . DS . 'core' . DS . 'css' . DS . 'admin-style.css'
+                'href' => '/assets/route/admin/core/css/admin-style.css'
             )
         );
 
