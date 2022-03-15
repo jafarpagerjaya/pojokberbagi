@@ -308,15 +308,15 @@ INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES('default','/assets/im
 ('bank-bjb','/assets/images/partners/bjb.png','partner','1'),
 ('bank-bsi','/assets/images/partners/bsi.png','partner','1'),
 ('bank-bri','/assets/images/partners/bri.png','partner','1'),
-('satu-juta-sembako','/uploads/images/bantuan/medium/satu-juta-sembako.jpg','bantuan', NULL),
+('satu-juta-sembako','/uploads/images/bantuan/medium/satu-juta-sembako-medium.jpg','bantuan', NULL),
 ('satu-juta-sembako-wide','/uploads/images/bantuan/wide/satu-juta-sembako-wide.png','bantuan', NULL),
-('geberr','/uploads/images/bantuan/medium/geberr.png','bantuan', NULL),
+('geberr','/uploads/images/bantuan/medium/geberr-medium.png','bantuan', NULL),
 ('geberr-wide','/uploads/images/bantuan/wide/geberr-wide.png','bantuan', NULL),
-('semeru','/uploads/images/bantuan/medium/semeru.jpg','bantuan', NULL),
+('semeru','/uploads/images/bantuan/medium/semeru-medium.jpg','bantuan', NULL),
 ('semeru-wide','/uploads/images/bantuan/wide/semeru-wide.png','bantuan', NULL),
-('razka','/uploads/images/bantuan/medium/razka.jpg','bantuan', NULL),
+('razka','/uploads/images/bantuan/medium/razka-medium.jpg','bantuan', NULL),
 ('razka-wide','/uploads/images/bantuan/wide/razka-wide.png','bantuan', NULL),
-('single-wonder-mom','/uploads/images/bantuan/medium/single-wonder-mom.jpeg','bantuan', NULL),
+('single-wonder-mom','/uploads/images/bantuan/medium/single-wonder-mom-medium.jpeg','bantuan', NULL),
 ('single-wonder-mom-wide','/uploads/images/bantuan/wide/single-wonder-mom-wide.png','bantuan', NULL);
 --
 

@@ -19,5 +19,5 @@ imgOnErrorList.forEach(errorImg => {
         alt = document.createTextNode(altValue);
         errorImg.parentNode.insertBefore(alt,errorImg);
         errorImg.parentNode.removeChild(errorImg);
-    });
+    }, 0);
 });
