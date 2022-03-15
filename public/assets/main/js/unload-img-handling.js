@@ -1,8 +1,8 @@
 const imgOnErrorList = document.querySelectorAll('img[alt]');
 // let defaultBrokenSrcImg = 'https://secure.gravatar.com/avatar?d=wavatar';
 
-imgOnErrorList.forEach(errorImg => {
-    setTimeout(() => {
+setTimeout(() => {
+    imgOnErrorList.forEach(errorImg => {
         let isLoaded = errorImg.naturalHeight !== 0;
 
         if (isLoaded) {
@@ -20,4 +20,4 @@ imgOnErrorList.forEach(errorImg => {
         errorImg.parentNode.insertBefore(alt,errorImg);
         errorImg.parentNode.removeChild(errorImg);
     });
-});
+}, 0);
