@@ -346,7 +346,7 @@ header.header+.hero-area {
     }
 
     .hero-area .app-image .img-wrapper {
-        min-height: auto;
+        min-height: 301.5px;
         max-height: 301.5px;
     }
 }
@@ -362,6 +362,7 @@ header.header+.hero-area {
     }
 
     .hero-area .app-image .img-wrapper {
+        min-height: 349.3125px;
         max-height: 349.3125px;
     }
 
@@ -380,6 +381,7 @@ header.header+.hero-area {
     }
 
     .hero-area .app-image .img-wrapper {
+        min-height: 408.375px;
         max-height: 408.375px;
     }
 
