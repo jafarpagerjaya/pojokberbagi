@@ -45,7 +45,7 @@ class Sanitize {
 	public static function thisArray($array = array(), $method = 'escape2') {
 		$result = array();
 		foreach($array as $key => $value) {
-			$result[$key] = Self::$method($value);
+			$result[$key] = self::$method($value);
 		}
 		return $result;
 	}
