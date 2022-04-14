@@ -1,0 +1,51 @@
+#image-wrapper {
+    height: auto;
+    max-height: 380px;
+    width: 100% !important;
+    overflow: hidden;
+}
+
+#charLeft {
+    bottom: .5em;
+    right: 1.15em;
+    font-size: .65em;
+}
+
+[type="submit"].disabled {
+    cursor: not-allowed;
+}
+
+textarea {
+    min-height: 128px !important;
+}
+
+.form-group.error .form-control-label {
+    position: relative;
+    color: var(--danger);
+}
+
+.form-group.error .form-control-label::after {
+    content: attr(data-label-after);
+    position: absolute;
+    top: 0px;
+    right: calc(-100% + -.25rem);
+    width: 100%;
+    display: flex;
+    height: 100%;
+    text-transform: capitalize;
+}
+
+.form-group.error .input-group-prepend>.form-control-label {
+    flex-direction: column;
+    border-color: var(--danger);
+    transition: border-color 0s ease;
+}
+
+.form-group.error .input-group-prepend>.form-control-label::after {
+    flex-direction: column;
+    right: auto;
+    height: auto;
+    width: auto;
+    position: static;
+    text-transform: lowercase;
+}

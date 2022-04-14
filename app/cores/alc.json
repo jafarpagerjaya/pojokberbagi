@@ -6,7 +6,7 @@
         }
     },
     "admin" : {
-        "cs" : {
+        "cre" : {
             "donatur" : "*"
         },
         "direktur" : {

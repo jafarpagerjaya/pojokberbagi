@@ -68,6 +68,80 @@
     color: #fff;
 }
 
+.inputGroup:not([data-file-passed]):hover,
+.inputGroup[data-file-passed="true"]:hover {
+    background-color: var(--light) !important;
+    border-color: var(--light) !important;
+}
+
+.inputGroup[data-file-passed="true"] {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+.inputGroup[data-file-passed="false"] {
+    background-color: var(--danger) !important;
+    border-color: var(--danger) !important;
+}
+
+.inputGroup[data-file-passed="true"] *,
+.inputGroup[data-file-passed="false"] * {
+    color: white;
+}
+
+.inputGroup[data-file-passed="true"] i::before {
+    content: "\ea26";
+    color: var(--success) !important;
+}
+
+@keyframes pulse {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0.2;
+    }
+}
+
+.inputGroup[data-file-passed="false"] i::before {
+    content: "\ea0e";
+    animation: pulse .3s linear infinite alternate;
+}
+
+.inputGroup[data-file-passed="true"]:hover i::before {
+    content: "\ea29";
+    color: var(--secondary) !important;
+}
+
+.inputGroup[data-file-passed="false"] label span.size {
+    font-weight: bolder !important;
+}
+
+.inputGroup input[type="file"] {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    border: 0px;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.inputGroup input[type="file"]~.desc+i {
+    font-size: 1.5rem;
+}
+
+.inputGroup input[type="file"]~.desc+i::before {
+    font-size: 1.5rem;
+}
+
+.inputGroup input[type="file"]~.desc span {
+    font-size: .7rem;
+}
+
 @media (min-width: 425px) {
 
     .inputGroup input[type="radio"],

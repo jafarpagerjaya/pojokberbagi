@@ -50,6 +50,7 @@ class DonaturController extends Controller {
 
             case 'CRE':
                 $this->cr();
+                return VIEW_PATH.'admin'.DS.'donatur'.DS.'cre.html';
             break;
             
             default:
@@ -60,6 +61,17 @@ class DonaturController extends Controller {
 
     public function cr() {
         $this->title = 'Donatur By CR';
+        $this->model('Cr');
+        $this->data['info-card'] = array(
+            'jumlah_donatur' => $this->model->jumlahDonatur(),
+            'jumlah_akun' => $this->model->jumlahAkun(),
+        );
+
+        $this->_donatur->dataDonatur();
+        $this->data['donatur'] = $this->_donatur->data();
+        $this->_donatur->countData('donatur');
+        $this->data['record'] = $this->_donatur->data()->jumlah_record;
+        $this->data['halaman'] = 1;
     }
 
     public function sys() {

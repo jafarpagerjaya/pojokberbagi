@@ -66,16 +66,23 @@ class Database {
 
 	private function filter($where = array()) {
 		$filter = array();
-		$operators = array('=', '>', '<', '>=', '<=', '!=','IS');
+		$operators = array('=', '>', '<', '>=', '<=', '!=','IS','IN');
 
 		$field    = $where[0];
 		$operator = $where[1];
 
 		if (in_array($operator, $operators)) {
-			$filter = array(
-				"{$field} {$operator} ?",
-				1
-			);
+			if ($operator != 'IN') {
+				$filter = array(
+					"{$field} {$operator} ?",
+					1
+				);
+			} else {
+				$filter = array(
+					"{$field} {$operator} (?)",
+					1
+				);
+			}
 		}
 		return $filter;
 	}
@@ -140,6 +147,8 @@ class Database {
 		}
 		return false;
 	}
+
+	// Multiple insert Jd PR
 
 	final public function update($table, $fields, $where) {
 		if (count($fields)) {

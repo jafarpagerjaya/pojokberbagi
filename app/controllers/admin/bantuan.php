@@ -27,7 +27,8 @@ class BantuanController extends Controller {
         $this->data['admin_alias'] = $admin->data()->alias;
         
         $this->_bantuan = $this->model('Bantuan');
-        $this->_bantuan->setOffset($this->getPageRecordLimit());
+        $this->_bantuan->setDataLimit($this->getPageRecordLimit());
+        $this->data['limit'] = $this->getPageRecordLimit();
     }
 
     public function index() {
@@ -48,16 +49,63 @@ class BantuanController extends Controller {
             'jumlah_bantuan_selesai' => $this->model->jumlahBantuanSelesai()
         );
 
-        $this->data['bantuan'] = $this->_bantuan->dataBantuan();
         $this->data['halaman'] = 1;
-        $this->data['record'] = $this->_bantuan->affected();
+        // Old
+        // $this->data['bantuan'] = $this->_bantuan->dataBantuan();
+        
+        // New Via Offset
+        // $this->_bantuan->setDataOffset(0);
+        // Limit Wajib Di set Jika tidak ingin mengikuti nilai limit di controller
+        // $this->_bantuan->setDataLimit(2);
+
+        // $this->_bantuan->newDataOffset();
+
+        // New Via Seek
+        // Limit Wajib Di set Jika tidak ingin mengikuti nilai limit di construct
+        // $this->_bantuan->setDataLimit(2);
+
+        $this->data['limit'] = $this->_bantuan->getDataLimit();
+        
+        $this->_bantuan->setDataBetween($this->data['halaman']);
+        $this->_bantuan->newDataSeek();
+        $this->data['bantuan'] = $this->_bantuan->data();
+        if ($this->_bantuan->countData('bantuan') != false) {
+            $this->data['record'] = $this->_bantuan->countData('bantuan')->jumlah_record;
+        } else {
+            $this->data['record'] = 0;
+        }
     }
 
     public function halaman($params = array()) {
         if (count($params)) {
-            $dataBantuan = $this->_bantuan->dataHalaman($params[0]);
+            // Old
+            // $dataBantuan = $this->_bantuan->dataHalaman($params[0]);
+
+            // New Via Offset Set Limit dulu Khawatir Offset ambil default = 10
+            // $this->_bantuan->setDataLimit(1);
+
+            // $this->_bantuan->setDataOffsetHalaman($params[0]);
+            // $this->_bantuan->newDataOffset();
+
+            // New Via Seek
+            // Limit Wajib Di set Jika tidak ingin mengikuti nilai limit di construct
+            // $this->_bantuan->setDataLimit(2);
+
+            $this->data['limit'] = $this->_bantuan->getDataLimit();
+
+            // Khusus seek method jika data yang ingin ditampilkan secara DESC maka wajib di set order_directionnya
+            $this->_bantuan->setDirection('DESC');
+
+
+            $this->_bantuan->setDataBetween($params[0]);
+            $this->_bantuan->newDataSeek();
+            $dataBantuan = $this->_bantuan->data();
             if ($dataBantuan) {
-                $this->data['record'] = $this->_bantuan->affected();
+                if ($this->_bantuan->countData('bantuan') != false) {
+                    $this->data['record'] = $this->_bantuan->countData('bantuan')->jumlah_record;
+                } else {
+                    $this->data['record'] = NULL;
+                }
                 $this->data['halaman'] = $params[0];
                 $this->data['bantuan'] = $dataBantuan;
 
@@ -89,42 +137,71 @@ class BantuanController extends Controller {
     }
 
     public function formulir($params = null) {
-        $dataJenis = $this->_bantuan->dataJenis();
-        $this->data['jenis_bantuan'] = $dataJenis;
+        // $dataJenis = $this->_bantuan->dataJenis();
+        // $this->data['jenis_bantuan'] = $dataJenis;
+
+        $dataKategori = $this->_bantuan->dataKategori();
+        $this->data['kategori_bantuan'] = $dataKategori;
+        $dataSektor = $this->_bantuan->dataSektor();
+        $this->data['sektor_bantuan'] = $dataSektor;
 
         $this->rel_action = array(
+            array(
+                'href' => '/assets/main/css/utility.css'
+            ),
+            array(
+                'href' => '/assets/main/css/inputGroup.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/form-element.css'
+            ),
+            array(
+                'href' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+            ),
             array(
                 'href' => VENDOR_PATH.'cropper'.DS.'dist'.DS.'cropper.min.css'
             ),
             array(
-                'href' => ASSET_PATH.'route'.DS.basename(dirname(__FILE__)).DS.'pages'.DS.'css'.DS.'formulir.css'
+                'href' => '/assets/route/admin/pages/css/formulir.css'
             )
         );
 
         $this->script_action = array(
+            // array(
+			// 	'type' => 'text/javascript',
+            //     'src' => VENDOR_PATH.'bootstrap-datepicker'. DS .'dist'. DS .'js'. DS .'bootstrap-datepicker.min.js'
+			// ),
+            // array(
+			// 	'type' => 'text/javascript',
+            //     'charset' => 'UTF-8',
+            //     'src' => VENDOR_PATH.'bootstrap-datepicker'. DS .'dist'. DS .'locales'. DS .'bootstrap-datepicker.id.min.js'
+			// ),
             array(
 				'type' => 'text/javascript',
-                'src' => VENDOR_PATH.'bootstrap-datepicker'. DS .'dist'. DS .'js'. DS .'bootstrap-datepicker.min.js'
+                'src' => '/assets/route/admin/core/js/form-function.js'
 			),
             array(
 				'type' => 'text/javascript',
-                'charset' => 'UTF-8',
-                'src' => VENDOR_PATH.'bootstrap-datepicker'. DS .'dist'. DS .'locales'. DS .'bootstrap-datepicker.id.min.js'
+                'src' => '/assets/main/js/token.js'
 			),
             array(
 				'type' => 'text/javascript',
                 'src' => VENDOR_PATH.'cropper'. DS .'dist'. DS .'cropper.min.js'
 			),
             array(
+                'source' => 'trushworty',
+                'src' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+            ),
+            array(
 				'type' => 'text/javascript',
-                'src' => ASSET_PATH.'route'.DS.basename(dirname(__FILE__)).DS.'pages'.DS.'js'.DS.'formulir.js'
+                'src' => '/assets/route/admin/pages/js/formulir.js'
 			)
         );
 
-        $this->data['token'] = Token::generate();
-
         $this->data['bantuan_berjalan'] = $this->_bantuan->dataBantuanBerjalan();
-        
+
+        // Token for fetch
+        $this->data[Config::get('session/token_name')] = Token::generate();
 
         if (count($params) > 0) {
             $this->formUpdate($params[0]);
@@ -134,74 +211,87 @@ class BantuanController extends Controller {
                 $min_jumlah_target = $this->_bantuan->data()->min_jumlah_pelaksanaan;    
                 $this->data['min_jumlah_target'] = $min_jumlah_target;
             }
+            array_push($this->script_action, array(
+                'src' => '/assets/route/admin/pages/js/form-update.js'
+            ));
             return VIEW_PATH.'admin'.DS.'bantuan'.DS.'form-update.html';
         }
     }
 
-    public function tambah() {
-        if (Input::exists()) {
-			if (Token::check(Input::get('token'))) {
-				$vali = new Validate();
-                $validate = $vali->check($_POST, array(
-                    'nama' => array(
-                        'required' => true,
-                        'min' => 5,
-                        'max' => 30,
-                        'unique' => 'bantuan'
-                    ),
-                    'id_jenis' => array(
-                        'required' => true
-                    ),
-                    'jumlah_target' => array(
-                        'digit' => true
-                    ),
-                    'satuan_target' => array(
-                        'min' => 1
-                    ),
-                    'total_rab' => array(
-                        'digit' => true
-                    ),
-                    'min_donasi' => array(
-                        'digit' => true
-                    ),
-                    'lama_penayangan' => array(
-                        'digit' => true,
-                        'max' => 180
-                    ),
-                    'deskripsi' => array(
-                        'required' => true,
-                        'min' => 50,
-                        'max' => 255
-                    )
-                    // ,
-                    // 'file_gambar' => array(
-                    //     'required' => true,
-                    //     'file' => array('.png','.jpg','.jpeg')
-                    // )
-                ));
-                if (!$validate->passed()) {
-                    Session::put('error_feedback', $validate->getValueFeedback());
-                    Redirect::to('admin/bantuan/formulir' . (strlen($validate->getReturnError()) ? '#' . $validate->getReturnError() : ''));
-                } else {
-                    $this->_bantuan->create('bantuan', array(
-                        'nama' => ucwords(Sanitize::escape(trim(Input::get('nama')))),
-                        'id_jenis' => ucwords(Sanitize::escape(trim(Input::get('id_jenis')))),
-                        'jumlah_target' => Sanitize::toInt(Sanitize::escape(trim(Input::get('jumlah_target')))),
-                        'satuan_target' => ucwords(Sanitize::escape(trim(Input::get('satuan_target')))),
-                        'total_rab' => Sanitize::toInt(Sanitize::escape(trim(Input::get('total_rab')))),
-                        'lama_penayangan' => Sanitize::toInt(Sanitize::escape(trim(Input::get('lama_penayangan')))),
-                        'deskripsi' => ucfirst(Sanitize::escape(trim(Input::get('deskripsi')))),
-                    ));
-                    if ($this->_bantuan->affected()) {
-                        Session::flash('success', 'Berhasil menambahkan bantuan baru');
-                    } else {
-                        Session::flash('error', 'Gagal menambahkan bantuan baru');
-                    }
-                    Redirect::to('admin/bantuan');
-                }
-            }
-        }
-    }
+    // public function tambah() {
+        // if (Input::exists()) {
+		// 	if (Token::check(Input::get('token'))) {
+		// 		$vali = new Validate();
+        //         $validate = $vali->check($_POST, array(
+        //             'nama' => array(
+        //                 'required' => true,
+        //                 'min' => 5,
+        //                 'max' => 30,
+        //                 'unique' => 'bantuan'
+        //             ),
+        //             'penerima_bantuan' => array(
+        //                 'required' => true,
+        //                 'min' => 5,
+        //                 'max' => 50
+        //             ),
+        //             'id_kategori' => array(
+        //                 'required' => true
+        //             ),
+        //             'id_sektor' => array(
+        //                 'required' => true
+        //             ),
+        //             'deskripsi' => array(
+        //                 'required' => true,
+        //                 'min' => 50,
+        //                 'max' => 255
+        //             ),
+        //             'jumlah_target' => array(
+        //                 'digit' => true
+        //             ),
+        //             'satuan_target' => array(
+        //                 'min' => 1
+        //             ),
+        //             'min_donasi' => array(
+        //                 'digit' => true
+        //             ),
+        //             'lama_penayangan' => array(
+        //                 'digit' => true,
+        //                 'max' => 180
+        //             ),
+        //             'total_rab' => array(
+        //                 'digit' => true
+        //             )
+        //             // ,
+        //             // 'file_gambar' => array(
+        //             //     'required' => true,
+        //             //     'file' => array('.png','.jpg','.jpeg')
+        //             // )
+        //         ));
+        //         if (!$validate->passed()) {
+        //             Session::put('error_feedback', $validate->getValueFeedback());
+        //             Redirect::to('admin/bantuan/formulir' . (strlen($validate->getReturnError()) ? '#' . $validate->getReturnError() : ''));
+        //         } else {
+        //             $this->_bantuan->create('bantuan', array(
+        //                 'nama' => ucwords(Sanitize::escape(trim(Input::get('nama')))),
+        //                 'id_jenis' => ucwords(Sanitize::escape(trim(Input::get('id_jenis')))),
+        //                 'jumlah_target' => Sanitize::toInt(Sanitize::escape(trim(Input::get('jumlah_target')))),
+        //                 'satuan_target' => ucwords(Sanitize::escape(trim(Input::get('satuan_target')))),
+        //                 'total_rab' => Sanitize::toInt(Sanitize::escape(trim(Input::get('total_rab')))),
+        //                 'lama_penayangan' => Sanitize::toInt(Sanitize::escape(trim(Input::get('lama_penayangan')))),
+        //                 'deskripsi' => ucfirst(Sanitize::escape(trim(Input::get('deskripsi')))),
+        //             ));
+        //             if ($this->_bantuan->affected()) {
+        //                 Session::flash('success', 'Berhasil menambahkan bantuan baru');
+        //             } else {
+        //                 Session::flash('error', 'Gagal menambahkan bantuan baru');
+        //             }
+        //             Redirect::to('admin/bantuan');
+        //         }
+        //     }
+        // }
+        // Debug::pr($_POST);
+        // return false;
+    // }
 
     public function berjalan($params = array()) {
         if (count($params) > 1) {
@@ -226,23 +316,42 @@ class BantuanController extends Controller {
         if (!$params) {
             Redirect::to('admin/bantuan');
         }
+
         $this->_bantuan->getDetilBantuan($params[0]);
         if (!$this->_bantuan->data()->id_bantuan) {
             Session::flash('error','Data bantuan dengan ID ['. $params[0] .'] tidak ditemukan');
             Redirect::to('admin/bantuan'); 
         }
         $this->data['detil_bantuan'] = $this->_bantuan->data();
+        $now = new DateTime(date('Y-m-d H:i:s'));
+        $action = new DateTime($this->data['detil_bantuan']->action_at);
+        $msInterval = $action->diff($now);
+        $this->data['detil_bantuan']->telah_dikelola_selama = $msInterval->days;
 
+        $dataSaldo = $this->_bantuan->getSaldoBantuan($params[0]);
+        $this->data['saldo_bantuan'] = $dataSaldo;
+
+        $this->_bantuan->setDataLimit(1);
         $this->_bantuan->setStatus(1);
+        // $this->_bantuan->setDirection('DESC');
+        // $this->_bantuan->setDataOffsetHalaman(1);
+
         $dataDonatur = $this->_bantuan->dataDonasiDonaturBantuan($params[0]);
         $this->data['donasi_bantuan'] = $dataDonatur;
-
         $this->data['halaman'] = 1;
-        $this->data['record'] = $this->_bantuan->affected();
+        $this->data['record'] = $this->_bantuan->countDonasiBantuan($params[0]);
+        $this->data['pages'] = ceil($this->data['record']->jumlah_record / $this->_bantuan->getDataLimit());
+        $this->data['limit'] = $this->_bantuan->getDataLimit();
 
         $this->rel_action = array(
             array(
                 'href' => VENDOR_PATH.'chart.js'.DS.'dist'.DS.'Chart.min.css'
+            ),
+            array(
+                'href' => '/assets/main/css/pagination.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/pages/css/data.css'
             )
         );
 
@@ -252,18 +361,34 @@ class BantuanController extends Controller {
                 'src' => VENDOR_PATH.'chart.js'. DS .'dist'. DS .'Chart.min.js'
 			),
             array(
-				'type' => 'text/javascript',
-                'src' => ASSET_PATH.'admin'. DS .'pages'. DS. 'js' . DS .'bantuan-data.js'
+                'src' => '/assets/main/js/pagination.js'
+            ),
+            array(
+                'src' => '/assets/main/js/token.js'
+            ),
+            array(
+                'src' => '/assets/route/admin/core/js/form-function.js'
+            ),
+            array(
+                'src' => '/assets/route/admin/pages/js/data.js'
 			)
         );
+
+        // Token for fetch
+        $this->data[Config::get('session/token_name')] = Token::generate();
     }
 
     public function formUpdate($id) {
         if (count($id[0])) {
-            $hasil = $this->_bantuan->getData('gambar.path_gambar, gambar.nama, bantuan.*, jenis.nama nama_jenis, jenis.layanan','gambar RIGHT JOIN bantuan USING(id_gambar) JOIN jenis USING(id_jenis)', array('id_bantuan','=',$id[0]));
-            if ($this->_bantuan->affected()) {
-                $this->data['bantuan'] = $hasil;
+            $hasil = $this->_bantuan->getData(
+                'gm.nama nama_gambar_medium, gw.nama nama_gambar_wide, gm.path_gambar path_gambar_medium, gw.path_gambar path_gambar_wide, b.*', 
+                'bantuan b LEFT JOIN gambar gm ON(b.id_gambar_medium = gm.id_gambar) LEFT JOIN gambar gw ON(b.id_gambar_wide = gw.id_gambar)', 
+                array('b.id_bantuan', '=', Sanitize::escape2($id)),'AND',array('b.blokir','IS', NULL)
+            );
+            if (!$this->_bantuan->affected()) {
+                Redirect::to('admin/bantuan/formulir');
             }
+            $this->data['bantuan'] = $hasil;
         }
     }
 
@@ -278,43 +403,44 @@ class BantuanController extends Controller {
                     }
                     $vali = new Validate();
                     $validate = $vali->check($_POST, array(
-                        'nama' => array(
-                            'required' => true,
-                            'min' => 5,
-                            'max' => 30,
-                            'unique' => 'bantuan'
-                        ),
-                        'id_jenis' => array(
-                            'required' => true
-                        ),
-                        'jumlah_target' => array(
-                            'digit' => true,
-                            'min_value' => $min_jumlah_target
-                        ),
-                        'satuan_target' => array(
-                            'min' => 1
-                        ),
-                        'total_rab' => array(
-                            'digit' => true
-                        ),
-                        'min_donasi' => array(
-                            'digit' => true
-                        ),
-                        'lama_penayangan' => array(
-                            'digit' => true,
-                            'max' => 180
-                        ),
-                        // 'tanggal_awal' => array(
-                        //     'required' => true
-                        // ),
-                        // 'tanggal_akhir' => array(
-                        //     'min' => 1
-                        // ),
-                        'deskripsi' => array(
-                            'required' => true,
-                            'min' => 50,
-                            'max' => 255
-                        )
+                        // 'nama' => array(
+        //                 'required' => true,
+        //                 'min' => 5,
+        //                 'max' => 30,
+        //                 'unique' => 'bantuan'
+        //             ),
+        //             'penerima_bantuan' => array(
+        //                 'required' => true,
+        //                 'min' => 5,
+        //                 'max' => 50
+        //             ),
+        //             'id_kategori' => array(
+        //                 'required' => true
+        //             ),
+        //             'id_sektor' => array(
+        //                 'required' => true
+        //             ),
+        //             'deskripsi' => array(
+        //                 'required' => true,
+        //                 'min' => 50,
+        //                 'max' => 255
+        //             ),
+        //             'jumlah_target' => array(
+        //                 'digit' => true
+        //             ),
+        //             'satuan_target' => array(
+        //                 'min' => 1
+        //             ),
+        //             'min_donasi' => array(
+        //                 'digit' => true
+        //             ),
+        //             'lama_penayangan' => array(
+        //                 'digit' => true,
+        //                 'max' => 180
+        //             ),
+        //             'total_rab' => array(
+        //                 'digit' => true
+        //             )
                         // ,
                         // 'file_gambar' => array(
                         //     'required' => true

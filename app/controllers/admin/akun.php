@@ -54,7 +54,9 @@ class AkunController extends Controller {
         $dataAkun = $this->_auth->getDataAkun();
         $this->data['halaman'] = 1;
         $this->data['record'] = $this->_auth->countData();
-        $this->data['list_akun'] = $dataAkun;
+        if ($dataAkun != false) {
+            $this->data['list_akun'] = $dataAkun;
+        }
     }
 
     public function blok($params = array()) {

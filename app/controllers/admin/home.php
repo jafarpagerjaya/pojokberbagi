@@ -51,6 +51,7 @@ class HomeController extends Controller {
 
             case 'CRE':
                 $this->cr();
+                return VIEW_PATH.'admin'.DS.'home'.DS.'cre.html';
             break;
 
             case 'PRO':
@@ -71,6 +72,13 @@ class HomeController extends Controller {
 
     public function cr() {
         $this->title = 'CR';
+        $this->model('Cr');
+        $this->data['info-card'] = array(
+            'jumlah_akun' => $this->model->jumlahAkun(),
+            'jumlah_donatur' => $this->model->jumlahDonatur(),
+            'jumlah_donasi' => $this->model->jumlahDonasi(),
+            'jumlah_bantuan' => $this->model->jumlahBantuanAktif()
+        );
     }
 
     public function sys() {

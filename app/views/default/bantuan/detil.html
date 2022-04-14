@@ -42,7 +42,7 @@
                 </div>
                 <div class="box-info d-flex flex-column">
                     <h6 class="mb-0" data-count-up-value="<?= $data['detil_bantuan']->donasi_terlaksana ?>">0</h6>
-                    <p><small class="text-muted">Paket Sembako Tersalurkan</small></p>
+                    <p><small class="text-muted"><?= (isset($data['detil_bantuan']->jenis_penyaluran) ? $data['detil_bantuan']->jenis_penyaluran : 'Donasi') ?> Tersalurkan</small></p>
                     <div class="progress mt-1">
                         <div class="progress-bar bg-green" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0%" aria-valuenow="<?= $data['detil_bantuan']->persentase_pelaksanaan; ?>"></div>
                     </div>

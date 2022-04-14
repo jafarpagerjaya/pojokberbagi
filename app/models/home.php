@@ -82,7 +82,9 @@ class HomeModel {
     }
 
     public function countData($table) {
-		$this->db->query("SELECT COUNT(*) jumlah_record FROM ".$table);
+        $table = Sanitize::escape2($table);
+        $sql = "SELECT COUNT(*) jumlah_record FROM {$table}";
+		$this->db->query($sql);
 		if ($this->db->count()) {
 			$this->data = $this->db->result();
 			return $this->data;
@@ -147,4 +149,8 @@ class HomeModel {
     protected function getAscDsc() {
         return $this->_ascDsc;
     }
+
+    protected function split($string, $spliters) {
+		return preg_split('~'.$spliters.'(?![^()]*\))~', trim($string));
+	}
 }

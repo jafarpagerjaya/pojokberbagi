@@ -53,11 +53,17 @@ class BantuanController extends Controller {
             );
 
             $this->model('Bantuan');
+            $this->model->getData('COUNT(id_bantuan) found','bantuan',array('id_bantuan','=',Sanitize::escape2($params[0])));
+            if ($this->model->data()->found == 0) {
+                Redirect::to('home');
+            }
             $this->setKunjungan($params);
             $this->model->getDetilBantuan($params[0]);
             if ($this->model->affected()) {
                 $this->data['detil_bantuan'] = $this->model->data();
             }
+        } else {
+            Redirect::to('home');
         }
     }
 

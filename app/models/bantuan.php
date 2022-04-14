@@ -2,13 +2,88 @@
 class BantuanModel extends HomeModel {
 
     private $_halaman = array(1,10),
-            $_offset = 10,
-            $_status = NULL,
+            $_offset = 0,
+            $_limit = 10,
             $_order = 1,
-            $_order_direction = 'ASC';
+            $_order_direction = 'DESC',
+            $_between = array(
+                'start' => 1, 
+                'end' => 10
+            );
 
-    public function dataBantuan() {
-        $data = $this->db->query('SELECT b.id_bantuan, b.nama, b.jumlah_target, b.status, b.blokir, b.create_at,
+    private $_status = NULL;
+
+    // Cara Offset dengan JOIN ke index
+    public function setDataOffset($offset) {
+        $this->_offset = Sanitize::toInt2($offset);
+    }
+    public function getDataOffset() {
+        return $this->_offset;
+    }
+    public function setDataLimit($offset_limit) {
+        $this->_limit = Sanitize::toInt2($offset_limit);
+    }
+    public function getDataLimit() {
+        return $this->_limit;
+    }
+    public function setDataOffsetHalaman($halaman) {
+        $halaman = Sanitize::toInt2($halaman);
+        if ($halaman == 1) {
+            $offset = 0;
+        } else {
+            $offset = (($halaman - 1) * $this->_limit);
+        }
+        $this->_offset = $offset;
+    }
+    public function getDataOffsetHalaman() {
+        return $this->_offset;
+    }
+    public function newDataOffset() {
+        $this->db->query("SELECT bo.*, 
+        IF(SUM(p.jumlah_pelaksanaan) IS NULL, 0, SUM(p.jumlah_pelaksanaan)) jumlah_pelaksanaan,
+        SUM(d.jumlah_donasi) total_donasi, 
+        SUM(CASE WHEN d.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END) donasi_terlaksana,
+        SUM(CASE WHEN d.id_pelaksanaan IS NULL THEN d.jumlah_donasi END) saldo_donasi,
+		TRUNCATE(COALESCE(IF(bo.jumlah_target IS NULL, TRUNCATE(SUM(CASE WHEN d.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END)/SUM(d.jumlah_donasi)*100,1), IF(TRUNCATE((SUM(p.jumlah_pelaksanaan)/bo.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p.jumlah_pelaksanaan)/bo.jumlah_target)*100,1))),0),0) persentase_pelaksanaan
+		FROM bantuan bo JOIN (SELECT id_bantuan FROM bantuan ORDER BY {$this->_order} {$this->_order_direction} LIMIT {$this->_offset}, {$this->_limit}) bi ON(bo.id_bantuan = bi.id_bantuan)
+        LEFT JOIN donasi d 
+        ON(bo.id_bantuan = d.id_bantuan)
+        LEFT JOIN pelaksanaan p
+        ON(d.id_pelaksanaan = p.id_pelaksanaan)
+        GROUP BY bo.id_bantuan ORDER BY {$this->_order} {$this->_order_direction}");
+        if ($this->db->count()) {
+            $this->data = $this->db->results();
+            return true;
+        }
+        return false;
+        // Debug::pr($this->db);
+        // die();
+    }
+
+    // Cara Seek Method dilarang ada penghapusan record
+    public function setDataBetween($halaman) {
+        $halaman = Sanitize::escape2($halaman);
+        $start = (($halaman-1) * $this->getDataLimit()) + 1;
+        if ($start < 0) {
+            $start = 0;
+        }
+        $end = $halaman * $this->getDataLimit();
+        if ($this->_order_direction == 'DESC') {
+            $jumlah_record = $this->db->query("SELECT COUNT(*) jumlah_record FROM bantuan")->result()->jumlah_record + 1;
+    
+            $startD = $jumlah_record - $end;
+            $endD = $jumlah_record - $start;
+            $start = $startD;
+            $end = $endD;
+        }
+        $this->_between = array('start' => $start, 'end' => $end);
+    }
+
+    public function getDataBetween() {
+        return $this->_between;
+    }
+    public function newDataSeek() {
+        $this->db->query("SELECT b.id_bantuan, b.nama, b.jumlah_target, b.status, b.blokir, b.create_at,
         b.jumlah_target,
         b.satuan_target,
         IF(SUM(p.jumlah_pelaksanaan) IS NULL, 0, SUM(p.jumlah_pelaksanaan)) jumlah_pelaksanaan,
@@ -21,8 +96,34 @@ class BantuanModel extends HomeModel {
         ON(b.id_bantuan = d.id_bantuan)
         LEFT JOIN pelaksanaan p
         ON(d.id_pelaksanaan = p.id_pelaksanaan)
-        WHERE b.id_bantuan BETWEEN 1 AND 10
-        GROUP BY b.id_bantuan ORDER BY b.id_bantuan DESC');
+        WHERE b.id_bantuan BETWEEN ? AND ?
+        GROUP BY b.id_bantuan ORDER BY {$this->_order} {$this->_order_direction}", array(
+            'between_start' => $this->_between['start'],
+            'between_end' => $this->_between['end']
+        ));
+        if ($this->db->count()) {
+            $this->data = $this->db->results();
+            return true;
+        }
+        return false;
+    }
+
+    public function dataBantuan() {
+        $data = $this->db->query("SELECT b.id_bantuan, b.nama, b.jumlah_target, b.status, b.blokir, b.create_at,
+        b.jumlah_target,
+        b.satuan_target,
+        IF(SUM(p.jumlah_pelaksanaan) IS NULL, 0, SUM(p.jumlah_pelaksanaan)) jumlah_pelaksanaan,
+        SUM(d.jumlah_donasi) total_donasi, 
+        SUM(CASE WHEN d.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END) donasi_terlaksana,
+        SUM(CASE WHEN d.id_pelaksanaan IS NULL THEN d.jumlah_donasi END) saldo_donasi,
+		TRUNCATE(COALESCE(IF(b.jumlah_target IS NULL, TRUNCATE(SUM(CASE WHEN d.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END)/SUM(d.jumlah_donasi)*100,1), IF(TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1))),0),0) persentase_pelaksanaan
+		FROM bantuan b 
+        LEFT JOIN donasi d 
+        ON(b.id_bantuan = d.id_bantuan)
+        LEFT JOIN pelaksanaan p
+        ON(d.id_pelaksanaan = p.id_pelaksanaan)
+        WHERE b.id_bantuan BETWEEN 1 AND ?
+        GROUP BY b.id_bantuan ORDER BY b.id_bantuan DESC", array($this->getOffset()));
         if ($data->count()) {
             $this->data = $data->results();
             return $this->data;
@@ -30,6 +131,7 @@ class BantuanModel extends HomeModel {
         return false;
     }
 
+    // Old
     public function dataHalaman($halaman = null) {
         if (count($halaman)) {
             $this->setHalaman($halaman);
@@ -54,15 +156,20 @@ class BantuanModel extends HomeModel {
 			return $this->data;
 		}
 		return false;
+        // Debug::pr($this->db);
+        // die();
 	}
 
     public function dataSektor() {
-        $data = $this->db->query("SELECT id_sektor, nama FROM sektor");
-        if ($this->db->count()) {
-            $this->data = $this->db->results();
-            return $this->data;
-        }
-        return false;
+        $this->db->query("SELECT id_sektor, nama FROM sektor");
+        $this->data = $this->db->results();
+        return $this->data;
+    }
+
+    public function dataKategori() {
+        $this->db->query("SELECT id_kategori, nama FROM kategori");
+        $this->data = $this->db->results();
+        return $this->data;
     }
 
     // Sementara
@@ -113,10 +220,12 @@ class BantuanModel extends HomeModel {
         IF(p2.nama IS NULL, 'Pojok Berbagi Indonesia', p2.nama) pengaju_bantuan,
         IF(b.id_pemohon IS NULL, '/assets/images/brand/pojok-berbagi-transparent.png', (SELECT path_gambar FROM gambar WHERE id_gambar = p2.id_gambar)) path_gambar_logo_pengaju_bantuan,
         COALESCE(b.jumlah_target,'Unlimited') jumlah_target,
+        IF(b.jumlah_target IS NULL, 'Donasi', b.satuan_target) jenis_penyaluran,
         IF(TIMESTAMPDIFF(DAY,b.tanggal_akhir, NOW()) IS NULL, 'Unlimited', TIMESTAMPDIFF(DAY,b.tanggal_akhir, NOW())) sisa_waktu,
         IF(SUM(p.jumlah_pelaksanaan) IS NULL, 0, SUM(p.jumlah_pelaksanaan)) jumlah_pelaksanaan,
         IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)) total_donasi, 
         IF(SUM(CASE WHEN d.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END) IS NULL, 0, SUM(CASE WHEN d.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END)) donasi_terlaksana,
+        COUNT(p.id_pelaksanaan) jumlah_pelaksanaan,
         IF(SUM(CASE WHEN d.id_pelaksanaan IS NULL THEN d.jumlah_donasi END) IS NULL, 0, SUM(CASE WHEN d.id_pelaksanaan IS NULL THEN d.jumlah_donasi END)) saldo_donasi,
         TRUNCATE(COALESCE(IF(b.jumlah_target IS NULL, TRUNCATE(SUM(CASE WHEN d.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END)/SUM(d.jumlah_donasi)*100,1), IF(TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1))),0),0) persentase_pelaksanaan
         FROM pelaksanaan p RIGHT JOIN donasi d USING(id_pelaksanaan) 
@@ -133,14 +242,44 @@ class BantuanModel extends HomeModel {
         return false;
     }
 
-    public function dataDonasiDonaturBantuan($id_bantuan, $halaman = null) {
-        if (count($halaman)) {
-            $this->setHalaman($halaman);
+    public function setFilter($search) {
+        $this->_search = Sanitize::escape2($search);
+    }
+
+    public function getFilter() {
+        return $this->_search;
+    }
+
+    public function dataDonasiDonaturBantuan($id_bantuan) {
+        $sql_index = "SELECT id_donasi FROM donasi WHERE bayar = ? AND id_bantuan = ? ORDER BY waktu_bayar {$this->_order_direction} LIMIT {$this->_offset}, {$this->_limit}";
+
+        if (isset($this->_search)) {
+            $column_filter = "CONCAT(d.id_donasi, IFNULL(d.id_donatur,''), d.jumlah_donasi, d.waktu_bayar, IFNULL(d2.nama, ''), IFNULL(d2.email, ''), IFNULL(d2.kontak,''), IFNULL(cp.jenis,''), IFNULL(gcp.nama,''))";
+            $this->splits = $this->split($column_filter, ',');
+            foreach ($this->splits as $splits_key => $splits_value) {
+                if (strpos($splits_value, '(') !== false) {
+                    $alias = $this->split($splits_value, ' ');
+                    $splits_value = $alias[0];
+                    $this->splits[$splits_key] = $splits_value;
+                }
+            }
+            $this->splits = implode(', ', $this->splits);
+            $sql_index = "SELECT d.id_donasi FROM donasi d LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN donatur d2 USING(id_donatur) LEFT JOIN gambar gcp ON(gcp.id_gambar = cp.id_gambar) WHERE d.bayar = ? AND d.id_bantuan = ? AND CONCAT({$this->splits}) LIKE '%{$this->_search}%' ORDER BY waktu_bayar {$this->_order_direction} LIMIT {$this->_offset}, {$this->_limit}";
         }
-		if (!$this->db->query('SELECT id_donasi, d.id_donatur, nama, jumlah_donasi donasi, d2.kontak, waktu_donasi 
-        FROM donasi d JOIN donatur d2 USING(id_donatur) 
-        WHERE bayar = ? AND id_bantuan = ? AND id_donasi BETWEEN ? AND ? 
-        ORDER BY id_donasi ASC LIMIT 10', array($this->getStatus(), $id_bantuan, $this->getHalaman()[0], $this->getHalaman()[1]))) {
+
+        $sql = "SELECT d.id_donasi, d.id_donatur, d.jumlah_donasi, IFNULL(ga.path_gambar, '/assets/images/default.png') path_gambar_akun, IFNULL(ga.nama,'default') nama_path_gambar_akun, d2.nama nama_donatur, d2.email, d2.kontak, d.waktu_bayar, cp.id_cp, cp.jenis, IFNULL(gcp.path_gambar, '/assets/images/brand/favicon-pojok-icon.ico') path_gambar_cp, IFNULL(gcp.nama, 'Kantor Pojok') nama_path_gambar_cp
+        FROM donasi d JOIN ({$sql_index}) di ON (di.id_donasi = d.id_donasi)
+        LEFT JOIN channel_payment cp USING(id_cp)
+        LEFT JOIN donatur d2 USING(id_donatur) 
+        LEFT JOIN gambar gcp ON(gcp.id_gambar = cp.id_gambar)
+        LEFT JOIN akun a USING(id_akun)
+        LEFT JOIN gambar ga ON(ga.id_gambar = a.id_gambar)
+        ORDER BY d.waktu_bayar {$this->_order_direction} LIMIT {$this->_limit}";
+        
+		if (!$this->db->query($sql, array(
+            'bayar' => $this->getStatus(),
+            'id_bantuan' => Sanitize::escape2($id_bantuan)
+        ))) {
             throw new Exception("Error Processing Read Data Donasi ID Bantuan " . $id_bantuan);
         }
         if ($this->db->count()) {
@@ -148,21 +287,48 @@ class BantuanModel extends HomeModel {
             return $this->data;
         }
     }
+
+    public function countRecordDataDonasiDonaturBantuan($id_bantuan) {
+        $sql = "SELECT count(id_bantuan) jumlah_record FROM donasi WHERE bayar = ? AND id_bantuan = ?";
+        if (isset($this->_search)) {
+            $sql = "SELECT count(d.id_bantuan) jumlah_record FROM donasi d LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN donatur d2 USING(id_donatur) LEFT JOIN gambar gcp ON(gcp.id_gambar = cp.id_gambar) WHERE d.bayar = ? AND d.id_bantuan = ? AND CONCAT({$this->splits}) LIKE '%{$this->_search}%'";
+        }
+        $this->db->query($sql, array(
+            'bayar' => Sanitize::escape2($this->getStatus()),
+            'id_bantuan' => Sanitize::escape2($id_bantuan)
+        ));
+        if ($this->db->count()) {
+            $this->data = $this->db->result()->jumlah_record;
+            return $this->data;
+        }
+    }
+
+    public function countDonasiBantuan($id_bantuan) {
+        $this->db->query("SELECT count(id_bantuan) jumlah_record FROM donasi WHERE bayar = ? AND id_bantuan = ?", array(
+            'bayar' => Sanitize::escape2($this->getStatus()),
+            'id_bantuan' => Sanitize::escape2($id_bantuan)
+        ));
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return $this->data;
+        }
+    }
     
     public function setOffset($offset) {
-        $this->_offset = $offset;
+        $this->_offset = Sanitize::escape2($offset);
     }
 
     public function getOffset() {
         return $this->_offset;
     }
 
-    public function setHalaman($params) {   
-        $param1 = (($params-1) * $this->getOffset()) + 1;
+    public function setHalaman($halaman) {
+        $halaman = Sanitize::escape2($halaman);
+        $param1 = (($halaman-1) * $this->getOffset()) + 1;
         if ($param1 < 0) {
             $param1 = 0;
         }
-        $param2 = $params * $this->getOffset();
+        $param2 = $halaman * $this->getOffset();
         $this->_halaman = array($param1, $param2);
     }
 
@@ -171,7 +337,7 @@ class BantuanModel extends HomeModel {
     }
 
     public function setStatus($status) {
-        $this->_status = $status;
+        $this->_status = Sanitize::escape2($status);
     }
 
     public function getStatus() {
@@ -334,6 +500,23 @@ class BantuanModel extends HomeModel {
         GROUP BY kategori.id_kategori", array('kategori.nama' => $nama_kategori));
         if (!$this->db->count()) {
             // nama_kategori unrecognize
+            return false;
+        }
+        $this->data = $this->db->result();
+        return $this->data;
+    }
+
+    public function getSaldoBantuan($id_bantuan) {
+        $this->db->query("SELECT 
+        IFNULL(SUM(IF(LOWER(cp.nama) = 'bank bjb', d.jumlah_donasi, 0)), 0) saldo_bjb, 
+        IFNULL(SUM(IF(LOWER(cp.nama) = 'bank bsi', d.jumlah_donasi, 0)), 0) saldo_bsi,
+        IFNULL(SUM(IF(LOWER(cp.nama) = 'bank bri', d.jumlah_donasi, 0)), 0) saldo_bri,
+        (SELECT path_gambar FROM gambar JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bjb' AND cptb.jenis = 'TB') path_gambar_bjb,
+        (SELECT path_gambar FROM gambar JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bsi' AND cptb.jenis = 'TB') path_gambar_bsi,
+        (SELECT path_gambar FROM gambar JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bri' AND cptb.jenis = 'TB') path_gambar_bri
+        FROM donasi d LEFT JOIN channel_payment cp ON(d.id_cp = cp.id_cp)
+        WHERE d.bayar = 1 AND d.id_bantuan = ? AND d.id_pelaksanaan IS NULL", array('d.id_bantuan' => Sanitize::escape2($id_bantuan)));
+        if (!$this->db->count()) {
             return false;
         }
         $this->data = $this->db->result();

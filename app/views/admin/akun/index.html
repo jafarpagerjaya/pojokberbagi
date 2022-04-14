@@ -89,7 +89,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!is_null($data['list_akun'])) {
+                        <?php if (isset($data['list_akun'])) {
                             foreach($data['list_akun'] as $data_akun) { ?>
                         <tr>
                             <th scope="row">

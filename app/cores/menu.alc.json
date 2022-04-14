@@ -36,18 +36,21 @@
 		}
 	},
 	"admin" : {
-		"cr" : {
+		"cre" : {
 			"Home" : {
 				"href" : "/admin",
-				"title": "Beranda"
+				"title": "Beranda",
+				"icon" : "ni ni-tv-2 text-primary"
+			},
+			"Bantuan" : {
+				"href" : "/admin/bantuan",
+				"title": "Bantuan",
+				"icon" : "ni ni-bullet-list-67 text-warning"
 			},
 			"Donatur" : {
 				"href" : "/admin/donatur",
-				"title": "Donatur"
-			},
-			"Pemohon" : {
-				"href" : "/admin/pemohon",
-				"title": "Pemohon Bantuan"
+				"title": "Donatur",
+				"icon" : "ni ni-satisfied text-info"
 			}
 		},
 		"pro" : {

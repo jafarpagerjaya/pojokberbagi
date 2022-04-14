@@ -31,4 +31,22 @@ class Sanitize {
 	public static function toInt2($string) {
 		return self::escape2(preg_replace("/[^0-9]/", '', $string));
 	}
+
+	public static function escape3($string) {
+		$patterns = array(
+			'/</',
+			'/>/',
+			'/{/',
+			'/}/'
+		);
+		return trim(preg_replace($patterns, '', $string));
+	}
+
+	public static function thisArray($array = array(), $method = 'escape2') {
+		$result = array();
+		foreach($array as $key => $value) {
+			$result[$key] = Self::$method($value);
+		}
+		return $result;
+	}
 }

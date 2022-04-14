@@ -1,6 +1,13 @@
-#avatar {
-    max-height: 200px;
-    max-width: 200px;
-    height: 125px;
-    width: 125px;
+.card img[alt="bank-bjb"],
+.card img[alt="bank-bsi"],
+.card img[alt="bank-bri"],
+.card img[alt="qris"] {
+    margin-bottom: .25rem;
+}
+
+/* Overview Table */
+table .avatar {
+    --avatar: 35px;
+    width: var(--avatar);
+    height: var(--avatar);
 }

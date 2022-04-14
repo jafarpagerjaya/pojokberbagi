@@ -15,10 +15,25 @@ class Utility {
         return $status;
     }
 
+    public static function statusBantuan($params) {
+        if ($params == 'B') {
+            $status = "belum disetujui";
+        } else if ($params == 'C') {
+            $status = "cek petugas";
+        } else if ($params == 'T') {
+            $status = "ditolak";
+        } else if ($params == 'D') {
+            $status = "dibuka";
+        } else if ($params == 'S') {
+            $status = "ditutup";
+        }
+        return $status;
+    }
+
     public static function keteranganJenisChannelPayment($params) {
         if ($params == 'TB') {
             $metode_bayar = "Transfer Bank";
-        } else if ($params == 'RQ') {
+        } else if ($params == 'QR') {
             $metode_bayar = "QRIS";
         } else if ($params == 'EW') {
             $metode_bayar = "E-Wallet";

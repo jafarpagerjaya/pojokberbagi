@@ -74,12 +74,16 @@ INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES('default','/assets/im
 ('bank-bjb','/assets/images/partners/bjb.png','partner','1'),
 ('bank-bsi','/assets/images/partners/bsi.png','partner','1'),
 ('bank-bri','/assets/images/partners/bri.png','partner','1'),
-('satu-juta-sembako','/uploads/images/bantuan/medium/satu-juta-sembako.jpg','bantuan', NULL),
+('satu-juta-sembako','/uploads/images/bantuan/medium/satu-juta-sembako-medium.jpg','bantuan', NULL),
 ('satu-juta-sembako-wide','/uploads/images/bantuan/wide/satu-juta-sembako-wide.png','bantuan', NULL),
-('geberr','/uploads/images/bantuan/medium/geberr.jpg','bantuan', NULL),
+('geberr','/uploads/images/bantuan/medium/geberr-medium.png','bantuan', NULL),
 ('geberr-wide','/uploads/images/bantuan/wide/geberr-wide.png','bantuan', NULL),
-('razka','/uploads/images/bantuan/medium/raska.jpg','bantuan', NULL);
-('razka-wide','/uploads/images/bantuan/wide/raska-wide.jpg','bantuan', NULL);
+('semeru','/uploads/images/bantuan/medium/semeru-medium.png','bantuan', NULL),
+('semeru-wide','/uploads/images/bantuan/wide/semeru-wide.png','bantuan', NULL),
+('razka','/uploads/images/bantuan/medium/razka-medium.jpg','bantuan', NULL),
+('razka-wide','/uploads/images/bantuan/wide/razka-wide.png','bantuan', NULL),
+('single-wonder-mom','/uploads/images/bantuan/medium/single-wonder-mom-medium.jpeg','bantuan', NULL),
+('single-wonder-mom-wide','/uploads/images/bantuan/wide/single-wonder-mom-wide.png','bantuan', NULL);
 
 
 CREATE TABLE akses (
@@ -264,11 +268,12 @@ CREATE TABLE kebutuhan (
 CREATE TABLE bantuan (
     id_bantuan INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     id_pemohon INT UNSIGNED,
-    nama VARCHAR(30) NOT NULL,
+    nama VARCHAR(50) NOT NULL,
+    tag VARCHAR(30),
     blokir ENUM('1') DEFAULT NULL,
     status ENUM('B','C','T','D','S') NOT NULL DEFAULT 'B',
     nama_penerima VARCHAR(50),
-    satuan_target VARCHAR(50),
+    satuan_target VARCHAR(15),
     jumlah_target INT UNSIGNED,
     min_donasi INT UNSIGNED,
     total_rab INT UNSIGNED DEFAULT NULL,
@@ -278,6 +283,7 @@ CREATE TABLE bantuan (
     deskripsi VARCHAR(255) NOT NULL,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    action_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id_gambar_medium INT UNSIGNED,
     id_gambar_wide INT UNSIGNED,
     id_sektor CHAR(1),
@@ -285,7 +291,7 @@ CREATE TABLE bantuan (
     id_jenis SMALLINT UNSIGNED,
     id_penangung_jawab SMALLINT UNSIGNED,
     id_pengawas SMALLINT UNSIGNED,
-    CONSTRAINT UN_NAMA_BANTUAN UNIQUE(nama),
+    CONSTRAINT U_TAG_BANTUAN UNIQUE(tag),
     CONSTRAINT F_ID_PEMOHON_BANTUAN_ODR FOREIGN KEY(id_pemohon) REFERENCES pemohon(id_pemohon) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT F_ID_GAMBAR_BANTUAN_MEDIUM_ODN FOREIGN KEY(id_gambar_medium) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT F_ID_GAMBAR_BANTUAN_WIDE_ODN FOREIGN KEY(id_gambar_wide) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE,
@@ -312,13 +318,29 @@ INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES('default','/assets/im
 ('satu-juta-sembako-wide','/uploads/images/bantuan/wide/satu-juta-sembako-wide.png','bantuan', NULL),
 ('geberr','/uploads/images/bantuan/medium/geberr-medium.png','bantuan', NULL),
 ('geberr-wide','/uploads/images/bantuan/wide/geberr-wide.png','bantuan', NULL),
-('semeru','/uploads/images/bantuan/medium/semeru-medium.jpg','bantuan', NULL),
+('semeru','/uploads/images/bantuan/medium/semeru-medium.png','bantuan', NULL),
 ('semeru-wide','/uploads/images/bantuan/wide/semeru-wide.png','bantuan', NULL),
 ('razka','/uploads/images/bantuan/medium/razka-medium.jpg','bantuan', NULL),
 ('razka-wide','/uploads/images/bantuan/wide/razka-wide.png','bantuan', NULL),
 ('single-wonder-mom','/uploads/images/bantuan/medium/single-wonder-mom-medium.jpeg','bantuan', NULL),
 ('single-wonder-mom-wide','/uploads/images/bantuan/wide/single-wonder-mom-wide.png','bantuan', NULL);
 --
+
+update channel_payment set id_gambar = (SELECT id_gambar FROM gambar WHERE LOWER(nama) = "bank-bjb") WHERE nama = "Bank BJB" AND jenis = "TB";
+update channel_payment set id_gambar = (SELECT id_gambar FROM gambar WHERE LOWER(nama) = "bank-bsi") WHERE nama = "Bank BSI" AND jenis = "TB";
+update channel_payment set id_gambar = (SELECT id_gambar FROM gambar WHERE LOWER(nama) = "bank-bri") WHERE nama = "Bank BRI" AND jenis = "TB";
+
+alter table bantuan ADD COLUMN action_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER modified_at;
+
+update bantuan set action_at = create_at;
+
+
+alter table bantuan modify column nama VARCHAR(50) NOT NULL;
+alter table bantuan modify column satuan_target VARCHAR(15);
+
+alter table bantuan drop INDEX UN_NAMA_BANTUAN;
+alter table bantuan add column tag VARCHAR(30) after nama;
+alter table bantuan add CONSTRAINT U_TAG_BANTUAN UNIQUE(tag);
 
 alter table bantuan drop foreign key F_ID_GAMBAR_BANTUAN_ODN;
 ALTER TABLE bantuan CHANGE id_gambar id_gambar_medium int unsigned;
@@ -332,6 +354,8 @@ update bantuan set id_gambar_medium = 9, id_gambar_wide = 10 where id_bantuan = 
 update bantuan set id_gambar_medium = 11, id_gambar_wide = 12 where id_bantuan = 3;
 update bantuan set id_gambar_medium = 13, id_gambar_wide = 14 where id_bantuan = 4;
 update bantuan set id_gambar_medium = 15, id_gambar_wide = 16 where id_bantuan = 5;
+
+update akun set id_gambar = 1;
 
 -- status tabel bantuan B = Belum Disetujui, T = Tidak Disetujui, D = Disetujui, S = Proyek Bantuan sudah selesai
 -- satuan_target = menyatakan sasaran dari jumlah target. contoh paket sembako

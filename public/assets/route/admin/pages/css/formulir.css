@@ -1,12 +1,334 @@
-#image-wrapper {
-    height: auto;
-    max-height: 380px;
-    width: 100% !important;
+.form-group {
+    margin: 0px;
+    padding-bottom: 1.5em;
+}
+
+.card-body>.row {
+    row-gap: 1em;
+}
+
+.card-body>.row .buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.steps {
+    transition: transform .3s ease-out;
+}
+
+.steps.translateX {
+    transform: translateX(calc(-41.66667%*2 + 100% - 41.66667%*2));
+}
+
+.steps .step {
+    padding: 0px;
+}
+
+.steps .step>* {
+    color: inherit;
+    transition: all .15s ease;
+}
+
+.steps .step.active>* {
+    color: white;
+}
+
+.steps .step h1,
+.steps .step h2,
+.steps .step h3,
+.steps .step h4,
+.steps .step h5,
+.steps .step h6 {
+    font-weight: 400;
+    margin: 0px;
+}
+
+.steps .step:not(.active) .heading-small {
+    transition: font-size 0.3s ease-out;
+}
+
+.steps .step.active~.step:not(.active) .heading-small,
+.steps .step.active~.step:not(.active) b {
+    color: var(--light);
+}
+
+.steps .step h6 {
+    font-size: .7rem;
+}
+
+.steps .step b {
+    font-size: .55rem;
+}
+
+.steps .step.active h1,
+.steps .step.active h2,
+.steps .step.active h3,
+.steps .step.active h4,
+.steps .step.active h5,
+.steps .step.active h6 {
+    display: flex;
+}
+
+.steps .step:not(.active) .heading-small>span {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.steps .step:not(.active) .heading-small>span::after {
+    content: "\ea26";
+    position: absolute;
+    font: normal normal normal 14px/1 NucleoIcons;
+    right: -1.25rem;
+    color: var(--success) !important;
+}
+
+.steps .step.active~.step:not(.active) .heading-small>span::after {
+    content: '';
+}
+
+p.small {
+    font-size: 70%;
+}
+
+.inputGroup {
+    height: 70px;
+    cursor: pointer;
+    transition: all .3s ease;
+    position: relative;
     overflow: hidden;
 }
 
-#charLeft {
-    bottom: .5em;
-    right: 1.15em;
-    font-size: .65em;
+/* Select2 */
+select~span.select2 * {
+    font-size: .875rem;
+}
+
+span.selection {
+    width: 100%;
+}
+
+.select2-container .select2-selection--single,
+.select2-container--default.select2-container--focus .select2-selection--multiple,
+.select2-container--default .select2-selection--multiple,
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #b5c1d2;
+}
+
+.select2-container--default .select2-selection--single {
+    border-color: #dee2e6 !important;
+    border-radius: 0.25rem !important;
+    height: 100%;
+    outline-width: 0px;
+}
+
+.form-group.error select~.select2-container--default .select2-selection--single {
+    border-color: #fb6340 !important;
+}
+
+.select2-container--default .select2-selection--single:focus-visible {
+    border: 1px solid #5e72e4 !important;
+}
+
+.select2-container--default .select2-selection--single[aria-expanded="true"] {
+    border-color: #5e72e4 !important;
+}
+
+.select2-container--default .select2-results__option--selected {
+    background-color: #dee2e6;
+    display: none;
+}
+
+.select2-selection__rendered {
+    padding-top: 1.625rem;
+    padding-bottom: 0.125rem;
+    padding-left: 0em !important;
+    padding-right: 1rem;
+    color: #8898aa !important;
+}
+
+.select2-container--open .select2-dropdown {
+    border-color: #5e72e4;
+    padding: 0px;
+    left: 0px;
+}
+
+.select2-search.select2-search--dropdown {
+    padding: 6px;
+}
+
+.select2-container--open .select2-dropdown.error {
+    border-color: #fb6340 !important;
+}
+
+.select2-dropdown.select2-dropdown--below {
+    top: -6px !important;
+    padding-bottom: 1px;
+    box-shadow: 0 3px 9px rgb(50 50 9 / 0%), 3px 4px 8px rgb(94 114 228 / 10%);
+}
+
+.select2-dropdown.select2-dropdown--above {
+    display: flex;
+    flex-direction: column-reverse;
+    top: 6px !important;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    border-color: #dee2e6;
+}
+
+.select2.select2-container.select2-container--default {
+    width: 100% !important;
+}
+
+.select2-results {
+    position: relative;
+    width: calc(100% + 0.5px);
+    overflow: hidden;
+}
+
+.select2-dropdown.select2-dropdown--below .select2-results {
+    border-bottom-left-radius: 0.2rem;
+    border-bottom-right-radius: 0.2rem;
+    bottom: -1px;
+    border-top: 1px dashed #5e72e4;
+}
+
+.select2-dropdown.select2-dropdown--above .select2-results {
+    border-top-left-radius: 0.2rem;
+    border-top-right-radius: 0.2rem;
+    border-bottom: 1px dashed #5e72e4;
+}
+
+.select2-dropdown.error .select2-results {
+    border-color: #fb6340;
+}
+
+/* Cropper */
+.modal img {
+    max-width: 100%;
+}
+
+.cropper-crop-box {
+    border-radius: inherit;
+}
+
+.cropper-container,
+.cropper-crop-box,
+.cropper-wrap-box,
+.cropper-view-box,
+.cropper-drag-box {
+    border-radius: inherit;
+}
+
+.cropper-point {
+    border-radius: 50%;
+}
+
+.cropper-point.point-se {
+    width: 15px;
+    height: 15px;
+}
+
+@media (min-width: 360px) {
+    .card .step h6 {
+        font-size: .75rem;
+    }
+
+    .steps .step b {
+        font-size: .6rem;
+    }
+}
+
+@media (min-width: 375px) {
+    .card .step h6 {
+        font-size: .775rem;
+    }
+
+    .steps .step b {
+        font-size: .625rem;
+    }
+}
+
+@media (min-width: 425px) {
+    .card .step h6 {
+        font-size: .8rem;
+    }
+
+    .steps .step b {
+        font-size: .65rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .steps.translateX {
+        transform: translateX(0px);
+        transition: none;
+    }
+
+    .border-md-right {
+        border-right: 1px dotted var(--lighter);
+    }
+
+    .card .step h6 {
+        font-size: .825rem;
+    }
+
+    .steps .step b {
+        font-size: .675rem;
+    }
+
+    .steps {
+        row-gap: 1em;
+    }
+}
+
+@media (min-width: 992px) {
+    p.small {
+        font-size: 75%;
+    }
+
+    .card .step h6 {
+        font-size: .85rem;
+    }
+
+    .steps .step b {
+        font-size: .7rem;
+    }
+
+    .card-body>.row .tab-pane .buttons {
+        justify-content: flex-start;
+        position: absolute;
+        bottom: 1em;
+        right: 0em;
+    }
+
+    /* select2 */
+    .select2-results {
+        left: -0.5px;
+    }
+
+    .select2-dropdown.select2-dropdown--above .select2-results {
+        bottom: -1px;
+        top: -0.5px;
+    }
+}
+
+@media (min-width: 1200px) {
+    p.small {
+        font-size: 80%;
+    }
+
+    .card .step h6 {
+        font-size: .875rem;
+    }
+
+    .steps .step b {
+        font-size: .725rem;
+    }
 }

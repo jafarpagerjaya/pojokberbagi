@@ -1,3 +1,4 @@
+
 <div class="row">
     <div class="col-xl-3 col-md-6">
         <div class="card card-stats">
@@ -28,7 +29,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col">
-                        <h5 class="card-title text-uppercase text-muted mb-0">Menunggu Persetujuan</h5>
+                        <h5 class="card-title text-uppercase text-muted mb-0">Belum Disetujui</h5>
                         <span class="h2 font-weight-bold mb-0 counter-card" data-count-up-value="<?= ($this->data['info-card']['jumlah_bantuan_menunggu']) ?>">0</span>
                     </div>
                     <div class="col-auto">
@@ -124,7 +125,7 @@
                         <tr>
                             <th scope="row">
                                 <div class="media align-items-center">
-                                    <a href="#">
+                                    <a href="#" data-id="<?= $data_bantuan->id_bantuan; ?>">
                                         <span class="name mb-0 text-sm"><?= $data_bantuan->id_bantuan; ?></span>
                                     </a>
                                 </div>
@@ -211,10 +212,33 @@
             <div class="card-footer py-4">
                 <nav aria-label="...">
                     <ul class="pagination justify-content-end mb-0">
-                        <?= Ui::pageing($this->data['halaman'], $this->data['record'], 10); ?>
+                        <?= Ui::pageing($this->data['halaman'], $this->data['record'], $this->data['limit']); ?>
                     </ul>
                 </nav>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Toast -->
+<?php if (Session::exists('toast')) {
+    $toast = Session::flash('toast');
+    ?>
+    <div aria-live="polite" aria-atomic="true" style="bottom: 1em; right: 1em; z-index: 10;" class="position-fixed d-flex justify-content-end flex-column align-items-end">
+        <div class="toast w-100 fade hide bg-white" role="alert" aria-live="assertive" aria-atomic="true" data-toast="feedback" data-delay="5000" data-toast-run="true">
+            <div class="toast-header d-flex gap-x-2 justify-content-center align-items-center">
+                <div class="small-box rounded p-2 ailgn-items-center <?= ($toast['error'] == true ? 'bg-danger' : 'bg-success') ?>"></div>
+                <strong class="mr-auto">Pemberitahuan</strong>
+                <small class="text-muted time-passed">Beberapa saat yang lalu</small>
+                <button type="button" class="close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                <?= $toast['feedback']['message']; ?>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+?>
