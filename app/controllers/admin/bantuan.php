@@ -78,6 +78,23 @@ class BantuanController extends Controller {
 
     public function halaman($params = array()) {
         if (count($params)) {
+            $this->model('Sys');
+            $this->data['info-card'] = array(
+                'jumlah_bantuan' => $this->model->jumlahBantuan(),
+                'jumlah_bantuan_menunggu' => $this->model->jumlahBantuanMenunggu(),
+                'jumlah_bantuan_aktif' => $this->model->jumlahBantuanAktif(),
+                'jumlah_bantuan_selesai' => $this->model->jumlahBantuanSelesai()
+            );
+
+            $this->script_action = array(
+                array(
+                    'src' => '/assets/pojok-berbagi-script.js'
+                ),
+                array(
+                    'type' => 'text/javascript',
+                    'src' => '/assets/route/admin/core/js/admin-script.js'
+                )
+            );
             // Old
             // $dataBantuan = $this->_bantuan->dataHalaman($params[0]);
 

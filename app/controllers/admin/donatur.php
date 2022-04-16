@@ -94,6 +94,17 @@ class DonaturController extends Controller {
 
     public function halaman($params) {
         if (count($params)) {
+            $this->script_action = array(
+                array(
+                    'type' => 'text/javascript',
+                    'src' => '/assets/route/admin/core/js/admin-script.js'
+                )
+            );
+            $this->model('Cr');
+            $this->data['info-card'] = array(
+                'jumlah_donatur' => $this->model->jumlahDonatur(),
+                'jumlah_akun' => $this->model->jumlahAkun(),
+            );
             $this->_donatur->dataDonatur($params[0]);
             $this->data['donatur'] = $this->_donatur->data();
             $this->_donatur->countData('donatur');
@@ -101,7 +112,7 @@ class DonaturController extends Controller {
             $this->data['halaman'] = $params[0];
             // $this->_donatur->setPageLink();
             // $this->data['pageLink'] = json_decode(json_encode($this->_donatur->data()), true);
-            return VIEW_PATH . 'admin' . DS . 'donatur' . DS . 'sys.html';
+            return VIEW_PATH . 'admin' . DS . 'donatur' . DS . 'cre.html';
         }
         Redirect::to('admin/donatur');
     }
