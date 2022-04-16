@@ -65,13 +65,15 @@ class BantuanModel extends HomeModel {
         $halaman = Sanitize::escape2($halaman);
         $start = (($halaman-1) * $this->getDataLimit()) + 1;
         if ($start < 0) {
-            $start = 0;
+            $start = 1;
         }
         $end = $halaman * $this->getDataLimit();
         if ($this->_order_direction == 'DESC') {
             $jumlah_record = $this->db->query("SELECT COUNT(*) jumlah_record FROM bantuan")->result()->jumlah_record + 1;
-    
             $startD = $jumlah_record - $end;
+            if ($startD <= 0) {
+                $startD = 1;
+            }
             $endD = $jumlah_record - $start;
             $start = $startD;
             $end = $endD;
@@ -82,6 +84,7 @@ class BantuanModel extends HomeModel {
     public function getDataBetween() {
         return $this->_between;
     }
+    
     public function newDataSeek() {
         $this->db->query("SELECT b.id_bantuan, b.nama, b.jumlah_target, b.status, b.blokir, b.create_at,
         b.jumlah_target,
@@ -385,7 +388,11 @@ class BantuanModel extends HomeModel {
     }
 
     public function setDirection($direction) {
-        $this->_order_dorection = Sanitize::escape($direction);
+        $this->_order_direction = Sanitize::escape($direction);
+    }
+
+    public function getDirection() {
+        return $this->_order_direction;
     }
 
     public function getListBantuan() {

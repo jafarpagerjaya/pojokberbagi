@@ -61,19 +61,23 @@ class BantuanController extends Controller {
         // $this->_bantuan->newDataOffset();
 
         // New Via Seek
+        // set Direction dan Limit sebelum Betweem
         // Limit Wajib Di set Jika tidak ingin mengikuti nilai limit di construct
         // $this->_bantuan->setDataLimit(2);
 
         $this->data['limit'] = $this->_bantuan->getDataLimit();
-        
+        // $this->_bantuan->setDirection('ASC');
         $this->_bantuan->setDataBetween($this->data['halaman']);
         $this->_bantuan->newDataSeek();
         $this->data['bantuan'] = $this->_bantuan->data();
+        
         if ($this->_bantuan->countData('bantuan') != false) {
             $this->data['record'] = $this->_bantuan->countData('bantuan')->jumlah_record;
         } else {
             $this->data['record'] = 0;
         }
+
+        
     }
 
     public function halaman($params = array()) {
