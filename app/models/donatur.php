@@ -127,4 +127,22 @@ class DonaturModel extends HomeModel {
         }
         return false;
     }
+
+    public function hasAccount($id_donatur) {
+        $this->db->query("SELECT COUNT(id_donatur) account_found, id_akun FROM donatur WHERE id_donatur = ?", array($id_donatur));
+        $this->data = $this->db->result();
+        if ($this->data->account_found != 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public function isEmployee($id_akun) {
+        $this->db->query("SELECT id_pegawai FROM admin WHERE id_akun = ?", array(Sanitize::escape2($id_akun))); 
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return true;
+        }
+        return false;
+    }
 }

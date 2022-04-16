@@ -172,6 +172,22 @@ class DonaturController extends Controller {
                             ), array('id_donatur','=', Sanitize::escape(Input::get('id_donatur')))
                         );
                         if ($result) {
+                            $this->_donatur->hasAccount(Sanitize::escape(Input::get('id_donatur')));
+                            if ($this->_donatur->data()->account_found != 0) {
+                                $id_akun = $this->_donatur->data()->id_akun;
+                                if ($this->_donatur->isEmployee($id_akun)) {
+                                    $id_pegawai = $this->_donatur->data()->id_pegawai;
+                                    $this->_donatur->update('pegawai', array(
+                                        'email' => Sanitize::escape2(Input::get('email'))
+                                    ), array(
+                                        'id_pegawai','=', Sanitize::escape2($id_pegawai)
+                                    ));
+                                }
+                                $this->_donatur->update('akun', array(
+                                    'email' => Sanitize::escape2(Input::get('email'))
+                                ), array('id_akun', '=', Sanitize::escape2($id_akun)));
+                                
+                            }
                             Session::flash('success', 'Data donatur dengan [ID] <b>'. Sanitize::escape2(Input::get('id_donatur')) .'</b> berhasil diupdate.');
                         } else {
                             Session::flash('error', 'Data donatur dengan [ID] <b>'. Sanitize::escape2(Input::get('id_donatur')) .'</b> gagal diupdate.');
