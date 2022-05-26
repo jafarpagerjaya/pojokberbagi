@@ -100,14 +100,14 @@
                             <div class="form-group">
                                 <label class="form-control-label" for="input-username">Username</label>
                                 <input type="text" readonly id="input-username" class="form-control"
-                                    placeholder="Username" value="<?= $data['akun']->username ?>">
+                                    placeholder="Username" value="<?= $data['akun']->username; ?>">
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label class="form-control-label" for="input-email">Alamat Email</label>
                                 <input type="email" readonly id="input-email" class="form-control"
-                                    placeholder="<?= $data['akun']->email ?>">
+                                    placeholder="<?= $data['akun']->email; ?>">
                             </div>
                         </div>
                     </div>
@@ -116,14 +116,14 @@
                             <div class="form-group">
                                 <label class="form-control-label" for="input-nama">Nama Lengkap</label>
                                 <input type="text" readonly id="input-nama" class="form-control"
-                                    placeholder="Nama Lengkap" value="<?= $data['donatur']->nama ?>">
+                                    placeholder="Nama Lengkap" value="<?= ucwords(strtolower($data['donatur']->nama)); ?>">
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label class="form-control-label" for="input-samaran">Nama Samaran</label>
                                 <input type="text" readonly id="input-samaran" class="form-control"
-                                    placeholder="Sahabat Berbagi" value="<?= $data['donatur']->samaran ?>">
+                                    placeholder="Sahabat Berbagi" value="<?= ucwords(strtolower($data['donatur']->samaran)); ?>">
                             </div>
                         </div>
                     </div>
@@ -137,7 +137,7 @@
                             <div class="form-group">
                                 <label class="form-control-label" for="input-kontak">No Kontak</label>
                                 <input type="text" readonly id="input-kontak" class="form-control"
-                                    placeholder="Kontak WA Aktif" value="<?= $data['donatur']->kontak ?>">
+                                    placeholder="Kontak WA Aktif" value="<?= $data['donatur']->kontak; ?>">
                             </div>
                         </div>
                     </div>

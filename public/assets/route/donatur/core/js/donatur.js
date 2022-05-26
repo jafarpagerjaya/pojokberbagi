@@ -71,6 +71,9 @@ function jenis_cp(params) {
         case 'GI':
             params = 'Giro';
             break;
+        case 'TN':
+            params = 'Tunai';
+            break;
         default:
             break;
     }
@@ -263,7 +266,8 @@ $('#modalKonfirmasiGantiMetodePembayaran [type="submit"]').on('click', function(
         return false;
     }
 
-    const id_donasi = data.id_donasi;
+    const id_donasi = data.id_donasi,
+          id_cp = data.id_cp;
     // Fetch with token
     fetch('/donatur/fetch/update/payment-method', {
         method: "POST",
@@ -286,6 +290,7 @@ $('#modalKonfirmasiGantiMetodePembayaran [type="submit"]').on('click', function(
             dataImgCP.elements.querySelector('[data-jenis-cp]').innerText = dataImgCP.typeDesc;
             dataImgCP.elements.querySelector('img').setAttribute('src', dataImgCP.src);
             dataImgCP.elements.querySelector('img').setAttribute('alt', dataImgCP.alt);
+            dataImgCP.elements.parentElement.parentElement.querySelector('a~.dropdown-menu>a').setAttribute('data-cp', id_cp);
         } else {
             message = data.server_feedback+' :(';
             console.log('there is some error in server side');

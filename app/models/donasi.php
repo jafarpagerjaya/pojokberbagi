@@ -10,7 +10,7 @@ class DonasiModel extends HomeModel {
     }
 
     public function dataDonasi($id_donatur) {
-        $this->db->get('bantuan.id_bantuan, bantuan.nama, donasi.id_donasi, donasi.jumlah_donasi, donasi.bayar, donasi.create_at, channel_payment.id_cp, channel_payment.nama nama_cp, channel_payment.jenis, gambar.path_gambar','bantuan JOIN donasi USING(id_bantuan) LEFT JOIN channel_payment USING(id_cp) JOIN gambar ON (channel_payment.id_gambar = gambar.id_gambar)', array('donasi.id_donatur','=', Sanitize::escape($id_donatur)));
+        $this->db->get('bantuan.id_bantuan, bantuan.nama, donasi.id_donasi, donasi.jumlah_donasi, donasi.bayar, IFNULL(formatTanggalFull(donasi.waktu_bayar),"") waktu_bayar, formatTanggalFull(donasi.create_at) create_at, channel_payment.id_cp, channel_payment.nama nama_cp, channel_payment.jenis, IFNULL(gambar.path_gambar,"/assets/images/partners/pojok-berbagi-transparent.png") path_gambar ','bantuan JOIN donasi USING(id_bantuan) LEFT JOIN channel_payment USING(id_cp) LEFT JOIN gambar ON (channel_payment.id_gambar = gambar.id_gambar)', array('donasi.id_donatur','=', Sanitize::escape($id_donatur)));
         if ($this->db->count()) {
             $this->data = $this->db->results();
             return $this->data;
@@ -19,7 +19,7 @@ class DonasiModel extends HomeModel {
     }
 
     public function dataTagihan($id_donatur, $status_tagihan) {
-        $this->db->get('bantuan.id_bantuan, bantuan.nama, donasi.id_donasi, donasi.jumlah_donasi, donasi.bayar, donasi.create_at, channel_payment.id_cp, channel_payment.nama nama_cp, channel_payment.jenis, gambar.path_gambar','bantuan JOIN donasi USING(id_bantuan) LEFT JOIN channel_payment USING(id_cp) JOIN gambar ON (channel_payment.id_gambar = gambar.id_gambar)', array('donasi.id_donatur','=', Sanitize::escape($id_donatur)), 'AND', array('donasi.bayar', '=', Sanitize::escape($status_tagihan)));
+        $this->db->get('bantuan.id_bantuan, bantuan.nama, donasi.id_donasi, donasi.jumlah_donasi, donasi.bayar, IFNULL(formatTanggalFull(donasi.waktu_bayar),"") waktu_bayar, formatTanggalFull(donasi.create_at) create_at, channel_payment.id_cp, channel_payment.nama nama_cp, channel_payment.jenis, IFNULL(gambar.path_gambar,"/assets/images/partners/pojok-berbagi-transparent.png") path_gambar ','bantuan JOIN donasi USING(id_bantuan) LEFT JOIN channel_payment USING(id_cp) LEFT JOIN gambar ON (channel_payment.id_gambar = gambar.id_gambar)', array('donasi.id_donatur','=', Sanitize::escape($id_donatur)), 'AND', array('donasi.bayar', '=', Sanitize::escape($status_tagihan)));
         if ($this->db->count()) {
             $this->data = $this->db->results();
             return $this->data;
@@ -67,5 +67,73 @@ class DonasiModel extends HomeModel {
             return $this->data;
         }
         return null;
+    }
+
+    // Admin
+    public function getCountUpDonasi() {
+        $this->db->query("SELECT SUM(IF(bayar = 0, 1, 0)) sum_belum_terverivikasi, SUM(IF(bayar = 1, 1, 0)) sum_sudah_terverivikasi, COUNT(id_donasi) count_donasi FROM donasi");
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return true;
+        }
+        return false;
+    }
+
+    public function getSaldoDonasi() {
+        $this->db->query("SELECT 
+        SUM(IF(LOWER(cp.nama) LIKE '%bjb%', d.jumlah_donasi, 0)) saldo_bjb,
+        SUM(IF(LOWER(cp.nama) LIKE '%bsi%', d.jumlah_donasi, 0)) saldo_bsi,
+        SUM(IF(LOWER(cp.nama) LIKE '%bri%', d.jumlah_donasi, 0)) saldo_bri,
+        SUM(IF(LOWER(cp.nama) LIKE '%tunai%', d.jumlah_donasi, 0)) saldo_tunai,
+        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bjb' AND cptb.jenis = 'TB') nomor_bjb,
+        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bsi' AND cptb.jenis = 'TB') nomor_bsi,
+        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bri' AND cptb.jenis = 'TB') nomor_bri,
+        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'tunai' AND cptb.jenis = 'TN') nomor_tunai
+        FROM channel_payment cp LEFT JOIN donasi d ON(d.id_cp = cp.id_cp)
+        WHERE d.bayar = 1 AND d.id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi)");
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return true;
+        }
+        return false;
+    }
+
+    public function getListDonasi() {
+        $fields = "b.nama nama_bantuan, k.nama nama_kategori, k.warna, s.nama nama_sektor, d.id_donasi, formatTanggalFull(d.create_at) create_donasi_at, d.bayar, formatTanggalFull(d.waktu_bayar) waktu_bayar, d.jumlah_donasi, d.id_bantuan, d.id_donatur, cp.jenis jenis_cp, IFNULL(gcp.path_gambar,'/assets/images/brand/favicon-pojok-icon.ico') path_gambar_cp, gcp.nama nama_path_gambar_cp";
+        $tables = "bantuan b
+        LEFT JOIN sektor s ON(s.id_sektor = b.id_sektor)
+        LEFT JOIN kategori k ON (k.id_kategori = b.id_kategori)
+        RIGHT JOIN donasi d ON(d.id_bantuan = b.id_bantuan)
+        LEFT JOIN channel_payment cp ON(cp.id_cp = d.id_cp) 
+        LEFT JOIN gambar gcp ON(gcp.id_gambar = cp.id_gambar)";
+        // Where bisa di set jika perlu;
+        $where = null;
+        $data['data'] = array();
+        if ($this->getSearch() != null) {
+            // OFSET
+            $search = "CONCAT(IFNULL(b.nama,''), IFNULL(k.nama,''), IFNULL(s.nama,''), IFNULL(formatTanggalFull(d.create_at),''), IFNULL(IF(d.bayar = 1, 'sudah terverivikasi','belum terverivikasi'),''), IFNULL(formatTanggalFull(d.waktu_bayar),''), IFNULL(FORMAT(d.jumlah_donasi,0,'id_ID'),''), IFNULL(cp.nama,''), IFNULL(CASE WHEN UPPER(cp.jenis) = 'TB' THEN 'Transfer Bank' WHEN UPPER(cp.jenis) = 'QR' THEN 'Qris' WHEN UPPER(cp.jenis) = 'VA' THEN 'Virtual Account' WHEN UPPER(cp.jenis) = 'GM' THEN 'Gerai Mart' WHEN UPPER(cp.jenis) = 'EW' THEN 'E-Wallet' WHEN UPPER(cp.jenis) = 'GI' THEN 'Giro' WHEN UPPER(cp.jenis) = 'TN' THEN 'Tunai' ELSE '' END,'')) LIKE '%{$this->getSearch()}%'";
+            $result = $this->countData($tables, $where, $search);
+            $sql = "SELECT {$fields} FROM {$tables} WHERE {$search} ORDER BY {$this->getOrderBy()} {$this->getAscDsc()}, d.id_donasi {$this->getAscDsc()} LIMIT {$this->getHalaman()[0]},{$this->getOffset()}";
+            $params = array();
+        } else {
+            // SEEK
+            $result = $this->countData($tables, $where);
+            $sql = "SELECT {$fields} FROM {$tables} WHERE d.id_donasi BETWEEN ? AND ? ORDER BY {$this->getOrderBy()} {$this->getAscDsc()}";
+            $params = array(
+                'between_start' => $this->getHalaman()[0],
+                'between_end' => $this->getHalaman()[1]
+            );
+        }
+
+        $data['total_record'] = $result->jumlah_record;
+        $this->db->query($sql, $params);
+
+        if ($this->db->count()) {
+            $data['data'] = $this->db->results();
+        }
+
+        $this->data = $data;
+        return true;
+        // return false;
     }
 }

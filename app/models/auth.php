@@ -45,7 +45,7 @@ class AuthModel {
 			$id = $this->data()->id_akun;
 		}
 		if (!$this->_db->update('akun', $fields, array('id_akun', '=', $id))) {
-			throw new  Exception("Error Processing Update");
+			throw new Exception("Error Processing Update");
 		}
 	}
 
@@ -55,13 +55,13 @@ class AuthModel {
 		}
 
 		if (!$this->_db->update($table, $fields, array('id_akun', '=', $id))) {
-			throw new  Exception("Error Processing Update");
+			throw new Exception("Error Processing Update");
 		}
 	}
 
 	public function delete($table = 'akun', $fields = array()) {
 		if (!$this->_db->delete($table, $fields)) {
-			throw new  Exception("Error Processing Delete");
+			throw new Exception("Error Processing Delete");
 		}
 	}
 	

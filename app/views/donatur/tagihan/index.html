@@ -54,7 +54,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <?= Output::strToFullLocalDateTime($data_unpaid->create_at); ?>
+                                        <?= $data_unpaid->create_at; ?>
                                     </td>
                                     <td class="text-right">
                                         <div class="dropdown">
@@ -93,7 +93,7 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col" class="sort" data-sort="budget">Nama Bantuan</th>
-                                    <th scope="col" class="sort" data-sort="nominal_donasi">Nominal</th>
+                                    <th scope="col" class="sort" data-sort="jumlah_donasi">Nominal</th>
                                     <th scope="col" class="sort" data-sort="status">Status Bayar</th>
                                     <th scope="col" class="sort" data-sort="id_cp">Metode Pembayaran Terpilih</th>
                                     <th scope="col" class="sort" data-sort="create_at">Dibuat Pada</th>
@@ -107,15 +107,16 @@
                                     <th scope="row">
                                         <div class="media align-items-center">
                                             <a href="#">
-                                                <span class="name mb-0 text-sm"><?= $data_paid->nama; ?></span>
+                                                <span class="name mb-0 text-sm font-weight-bolder"><?= $data_paid->nama; ?></span>
                                             </a>
                                         </div>
                                     </th>
                                     <td class="text-right">
-                                        <b><?= Output::tSparator($data_paid->nominal_donasi); ?></b>
+                                        <b><?= Output::tSparator($data_paid->jumlah_donasi); ?></b>
                                     </td>
                                     <td>
-                                        <?= $data_paid->bayar; ?>
+                                        <div class="badge badge-success text-black-50 font-weight-bolder px-2">Sudah Bayar</div>
+                                        <div class="text-black-50 font-weight-bold ml-2"><?= $data_paid->waktu_bayar; ?></div>
                                     </td>
                                     <td>
                                         <?= '<div class="channel-payment d-flex justify-content-center align-items-end">
@@ -125,9 +126,12 @@
                                     ?>
                                     </td>
                                     <td>
-                                        <?= Output::timeToLocal($data_paid->create_at); ?>
+                                        <a class="font-weight-bolder" href="javascript:;"><?= $data_paid->id_donasi; ?></a>
+                                        <div class="font-weight-bold text-black-50"><?= $data_paid->create_at; ?></div>
                                     </td>
                                     <td class="text-right">
+                                        <!-- Ini nanti dihilangkan setelah fitur halaman detil donasi dibuat -->
+                                        <?php if ($data_paid->bayar != 1) { ?>
                                         <div class="dropdown">
                                             <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
                                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -137,6 +141,7 @@
                                                 <a class="dropdown-item" href="/donatur/donasi/data/<?= $data_paid->id_donasi; ?>">Lihat Data</a>
                                             </div>
                                         </div>
+                                        <?php } ?>
                                     </td>
                                 </tr>
                                 <?php }} else {
@@ -190,7 +195,7 @@
                                             <div class="overflow-hidden d-flex justify-content-center align-items-center h-100">
                                                 <img src="<?= $data_cp->path_gambar; ?>" alt="<?= $data_cp->nama_cp; ?>" class="img-fluid" data-jenis-cp="<?= $data_cp->jenis_cp; ?>">
                                             </div>
-                                            <h6 class="m-0"><?= $data_cp->nama_cp; ?></h6>
+                                            <h6 class="m-0 text-center"><?= $data_cp->nama_cp; ?></h6>
                                         </div>
                                         <?php
                                         }

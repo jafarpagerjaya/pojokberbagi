@@ -78,7 +78,7 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="form-control-label" for="input-nama">Nama Donatur</label>
-                                    <input name="nama" type="text" id="input-nama" class="form-control text-uppercase" placeholder="Nama Lengkap" value="<?= isset($data_error_feedback['nama']['value']) ? $data_error_feedback['nama']['value'] :  $data['donatur']->nama; ?>">
+                                    <input name="nama" type="text" id="input-nama" class="form-control text-capitalize" placeholder="Nama Lengkap" value="<?= isset($data_error_feedback['nama']['value']) ? $data_error_feedback['nama']['value'] :  ucwords(strtolower($data['donatur']->nama)); ?>">
                                     <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['nama']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['nama']['feedback']) ?></div>
                                 </div>
                             </div>

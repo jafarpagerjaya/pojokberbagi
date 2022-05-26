@@ -1,0 +1,9 @@
+URGEN MINGGU INI MAX (29 Mei)
+1. Take Down bantuan
+2. Tambah Data Donasi Yang Lalu
+BONUS KALO CUKUP Bulan Ini
+1. Kelola Banner MAIN bantuan
+2. Lvl Akses => pelajari ALC Lvl Akses
+PR 
+1. Route admin/bantuan/kategori => buat halaman kategori jika nama kategori tidak diisi
+2. Route admin/bantuan/data/ => pastikan pula jika load data via fetch pada tabel mengupdate pula data card (saldo dll) yang terbaru

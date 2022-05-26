@@ -371,7 +371,41 @@
                 <div class="row align-items-center">
                     <div class="col">
                         <h6 class="text-uppercase text-muted ls-1 mb-1">Program</h6>
-                        <h5 class="h3 mb-0">Program Berjalan</h5>
+                        <h5 class="h3 mb-0">Bantuan Diajukan</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Kategori Program</th>
+                            <th scope="col">Jumlah</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($data['bantuan_diajukan'] as $bantuan_diajukan) { ?>
+                        <tr>
+                            <th scope="row">
+                                <a href="<?= (($bantuan_diajukan->jumlah_kategori > 0) ? '/admin/bantuan/kategori/' . str_replace(" ",'-', strtolower($bantuan_diajukan->nama)) : '#') ?>" title="Klik Detil Program"><?= $bantuan_diajukan->nama ?></a>
+                            </th>
+                            <td>
+                                <?= number_format($bantuan_diajukan->jumlah_kategori, 0, ",", ".") ?>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 order-xl-2">
+        <div class="card">
+            <div class="card-header bg-transparent">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h6 class="text-uppercase text-muted ls-1 mb-1">Program</h6>
+                        <h5 class="h3 mb-0">Bantuan Berjalan</h5>
                     </div>
                 </div>
             </div>
@@ -387,10 +421,44 @@
                         <?php foreach($data['bantuan_berjalan'] as $bantuan_berjalan) { ?>
                         <tr>
                             <th scope="row">
-                                <a href="<?= (($bantuan_berjalan->jumlah_kategori_berjalan > 0) ? '/admin/bantuan/berjalan/kategori/' . str_replace(" ",'-', strtolower($bantuan_berjalan->nama)) : '#') ?>" title="Klik Detil Program"><?= $bantuan_berjalan->nama ?></a>
+                                <a href="<?= (($bantuan_berjalan->jumlah_kategori > 0) ? '/admin/bantuan/berjalan/kategori/' . str_replace(" ",'-', strtolower($bantuan_berjalan->nama)) : '#') ?>" title="Klik Detil Program"><?= $bantuan_berjalan->nama ?></a>
                             </th>
                             <td>
-                                <?= number_format($bantuan_berjalan->jumlah_kategori_berjalan, 0, ",", ".") ?>
+                                <?= number_format($bantuan_berjalan->jumlah_kategori, 0, ",", ".") ?>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 order-xl-2">
+        <div class="card">
+            <div class="card-header bg-transparent">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h6 class="text-uppercase text-muted ls-1 mb-1">Program</h6>
+                        <h5 class="h3 mb-0">Bantuan Selesai</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Kategori Program</th>
+                            <th scope="col">Jumlah</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($data['bantuan_selesai'] as $bantuan_selesai) { ?>
+                        <tr>
+                            <th scope="row">
+                                <a href="<?= (($bantuan_selesai->jumlah_kategori > 0) ? '/admin/bantuan/berjalan/kategori/' . str_replace(" ",'-', strtolower($bantuan_selesai->nama)) : '#') ?>" title="Klik Detil Program"><?= $bantuan_selesai->nama ?></a>
+                            </th>
+                            <td>
+                                <?= number_format($bantuan_selesai->jumlah_kategori, 0, ",", ".") ?>
                             </td>
                         </tr>
                         <?php } ?>

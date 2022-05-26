@@ -69,7 +69,10 @@ formControl.forEach(el => {
         if (ceret == 0 && e.keyCode == 32) {
             e.preventDefault();
         }
-        if (e.keyCode == 32 && e.target.selectionStart != 0 && e.target.value.indexOf(' ') >= 0 && this.value.substring(e.target.selectionStart, e.target.selectionStart-1) == ' ' && e.target.value.charCodeAt(e.target.selectionStart-1) == 32) {
+        if ((e.keyCode == 32 && ceret != 0 && e.target.value.indexOf(' ') >= 0) && (
+                (this.value.substring(ceret, ceret-1) == ' ' && e.target.value.charCodeAt(ceret-1) == 32)
+                || (this.value.substring(ceret, ceret+1) == ' ' && e.target.value.charCodeAt(ceret) == 32)
+            )) {
             e.preventDefault();
         }
     });
@@ -89,4 +92,76 @@ let noSpace = function(event) {
     if (event.keyCode === 32) {
         event.preventDefault();
     }
+}
+
+// Dinon aktivkan sementara karena keyup mode masih ada buffer forming text
+// let textCapList2 = document.querySelectorAll('.text-capitalize2');
+// textCapList2.forEach(textCap2 => {
+//     textCap2.addEventListener('keypress', function(e) {
+//         let charCode = e.keyCode;
+//         if (((charCode > 64 && charCode < 91) || (charCode > 96 && charCode < 123) || charCode == 8 || charCode == 32 || charCode == 20 || charCode == 18) == false) {
+//             e.preventDefault();
+//         }
+//     });
+//     textCap2.addEventListener('keyup', function(e) {
+//         e.target.value = e.target.value.toLowerCase();
+//         this.value = ucwords(e.target.value, false);
+//     });
+// });
+
+let textCapList = document.querySelectorAll('.text-capitalize');
+textCapList.forEach(textCap => {
+    let ctrl;
+    textCap.addEventListener('keyup', function(e) {
+        if (e.key == 'Control') {
+            ctrl = 'up';
+        }
+    });
+
+    textCap.addEventListener('keydown', function(e) {
+        let pattern = /^[^a-zA-Z\s]+$/;
+        let ceretS = e.target.selectionStart;
+        
+        if (pattern.test(e.key) === true) {
+            e.preventDefault();
+            return false;
+        }
+
+        if (e.code == 'Space' && e.key == ' ' && (this.value.substring(ceretS, ceretS+1) == ' ' || this.value.substring(ceretS, ceretS-1) == ' ')) {
+            e.preventDefault();
+            return false;
+        }
+
+        if (e.key == 'Control' || ctrl == 'down' && e.code.indexOf('Key') >= 0) {
+            ctrl = 'down';
+            return false;
+        }
+
+        if (e.code.indexOf('Key') >= 0 || e.code == 'Space') {
+            if (this.value.length > 0 && ceretS == 0 && e.target.selectionEnd == this.value.length) {
+                return false;
+            }
+            this.value = ucwords(this.value.slice(0,ceretS) + e.key + this.value.slice(ceretS), false);
+            e.target.selectionStart = ceretS+1;
+            e.target.selectionEnd = ceretS+1;
+            if (ctrl != 'down') {
+                e.preventDefault();
+                return false;
+            }
+        }
+    });
+    textCap.addEventListener('paste', function() {
+        setTimeout(() => {
+            this.value = escapeRegExp(this.value,'',/[^a-zA-Z\s]/g).trim();
+        }, 0);
+    });
+});
+
+// Set True Or False Default value is true
+const spellCheck = false;
+if (spellCheck === false) {
+    const inputSpellCheckList = document.querySelectorAll('input[type="text"]');
+    inputSpellCheckList.forEach(elInput => {
+        elInput.setAttribute('spellcheck', spellCheck);
+    });    
 }

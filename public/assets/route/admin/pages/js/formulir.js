@@ -522,11 +522,11 @@ function handleMask(event, mask) {
             var pos = selectionStart + 1
         }
     }
-    var nan = count(val, /\D/, pos) // nan va calcolato prima di eliminare i separatori
+    var nan = count(val, /\D/, pos) 
     val = val.replace(/\D/g,'')
 
     var mask = mask.match(/^(\D*)(.+9)(\D*)$/)
-    if (!mask) return // meglio exception?
+    if (!mask) return 
     if (val.length > count(mask[2], /9/)) return
 
     for (var txt='', im=0, iv=0; im<mask[2].length && iv<val.length; im+=1) {

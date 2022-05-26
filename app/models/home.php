@@ -7,7 +7,8 @@ class HomeModel {
     private $_halaman = array(1,10),
             $_offset = 10,
             $_orderBy = 1,
-            $_ascDsc = 'ASC';
+            $_ascDsc = 'ASC',
+            $_search;
 
     public function __construct() {
         $this->db = Database::getInstance();
@@ -81,9 +82,22 @@ class HomeModel {
         return false;
     }
 
-    public function countData($table) {
+    public function countData($table, $where = null, $search = null) {
         $table = Sanitize::escape2($table);
         $sql = "SELECT COUNT(*) jumlah_record FROM {$table}";
+        if (!is_null($search)) {
+            if (is_null($where)) {
+                $where = $search;
+            } else {
+                $where .= " AND {$search}";
+            }
+            $sql .= " WHERE {$where}";
+        } else {
+            if (!is_null($where)) {
+                $sql .= " WHERE {$where}";
+            }
+        }
+
 		$this->db->query($sql);
 		if ($this->db->count()) {
 			$this->data = $this->db->result();
@@ -113,41 +127,68 @@ class HomeModel {
 		return false;
     }
 
-    protected function setOffset($offset) {
-        $this->_offset = $offset;
+    public function setSearch($search) {
+        $this->_search = Sanitize::escape2($search);
     }
 
-    protected function getOffset() {
+    public function getSearch() {
+        return $this->_search;
+    }
+
+    public function setOffset($offset) {
+        $this->_offset = Sanitize::escape2($offset);
+    }
+
+    public function getOffset() {
         return $this->_offset;
     }
 
-    protected function setHalaman($params) {   
+    public function setAscDsc($asc_dsc) {
+        $this->_ascDsc = strtoupper($asc_dsc);
+    }
+
+    public function getAscDsc() {
+        return $this->_ascDsc;
+    }
+
+    public function setHalaman($params, $table) {   
         $param1 = (($params-1) * $this->getOffset()) + 1;
         if ($param1 < 0) {
             $param1 = 0;
         }
         $param2 = $params * $this->getOffset();
+        // Cek apakah OFFSET ATAU SEEK
+        if ($this->_search == null) {
+            // SEEK
+            // Cek Direction
+            if ($this->_ascDsc == 'DESC') {
+                // Dibalik
+                $result = $this->countData($table);
+                $bStart = $result->jumlah_record - $param2 + 1;
+                if ($bStart <= 0) {
+                    $bStart = 1;
+                }
+                $bEnd = $result->jumlah_record - $param1 + 1;
+                $param1 = $bStart;
+                $param2 = $bEnd;
+            }
+        } else {
+            // OFFSET USE $param2
+            $param1--;
+        }
         $this->_halaman = array($param1, $param2);
     }
 
-    protected function getHalaman() {
+    public function getHalaman() {
         return $this->_halaman;
     }
 
-    protected function setOrderBy($order_by) {
+    public function setOrderBy($order_by) {
         $this->_orderBy = $order_by;
     }
 
-    protected function getOrderBy() {
+    public function getOrderBy() {
         return $this->_orderBy;
-    }
-
-    protected function setAscDsc($asc_dsc) {
-        $this->_ascDsc = $asc_dsc;
-    }
-
-    protected function getAscDsc() {
-        return $this->_ascDsc;
     }
 
     protected function split($string, $spliters) {

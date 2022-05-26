@@ -30,7 +30,31 @@ class Utility {
         return $status;
     }
 
+    public static function statusBantuanClassText($status) {
+        if(strtolower($status) == 'd') {
+            $class = 'badge-primary';
+            $status_text = 'Berjalan';
+        } elseif (strtolower($status) == 's') {
+            $class = 'badge-success';
+            $status_text = "Selesai";
+        } elseif (strtolower($status) == 'b') {
+            $class = 'badge-warning'; 
+            $status_text = "Menunggu Penilaian";
+        } elseif (strtolower($status) == 'c') {
+            $class = 'badge-info'; 
+            $status_text = "Penilaian";
+        } else {
+            $status_text = "Ditolak";
+            $class = 'badge-secondary'; 
+        }
+        return array(
+            'class' => $class, 
+            'text' => $status_text
+        );
+    }
+
     public static function keteranganJenisChannelPayment($params) {
+        $params = strtoupper($params);
         if ($params == 'TB') {
             $metode_bayar = "Transfer Bank";
         } else if ($params == 'QR') {
@@ -43,6 +67,8 @@ class Utility {
             $metode_bayar = "Gerai Mart";
         } else if ($params == 'GI') {
             $metode_bayar = "Giro";
+        } else if ($params == 'TN') {
+            $metode_bayar = "Tunai";
         } else {
             $metode_bayar = "Unrecognize (Payment Method)";
         }
@@ -51,5 +77,22 @@ class Utility {
 
     public static function contackToLocal($kontak) {
         return preg_replace('/^0/', '+62', $kontak);
+    }
+
+    public static function blokirClassText($blokir) {
+        if ($blokir == 1) {
+            $status_blokir_class = 'bg-danger'; $blokir_status_text = 'Diblok';
+        } else {
+            $status_blokir_class = 'bg-success'; $blokir_status_text = 'Aktif';
+        }
+        return array(
+            'class' => $status_blokir_class,
+            'text' => $blokir_status_text
+        );
+    }
+
+    public static function imploderArray($params = array(), $implodeby = ' - ') {
+        $array = array();
+        return implode($implodeby, $params);
     }
 }

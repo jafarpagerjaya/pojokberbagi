@@ -55,12 +55,20 @@ class Validate {
 								$addCvalue    = Sanitize::escape(trim($addConditions[2]));
 								$addCmark	  = (isset($addConditions[3]) ? Sanitize::escape(trim($addConditions[3])) : 'AND');
 								if (in_array($addCoperator, $operators)) {
-									$sql .= " {$addCmark} {$addCfield} {$addCoperator} '{$addCvalue}'";
+									// Belum ter test $conditionFilterNull untuk semua kondisi
+									$conditionFilterNull = ($addCmark == 'AND' ? 'OR' : 'AND' ) . " {$addCfield} IS NULL";
+									$sql .= " {$addCmark} ({$addCfield} {$addCoperator} '{$addCvalue}' {$conditionFilterNull})";
 								}
 							}
 							$uniqueCheck = $this->_db->query($sql);
 							if ($uniqueCheck->count()) {
-								$this->addError("{$field} sudah terpakai");
+								$this->addError("{$field} {$rule_value} sudah terpakai");
+								$this->addErrorAtRule($field, $rule);
+							}
+							break;
+						case 'regex':
+							if (!preg_match($rule_value, $value)) {
+								$this->addError("{$field} harus sesuai format");
 								$this->addErrorAtRule($field, $rule);
 							}
 							break;
@@ -204,5 +212,42 @@ class Validate {
 			}
 		}
 		return $inputName;
+	}
+
+	public static function errorArrayRule ($arrayFeed) {
+		$arrayRuleError = array();
+		foreach($arrayFeed as $key => $value) {
+			if (is_array($value)) {
+				foreach($value as $rule => $rule_value) {
+					if ($rule == 'rule') {
+						$arrayRuleError[$key] = $value;
+						unset($arrayFeed[$key]);
+					}
+				}
+			}
+		}
+		return array($arrayFeed, $arrayRuleError);
+	}
+
+	public static function errorArrayRuleList($list_validate_error = array()) {
+		if (count($list_validate_error) > 0) {
+			$newListValidateError = array();
+			$listValidateRule = array();
+			foreach($list_validate_error as $validate_error_key => $validate_error_value) {
+				array_push($newListValidateError, self::errorArrayRule($validate_error_value)[0]);
+				array_push($listValidateRule, self::errorArrayRule($validate_error_value)[1]);
+			}
+			// if (count($listValidateRule) > 0) {
+			//     $newListValidateRule = array();
+			//     $listValidateRule = array_reverse($listValidateRule);
+			//     foreach($listValidateRule as $validateRuleKey => $validateRuleValue) {
+			//         $newListValidateRule = array_merge($newListValidateRule, $validateRuleValue);
+			//     }
+			//     $listValidateRule = $newListValidateRule;
+			// }
+			$newListValidateError = call_user_func_array('array_merge', $newListValidateError);
+			$listValidateRule = call_user_func_array('array_merge', array_reverse($listValidateRule));
+			return array_merge($newListValidateError, $listValidateRule);
+		}
 	}
 }

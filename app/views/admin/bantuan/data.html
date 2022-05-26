@@ -15,7 +15,7 @@
                 <img src="<?= $this->data['detil_bantuan']->path_gambar_wide; ?>" alt="<?= $this->data['detil_bantuan']->nama_gambar_wide; ?>" class="img-fluid">
             </div>
             <div class="card-footer p-0 pb-2">
-                <table class="table table-borderless table-hover">
+                <table class="table table-borderless table-hover table-responsive-sm">
                     <thead>
                         <tr>
                             <td class="font-weight-bold">Id Donasi</td>
@@ -31,7 +31,7 @@
                                     <tr>
                                         <td class="py-2">
                                             <a href="#" class="id-donasi text-primary font-weight-bolder"><?= $donasiBantuan->id_donasi; ?></a>
-                                            <div class="time small text-black-50"><?= Output::strToFullLocalDate($donasiBantuan->waktu_bayar); ?></div>
+                                            <div class="time small text-black-50 font-weight-bold"><?= $donasiBantuan->waktu_bayar; ?></div>
                                         </td>
                                         <td class="py-2">
                                             <div class="media align-items-center">
@@ -39,10 +39,10 @@
                                                     <img alt="<?= $donasiBantuan->nama_path_gambar_akun; ?>" src="<?= $donasiBantuan->path_gambar_akun; ?>">
                                                 </a>
                                                 <div class="media-body">
-                                                    <div class="name mb-0 text-black-50 font-weight-bold"><?= ucwords(strtolower($donasiBantuan->nama_donatur)); ?></div>
-                                                    <div class="small">
-                                                        <span class="small kontak"><?= $donasiBantuan->kontak; ?></span>
-                                                        <span class="small email"><?= $donasiBantuan->email; ?></span>
+                                                    <div class="name mb-0 text-black-50 font-weight-bolder"><?= ucwords(strtolower($donasiBantuan->nama_donatur)); ?></div>
+                                                    <div class="small text-black-50 font-weight-bold">
+                                                        <span class="kontak"><?= $donasiBantuan->kontak; ?></span>
+                                                        <span class="email"><?= $donasiBantuan->email; ?></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -50,8 +50,8 @@
                                         <td class="py-2">
                                             <div class="media align-items-center">
                                                 <div class="media-body">
-                                                    <div class="name mb-0 text-black-50 font-weight-bold"><?= Output::tSparator($donasiBantuan->jumlah_donasi); ?></div>
-                                                    <div class="small text-muted"><?= Utility::keteranganJenisChannelPayment($donasiBantuan->jenis); ?></div>
+                                                    <div class="name mb-0 text-black-50 font-weight-bolder"><?= Output::tSparator($donasiBantuan->jumlah_donasi); ?></div>
+                                                    <div class="small text-muted font-weight-bold"><?= Utility::keteranganJenisChannelPayment($donasiBantuan->jenis); ?></div>
                                                 </div>
                                                 <div class="avatar rounded ml-3 bg-transparent border" data-id-cp="<?= $donasiBantuan->id_cp; ?>">
                                                     <img src="<?= $donasiBantuan->path_gambar_cp; ?>" alt="<?= $donasiBantuan->nama_path_gambar_cp; ?>" class="img-fluid">
@@ -103,7 +103,7 @@
                         </div>
                         <div class="row small">
                             <div class="col-6 small text-muted">Total Pencairan/Kali</div>
-                            <div class="col-6 small text-right"><span class="pencairan"><?= Output::tSparator($this->data['detil_bantuan']->donasi_terlaksana); ?></span>/<span class="font-weight-bold"><?= $this->data['detil_bantuan']->jumlah_pelaksanaan; ?></span></div>
+                            <div class="col-6 small text-right"><span class="pencairan"><?= Output::tSparator($this->data['detil_bantuan']->donasi_terlaksana); ?></span>/<span class="font-weight-bold"><?= $this->data['detil_bantuan']->sekian_kali_pencairan; ?></span></div>
                         </div>
                     </div>
                     <div class="card-footer bg-gradient-info text-white">
@@ -121,7 +121,7 @@
                                 <span class="text-muted"><?= Output::tSparator($this->data['saldo_bantuan']->saldo_bjb); ?></span>
                             </div>
                             <div class="col-3">
-                                <img src="<?= $this->data['saldo_bantuan']->path_gambar_bjb; ?>" alt="BJB" class="img-fluid">
+                                <img src="<?= $this->data['saldo_bantuan']->path_gambar_bjb; ?>" alt="BJB" class="img-fluid saldo">
                             </div>
                         </div>
                     </div>
@@ -136,7 +136,7 @@
                                 <span class="text-muted"><?= Output::tSparator($this->data['saldo_bantuan']->saldo_bsi); ?></span>
                             </div>
                             <div class="col-3">
-                                <img src="<?= $this->data['saldo_bantuan']->path_gambar_bsi; ?>" alt="BSI" class="img-fluid">
+                                <img src="<?= $this->data['saldo_bantuan']->path_gambar_bsi; ?>" alt="BSI" class="img-fluid saldo">
                             </div>
                         </div>
                     </div>
@@ -151,7 +151,22 @@
                                 <span class="text-muted"><?= Output::tSparator($this->data['saldo_bantuan']->saldo_bri); ?></span>
                             </div>
                             <div class="col-3">
-                                <img src="<?= $this->data['saldo_bantuan']->path_gambar_bri; ?>" alt="BRI" class="img-fluid">
+                                <img src="<?= $this->data['saldo_bantuan']->path_gambar_bri; ?>" alt="BRI" class="img-fluid saldo">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-12">
+                <div class="card">
+                    <div class="card-header rounded py-3">
+                        <div class="row justify-content-between align-items-end">
+                            <div class="col-auto">
+                                <b>Saldo</b>
+                                <span class="text-muted"><?= Output::tSparator($this->data['saldo_bantuan']->saldo_tunai); ?></span>
+                            </div>
+                            <div class="col-3">
+                                <img src="<?= $this->data['saldo_bantuan']->path_gambar_tunai; ?>" alt="TUNAI CR" class="img-fluid saldo">
                             </div>
                         </div>
                     </div>

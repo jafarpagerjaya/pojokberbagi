@@ -1064,4 +1064,76 @@ class Ui {
                     </html>';
         }
     }
+
+    public static function emailAktivasiAkun($data = array()) {
+        if (isset($data)) {
+            return '<!doctype html>
+            <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Kaitkan Akun</title>
+                <style>
+                    @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap");
+                    * {
+                        font-family: "Nunito", sans-serif;
+                    }
+                    a:hover {
+                        opacity: .9;
+                    }
+                </style>
+            </head>
+            <body>
+                <table style="max-width: 500px; margin: auto;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="https://pojokberbagi.id/assets/images/brand/pojok-berbagi-transparent.png" alt="Pojok berbagi" style="max-width: 100px; margin-bottom: 1em;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="padding: 1.5em; border-radius: 20px; background-color: aliceblue;">
+                                <h3>
+                                    Hi '. strip_tags($data["nama"]) .',
+                                </h3>
+                                <p>
+                                    Kami menerima permintaan untuk mengaktifkan akun anda!
+                                </p>
+                                <p>
+                                    Jika anda merasa tidak melakukan permintaan tersebut, lupakan email ini.
+                                </p>
+                                <p>
+                                    Namun jika sebaliknya, silahkan klik tombol <strong>Aktifkan Akun</strong> untuk aktifkan akun PBI anda.
+                                </p>
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td>
+                                            <center>
+                                                <a href="'. strip_tags($data["link"]) .'" style="padding: 0.75em; border-radius: 10px; background-color: #FE5000; color: white; text-decoration: none; margin: auto;">
+                                                    Aktifkan Akun
+                                                </a>
+                                            </center>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 1.5em; text-align: center">
+                            <small>
+                                <span>
+                                    Jl. Kuningan Raya No. 86, Kel. Antapani Kidul, Kec. Antapani, Kota Bandung, Provinsi Jawa Barat.
+                                </span>
+                                <div style="color: lightslategrey; display: flex; gap: 0.5rem; justify-content: center;">
+                                    <span>Telepon 022 21210292 - WA 0821 1113 3331</span>
+                                </div>
+                            </small>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            </html>';
+        }
+    }
 }

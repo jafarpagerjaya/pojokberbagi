@@ -63,17 +63,17 @@ class AkunController extends Controller {
         if (count($params)) {
             $data = $this->_auth->get('aktivasi, username',array('id_akun','=',$params[0]));
             if ($data->aktivasi == 1) {
-                $setAktivasi = 0;
+                $setAktivasi = '0';
                 $mode = 'blokir';
             } else {
-                $setAktivasi = 1;
+                $setAktivasi = '1';
                 $mode = 'unblokir';
             }
             $cekCurrentId = $this->_auth->isCurrentAkun($params[0]);
             if (!$cekCurrentId) {
-                $this->_auth->update(array('aktivasi'=> $setAktivasi), $params[0]);
+                $this->_auth->update(array('aktivasi' => $setAktivasi), $params[0]);
                 if ($this->_auth->affected()) {
-                    Session::flash('success','Berhasil ' . $mode . ' akun [' . $data->username . ']');
+                    Session::flash('success','Akun [<b>' . $data->username . '</b>] telah di<span class="font-weight-bold ' . ($setAktivasi == '1' ? 'text-green' : 'text-danger') . '">' . $mode . '</span>');
                 }
             } else {
                 Session::flash('error','Tidak bisa blok diri sendiri saat online');

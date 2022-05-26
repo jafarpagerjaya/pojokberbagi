@@ -66,7 +66,7 @@ class Database {
 
 	private function filter($where = array()) {
 		$filter = array();
-		$operators = array('=', '>', '<', '>=', '<=', '!=','IS','IN');
+		$operators = array('=', '>', '<', '>=', '<=', '!=','IS','IN','LIKE');
 
 		$field    = $where[0];
 		$operator = $where[1];
@@ -78,10 +78,17 @@ class Database {
 					1
 				);
 			} else {
-				$filter = array(
-					"{$field} {$operator} (?)",
-					1
-				);
+				if ($operator == 'LIKE') {
+					$filter = array(
+						"{$field} {$operator} CONCAT('%',?,'%')",
+						1
+					);
+				} else {
+					$filter = array(
+						"{$field} {$operator} (?)",
+						1
+					);
+				}
 			}
 		}
 		return $filter;

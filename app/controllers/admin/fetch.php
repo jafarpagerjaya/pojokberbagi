@@ -167,6 +167,10 @@ class FetchController extends Controller {
                 case 'bantuan':
                     // bantuan Params
                 break;
+
+                case 'list':
+                    // bantuan Params
+                break;
                 
                 default:
                     $this->_result['feedback'] = array(
@@ -591,6 +595,61 @@ class FetchController extends Controller {
             'message' => 'Bantuan <span class="font-weight-bold" data-id-bantuan="'. $id_bantuan .'">' . $decoded['nama'] . '</span> berhasil di perbaharui.'
         );
         $this->result();
+        return false;
+    }
+
+    private function donasiListRead($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        if (!isset($decoded['limit'])) {
+            $decoded['limit'] = 1;
+        }
+
+        if (!isset($decoded['halaman'])) {
+            $decoded['halaman'] = 1;
+        }
+
+        $this->model('Donasi');
+
+        if (isset($decoded['search'])) {
+            $this->model->setSearch($decoded['search']);
+        }
+
+        $data = array();
+
+        $this->model->setOffset($decoded['limit']);
+        $this->model->setAscDsc('Desc');
+        $this->model->setHalaman($decoded['halaman'], 'donasi');
+        $this->model->setOrderBy('d.create_at');
+        $this->model->getListDonasi();
+
+        if ($this->model->affected()) {
+            $data = $this->model->data();
+        }
+
+        if (!isset($data['data'])) {
+            $data['data'] = array();
+        }
+
+        if (!isset($data['total_record'])) {
+            $data['total_record'] = $this->model->data()['total_record'];
+        }
+
+        $pages = ceil($data['total_record']/$decoded['limit']);
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => $data['data'],
+            'message' => 'ok',
+            'pages' => $pages,
+            'total_record' => $data['total_record']
+        );
+
+        $this->result();
+
+        if ($this->_result['error'] == false) {
+            Session::delete('toast');
+        }
         return false;
     }
 

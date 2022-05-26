@@ -391,6 +391,8 @@ class Controller {
 				App::getRouter()->getController(),
 				App::getRouter()->getAction()
 			);
+			// PHP 7.2 + count()
+			// count(is_countable($params) ? $params : [])
 			if (count($params)) {
 				if (!is_array($params)) {
 					$params = array($params);

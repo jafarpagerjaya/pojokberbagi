@@ -2,12 +2,6 @@
 class ProfileController extends Controller {
     public function __construct() {
         $this->title = 'Profil';
-        $this->title = 'Akun';
-        $this->rel_action = array(
-            array(
-                'href' => '/assets/route/admin/core/css/admin-style.css'
-            )
-        );
 
         $this->_auth = $this->model("Auth");
         if (!$this->_auth->hasPermission('admin')) {
@@ -59,6 +53,27 @@ class ProfileController extends Controller {
         if ($dataGambar) {
             $this->data['gambar'] = $dataGambar;
         }
+
+        $this->rel_action = array(
+            array(
+                'href' => '/assets/route/admin/core/css/admin-style.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/form-element.css'
+            )
+        );
+
+        $this->script_action = array(
+            array(
+                'src' => '/assets/route/admin/core/js/form-function.js'
+            ),
+            array(
+                'src' => '/assets/main/js/unlock-profile.js'
+            ),
+            array(
+                'src' => '/assets/route/admin/pages/js/unlock.js'
+            )
+        );
         return VIEW_PATH.'admin'.DS.'profile'.DS.'form-edit-profile.html';
     }
 
@@ -75,14 +90,15 @@ class ProfileController extends Controller {
                     'kontak' => array(
                         'required' => true,
                         'digit' => true,
-                        'min' => 11,
+                        'min' => 5,
                         'max' => 13,
                         'unique' => 'pegawai'
                     ),
                     'email' => array(
                         'required' => true,
                         'max' => 100,
-                        'unique' => 'pegawai'
+                        'unique' => 'pegawai',
+                        'regex' => '/^([^\.\_\-\@])+([^\.\@\_\-])*((([^\d\@]){0,1})[a-z0-9]{2,}){0,1}((@([a-zA-Z]{2,})+(\.([a-z]{2,})){1,2}|@(\d{3}.){1,3})|(@([0-9]{1,3})+(\.([0-9]{1,3})){3}))$/'
                     ),
                     'alamat' => array(
                         'required' => true,
@@ -90,10 +106,10 @@ class ProfileController extends Controller {
                         'max' => 255
                     )
                 ), array('id_pegawai','!=', $this->data['pegawai']->id_pegawai));
-                if (!$validate1->passed()) {
-                    Session::put('error_feedback', $validate1->getValueFeedback());
-                    Redirect::to('admin/profile/unlock/'. Token::generate());
-                }
+                // if (!$validate1->passed()) {
+                //     Session::put('error_feedback', $validate1->getValueFeedback());
+                //     Redirect::to('admin/profile/unlock/'. Token::generate());
+                // }
                 $vali2 = new Validate();
                 $validate2 = $vali2->check($_POST, array(
                     'username' => array(
@@ -105,40 +121,69 @@ class ProfileController extends Controller {
                     'email' => array(
                         'required' => true,
                         'max' => 100,
-                        'unique' => 'akun'
+                        'unique' => 'akun',
+                        'regex' => '/^([^\.\_\-\@])+([^\.\@\_\-])*((([^\d\@]){0,1})[a-z0-9]{2,}){0,1}((@([a-zA-Z]{2,})+(\.([a-z]{2,})){1,2}|@(\d{3}.){1,3})|(@([0-9]{1,3})+(\.([0-9]{1,3})){3}))$/'
                     ),
                 ), array('id_akun','!=', $this->data['akun']->id_akun));
-                if (!$validate2->passed()) {
-                    Session::put('error_feedback', $validate2->getValueFeedback());
+                // if (!$validate2->passed()) {
+                //     Session::put('error_feedback', $validate2->getValueFeedback());
+                //     Redirect::to('admin/profile/unlock/'. Token::generate());
+                // }
+                $vali3 = new Validate();
+                $validate3 = $vali3->check($_POST, array(
+                    'email' => array(
+                        'required' => true,
+                        'max' => 100,
+                        'unique' => 'donatur',
+                        'regex' => '/^([^\.\_\-\@])+([^\.\@\_\-])*((([^\d\@]){0,1})[a-z0-9]{2,}){0,1}((@([a-zA-Z]{2,})+(\.([a-z]{2,})){1,2}|@(\d{3}.){1,3})|(@([0-9]{1,3})+(\.([0-9]{1,3})){3}))$/'
+                    ),
+                    'kontak' => array(
+                        'required' => true,
+                        'digit' => true,
+                        'min' => 11,
+                        'max' => 13,
+                        'unique' => 'donatur'
+                    )
+                ), array('id_akun','!=', $this->data['akun']->id_akun));
+                // if (!$validate3->passed()) {
+                //     Session::put('error_feedback', $validate3->getValueFeedback());
+                //     Redirect::to('admin/profile/unlock/'. Token::generate());
+                // }
+                if (!$validate2->passed() || !$validate1->passed() || !$validate3->passed()) {
+                    $validateList = array($validate1->getValueFeedback(), $validate2->getValueFeedback(), $validate3->getValueFeedback());
+                    Session::put('error_feedback', Validate::errorArrayRuleList($validateList));
                     Redirect::to('admin/profile/unlock/'. Token::generate());
                 }
+
                 $this->model('Pegawai');
 
-                $result1 = $this->model->update('pegawai', array(
-                    'nama' => Sanitize::escape(trim(Input::get('nama'))),
-                    'kontak' => Sanitize::escape(trim(Input::get('kontak'))),
-                    'email' => Sanitize::escape(trim(Input::get('email'))),
-                    'alamat' => Sanitize::escape(trim(Input::get('alamat')))
+                $updatePegawai = $this->model->update('pegawai', array(
+                    'nama' => strtoupper(Sanitize::noDblSpace2(Input::get('nama'))),
+                    'kontak' => Sanitize::toInt2(Input::get('kontak')),
+                    'email' => strtolower(Sanitize::noSpace2(Input::get('email'))),
+                    'alamat' => Sanitize::escape3(Sanitize::escape2(Input::get('alamat')))
                     ), array('id_pegawai','=', $this->data['pegawai']->id_pegawai)
                 );
 
-                if (!is_null($this->data['akun']->id_donatur)) {
-                    $checkIsDonatur = $this->model->getData('id_donatur','donatur', array('id_akun','=',$this->data['akun']->id_donatur));
+                if (!is_null($this->data['akun']->id_akun)) {
+                    $checkIsDonatur = $this->model->getData('id_donatur','donatur', array('id_akun','=',$this->data['akun']->id_akun));
                     if ($checkIsDonatur) {
-                        $result11 = $this->model->update('donatur', array(
-                            'nama' => Sanitize::escape(trim(Input::get('nama')))
-                            ), array('id_pegawai','=', $this->data['pegawai']->id_pegawai)
+                        $updateDonatur = $this->model->update('donatur', array(
+                            'nama' => strtoupper(Sanitize::escape2(Input::get('nama'))),
+                            'email' => strtolower(Sanitize::escape2(Input::get('email'))),
+                            'kontak' => Sanitize::toInt2(Input::get('kontak')),
+                            ), array('id_akun','=', $this->data['akun']->id_akun)
                         );
                     }
                 }
 
-                $result2 = $this->model->update('akun', array(
-                    'username' => Sanitize::escape(trim(Input::get('username'))),
-                    'email' => Sanitize::escape(trim(Input::get('email')))
+                $updateAkun = $this->model->update('akun', array(
+                    'username' => Sanitize::escape3(Sanitize::escape2(Input::get('username'))),
+                    'email' => strtolower(Sanitize::escape2(Input::get('email')))
                     ), array('id_akun','=', $this->data['akun']->id_akun)
                 );
 
-                if ($result1 || $result2) {
+                if ($updatePegawai || $updateAkun || $updateDonatur) {
                     Session::flash('success', 'Data Profil Berhasil Diupdate');
                 } else {
                     Session::flash('error', 'Data Profil Gagal Diupdate');

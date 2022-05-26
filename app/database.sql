@@ -229,7 +229,7 @@ CREATE TABLE sektor (
     deskripsi VARCHAR(255),
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT UN_NAMA_SEKTOR UNIQUE(NAMA)
+    CONSTRAINT UN_NAMA_SEKTOR UNIQUE(nama)
 )ENGINE=INNODB;
 
 INSERT INTO sektor(id_sektor, nama) VALUES('B','Bencana'),
@@ -239,24 +239,6 @@ INSERT INTO sektor(id_sektor, nama) VALUES('B','Bencana'),
 ('P','Pendidikan'),
 ('S','Sosial');
 
-CREATE TABLE jenis (
-    id_jenis SMALLINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    nama VARCHAR(20) NOT NULL,
-    layanan ENUM('P','K','L','S','D','E') NOT NULL,
-    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    id_kategori TINYINT UNSIGNED,
-    CONSTRAINT F_ID_KATEGORI_JENIS_ODR FOREIGN KEY(id_kategori) REFERENCES kategori(id_kategori) ON DELETE RESTRICT ON UPDATE CASCADE
-)ENGINE=INNODB;
-
--- layanan P = pendidikan, K = kesehatan, L = lingkungan, S = Sosial, D = Dalurat, E = Ekonomi
-
-INSERT INTO jenis(nama,layanan,id_kategori) VALUES('Paket Sembako','S',3),
-('Berbagi Makan','S',3),
-('Sedekah UKM','E',1),
-('Peduli Anak','K',3),
-('Tanggap Bencana','D',5);
-
 CREATE TABLE kebutuhan (
     id_kebutuhan INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     nama VARCHAR(50) NOT NULL,
@@ -264,6 +246,34 @@ CREATE TABLE kebutuhan (
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT UN_NAMA_KEBUTUHAN UNIQUE(nama)
 )ENGINE=INNODB;
+
+-- FETURE
+-- CREATE TABLE pengajuan (
+--     id_pengajuan INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+--     nama VARCHAR(50) NOT NULL,
+--     nama_penerima VARCHAR(50),
+--     satuan_target VARCHAR(15),
+--     jumlah_target INT UNSIGNED,
+--     min_donasi INT UNSIGNED,
+--     total_rab INT UNSIGNED DEFAULT NULL,
+--     lama_penayangan SMALLINT UNSIGNED,
+--     tanggal_awal DATE,
+--     tanggal_akhir DATE,
+--     deskripsi VARCHAR(255) NOT NULL,
+--     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+--     action_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     id_gambar_medium INT UNSIGNED,
+--     id_gambar_wide INT UNSIGNED,
+--     id_sektor CHAR(1),
+--     id_kategori TINYINT UNSIGNED,
+--     id_pemohon INT UNSIGNED,
+--     CONSTRAINT F_ID_GAMBAR_PENGAJUAN_MEDIUM_ODN FOREIGN KEY(id_gambar_medium) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE,
+--     CONSTRAINT F_ID_GAMBAR_PENGAJUAN_WIDE_ODN FOREIGN KEY(id_gambar_wide) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE,
+--     CONSTRAINT F_ID_SEKTOR_PENGAJUAN_ODR FOREIGN KEY(id_sektor) REFERENCES sektor(id_sektor) ON DELETE RESTRICT ON UPDATE CASCADE,
+--     CONSTRAINT F_ID_KATEGORI_PENGAJUAN_ODR FOREIGN KEY(id_kategori) REFERENCES kategori(id_kategori) ON DELETE RESTRICT ON UPDATE CASCADE,
+--     CONSTRAINT F_ID_PEMOHON_PENGAJUAN_ODN REFERENCES pemohon(id_pemohon) ON DELETE SET NULL ON UPDATE CASCADE
+-- )ENGINE=INNODB;
 
 CREATE TABLE bantuan (
     id_bantuan INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -288,7 +298,6 @@ CREATE TABLE bantuan (
     id_gambar_wide INT UNSIGNED,
     id_sektor CHAR(1),
     id_kategori TINYINT UNSIGNED,
-    id_jenis SMALLINT UNSIGNED,
     id_penangung_jawab SMALLINT UNSIGNED,
     id_pengawas SMALLINT UNSIGNED,
     CONSTRAINT U_TAG_BANTUAN UNIQUE(tag),
@@ -297,73 +306,18 @@ CREATE TABLE bantuan (
     CONSTRAINT F_ID_GAMBAR_BANTUAN_WIDE_ODN FOREIGN KEY(id_gambar_wide) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT F_ID_SEKTOR_BANTUAN_ODR FOREIGN KEY(id_sektor) REFERENCES sektor(id_sektor) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT F_ID_KATEGORI_BANTUAN_ODR FOREIGN KEY(id_kategori) REFERENCES kategori(id_kategori) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT F_ID_JENIS_BANTUAN_ODR FOREIGN KEY(id_jenis) REFERENCES jenis(id_jenis) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT F_ID_PENANGUNG_JAWAB_BANTUAN_ODN FOREIGN KEY(id_penangung_jawab) REFERENCES pegawai(id_pegawai) ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT F_ID_PENGAWAS_BANTUAN_ODN FOREIGN KEY(id_pengawas) REFERENCES pegawai(id_pegawai) ON DELETE SET NULL ON UPDATE CASCADE
 )ENGINE=INNODB;
 
--- Catatan baris ini wajib dihapus jika sudah db host disesuaikan;
---
--- this query must run on host then delete it
---
-delete from gambar;
-alter table gambar AUTO_INCREMENT = 0;
-INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES('default','/assets/images/default.png','avatar','1'),
-('female-avatar','/assets/images/female-avatar.jpg','avatar','1'),
-('male-avatar','/assets/images/male-avatar.jpg','avatar','1'),
-('bank-bjb','/assets/images/partners/bjb.png','partner','1'),
-('bank-bsi','/assets/images/partners/bsi.png','partner','1'),
-('bank-bri','/assets/images/partners/bri.png','partner','1'),
-('satu-juta-sembako','/uploads/images/bantuan/medium/satu-juta-sembako-medium.jpg','bantuan', NULL),
-('satu-juta-sembako-wide','/uploads/images/bantuan/wide/satu-juta-sembako-wide.png','bantuan', NULL),
-('geberr','/uploads/images/bantuan/medium/geberr-medium.png','bantuan', NULL),
-('geberr-wide','/uploads/images/bantuan/wide/geberr-wide.png','bantuan', NULL),
-('semeru','/uploads/images/bantuan/medium/semeru-medium.png','bantuan', NULL),
-('semeru-wide','/uploads/images/bantuan/wide/semeru-wide.png','bantuan', NULL),
-('razka','/uploads/images/bantuan/medium/razka-medium.jpg','bantuan', NULL),
-('razka-wide','/uploads/images/bantuan/wide/razka-wide.png','bantuan', NULL),
-('single-wonder-mom','/uploads/images/bantuan/medium/single-wonder-mom-medium.jpeg','bantuan', NULL),
-('single-wonder-mom-wide','/uploads/images/bantuan/wide/single-wonder-mom-wide.png','bantuan', NULL);
---
-
-update channel_payment set id_gambar = (SELECT id_gambar FROM gambar WHERE LOWER(nama) = "bank-bjb") WHERE nama = "Bank BJB" AND jenis = "TB";
-update channel_payment set id_gambar = (SELECT id_gambar FROM gambar WHERE LOWER(nama) = "bank-bsi") WHERE nama = "Bank BSI" AND jenis = "TB";
-update channel_payment set id_gambar = (SELECT id_gambar FROM gambar WHERE LOWER(nama) = "bank-bri") WHERE nama = "Bank BRI" AND jenis = "TB";
-
-alter table bantuan ADD COLUMN action_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER modified_at;
-
-update bantuan set action_at = create_at;
-
-
-alter table bantuan modify column nama VARCHAR(50) NOT NULL;
-alter table bantuan modify column satuan_target VARCHAR(15);
-
-alter table bantuan drop INDEX UN_NAMA_BANTUAN;
-alter table bantuan add column tag VARCHAR(30) after nama;
-alter table bantuan add CONSTRAINT U_TAG_BANTUAN UNIQUE(tag);
-
-alter table bantuan drop foreign key F_ID_GAMBAR_BANTUAN_ODN;
-ALTER TABLE bantuan CHANGE id_gambar id_gambar_medium int unsigned;
-alter table bantuan add CONSTRAINT F_ID_GAMBAR_MEDIUM_BANTUAN_ODN FOREIGN KEY(id_gambar_medium) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE;
-alter table bantuan add column id_gambar_wide INT UNSIGNED AFTER id_gambar_medium;
-alter table bantuan add CONSTRAINT F_ID_GAMBAR_WIDE_BANTUAN_ODN FOREIGN KEY(id_gambar_wide) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE;
---
-
-update bantuan set id_gambar_medium = 7, id_gambar_wide = 8 where id_bantuan = 1;
-update bantuan set id_gambar_medium = 9, id_gambar_wide = 10 where id_bantuan = 2;
-update bantuan set id_gambar_medium = 11, id_gambar_wide = 12 where id_bantuan = 3;
-update bantuan set id_gambar_medium = 13, id_gambar_wide = 14 where id_bantuan = 4;
-update bantuan set id_gambar_medium = 15, id_gambar_wide = 16 where id_bantuan = 5;
-
-update akun set id_gambar = 1;
-
 -- status tabel bantuan B = Belum Disetujui, T = Tidak Disetujui, D = Disetujui, S = Proyek Bantuan sudah selesai
 -- satuan_target = menyatakan sasaran dari jumlah target. contoh paket sembako
 
-INSERT INTO bantuan(nama,status,satuan_target,jumlah_target,tanggal_awal,deskripsi,id_jenis,id_kategori,id_sektor,id_gambar) VALUES('Satu Juta Sembako','D','Paket Sembako',1000000,'2021-08-01','Berbagi Sembako Bagi Masyarakat Terdampak COVID-19',1, '3', 'S',5),
-('Geberr','D',NULL,NULL,NULL,"Gerakan Berbagi Nasi Untuk Orang Lapar di Hari Jum'at Berkah",2, '3', 'S',6),
-('Peduli Semeru','D',NULL,NULL,NULL,'Bantuan Bencana Bagi Masyarakat Terdampak Letusan Gunung Semeru',1, '5', 'B',7),
-('Peduli Razka','D',NULL,NULL,NULL,'Bantuan Untuk Razka Pendrita Miningitis Berusia 6thn',4, '3', 'K',8);
+INSERT INTO bantuan(nama,status,satuan_target,jumlah_target,tanggal_awal,deskripsi,id_kategori,id_sektor) VALUES
+('Satu Juta Sembako','D','Paket Sembako',1000000,'2021-08-01','Berbagi Sembako Bagi Masyarakat Terdampak COVID-19', '3', 'S'),
+('Geberr','D',NULL,NULL,NULL,"Gerakan Berbagi Nasi Untuk Orang Lapar di Hari Jum'at Berkah", '3', 'S'),
+('Peduli Semeru','D',NULL,NULL,NULL,'Bantuan Bencana Bagi Masyarakat Terdampak Letusan Gunung Semeru', '5', 'B'),
+('Peduli Razka','D',NULL,NULL,NULL,'Bantuan Untuk Razka Pendrita Miningitis Berusia 6thn', '3', 'K');
 
 CREATE TABLE kebutuhan_bantuan (
     jumlah INT UNSIGNED NOT NULL DEFAULT 1,
@@ -381,6 +335,7 @@ CREATE TABLE pelaksanaan (
     id_pelaksanaan INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     deskripsi VARCHAR(255),
     jumlah_pelaksanaan INT,
+    total_anggaran INT UNSIGNED NOT NULL,
     status ENUM('J','S') NOT NULL DEFAULT 'J',
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -388,8 +343,9 @@ CREATE TABLE pelaksanaan (
 
 -- status pelaksanaan J = Jalan/Sedang Berjalan, S = Selesai
 
-INSERT INTO pelaksanaan(deskripsi, jumlah_pelaksanaan, status) VALUE('Program sembako BJB Agustus', 15000, 'S'),
-('Program sembako BJB November', 25000, 'J');
+INSERT INTO pelaksanaan(deskripsi, jumlah_pelaksanaan, status, total_anggaran) VALUE('Program sembako BJB Agustus', 15000, 'S', 2312500000),
+('Program sembako BJB November', 25000, 'J', 3125000000),
+('Geberr Baitul Mutaqin', 150, 'S', 750000);
 
 CREATE TABLE channel_payment (
     id_cp TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -397,17 +353,17 @@ CREATE TABLE channel_payment (
     kode CHAR(3) DEFAULT NULL,
     nomor VARCHAR(30) NOT NULL,
     atas_nama VARCHAR(30) NOT NULL,
-    jenis ENUM('TB','VA','EW','QR','GM','GI') NOT NULL,
+    jenis ENUM('TB','VA','EW','QR','GM','GI','TN') NOT NULL,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     id_gambar INT UNSIGNED,
-    CONSTRAINT U_NAMA_NOMOR_CHANNEL_PAYMENT UNIQUE(nama, nomor) ,
+    CONSTRAINT U_NAMA_NOMOR_CHANNEL_PAYMENT UNIQUE(nama, nomor, jenis),
     CONSTRAINT F_ID_GAMBAR_CHANNEL_PAYMENT_ODN FOREIGN KEY(id_gambar) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE
 )ENGINE=INNODB;
 
--- jenis channel_payment TB = Transfer Bank, VA = Virtual Acount, EW = E-Wallet, QR, Qris, GM = Gerai Mart, GI = GIRO
+-- jenis channel_payment TB = Transfer Bank, VA = Virtual Acount, EW = E-Wallet, QR, Qris, GM = Gerai Mart, GI = GIRO, TN = Tunai
 
-INSERT INTO channel_payment(nama, kode, nomor, jenis) VALUES('Bank BJB', '110', '0001000080001', 'TB');
+INSERT INTO channel_payment(nama, kode, nomor, jenis, atas_nama) VALUES('Bank BJB', '110', '0001000080001', 'TB','POJOK BERBAGI INDONESIA'),('Bank BJB Giro Payment', '110', '0001000080001', 'GI','POJOK BERBAGI INDONESIA'),('Tunai Via CR', '1', '1', 'TN','CR POJOK BERBAGI KANTOR PUSAT'),('Bank BSI','451','7400525255','TB','POJOK BERBAGI INDONESIA'),('Bank BRI','002','107001000272300','TB','POJOK BERBAGI INDONESIA');
 
 CREATE TABLE donasi (
     id_donasi BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -423,18 +379,42 @@ CREATE TABLE donasi (
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     id_bantuan INT UNSIGNED,
     id_donatur INT UNSIGNED,
-    id_pelaksanaan INT UNSIGNED,
+    -- id_pelaksanaan INT UNSIGNED,
     id_cp TINYINT UNSIGNED,
     CONSTRAINT U_KODE_PEMBAYARAN_DONASI UNIQUE(kode_pembayaran),
-    CONSTRAINT F_ID_BANTUAN_DONATUR_ODR FOREIGN KEY(id_bantuan) REFERENCES bantuan(id_bantuan) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT F_ID_DONATUR_DONATUR_ODR FOREIGN KEY(id_donatur) REFERENCES donatur(id_donatur) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT F_ID_PELAKSANAAN_DONATUR_ODN FOREIGN KEY(id_pelaksanaan) REFERENCES pelaksanaan(id_pelaksanaan) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_ID_BANTUAN_DONASI_ODR FOREIGN KEY(id_bantuan) REFERENCES bantuan(id_bantuan) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT F_ID_DONATUR_DONASI_ODR FOREIGN KEY(id_donatur) REFERENCES donatur(id_donatur) ON DELETE RESTRICT ON UPDATE CASCADE,
+    -- CONSTRAINT F_ID_PELAKSANAAN_DONASI_ODN FOREIGN KEY(id_pelaksanaan) REFERENCES pelaksanaan(id_pelaksanaan) ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT F_ID_CP_DONASI_ODN FOREIGN KEY(id_cp) REFERENCES channel_payment(id_cp) ON DELETE SET NULL ON UPDATE CASCADE
 )ENGINE=INNODB;
 
 -- status donasi 0 = pembayaran belum dilakukan, 1 = pembayaran berhasil;
 
-INSERT INTO donasi(id_bantuan,id_donatur,alias,jumlah_donasi, id_pelaksanaan, bayar, id_cp) VALUES(1,1,'CSR BJB',2312500000,1,'1'),(1,1,'CSR BJB',3125000000,2,'1','1');
+-- INSERT INTO donasi(id_bantuan,id_donatur,alias,jumlah_donasi, id_pelaksanaan, bayar, id_cp) VALUES(1,1,'CSR BJB',2312500000,1,'1'),(1,1,'CSR BJB',3125000000,2,'1','1');
+INSERT INTO donasi(id_bantuan,id_donatur,alias,jumlah_donasi, bayar, id_cp, waktu_bayar) VALUES(1,1,'CSR BJB',2312500000,'1',1,'2021-08-11'),(1,1,'CSR BJB',3125000000,'1',1, '2021-10-10'),(2,2,"PROGRAM",750000,'1',2,'2021-10-16');
+
+CREATE TABLE anggaran_pelaksanaan_donasi (
+    nominal_penggunaan_donasi INT UNSIGNED NOT NULL,
+    nominal_kebutuhan INT UNSIGNED NOT NULL,
+    saldo_kebutuhan INT UNSIGNED NOT NULL,
+    saldo_donasi INT UNSIGNED NOT NULL,
+    keterangan VARCHAR(50),
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id_kebutuhan INT UNSIGNED,
+    id_pelaksanaan INT UNSIGNED,
+    id_donasi BIGINT UNSIGNED,
+    CONSTRAINT F_ID_KEBUTUHAN_ANGGARAN_KEBUTUHAN_DONASI_ODN FOREIGN KEY(id_kebutuhan) REFERENCES kebutuhan(id_kebutuhan) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_ID_PELAKSANAAN_ANGGARAN_KEBUTUHAN_DONASI_ODR FOREIGN KEY(id_pelaksanaan) REFERENCES pelaksanaan(id_pelaksanaan) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT F_ID_DONASI_ANGGARAN_KEBUTUHAN_DONASI_ODC FOREIGN KEY(id_donasi) REFERENCES donasi(id_donasi) ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=INNODB;
+
+INSERT INTO kebutuhan(nama) VALUES('RAB CSR BJB SEMBAKO'),
+('RAB GEBERR');
+INSERT INTO anggaran_pelaksanaan_donasi (id_donasi, id_pelaksanaan, id_kebutuhan, nominal_kebutuhan, nominal_penggunaan_donasi, saldo_kebutuhan, saldo_donasi, keterangan) VALUES
+(1,1,1,2312500000,2312500000,0,0,"TOTAL RAB"),
+(2,2,1,3125000000,3125000000,0,0,"TOTAL RAB"),
+(3,3,1,750000,750000,0,0,"TOTAL RAB");
 
 --
 --
@@ -497,3 +477,202 @@ INSERT INTO banner(id_bantuan) VALUES(1),
 (2),
 (3),
 (4);
+
+DROP FUNCTION IF EXISTS formatTanggalFull;
+DELIMITER $$
+CREATE FUNCTION formatTanggalFull(tanggal TIMESTAMP)
+  RETURNS VARCHAR(255) DETERMINISTIC
+BEGIN
+  DECLARE varhasil varchar(255);
+
+  SELECT CONCAT(
+    CASE DAYOFWEEK(tanggal)
+      WHEN 1 THEN 'Minggu'
+      WHEN 2 THEN 'Senin'
+      WHEN 3 THEN 'Selasa'
+      WHEN 4 THEN 'Rabu'
+      WHEN 5 THEN 'Kamis'
+      WHEN 6 THEN 'Jumat'
+      WHEN 7 THEN 'Sabtu'
+    END,', ',
+    DAY(tanggal),' ',
+    CASE MONTH(tanggal) 
+      WHEN 1 THEN 'Januari' 
+      WHEN 2 THEN 'Februari' 
+      WHEN 3 THEN 'Maret' 
+      WHEN 4 THEN 'April' 
+      WHEN 5 THEN 'Mei' 
+      WHEN 6 THEN 'Juni' 
+      WHEN 7 THEN 'Juli' 
+      WHEN 8 THEN 'Agustus' 
+      WHEN 9 THEN 'September'
+      WHEN 10 THEN 'Oktober' 
+      WHEN 11 THEN 'November' 
+      WHEN 12 THEN 'Desember' 
+    END,' ',
+    YEAR(tanggal),' ',
+    TIME(tangal)
+  ) INTO varhasil;
+
+  RETURN varhasil;
+END $$
+
+DROP FUNCTION IF EXISTS formatTanggal $$
+CREATE FUNCTION formatTanggal(tanggal DATE)
+  RETURNS VARCHAR(255) DETERMINISTIC
+BEGIN
+  DECLARE varhasil varchar(255);
+
+  SELECT CONCAT(
+    CASE DAYOFWEEK(tanggal)
+        WHEN 1 THEN 'Minggu'
+        WHEN 2 THEN 'Senin'
+        WHEN 3 THEN 'Selasa'
+        WHEN 4 THEN 'Rabu'
+        WHEN 5 THEN 'Kamis'
+        WHEN 6 THEN 'Jumat'
+        WHEN 7 THEN 'Sabtu'
+    END,', ',
+    DAY(tanggal),' ',
+    CASE MONTH(tanggal) 
+        WHEN 1 THEN 'Januari' 
+        WHEN 2 THEN 'Februari' 
+        WHEN 3 THEN 'Maret' 
+        WHEN 4 THEN 'April' 
+        WHEN 5 THEN 'Mei' 
+        WHEN 6 THEN 'Juni' 
+        WHEN 7 THEN 'Juli' 
+        WHEN 8 THEN 'Agustus' 
+        WHEN 9 THEN 'September'
+        WHEN 10 THEN 'Oktober' 
+        WHEN 11 THEN 'November' 
+        WHEN 12 THEN 'Desember' 
+    END,' ',
+    YEAR(tanggal)
+  ) INTO varhasil;
+
+  RETURN varhasil;
+END $$
+DELIMITER ;
+
+-- Catatan baris ini wajib dihapus jika sudah db host disesuaikan;
+--
+-- this query must run on host then delete it or comment it after run on server
+--
+-- delete from gambar;
+-- alter table gambar AUTO_INCREMENT = 0;
+-- INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES('default','/assets/images/default.png','avatar','1'),
+-- ('female-avatar','/assets/images/female-avatar.jpg','avatar','1'),
+-- ('male-avatar','/assets/images/male-avatar.jpg','avatar','1'),
+-- ('bank-bjb','/assets/images/partners/bjb.png','partner','1'),
+-- ('bank-bsi','/assets/images/partners/bsi.png','partner','1'),
+-- ('bank-bri','/assets/images/partners/bri.png','partner','1'),
+-- ('satu-juta-sembako','/uploads/images/bantuan/medium/satu-juta-sembako-medium.jpg','bantuan', NULL),
+-- ('satu-juta-sembako-wide','/uploads/images/bantuan/wide/satu-juta-sembako-wide.png','bantuan', NULL),
+-- ('geberr','/uploads/images/bantuan/medium/geberr-medium.png','bantuan', NULL),
+-- ('geberr-wide','/uploads/images/bantuan/wide/geberr-wide.png','bantuan', NULL),
+-- ('semeru','/uploads/images/bantuan/medium/semeru-medium.png','bantuan', NULL),
+-- ('semeru-wide','/uploads/images/bantuan/wide/semeru-wide.png','bantuan', NULL),
+-- ('razka','/uploads/images/bantuan/medium/razka-medium.jpg','bantuan', NULL),
+-- ('razka-wide','/uploads/images/bantuan/wide/razka-wide.png','bantuan', NULL),
+-- ('single-wonder-mom','/uploads/images/bantuan/medium/single-wonder-mom-medium.jpeg','bantuan', NULL),
+-- ('single-wonder-mom-wide','/uploads/images/bantuan/wide/single-wonder-mom-wide.png','bantuan', NULL);
+--
+
+update channel_payment set id_gambar = (SELECT id_gambar FROM gambar WHERE LOWER(nama) = "bank-bjb") WHERE nama = "Bank BJB" AND jenis = "TB";
+update channel_payment set id_gambar = (SELECT id_gambar FROM gambar WHERE LOWER(nama) = "bank-bsi") WHERE nama = "Bank BSI" AND jenis = "TB";
+update channel_payment set id_gambar = (SELECT id_gambar FROM gambar WHERE LOWER(nama) = "bank-bri") WHERE nama = "Bank BRI" AND jenis = "TB";
+
+alter table bantuan ADD COLUMN action_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER modified_at;
+update bantuan set action_at = create_at;
+
+alter table bantuan modify column nama VARCHAR(50) NOT NULL;
+alter table bantuan modify column satuan_target VARCHAR(15);
+
+alter table bantuan drop INDEX UN_NAMA_BANTUAN;
+alter table bantuan add column tag VARCHAR(30) after nama;
+alter table bantuan add CONSTRAINT U_TAG_BANTUAN UNIQUE(tag);
+
+alter table bantuan drop foreign key F_ID_GAMBAR_BANTUAN_ODN;
+ALTER TABLE bantuan CHANGE id_gambar id_gambar_medium int unsigned;
+alter table bantuan add CONSTRAINT F_ID_GAMBAR_MEDIUM_BANTUAN_ODN FOREIGN KEY(id_gambar_medium) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE;
+alter table bantuan add column id_gambar_wide INT UNSIGNED AFTER id_gambar_medium;
+alter table bantuan add CONSTRAINT F_ID_GAMBAR_WIDE_BANTUAN_ODN FOREIGN KEY(id_gambar_wide) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE;
+
+update bantuan set id_gambar_medium = 7, id_gambar_wide = 8 where id_bantuan = 1;
+update bantuan set id_gambar_medium = 9, id_gambar_wide = 10 where id_bantuan = 2;
+update bantuan set id_gambar_medium = 11, id_gambar_wide = 12 where id_bantuan = 3;
+update bantuan set id_gambar_medium = 13, id_gambar_wide = 14 where id_bantuan = 4;
+update bantuan set id_gambar_medium = 15, id_gambar_wide = 16 where id_bantuan = 5;
+
+update akun set id_gambar = 1;
+
+-- Hapus kolom id_pelaksanaan foreign key id_pelaksanaan di tabel donasi
+alter table bantuan drop foreign key F_ID_PELAKSANAAN_DONASI_ODN;
+alter table bantuan drop index F_ID_PELAKSANAAN_DONASI_ODN;
+alter table bantuan drop column id_pelaksanaan;
+
+-- Perbaikan salah penamaan constraint FK
+ALTER tabel donasi drop foreign key F_ID_BANTUAN_DONATUR_ODR;
+ALTER tabel donasi drop index F_ID_BANTUAN_DONATUR_ODR;
+alter table donasi add constraint F_ID_BANTUAN_DONASI_ODR FOREIGN KEY(id_bantuan) REFERENCES bantuan(id_bantuan) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER tabel donasi drop foreign key F_ID_DONATUR_DONATUR_ODR;
+ALTER tabel donasi drop index F_ID_DONATUR_DONATUR_ODR;
+ALTER TABLE donasi ADD CONSTRAINT F_ID_DONATUR_DONASI_ODR FOREIGN KEY(id_donatur) REFERENCES donatur(id_donatur) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER tabel donasi drop foreign key F_ID_PELAKSANAAN_DONATUR_ODN;
+ALTER tabel donasi drop index F_ID_PELAKSANAAN_DONATUR_ODN;
+ALTER TABLE donasi ADD CONSTRAINT F_ID_PELAKSANAAN_DONASI_ODN FOREIGN KEY(id_pelaksanaan) REFERENCES pelaksanaan(id_pelaksanaan) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- Penambahan Jenis CP
+ALTER table channel_payment modify jenis ENUM('TB','VA','EW','QR','GM','GI','TN') NOT NULL;
+
+-- Penambahan Total Anggaran
+alter table pelaksanaan add column total_anggaran INT UNSIGNED after jumlah_pelaksanaan;
+update pelaksanaan set total_anggaran = 2312500000 where id_pelaksanaan = 1;
+update pelaksanaan set total_anggaran = 3125000000 where id_pelaksanaan = 2;
+update pelaksanaan set total_anggaran = 750000 where id_pelaksanaan = 3;
+
+-- Sementara Pakai RAB
+INSERT INTO kebutuhan(nama) VALUES('RAB CSR BJB SEMBAKO'),
+('RAB GEBERR');
+
+-- Simpan create table ini setelah create table bantuan jika sudah di run diserver
+CREATE TABLE anggaran_pelaksanaan_donasi (
+    nominal_penggunaan_donasi INT UNSIGNED NOT NULL,
+    nominal_kebutuhan INT UNSIGNED NOT NULL,
+    saldo_kebutuhan INT UNSIGNED NOT NULL,
+    saldo_donasi INT UNSIGNED NOT NULL,
+    keterangan VARCHAR(50),
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id_kebutuhan INT UNSIGNED,
+    id_pelaksanaan INT UNSIGNED,
+    id_donasi BIGINT UNSIGNED,
+    CONSTRAINT F_ID_KEBUTUHAN_ANGGARAN_KEBUTUHAN_DONASI_ODN FOREIGN KEY(id_kebutuhan) REFERENCES kebutuhan(id_kebutuhan) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_ID_PELAKSANAAN_ANGGARAN_KEBUTUHAN_DONASI_ODR FOREIGN KEY(id_pelaksanaan) REFERENCES pelaksanaan(id_pelaksanaan) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT F_ID_DONASI_ANGGARAN_KEBUTUHAN_DONASI_ODC FOREIGN KEY(id_donasi) REFERENCES donasi(id_donasi) ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=INNODB;
+INSERT INTO anggaran_pelaksanaan_donasi (id_donasi, id_pelaksanaan, id_kebutuhan, nominal_kebutuhan, nominal_penggunaan_donasi, saldo_kebutuhan, saldo_donasi, keterangan) VALUES
+(1,1,1,2312500000,2312500000,0,0,"TOTAL RAB"),
+(2,2,1,3125000000,3125000000,0,0,"TOTAL RAB"),
+(3,3,1,750000,750000,0,0,"TOTAL RAB");
+
+-- Tambah CP Tunai Via CR
+INSERT INTO channel_payment(nama, kode, nomor, jenis) VALUES('Tunai Via CR', '1', '1', 'TN');
+
+-- Jika Belum ada
+INSERT INTO donasi(id_bantuan,id_donatur,alias,jumlah_donasi, bayar, id_cp, waktu_bayar) VALUES(2,2,"PROGRAM",750000,1, (SELECT id_cp FROM channel_payment WHERE nomor = 1 AND jenis = 'TN'), '2021-10-16');
+
+-- Tambah BJB GI dan update BJB TB Sembako ke GI
+ALTER TABLE channel_payment MODIFY nama VARCHAR(25) NOT NULL;
+INSERT INTO channel_payment(nama, kode, nomor, atas_nama, jenis, id_gambar) VALUES('Bank BJB Giro Payment', '110', '0001000080001', 'POJOK BERBAGI INDONESIA', 'GI', 4);
+UPDATE donasi JOIN bantuan USING(id_bantuan) SET id_cp = (SELECT id_cp FROM channel_payment WHERE kode = '110' AND jenis = 'GI') WHERE id_cp = 1 AND id_bantuan = 1;
+
+-- ALTER CP Constraint 
+ALTER TABLE channel_payment DROP INDEX U_NAMA_NOMOR_CHANNEL_PAYMENT;
+ALTER TABLE channel_payment ADD CONSTRAINT U_NAMA_NOMOR_JENIS_CHANNEL_PAYMENT UNIQUE(nama,nomor,jenis);
+
+INSERT INTO gambar(nama,path_gambar,label,gembok) VALUES('uang tunai','/assets/images/partners/tunai.png','partner',1);
+UPDATE channel_payment SET id_gambar = (SELECT id_gambar FROM gambar WHERE nama = 'uang tunai') WHERE jenis = 'TN' AND nama = 'Tunai';

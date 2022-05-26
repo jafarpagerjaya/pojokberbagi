@@ -34,6 +34,8 @@ function priceToNumber(v){
     return Number(v.replace(/[^0-9.]/g, ""));
 }
 
+function isNumber(n) { return /^[0-9.]+$/.test(n); }
+
 function autoResize() { 
     this.style.height = 'auto'; 
     this.style.height = this.scrollHeight + 'px'; 
@@ -43,16 +45,31 @@ function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function escapeRegExp(str) {
-    return str.replace(/[<>]/g, ' ');
+function escapeRegExp(str, result = ' ', pattern = /[<>]/g) {
+    return str.replace(pattern, result);
 }
 
-function ucwords(string) {
+function ucwords(string, trim = true) {
     if (string == null) {
         return '';
     }
-    str = string.trim();
-    return str.replace(/(^([a-zA-Z\p{M}]))|([ -][a-zA-Z\p{M}])/g, function(s){
-        return s.toUpperCase();
+    let str = string;
+    if (trim) {
+        str.trim()
+    }
+    return str.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+        return letter.toUpperCase();
     });
 };
+
+function checkEmailChar(char) {
+    const pattern = /[^~`!#$%^&*()+={}:;'"<>,/?\[\]|\\\s]/; // not acceptable char
+
+    return pattern.test(char); 
+}
+
+function checkEmailPattern(str) {
+    const pattern = /^([^\.\_\-\@])+([^\.\@\_\-])*((([^\d\@]){0,1})[a-z0-9]{2,}){0,1}((@([a-zA-Z]{2,})+(\.([a-z]{2,})){1,2}|@(\d{3}.){1,3})|(@([0-9]{1,3})+(\.([0-9]{1,3})){3}))$/;
+
+    return pattern.test(str.toLowerCase());
+}

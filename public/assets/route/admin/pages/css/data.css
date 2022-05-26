@@ -1,7 +1,10 @@
 .card img[alt="bank-bjb"],
 .card img[alt="bank-bsi"],
 .card img[alt="bank-bri"],
-.card img[alt="qris"] {
+.card img[alt="qris"],
+.card img[alt="BJB"],
+.card img[alt="BSI"],
+.card img[alt="BRI"] {
     margin-bottom: .25rem;
 }
 
@@ -10,4 +13,29 @@ table .avatar {
     --avatar: 35px;
     width: var(--avatar);
     height: var(--avatar);
+}
+
+/* Media Query */
+@media (min-width: 1548px) {
+    #main-content .row .col-lg-8 {
+        flex: 1 1;
+    }
+
+    #main-content .row .col-lg-8~.col .col-lg-12 {
+        flex: 0 1 50%;
+    }
+
+    .card img[alt="bank-bjb"].saldo,
+    .card img[alt="bank-bsi"].saldo,
+    .card img[alt="bank-bri"].saldo,
+    .card img[alt="qris"].saldo,
+    .card img[alt="BJB"].saldo,
+    .card img[alt="BSI"].saldo,
+    .card img[alt="BRI"].saldo {
+        margin-bottom: .5rem;
+    }
+
+    .card .row.align-items-end {
+        align-items: center !important;
+    }
 }

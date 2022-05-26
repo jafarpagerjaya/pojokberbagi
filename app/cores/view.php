@@ -54,11 +54,11 @@ class View {
 
 	private function autoVersion($file) {
 		// if it is not a valid path (example: a CDN url)
-		if (strpos($file, '/') !== 0 || !file_exists($_SERVER['DOCUMENT_ROOT'] . $file)) return $file;
+		if (strpos($file, DS) !== 0 && !file_exists(BASEURL . $file) || strpos($file, DS) === 0 && !file_exists(BASEURL . ltrim($file, DS))) return $file;
 	
 		// retrieving the file modification time
 		// https://www.php.net/manual/en/function.filemtime.php
-		$mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . $file);
+		$mtime = filemtime(BASEURL . ltrim($file, DS));
 	
 		return sprintf("%s?v=%d", $file, $mtime);
 	}
@@ -115,6 +115,10 @@ class View {
 				}
 
 				$href = $this->autoVersion($href);
+
+				if (strpos($href, DS) !== 0 && (empty($integrity) || empty($crossorigin)) && strpos($href, 'https://') !== 0) {
+					$href = DS . $href;
+				}
 
 				$link = '<link rel="' . $rel . '" type="' . $type . '" href="' . $href . '"';
 				if (!empty($media)) {
@@ -181,6 +185,10 @@ class View {
 					}
 
 					$src = $this->autoVersion($src);
+
+					if (strpos($src, DS) !== 0 && $source != 'trushworty') {
+						$src = DS . $src;
+					}
 
 					$script = '<script type="' . $type . '" src="' . $src . '"';
 					

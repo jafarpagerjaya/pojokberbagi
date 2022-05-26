@@ -132,3 +132,26 @@ const detectMob = function() {
 const detectTab = function() {
     return ( window.innerWidth <= 768 );
 };
+
+function keteranganJenisChannelPayment(jenis_cp) {
+    let keterangan_cp;
+    jenis_cp = jenis_cp.toUpperCase();
+    if (jenis_cp == 'TB') {
+        keterangan_cp = "Transfer Bank";
+    } else if (jenis_cp == 'QR') {
+        keterangan_cp = "QRIS";
+    } else if (jenis_cp == 'EW') {
+        keterangan_cp = "E-Wallet";
+    } else if (jenis_cp == 'VA') {
+        keterangan_cp = "Virtual Akun";
+    } else if (jenis_cp == 'GM') {
+        keterangan_cp = "Gerai Mart";
+    } else if (jenis_cp == 'GI') {
+        keterangan_cp = "Giro";
+    } else if (jenis_cp == 'TN') {
+        keterangan_cp = "Tunai";
+    } else {
+        keterangan_cp = "Unrecognize (Payment Method)";
+    }
+    return keterangan_cp;
+}

@@ -1,0 +1,129 @@
+.card#list-donasi>.card-header,
+.card#list-donasi>.card-footer {
+    border: 0px;
+}
+
+.col-12.col-md-6.card[data-cp] {
+    min-height: 171px;
+}
+
+.card.overflow-hidden[data-cp="bank-bjb"]>img {
+    position: absolute;
+    width: 45%;
+}
+
+.card.overflow-hidden[data-cp="bank-bsi"]::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--dark);
+    content: '';
+    border-top-left-radius: 50px;
+    border-bottom-right-radius: 100%;
+    opacity: 0.8;
+}
+
+.card.overflow-hidden[data-cp="bank-bri"]>.strip-bottom,
+.card.overflow-hidden[data-cp="bank-bri"]>.strip-top {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 101%;
+    background-image: linear-gradient(to bottom, var(--blue), var(--blue));
+    box-shadow: 0 0 10px 0px rgba(0,0,0,0.5);
+}
+
+.card.overflow-hidden[data-cp="bank-bri"]>.strip-bottom {
+  width: 200px;
+  transform: skewX(-15deg) translateX(75px);
+}
+
+.card.overflow-hidden[data-cp="bank-bri"]>.strip-top {
+  width: 180px;
+  transform: skewX(20deg) translateX(50px);
+}
+
+.card img[alt="GPN"] {
+    max-width: 40px;
+}
+
+/* Media Query */
+@media (min-width: 768px) {
+    /* Percobaan */
+    #main-content .row .col-xl-8~.col-xl-4>.row {
+        column-gap: 2em;
+    }
+
+    #main-content .row .col-xl-8~.col-xl-4 .col-md-6.card {
+        flex: 1 1;
+        flex-basis: calc(50% - 1em);
+        width: calc(50% - 1em);
+        max-width: calc(50% - 1em);
+    }
+    /* Akhir Percobaan */
+}
+
+/* Media Query */
+@media (min-width: 992px) {
+    /* Percobaan */
+
+    #main-content .row .col-xl-8~.col-xl-4 .col-md-6.card {
+        flex: 1 1;
+        flex-basis: calc(33.3% - 1em);
+    }
+    /* Akhir Percobaan */
+}
+
+@media (min-width: 1200px) {
+    #main-content .row .col-xl-8~.col-xl-4 .col-md-6.card {
+        max-width: 100%;
+        width: 100%;
+        flex: 1 1 100%;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1277px) {
+    .card table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (min-width: 1617px) {
+  #main-content .row .col-xl-8 {
+      flex-basis: 50%;
+  }
+
+  #main-content .row .col-xl-8~.col-xl-4 {
+      width: 100%;
+      max-width: 100%;
+      flex: 0 1 50%;
+  }
+
+  /* Percobaan */
+
+    #main-content .row .col-xl-8~.col-xl-4 .col-md-6.card {
+        max-width: calc(50% - 1em);
+        flex: 1 1 calc(50% - 1em);
+        width: calc(50% - 1em);
+    }
+  /* Akhir Percobaan */
+
+  .card img[alt="bank-bjb"].saldo,
+  .card img[alt="bank-bsi"].saldo,
+  .card img[alt="bank-bri"].saldo,
+  .card img[alt="qris"].saldo,
+  .card img[alt="BJB"].saldo,
+  .card img[alt="BSI"].saldo,
+  .card img[alt="BRI"].saldo {
+      margin-bottom: .5rem;
+  }
+
+  .card .row.align-items-end {
+      align-items: center !important;
+  }
+}

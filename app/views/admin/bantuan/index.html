@@ -106,48 +106,70 @@
                     </div>
                 </div>
             </div>
-            <div class="table-responsive">
+            <div class="table-responsive table-striped table-hover">
                 <table class="table">
                     <thead class="thead-light">
                         <tr>
-                            <th scope="col" class="sort" data-sort="name">ID</th>
-                            <th scope="col" class="sort" data-sort="budget">Nama Bantuan</th>
-                            <th scope="col" class="sort" data-sort="jumlah_target">Total Target</th>
-                            <th scope="col" class="sort" data-sort="jumlah_target">Total Terrealisasi</th>
-                            <th scope="col" class="sort" data-sort="status">Status</th>
-                            <th scope="col" class="sort" data-sort="completion">Aktive</th>
+                            <th scope="col" class="sort" data-sort="name">Bantuan</th>
+                            <th scope="col" class="sort fit" data-sort="budget">Kategori Penerima</th>
+                            <th scope="col" class="sort fit" data-sort="jumlah_target">Target</th>
+                            <th scope="col" class="sort" data-sort="realisasi">Realisasi</th>
+                            <th scope="col" class="sort" data-sort="total_pencairan">Total Pencairan</th>
+                            <th scope="col" class="sort" data-sort="completion">Saldo</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (!is_null($data['bantuan'])) {
-                            foreach($data['bantuan'] as $data_bantuan) { ?>
+                            foreach($data['bantuan'] as $data_bantuan) { 
+                                $blokir = Utility::blokirClassText($data_bantuan->blokir);
+                                $status = Utility::statusBantuanClassText($data_bantuan->status);
+                                $sektorKategori = Utility::imploderArray(array($data_bantuan->nama_sektor, $data_bantuan->nama_kategori));
+                            ?>
                         <tr>
                             <th scope="row">
-                                <div class="media align-items-center">
-                                    <a href="#" data-id="<?= $data_bantuan->id_bantuan; ?>">
-                                        <span class="name mb-0 text-sm"><?= $data_bantuan->id_bantuan; ?></span>
-                                    </a>
+                                <div class="row align-items-center">
+                                    <div class="col-6 font-weight-bolder">
+                                        <div class="media align-items-center">
+                                            <a href="#" data-id="<?= $data_bantuan->id_bantuan; ?>">
+                                                <span class="name mb-0 text-sm"><?= $data_bantuan->id_bantuan; ?></span><span class="ml-1"<?= (isset($data_bantuan->warna) ? ' style="color: '. $data_bantuan->warna .'"' : ''); ?>><?= $data_bantuan->nama ?></span>
+                                            </a>
+                                        </div>
+                                        <div class="text-black-50 small font-weight-bolder"><?= $data_bantuan->create_bantuan_at; ?></div>
+                                    </div>
+                                    <div class="col-6 justify-content-end d-flex">
+                                        <div class="media align-items-center flex-column">
+                                            <div class="badge badge-dot text-capitalize">
+                                                <i class="<?= $blokir['class']; ?> m-0"></i>
+                                                <span class="small"><?= $blokir['text']; ?></span>
+                                            </div>
+                                            <div class="badge px-2 text-capitalize<?= ' '. $status['class']; ?>"><?= $status['text']; ?></div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </th>
-                            <td>
-                                <?= $data_bantuan->nama; ?>
                             </td>
-                            <td>
-                                <b><?= (is_null($data_bantuan->jumlah_target) ? 'Unlimited' : number_format($data_bantuan->jumlah_target,0,',','.')); ?></b>
+                            <td class="fit">
+                                <div class="d-flex flex-column">
+                                    <?= $data_bantuan->nama_penerima; ?>
+                                    <div class="text-muted small"><?= $sektorKategori; ?></div>
+                                </div>
+                            </td>
+                            <td class="fit">
+                                <b><?= $data_bantuan->jumlah_target; ?></b>
+                                <?= (isset($data_bantuan->satuan_target) ? '<div class="text-muted">'. $data_bantuan->satuan_target .'</div>' : ''); ?>
                             </td>
                             <td>
                                 <div class="progress-wrapper" style="padding-top: 0px;">
                                     <div class="progress-info">
                                         <div class="progress-label">
-                                            <span><?= number_format($data_bantuan->jumlah_pelaksanaan,0,',','.') ?></span>
+                                            <span class="py-2"><?= number_format($data_bantuan->jumlah_pelaksanaan,0,',','.') ?></span>
                                         </div>
                                         <div class="progress-percentage">
                                             <span><?= $data_bantuan->persentase_pelaksanaan; ?>%</span>
                                         </div>
                                     </div>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-primary" role="progressbar"
+                                    <div class="progress" style="width: 100%;">
+                                        <div class="progress-bar bg-info" role="progressbar"
                                             aria-valuenow="<?= $data_bantuan->persentase_pelaksanaan; ?>"
                                             aria-valuemin="0" aria-valuemax="100"
                                             <?= 'style="width:'. $data_bantuan->persentase_pelaksanaan . '%"'?>></div>
@@ -155,25 +177,10 @@
                                 </div>
                             </td>
                             <td>
-                                <?php if(strtolower($data_bantuan->status) == 'd') {
-                                    $class = 'badge-primary';
-                                    $status = 'Berjalan';
-                                } elseif (strtolower($data_bantuan->status) == 's') {
-                                    $class = 'badge-success';
-                                    $status = "Selesai";
-                                } elseif (strtolower($data_bantuan->status) == 'b') {
-                                    $class = 'badge-warning'; 
-                                    $status = "Menunggu Penilaian";
-                                } elseif (strtolower($data_bantuan->status) == 'c') {
-                                    $class = 'badge-info'; 
-                                    $status = "Penilaian";
-                                } else {
-                                    $status = "Ditolak";
-                                    $class = 'badge-secondary'; 
-                                } ?>
-                                <span class="badge badge-pill <?= $class; ?>">
-                                    <span class="status"><?= $status; ?></span>
-                                </span>
+                                <div class="media align-item-center flex-column">
+                                    <b><?= $data_bantuan->donasi_terlaksana; ?></b>
+                                    <div class="small badge badge-primary text-black-50 text-capitalize"><?= $data_bantuan->sekian_kali_pencairan; ?> Pencairan</div>
+                                </div>
                             </td>
                             <td>
                                 <span class="badge badge-dot mr-4">

@@ -87,7 +87,7 @@
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table">
+                <table class="table table-hover">
                     <thead class="thead-light">
                         <tr>
                             <th scope="col" class="sort" data-sort="budget">Nama Bantuan</th>
@@ -114,18 +114,21 @@
                             </td>
                             <td>
                                 <?= '<span class="badge badge-pill ' . ($data_donasi->bayar != 1 ? 'badge-warning">Belum Bayar' : 'badge-success">Sudah Bayar') . '</span>'; ?>
+                                <?= (!empty($data_donasi->waktu_bayar) ? '<div class="ml-2">' . $data_donasi->waktu_bayar . '</div>' :  ''); ?>
                             </td>
                             <td>
                                 <?= '<div class="channel-payment d-flex justify-content-center align-items-end">
                                         <p class="text-info m-0" data-jenis-cp="' . $data_donasi->jenis . '">'. Utility::keteranganJenisChannelPayment($data_donasi->jenis) .'</p>
-                                        <img class="img-fluid" src="'. $data_donasi->path_gambar .'" alt="'. $data_donasi->nama_cp .'">
+                                        <img class="img-fluid" src="'. $data_donasi->path_gambar .'" alt="'. $data_donasi->nama_cp .'"' . ($data_donasi->jenis == "TN" ? ' style="width: 42px;"' : '') . '>
                                     </div>';
                                 ?>
                             </td>
                             <td>
-                                <?= Output::strToFullLocalDateTime($data_donasi->create_at); ?>
+                                <?= $data_donasi->create_at; ?>
                             </td>
                             <td class="text-right">
+                                <!-- Ini nanti dihilangkan setelah fitur halaman detil donasi dibuat -->
+                                <?php if ($data_donasi->bayar != 1) { ?>
                                 <div class="dropdown">
                                     <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -138,6 +141,7 @@
                                         <?php } ?>
                                     </div>
                                 </div>
+                                <?php } ?>
                             </td>
                         </tr>
                         <?php }} else {

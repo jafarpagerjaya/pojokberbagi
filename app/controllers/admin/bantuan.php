@@ -158,9 +158,6 @@ class BantuanController extends Controller {
     }
 
     public function formulir($params = null) {
-        // $dataJenis = $this->_bantuan->dataJenis();
-        // $this->data['jenis_bantuan'] = $dataJenis;
-
         $dataKategori = $this->_bantuan->dataKategori();
         $this->data['kategori_bantuan'] = $dataKategori;
         $dataSektor = $this->_bantuan->dataSektor();
@@ -219,7 +216,9 @@ class BantuanController extends Controller {
 			)
         );
 
-        $this->data['bantuan_berjalan'] = $this->_bantuan->dataBantuanBerjalan();
+        $this->data['bantuan_diajukan'] = $this->_bantuan->getJumlahDataBantuan();
+        $this->data['bantuan_berjalan'] = $this->_bantuan->getJumlahDataBantuan('D');
+        $this->data['bantuan_selesai'] = $this->_bantuan->getJumlahDataBantuan('S');
 
         // Token for fetch
         $this->data[Config::get('session/token_name')] = Token::generate();
@@ -227,7 +226,7 @@ class BantuanController extends Controller {
         if (count($params) > 0) {
             $this->formUpdate($params[0]);
             $min_jumlah_target = null;
-            $this->_bantuan->getData('SUM(jumlah_pelaksanaan) min_jumlah_pelaksanaan','pelaksanaan JOIN donasi USING(id_pelaksanaan)',array('id_bantuan','=',Sanitize::escape($params[0])));
+            $this->_bantuan->getData('SUM(jumlah_pelaksanaan) min_jumlah_pelaksanaan','pelaksanaan RIGHT JOIN anggaran_pelaksanaan_donasi USING(id_pelaksanaan) RIGHT JOIN donasi USING(id_donasi)',array('id_bantuan','=',Sanitize::escape($params[0])));
             if ($this->_bantuan->affected()) {
                 $min_jumlah_target = $this->_bantuan->data()->min_jumlah_pelaksanaan;    
                 $this->data['min_jumlah_target'] = $min_jumlah_target;
@@ -239,92 +238,63 @@ class BantuanController extends Controller {
         }
     }
 
-    // public function tambah() {
-        // if (Input::exists()) {
-		// 	if (Token::check(Input::get('token'))) {
-		// 		$vali = new Validate();
-        //         $validate = $vali->check($_POST, array(
-        //             'nama' => array(
-        //                 'required' => true,
-        //                 'min' => 5,
-        //                 'max' => 30,
-        //                 'unique' => 'bantuan'
-        //             ),
-        //             'penerima_bantuan' => array(
-        //                 'required' => true,
-        //                 'min' => 5,
-        //                 'max' => 50
-        //             ),
-        //             'id_kategori' => array(
-        //                 'required' => true
-        //             ),
-        //             'id_sektor' => array(
-        //                 'required' => true
-        //             ),
-        //             'deskripsi' => array(
-        //                 'required' => true,
-        //                 'min' => 50,
-        //                 'max' => 255
-        //             ),
-        //             'jumlah_target' => array(
-        //                 'digit' => true
-        //             ),
-        //             'satuan_target' => array(
-        //                 'min' => 1
-        //             ),
-        //             'min_donasi' => array(
-        //                 'digit' => true
-        //             ),
-        //             'lama_penayangan' => array(
-        //                 'digit' => true,
-        //                 'max' => 180
-        //             ),
-        //             'total_rab' => array(
-        //                 'digit' => true
-        //             )
-        //             // ,
-        //             // 'file_gambar' => array(
-        //             //     'required' => true,
-        //             //     'file' => array('.png','.jpg','.jpeg')
-        //             // )
-        //         ));
-        //         if (!$validate->passed()) {
-        //             Session::put('error_feedback', $validate->getValueFeedback());
-        //             Redirect::to('admin/bantuan/formulir' . (strlen($validate->getReturnError()) ? '#' . $validate->getReturnError() : ''));
-        //         } else {
-        //             $this->_bantuan->create('bantuan', array(
-        //                 'nama' => ucwords(Sanitize::escape(trim(Input::get('nama')))),
-        //                 'id_jenis' => ucwords(Sanitize::escape(trim(Input::get('id_jenis')))),
-        //                 'jumlah_target' => Sanitize::toInt(Sanitize::escape(trim(Input::get('jumlah_target')))),
-        //                 'satuan_target' => ucwords(Sanitize::escape(trim(Input::get('satuan_target')))),
-        //                 'total_rab' => Sanitize::toInt(Sanitize::escape(trim(Input::get('total_rab')))),
-        //                 'lama_penayangan' => Sanitize::toInt(Sanitize::escape(trim(Input::get('lama_penayangan')))),
-        //                 'deskripsi' => ucfirst(Sanitize::escape(trim(Input::get('deskripsi')))),
-        //             ));
-        //             if ($this->_bantuan->affected()) {
-        //                 Session::flash('success', 'Berhasil menambahkan bantuan baru');
-        //             } else {
-        //                 Session::flash('error', 'Gagal menambahkan bantuan baru');
-        //             }
-        //             Redirect::to('admin/bantuan');
-        //         }
-        //     }
-        // }
-        // Debug::pr($_POST);
-        // return false;
-    // }
+    public function kategori($params = array()) {
+        $kategori = null;
+        if (count($params) > 0) {
+            $params = Sanitize::thisArray($params);
+            $kategori = str_replace("-", " ", $params[0]);
+            $halaman = 1;
+            if (isset($params[1]) && ctype_digit($params[1])) {
+                $halaman = $params[1];
+                $this->_bantuan->setHalaman(Sanitize::escape2($halaman), 'bantuan');
+            }
+            $this->data['halaman'] = $halaman;
+            // $this->_bantuan->setSearch('Qr');
+            $this->_bantuan->setOrder(1);
+            $this->_bantuan->setDirection('ASC');
+            $this->_bantuan->setDataOffsetHalaman($halaman);
+            $this->_bantuan->setDataLimit(10);
+            $this->_bantuan->readDataBantuanKategori($kategori);
+            $this->data['kategori'] = ucwords($kategori);
+            
+            if (empty($this->_bantuan->data()['data'])) {
+                $halaman = $this->data['halaman'] - 1;
+                if ($halaman < 1) {
+                    $halaman = 1;
+                }
+                Redirect::to('admin/bantuan/kategori/' . $params[0] . '/' . $halaman);
+            }
+
+            $this->data['record'] = $this->_bantuan->data()['record'];
+            $this->data['list_kategori'] = $this->_bantuan->data()['data'];
+        } else {
+            // Sementara nanti buat halaman kategori yang menampilkan seluruh info bantuan tentang kategori
+            Redirect::to('admin/bantuan');
+        }
+    }
 
     public function berjalan($params = array()) {
         if (count($params) > 1) {
             if ($params[0] == 'kategori') {
+                $kategori_param = $params[1];
                 $params[1] = str_replace("-", " ", $params[1]);
                 $this->data['halaman'] = 1;
                 if (isset($params[2]) && ctype_digit($params[2])) {
-                    $this->_bantuan->setHalaman($params[2]);
-                    $this->data['halaman'] = $params[2];
+                    $this->_bantuan->setHalaman(Sanitize::escape2($params[2]), 'bantuan');
+                    $this->data['halaman'] = Sanitize::escape2($params[2]);
                     // return VIEW_PATH.'admin'.DS.'bantuan'.DS.'index.html';
                 }
-                $dataBantuanKategori = $this->_bantuan->dataBantuanKategori($params[1]);
+                $this->_bantuan->setDataOffsetHalaman($this->data['halaman']);
+                $this->_bantuan->setDataLimit(10);
+                $dataBantuanKategori = $this->_bantuan->dataBantuanKategori(Sanitize::escape2($params[1]));
+
+                if (empty($dataBantuanKategori)) {
+                    $halaman = $this->data['halaman'] - 1;
+                    if ($halaman < 1) {
+                        $halaman = 1;
+                    }
+                    Redirect::to('admin/bantuan/berjalan/' . $params[0] . '/' . $kategori_param . '/' . $halaman);
+                }
                 $this->data['record'] = $this->_bantuan->affected();
                 $this->data['data_bantuan_kategori'] = $dataBantuanKategori;
             }
@@ -352,7 +322,7 @@ class BantuanController extends Controller {
         $dataSaldo = $this->_bantuan->getSaldoBantuan($params[0]);
         $this->data['saldo_bantuan'] = $dataSaldo;
 
-        $this->_bantuan->setDataLimit(1);
+        $this->_bantuan->setDataLimit(3);
         $this->_bantuan->setStatus(1);
         // $this->_bantuan->setDirection('DESC');
         // $this->_bantuan->setDataOffsetHalaman(1);
@@ -382,6 +352,9 @@ class BantuanController extends Controller {
                 'src' => VENDOR_PATH.'chart.js'. DS .'dist'. DS .'Chart.min.js'
 			),
             array(
+                'src' => '/assets/pojok-berbagi-script.js'
+            ),
+            array(
                 'src' => '/assets/main/js/pagination.js'
             ),
             array(
@@ -410,102 +383,6 @@ class BantuanController extends Controller {
                 Redirect::to('admin/bantuan/formulir');
             }
             $this->data['bantuan'] = $hasil;
-        }
-    }
-
-    public function update($params) {
-        if (count($params[0])) {
-            if (Input::exists()) {
-                if (Token::check(Input::get('token'))) {
-                    $min_jumlah_target = null;
-                    $this->_bantuan->getData('SUM(jumlah_pelaksanaan) min_jumlah_pelaksanaan','pelaksanaan JOIN donasi USING(id_pelaksanaan)',array('id_bantuan','=',Sanitize::escape($params[0])));
-                    if ($this->_bantuan->affected()) {
-                        $min_jumlah_target = $this->_bantuan->data()->min_jumlah_pelaksanaan;
-                    }
-                    $vali = new Validate();
-                    $validate = $vali->check($_POST, array(
-                        // 'nama' => array(
-        //                 'required' => true,
-        //                 'min' => 5,
-        //                 'max' => 30,
-        //                 'unique' => 'bantuan'
-        //             ),
-        //             'penerima_bantuan' => array(
-        //                 'required' => true,
-        //                 'min' => 5,
-        //                 'max' => 50
-        //             ),
-        //             'id_kategori' => array(
-        //                 'required' => true
-        //             ),
-        //             'id_sektor' => array(
-        //                 'required' => true
-        //             ),
-        //             'deskripsi' => array(
-        //                 'required' => true,
-        //                 'min' => 50,
-        //                 'max' => 255
-        //             ),
-        //             'jumlah_target' => array(
-        //                 'digit' => true
-        //             ),
-        //             'satuan_target' => array(
-        //                 'min' => 1
-        //             ),
-        //             'min_donasi' => array(
-        //                 'digit' => true
-        //             ),
-        //             'lama_penayangan' => array(
-        //                 'digit' => true,
-        //                 'max' => 180
-        //             ),
-        //             'total_rab' => array(
-        //                 'digit' => true
-        //             )
-                        // ,
-                        // 'file_gambar' => array(
-                        //     'required' => true
-                        // )
-                    ), array('id_bantuan','!=', Input::get('id_bantuan')));
-                    if (!$validate->passed()) {
-                        Session::put('error_feedback', $validate->getValueFeedback());
-                        Redirect::to('admin/bantuan/formulir/'.$params[0] . (strlen($validate->getReturnError()) ? '#' . $validate->getReturnError() : ''));
-                        
-                    } else {
-                        $jumlah_target = Sanitize::toInt(Input::get('jumlah_target'));
-                        $min_jumlah_target = null;
-                        $this->_bantuan->getData('SUM(jumlah_pelaksanaan) min_jumlah_pelaksanaan','pelaksanaan JOIN donasi USING(id_pelaksanaan)',array('id_bantuan','=',Sanitize::escape($params[0])));
-                        if ($this->_bantuan->affected()) {
-                            $min_jumlah_target = $this->_bantuan->data()->min_jumlah_pelaksanaan;
-                        }
-                        if (!is_null($min_jumlah_target)) {
-                            $jumlah_target = ($jumlah_target < $min_jumlah_target ? $min_jumlah_target : Sanitize::toInt(Input::get('jumlah_target')));
-                        }
-                        if ($jumlah_target == 0) {
-                            $jumlah_target = '';
-                        }
-                        $result = $this->_bantuan->update('bantuan', array(
-                                'nama' => Input::get('nama'),
-                                'id_jenis' => Input::get('id_jenis'),
-                                'jumlah_target' => $jumlah_target,
-                                'satuan_target' => Input::get('satuan_target'),
-                                'total_rab' => Sanitize::toInt(Input::get('total_rab')),
-                                'min_donasi' => Sanitize::toInt(Input::get('min_donasi')),
-                                'lama_penayangan' => Sanitize::toInt(Input::get('lama_penayangan')),
-                                'deskripsi' => Input::get('deskripsi')
-                            ), array('id_bantuan','=', Input::get('id_bantuan'))
-                        );
-                        if ($result) {
-                            Session::flash('success', 'Data Bantuan Berhasil Diupdate');
-                        } else {
-                            Session::flash('error', 'Data Bantuan Gagal Diupdate');
-                        }
-                    }
-                }
-            }
-            Redirect::to('admin/bantuan/formulir/' . $params[0]);
-        } else {
-            Redirect::to('admin/bantuan');
         }
     }
 }

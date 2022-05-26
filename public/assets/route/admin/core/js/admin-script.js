@@ -22,3 +22,23 @@ if (toastRun != null) {
         $('table tbody>tr.highlight').removeClass('highlight');
     }, 3100);
 }
+
+let tableWidthSetter = function() {
+    if ($('table thead').width() > $('table').parent().width()) {
+        $('table').addClass('table-responsive');
+    } else {
+        if ($('table').hasClass('table-responsive')) {
+            $('table').removeClass('table-responsive');
+        }
+    }
+}
+
+let resizeTimeoutTable;
+$(window).resize(function () {
+    clearTimeout(resizeTimeoutTable)
+    resizeTimeoutTable = setTimeout(function () {
+        if ($('table').length) {
+            tableWidthSetter();
+        }
+    }, 50);
+});

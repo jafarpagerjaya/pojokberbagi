@@ -3,7 +3,7 @@ p {
 }
 
 .table tbody>tr>* {
-    vertical-align: baseline;
+    vertical-align: middle;
 }
 
 .table .channel-payment {

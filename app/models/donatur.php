@@ -7,7 +7,7 @@ class DonaturModel extends HomeModel {
 
     public function dataDonatur($halaman = null) {
         if (!is_null($halaman)) {
-            $this->setHalaman($halaman);
+            $this->setHalaman($halaman, 'donatur');
         }
         $this->db->query('SELECT id_donatur, nama, email, IFNULL(kontak,"Belum Ada") kontak, create_at terdaftar_sejak, id_akun FROM donatur WHERE id_donatur BETWEEN ? AND ? ORDER BY ? ? LIMIT 10',
                             array($this->getHalaman()[0], $this->getHalaman()[1], $this->getOrderBy(), $this->getAscDsc())
@@ -116,7 +116,7 @@ class DonaturModel extends HomeModel {
     }
 
     public function getJumlahDonasiTersalurkan($id_donatur) {
-        $data = $this->db->query("SELECT COUNT('id_donasi') jumlah_info_bantuan FROM donasi WHERE bayar = '1' AND id_pelaksanaan IS NOT NULL AND id_donatur = ?", 
+        $data = $this->db->query("SELECT COUNT(apd.id_donasi) jumlah_info_bantuan FROM donasi d LEFT JOIN anggaran_pelaksanaan_donasi apd USING(id_donasi) WHERE d.bayar = '1' AND apd.id_pelaksanaan IS NOT NULL AND d.id_donatur = ?", 
             array(
                 'id_donatur' => Sanitize::escape($id_donatur)
             )
@@ -138,7 +138,16 @@ class DonaturModel extends HomeModel {
     }
 
     public function isEmployee($id_akun) {
-        $this->db->query("SELECT id_pegawai FROM admin WHERE id_akun = ?", array(Sanitize::escape2($id_akun))); 
+        $this->db->query("SELECT ad.id_pegawai FROM admin ad join akun ak USING(id_akun) WHERE ad.id_akun = ? AND UPPER(ak.hak_akses) = 'A'", array(Sanitize::escape2($id_akun))); 
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return true;
+        }
+        return false;
+    }
+
+    public function isPemohon($id_akun) {
+        $this->db->query("SELECT pe.id_pemohon FROM akun ak join pemohon pe USING(id_akun) WHERE pe.id_akun = ? AND UPPER(ak.hak_akses) = 'P'", array(Sanitize::escape2($id_akun))); 
         if ($this->db->count()) {
             $this->data = $this->db->result();
             return true;
