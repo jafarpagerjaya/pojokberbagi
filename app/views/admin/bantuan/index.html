@@ -114,15 +114,17 @@
                             <th scope="col" class="sort fit" data-sort="budget">Kategori Penerima</th>
                             <th scope="col" class="sort fit" data-sort="jumlah_target">Target</th>
                             <th scope="col" class="sort" data-sort="realisasi">Realisasi</th>
-                            <th scope="col" class="sort" data-sort="total_pencairan">Total Pencairan</th>
-                            <th scope="col" class="sort" data-sort="completion">Saldo</th>
-                            <th scope="col"></th>
+                            <th scope="col" class="sort" data-sort="jumlah_pencairan">Total Pencairan</th>
+                            <th scope="col" class="sort" data-sort="donasi_donatur">Donasi Donatur</th>
+                            <th scope="col" class="sort fit" data-sort="saldo">Saldo</th>
+                            <th scope="col" class="fit"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (!is_null($data['bantuan'])) {
                             foreach($data['bantuan'] as $data_bantuan) { 
                                 $blokir = Utility::blokirClassText($data_bantuan->blokir);
+                                $blokUnblock = Utility::blokUnblockClassText($data_bantuan->blokir);
                                 $status = Utility::statusBantuanClassText($data_bantuan->status);
                                 $sektorKategori = Utility::imploderArray(array($data_bantuan->nama_sektor, $data_bantuan->nama_kategori));
                             ?>
@@ -169,7 +171,7 @@
                                         </div>
                                     </div>
                                     <div class="progress" style="width: 100%;">
-                                        <div class="progress-bar bg-info" role="progressbar"
+                                        <div class="progress-bar <?= Utility::setProgressClass($data_bantuan->persentase_pelaksanaan); ?>" role="progressbar"
                                             aria-valuenow="<?= $data_bantuan->persentase_pelaksanaan; ?>"
                                             aria-valuemin="0" aria-valuemax="100"
                                             <?= 'style="width:'. $data_bantuan->persentase_pelaksanaan . '%"'?>></div>
@@ -182,18 +184,16 @@
                                     <div class="small badge badge-primary text-black-50 text-capitalize"><?= $data_bantuan->sekian_kali_pencairan; ?> Pencairan</div>
                                 </div>
                             </td>
-                            <td>
-                                <span class="badge badge-dot mr-4">
-                                    <?php if ($data_bantuan->blokir == 1) {
-                                        $class = 'bg-danger'; $status = 'Diblok';
-                                    } else {
-                                        $class = 'bg-success'; $status = 'Aktif';
-                                    } ?>
-                                    <i class="<?= $class; ?>"></i>
-                                    <span class="status"><?= $status; ?></span>
-                                </span>
+                            <th>
+                                <div class="media align-item-center flex-column">
+                                    <b class="item"><?= $data_bantuan->total_donasi; ?></b>
+                                    <div class="badge badge-primary text-orange text-capitalize"><?= $data_bantuan->total_donatur; ?> Donatur</div>
+                                </div>
+                            </th>
+                            <td class="fit">
+                                <?= $data_bantuan->saldo_donasi; ?>
                             </td>
-                            <td class="text-right">
+                            <td class="text-right fit">
                                 <div class="dropdown">
                                     <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -202,10 +202,13 @@
                                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                                         <a class="dropdown-item"
                                             href="/admin/bantuan/data/<?= $data_bantuan->id_bantuan; ?>">Lihat Data</a>
-                                        <a class="dropdown-item"
+                                        <?php if ($data_bantuan->status != 'S') { ?>
+                                            <a class="dropdown-item"
                                             href="/admin/bantuan/formulir/<?= $data_bantuan->id_bantuan; ?>">Ubah Data</a>
-                                        <a class="dropdown-item"
-                                            href="/admin/bantuan/blok/<?= $data_bantuan->id_bantuan; ?>"><?= ($data_bantuan->blokir == 1) ? 'Unblokir' : 'Blokir' ?></a>
+                                            <a class="dropdown-item font-weight-bold <?= ' '.$blokUnblock['class'];?>"
+                                            href="/admin/bantuan/blok/<?= $data_bantuan->id_bantuan; ?>"><?= $blokUnblock['text']; ?></a>
+                                        <?php } ?>
+                                        <?= ($data_bantuan->status == 'D' ? '<a class="dropdown-item font-weight-bold text-black-50" href="/admin/bantuan/take-down/<?= $data_bantuan->id_bantuan; ?>">Take Down</a>' : ''); ?>
                                     </div>
                                 </div>
                             </td>

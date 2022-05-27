@@ -6,6 +6,7 @@ class HomeModel {
 
     private $_halaman = array(1,10),
             $_offset = 10,
+            $_limit = 10,
             $_orderBy = 1,
             $_ascDsc = 'ASC',
             $_search;
@@ -141,6 +142,14 @@ class HomeModel {
 
     public function getOffset() {
         return $this->_offset;
+    }
+
+    public function setLimit($limit) {
+        $this->_limit = Sanitize::escape2($limit);
+    }
+
+    public function getLimit() {
+        return $this->_limit;
     }
 
     public function setAscDsc($asc_dsc) {

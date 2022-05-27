@@ -26,7 +26,9 @@
                         <?php 
                             if (count($data['list_kategori']) > 0) {
                                 foreach($data['list_kategori'] as $list_kategori) {
+                                        $status = Utility::statusBantuanClassText($list_kategori->status_bantuan);
                                         $statusClassText = Utility::statusBantuanClassText($list_kategori->status_bantuan);
+                                        $blokUnblock = Utility::blokUnblockClassText($list_kategori->blokir);
                                     ?>
                                     <tr>
                                         <td class="py-2 auto">
@@ -95,10 +97,13 @@
                                                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                                                     <a class="dropdown-item"
                                                         href="/admin/bantuan/data/<?= $list_kategori->id_bantuan; ?>">Lihat Data</a>
-                                                    <a class="dropdown-item"
+                                                    <?php if ($list_kategori->status_bantuan != 'S') { ?>
+                                                        <a class="dropdown-item"
                                                         href="/admin/bantuan/formulir/<?= $list_kategori->id_bantuan; ?>">Ubah Data</a>
-                                                    <a class="dropdown-item"
-                                                        href="/admin/bantuan/blok/<?= $list_kategori->id_bantuan; ?>"><?= ($list_kategori->blokir == 1) ? 'Unblokir' : 'Blokir' ?></a>
+                                                        <a class="dropdown-item font-weight-bold <?= ' '.$blokUnblock['class'];?>"
+                                                        href="/admin/bantuan/blok/<?= $list_kategori->id_bantuan; ?>"><?= $blokUnblock['text']; ?></a>
+                                                    <?php } ?>
+                                                    <?= ($list_kategori->status_bantuan == 'D' ? '<a class="dropdown-item font-weight-bold text-black-50" href="/admin/bantuan/take-down/<?= $list_kategori->id_bantuan; ?>">Take Down</a>' : ''); ?>
                                                 </div>
                                             </div>
                                         </td>

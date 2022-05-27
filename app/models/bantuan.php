@@ -90,9 +90,10 @@ class BantuanModel extends HomeModel {
         k.warna, k.nama nama_kategori,
         COUNT(p.id_pelaksanaan) sekian_kali_pencairan,
         IF(SUM(p.jumlah_pelaksanaan) IS NULL, 0, SUM(p.jumlah_pelaksanaan)) jumlah_pelaksanaan,
-        SUM(d.jumlah_donasi) total_donasi, 
+        FORMAT(SUM(d.jumlah_donasi),0,'id_ID') total_donasi, 
+        FORMAT(COUNT(d.id_donatur),0,'id_ID') total_donatur,
         FORMAT(SUM(CASE WHEN apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END),0,'id_ID') donasi_terlaksana,
-        SUM(CASE WHEN apd.id_pelaksanaan IS NULL THEN d.jumlah_donasi END) saldo_donasi,
+        IFNULL(FORMAT(SUM(CASE WHEN apd.id_pelaksanaan IS NULL THEN d.jumlah_donasi END),0,'id_ID'),0) saldo_donasi,
 		TRUNCATE(COALESCE(IF(b.jumlah_target IS NULL, TRUNCATE(SUM(CASE WHEN apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END)/SUM(d.jumlah_donasi)*100,1), IF(TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1))),0),0) persentase_pelaksanaan
 		FROM bantuan b 
         LEFT JOIN donasi d 
@@ -166,20 +167,6 @@ class BantuanModel extends HomeModel {
         // Debug::pr($this->db);
         // die();
 	}
-
-    // public function setHalaman($halaman) {
-    //     $halaman = Sanitize::escape2($halaman);
-    //     $param1 = (($halaman-1) * $this->getOffset()) + 1;
-    //     if ($param1 < 0) {
-    //         $param1 = 0;
-    //     }
-    //     $param2 = $halaman * $this->getOffset();
-    //     $this->_halaman = array($param1, $param2);
-    // }
-
-    // public function getHalaman() {
-    //     return $this->_halaman;
-    // }
 
     // Old ENd
 
@@ -440,7 +427,7 @@ class BantuanModel extends HomeModel {
     }
 
     public function getListBantuan() {
-        $data = $this->db->query("SELECT b.id_bantuan, s.id_sektor layanan, b.nama nama_bantuan, gm.path_gambar path_gambar_medium, gm.nama nama_gambar_medium, gw.path_gambar path_gambar_wide, gw.nama nama_gambar_wide, s.nama nama_sektor, k.nama nama_kategori, IF(k.warna IS NULL, '#e9ecef', k.warna) warna,
+        $sql = "SELECT b.id_bantuan, s.id_sektor layanan, b.nama nama_bantuan, gm.path_gambar path_gambar_medium, gm.nama nama_gambar_medium, gw.path_gambar path_gambar_wide, gw.nama nama_gambar_wide, s.nama nama_sektor, k.nama nama_kategori, IF(k.warna IS NULL, '#e9ecef', k.warna) warna,
         IF(p2.id_gambar IS NULL, '/assets/images/brand/pojok-berbagi-transparent.png', gp2.path_gambar) path_gambar_pengaju,
         IF(p2.nama IS NULL, 'Pojok Berbagi Indonesia', p2.nama) pengaju_bantuan,
         SUM(CASE WHEN d.bayar = 1 THEN d.jumlah_donasi ELSE 0 END) total_donasi,
@@ -449,7 +436,8 @@ class BantuanModel extends HomeModel {
         IF(b.jumlah_target IS NULL,
         IF(TRUNCATE((SUM(IF(apd.id_pelaksanaan IS NULL, 0, d.jumlah_donasi))/IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)))*100,1) IS NULL, 0, TRUNCATE((SUM(IF(apd.id_pelaksanaan IS NULL, 0, d.jumlah_donasi))/IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)))*100,1))
         , IF(TRUNCATE((SUM(p1.jumlah_pelaksanaan)/b.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p1.jumlah_pelaksanaan)/b.jumlah_target)*100,1))) persentase_donasi_dilaksanakan
-        FROM bantuan b LEFT JOIN donasi d USING(id_bantuan)
+        FROM (SELECT id_bantuan FROM bantuan WHERE status = 'D' AND (blokir IS NULL OR blokir != '1') ORDER BY {$this->_order} {$this->_order_direction} LIMIT {$this->getOffset()},{$this->getLimit()}) bi JOIN bantuan b ON (bi.id_bantuan = b.id_bantuan)
+        LEFT JOIN donasi d ON (d.id_bantuan = b.id_bantuan)
         LEFT JOIN anggaran_pelaksanaan_donasi apd ON (d.id_donasi = apd.id_donasi)
         LEFT JOIN pelaksanaan p1 USING(id_pelaksanaan)
         LEFT JOIN gambar gm ON (b.id_gambar_medium = gm.id_gambar)
@@ -458,12 +446,45 @@ class BantuanModel extends HomeModel {
         LEFT JOIN gambar gp2 ON (gp2.id_gambar = p2.id_gambar)
         LEFT JOIN sektor s USING(id_sektor)
         LEFT JOIN kategori k USING(id_kategori)
-        WHERE b.blokir IS NULL AND b.status = 'D'
-        AND b.id_bantuan BETWEEN ? AND ?
         GROUP BY b.id_bantuan
-        ORDER BY {$this->_order} {$this->_order_direction} LIMIT 10", array($this->getHalaman()[0], $this->getHalaman()[1]));
+        ORDER BY {$this->_order} {$this->_order_direction} LIMIT {$this->getLimit()}";
+        $data = $this->db->query($sql);
+
+        // $data = $this->db->query("SELECT b.id_bantuan, s.id_sektor layanan, b.nama nama_bantuan, gm.path_gambar path_gambar_medium, gm.nama nama_gambar_medium, gw.path_gambar path_gambar_wide, gw.nama nama_gambar_wide, s.nama nama_sektor, k.nama nama_kategori, IF(k.warna IS NULL, '#e9ecef', k.warna) warna,
+        // IF(p2.id_gambar IS NULL, '/assets/images/brand/pojok-berbagi-transparent.png', gp2.path_gambar) path_gambar_pengaju,
+        // IF(p2.nama IS NULL, 'Pojok Berbagi Indonesia', p2.nama) pengaju_bantuan,
+        // SUM(CASE WHEN d.bayar = 1 THEN d.jumlah_donasi ELSE 0 END) total_donasi,
+        // SUM(CASE WHEN d.bayar = 1 AND apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi ELSE 0 END) donasi_disalurkan,
+        // IF(TIMESTAMPDIFF(DAY,b.tanggal_akhir, NOW()) IS NULL, 'Unlimited', TIMESTAMPDIFF(DAY,b.tanggal_akhir, NOW())) sisa_waktu,
+        // IF(b.jumlah_target IS NULL,
+        // IF(TRUNCATE((SUM(IF(apd.id_pelaksanaan IS NULL, 0, d.jumlah_donasi))/IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)))*100,1) IS NULL, 0, TRUNCATE((SUM(IF(apd.id_pelaksanaan IS NULL, 0, d.jumlah_donasi))/IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)))*100,1))
+        // , IF(TRUNCATE((SUM(p1.jumlah_pelaksanaan)/b.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p1.jumlah_pelaksanaan)/b.jumlah_target)*100,1))) persentase_donasi_dilaksanakan
+        // FROM bantuan b LEFT JOIN donasi d USING(id_bantuan)
+        // LEFT JOIN anggaran_pelaksanaan_donasi apd ON (d.id_donasi = apd.id_donasi)
+        // LEFT JOIN pelaksanaan p1 USING(id_pelaksanaan)
+        // LEFT JOIN gambar gm ON (b.id_gambar_medium = gm.id_gambar)
+        // LEFT JOIN gambar gw ON (b.id_gambar_wide = gw.id_gambar)
+        // LEFT JOIN pemohon p2 USING(id_pemohon)
+        // LEFT JOIN gambar gp2 ON (gp2.id_gambar = p2.id_gambar)
+        // LEFT JOIN sektor s USING(id_sektor)
+        // LEFT JOIN kategori k USING(id_kategori)
+        // WHERE b.blokir IS NULL AND b.status = 'D'
+        // AND b.id_bantuan BETWEEN ? AND ?
+        // GROUP BY b.id_bantuan
+        // ORDER BY {$this->_order} {$this->_order_direction} LIMIT 10", array($this->getHalaman()[0], $this->getHalaman()[1]));
         if ($data->count()) {
-            $this->data = $data->results();
+            $return['data'] = $data->results();
+            $result = $this->countData("bantuan","blokir IS NULL OR blokir != '1'");
+            $return['record'] = $result->jumlah_record;
+            $return['offset'] = $this->getOffset();
+            
+            $return['load_more'] = ($return['record'] > $return['offset'] ? true : false);
+            if ($return['load_more'] == true) {
+                $return['offset'] = $return['offset'] + $this->getLimit();
+                $return['limit'] = $this->getLimit();
+            }
+            // Debug::pr($return);die();
+            $this->data = $return;
             return $this->data;
         }
         return false;

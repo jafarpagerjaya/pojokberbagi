@@ -35,6 +35,8 @@ class HomeController extends Controller {
 		$this->model->getBanner();
 		$this->data['banner'] = $this->model->data();
 		
+		$this->model->setOffset(0);
+		$this->model->setLimit(9);
 		$this->model->getListBantuan();
         $this->data['list_bantuan'] = $this->model->data();
 		// $this->setKunjungan();

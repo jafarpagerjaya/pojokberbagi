@@ -91,8 +91,35 @@ class Utility {
         );
     }
 
+    public static function blokUnblockClassText($blokir) {
+        if ($blokir != 1) {
+            $status_blokir_class = 'text-danger'; $blokir_status_text = 'Blockir';
+        } else {
+            $status_blokir_class = 'text-warning'; $blokir_status_text = 'Unblock';
+        }
+        return array(
+            'class' => $status_blokir_class,
+            'text' => $blokir_status_text
+        );
+    }
+
     public static function imploderArray($params = array(), $implodeby = ' - ') {
         $array = array();
         return implode($implodeby, $params);
+    }
+
+    public static function setProgressClass($value) {
+        if ($value < 20) {
+            $class = "bg-danger";
+        } else if ($value >= 20 && $value < 40) {
+            $class = "bg-warning";
+        } else if ($value >= 40 && $value < 60) {
+            $class = "bg-primary";
+        } else if ($value >= 60 && $value < 80) {
+            $class = "bg-success";
+        } else {
+            $class = "bg-info";
+        }
+        return $class;
     }
 }

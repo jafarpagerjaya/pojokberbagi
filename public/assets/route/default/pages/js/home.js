@@ -338,3 +338,20 @@ if (notifikasiModalEl != null) {
         myModal.toggle();
     }, 500);
 }
+
+const loadMoreBtn = document.getElementById('load-more');
+if (loadMoreBtn != null) {
+    // let fetchData = function() {
+
+    // };
+
+    let urlLoadMoreBtn = 'fetch/read/bantuan/list';
+    loadMoreBtn.addEventListener('click', function() {
+        console.log(urlLoadMoreBtn);
+        // let data = {
+        //     token: token,
+        //     offset: offset
+        // }
+        // fetchData()
+    });
+}
