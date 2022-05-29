@@ -22,7 +22,7 @@
     <?= $this->getLinkRel('controller'); ?>
     <?= $this->getLinkRel('action'); ?>
 </head>
-<body <?= (isset($this->data['uri']) ? 'data-uri="'. $this->data['uri'] .'"' : '') ?>>
+<body <?= (isset($this->data['uri']) ? 'data-uri="'. $this->data['uri'] .'"' : '') ?><?= (isset($this->data[Config::get('session/token_name')]) ? ' data-token="'. $this->data[Config::get('session/token_name')] .'"' : '') ?>>
     <!-- Preloader -->
     <div class="preloader">
         <div class="preloader-inner">
@@ -210,7 +210,7 @@
     <!-- <script src="/assets/route/default/core/js/count-up.min.js"></script> -->
     <script src="/assets/route/default/core/js/main.js"></script>
     <!-- Core Script -->
-    <script src="/assets/route/default/core/js/default.js?v=1"></script>
+    <script src="/assets/route/default/core/js/default.js?v=290522"></script>
     <script src="/assets/route/auth/js/auth.js"></script>
     <?= $this->getScript('controller'); ?>
     <?= $this->getScript('action'); ?>

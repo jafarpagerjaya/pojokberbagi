@@ -173,6 +173,29 @@
                 </div>
             </div>
         </div>
+        <?php } elseif (Session::exists('notifikasi')) { 
+                $notifikasi = Session::get('notifikasi');
+                Session::delete('notifikasi');
+            ?>
+            <div class="modal fade" id="notifikasi" tabindex="-1" role="dialog" aria-labelledby="notifikasi-label"
+            aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered <?= 'modal-' . $notifikasi['state'] ?>" role="document">
+                    <div class="modal-content <?= 'bg-gradient-' . $notifikasi['state'] ?>">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Pesan</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <?= $notifikasi['pesan']; ?>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         <?php } ?>
     <!-- Broken Img Handler -->
     

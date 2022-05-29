@@ -95,13 +95,12 @@ class FetchController extends Controller {
     }
 
     // getListbantuan(); Route Default HomeController
-    private function bantuanListRead() {
+    private function bantuanListRead($decoded) {
         $decoded = Sanitize::thisArray($decoded);
 
-        $this->model('Donasi');
-        $offset = $decoded['offset'];
-        $this->setOffset($offset);
-        $this->setLimit($limit);
+        $this->model('Bantuan');
+        $this->model->setOffset($decoded['offset']);
+        $this->model->setLimit($decoded['limit']);
         $this->model->getListBantuan();
 
         if ($this->model->affected()) {
@@ -134,7 +133,8 @@ class FetchController extends Controller {
             'message' => 'ok',
             'limit' => $data['limit'],
             'offset' => $data['offset'],
-            'total_record' => $data['total_record']
+            'total_record' => $data['record'],
+            'load_more' => $data['load_more']
         );
 
         $this->result();

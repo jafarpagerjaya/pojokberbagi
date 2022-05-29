@@ -181,10 +181,10 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <?php $delay_card = 0.2; ?>
+        <div class="row" id="list-bantuan-row" data-delay="<?= $delay_card; ?>">
             <?php 
             if (!is_null($data['list_bantuan']['data'])) {
-                $delay_card = 0.2;
                 $time_card = 0.2;
                 foreach($data['list_bantuan']['data'] as $list_bantuan) { 
                     $delay_card = $delay_card + $time_card; 
@@ -198,7 +198,7 @@
                                     <img src="<?= $list_bantuan->path_gambar_pengaju; ?>" alt="<?= $list_bantuan->pengaju_bantuan; ?>">
                                 </div>
                                 <div class="service-icon shadow d-flex justify-content-center align-items-center position-absolute bottom left" data-animation-name="slide" <?= (isset($list_bantuan->warna) ? 'style="background-color:' . $list_bantuan->warna .'"' : '') ?>>
-                                    <?= BantuanModel::iconLayanan($list_bantuan->layanan); ?>
+                                    <?= Utility::iconSektor($list_bantuan->layanan); ?>
                                 </div>
                             </div>
                             <h6 class="my-3 overflow-hidden title"><?= $list_bantuan->nama_bantuan ?></h6>
@@ -231,7 +231,7 @@
                 ?>
                 <div class="row mt-5">
                     <div class="col-12 text-center wow fadeInUp" data-wow-delay="<?= $delay_card.'s'; ?>">
-                        <a href="javascript:;" class="btn btn-primary rounded-box py-3 px-5" id="load-more" data-offset="<?= $data['list_bantuan']['offset']; ?>" data-limit="<?= $data['list_bantuan']['limit']; ?>">Load More</a>
+                        <a href="javascript:;" class="btn btn-outline-orange rounded-box py-2 px-4" id="load-more" data-offset="<?= $data['list_bantuan']['offset']; ?>" data-limit="<?= $data['list_bantuan']['limit']; ?>">Load More</a>
                     </div>
                 </div>
                 <?php

@@ -122,4 +122,23 @@ class Utility {
         }
         return $class;
     }
+
+    public static function iconSektor($id_sector) {
+        if ($id_sector == 'S') {
+            $icon = '<i class="lni lni-heart"></i>';
+        } elseif ($id_sector == 'E') {
+            $icon = '<i class="lni lni-bar-chart"></i>';
+        } elseif ($id_sector == 'B') {
+            $icon = '<i class="lni lni-warning"></i>';
+        } elseif ($id_sector == 'K') {
+            $icon = '<i class="lni lni-sthethoscope"></i>';
+        } elseif ($id_sector == 'P') {
+            $icon = '<i class="lni lni-graduation"></i>';
+        } elseif ($id_sector == 'L') {
+            $icon = '<i class="lni lni-sprout"></i>';
+        } else {
+            $icon = '<i class="lni lni-support"></i>';
+        }
+        return $icon;
+    }
 }

@@ -27,6 +27,9 @@ class HomeController extends Controller {
 
 		$this->script_action = array(
 			array(
+				'src' => '/assets/main/js/token.js'
+			),
+			array(
 				'src' => '/assets/route/default/pages/js/home.js'
 			)
 		);
@@ -36,12 +39,14 @@ class HomeController extends Controller {
 		$this->data['banner'] = $this->model->data();
 		
 		$this->model->setOffset(0);
-		$this->model->setLimit(9);
+		$this->model->setLimit(3);
 		$this->model->getListBantuan();
         $this->data['list_bantuan'] = $this->model->data();
 		// $this->setKunjungan();
 		// Track real path based on return php request for js dom
 		$this->data['uri'] = base64_encode($this->getRealUri());
+		// Token for fetch
+        $this->data[Config::get('session/token_name')] = Token::generate();
 	}
 
 	public function kunjungan() {

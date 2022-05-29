@@ -1,8 +1,7 @@
-const elNavbarMobToggler = document.querySelector('.header .navbar-toggler.mobile-menu-btn'),
-      body = document.querySelector('body');
+const elNavbarMobToggler = document.querySelector('.header .navbar-toggler.mobile-menu-btn');
 
 elNavbarMobToggler.addEventListener('click', ()=> {
-    body.classList.toggle('overflow-hidden');
+    document.querySelector('body').classList.toggle('overflow-hidden');
 });
 
 function calculaterowPerGridHeight(item) {

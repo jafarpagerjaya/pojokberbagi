@@ -20,6 +20,9 @@ $(window).resize(function () {
     }, 50);
 });
 
+// New
+$("#notifikasi").modal({backdrop: "static"});
+// Old
 $("#notif-modal").modal({backdrop: "static"});
 
 const signoutButton = document.querySelectorAll('a[href="/auth/signout"]');

@@ -33,6 +33,8 @@ let tableWidthSetter = function() {
     }
 }
 
+tableWidthSetter();
+
 let resizeTimeoutTable;
 $(window).resize(function () {
     clearTimeout(resizeTimeoutTable)

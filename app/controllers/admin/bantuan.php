@@ -34,10 +34,16 @@ class BantuanController extends Controller {
     public function index() {
         $this->script_action = array(
             array(
+                'src' => '/assets/main/js/token.js'
+            ),
+            array(
                 'src' => '/assets/pojok-berbagi-script.js'
             ),
             array(
                 'src' => '/assets/route/admin/core/js/admin-script.js'
+            ),
+            array(
+                'src' => '/assets/main/js/token-action-updater.js'
             )
         );
 
@@ -77,7 +83,8 @@ class BantuanController extends Controller {
             $this->data['record'] = 0;
         }
 
-        
+        // Token for fetch
+        $this->data[Config::get('session/token_name')] = Token::generate();
     }
 
     public function halaman($params = array()) {
@@ -91,6 +98,9 @@ class BantuanController extends Controller {
             );
 
             $this->script_action = array(
+                array(
+                    'src' => '/assets/main/js/token.js'
+                ),
                 array(
                     'src' => '/assets/pojok-berbagi-script.js'
                 ),
@@ -130,6 +140,8 @@ class BantuanController extends Controller {
                 $this->data['halaman'] = $params[0];
                 $this->data['bantuan'] = $dataBantuan;
 
+                // Token for fetch
+                $this->data[Config::get('session/token_name')] = Token::generate();
                 return VIEW_PATH.'admin'.DS.'bantuan'.DS.'index.html';
             }
         }
@@ -267,6 +279,20 @@ class BantuanController extends Controller {
 
             $this->data['record'] = $this->_bantuan->data()['record'];
             $this->data['list_kategori'] = $this->_bantuan->data()['data'];
+
+            // Token for fetch
+            $this->data[Config::get('session/token_name')] = Token::generate();
+            $this->script_action = array(
+                array(
+                    'src' => '/assets/main/js/token.js'
+                ),
+                array(
+                    'src' => '/assets/pojok-berbagi-script.js'
+                ),
+                array(
+                    'src' => '/assets/route/admin/core/js/admin-script.js'
+                )
+            );
         } else {
             // Sementara nanti buat halaman kategori yang menampilkan seluruh info bantuan tentang kategori
             Redirect::to('admin/bantuan');
@@ -297,6 +323,19 @@ class BantuanController extends Controller {
                 }
                 $this->data['record'] = $this->_bantuan->affected();
                 $this->data['data_bantuan_kategori'] = $dataBantuanKategori;
+                // Token for fetch
+                $this->data[Config::get('session/token_name')] = Token::generate();
+                $this->script_action = array(
+                    array(
+                        'src' => '/assets/main/js/token.js'
+                    ),
+                    array(
+                        'src' => '/assets/pojok-berbagi-script.js'
+                    ),
+                    array(
+                        'src' => '/assets/route/admin/core/js/admin-script.js'
+                    )
+                );
             }
         } else {
             Redirect::to('admin/bantuan');
@@ -370,6 +409,49 @@ class BantuanController extends Controller {
 
         // Token for fetch
         $this->data[Config::get('session/token_name')] = Token::generate();
+    }
+
+    public function tutup($params) {
+        if (!$params) {
+            Redirect::to('admin/bantuan');
+        }
+
+        if (!Token::check($params[1])) {
+            Redirect::to('admin/bantuan');
+        }
+
+        $this->model('Bantuan');
+
+        $data = $this->model->getData('nama nama_bantuan', 'bantuan', array('id_bantuan','=',Sanitize::escape2($params[0])));
+
+        if ($data == false) {
+            Session::put('notifikasi', array(
+                'pesan' => 'Data bantuan tidak ditemukan',
+                'state' => 'warning'
+            ));
+            Redirect::to('admin/bantuan');
+        }
+
+        $this->model->update('bantuan', array(
+            'status' => 'S'
+        ), array(
+            'id_bantuan','=',Sanitize::toInt2($params[0])
+        ));
+
+        if ($this->model->affected()) {
+            Session::put('notifikasi', array(
+                'pesan' => 'Bantuan <b class="text-dark">'.$data->nama_bantuan.'</b> telah di <span class="font-weight-bolder text-orange">take down</span>',
+                'state' => 'success',
+                'id' => $params[0]
+            ));
+        } else {
+            Session::put('notifikasi', array(
+                'pesan' => 'Gagal take down bantuan',
+                'state' => 'error'
+            ));
+        }
+
+        Redirect::to('admin/bantuan');
     }
 
     public function formUpdate($id) {

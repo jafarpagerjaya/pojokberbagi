@@ -61,7 +61,7 @@
                                     <img src="<?= $list_bantuan->path_gambar_pengaju; ?>" alt="<?= $list_bantuan->pengaju_bantuan; ?>">
                                 </div>
                                 <div class="service-icon shadow d-flex justify-content-center align-items-center position-absolute bottom left" data-animation-name="slide" data-animation-start="backward" <?= (isset($list_bantuan->warna) ? 'style="background-color:' . $list_bantuan->warna .'"' : '') ?>>
-                                    <?= BantuanModel::iconLayanan($list_bantuan->layanan); ?>
+                                    <?= Utility::iconSektor($list_bantuan->layanan); ?>
                                 </div>
                             </div>
                             <h6 class="my-3 overflow-hidden title"><?= $list_bantuan->nama_bantuan ?></h6>
