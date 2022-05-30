@@ -234,9 +234,10 @@ class BantuanModel extends HomeModel {
                 $sql_inner = "SELECT id_bantuan FROM bantuan LEFT JOIN kategori USING(id_kategori) ORDER BY {$this->_order} {$this->_order_direction} LIMIT {$this->_offset},{$this->_limit}";
                 $left = "LEFT";
             } else {
-                $sql_inner = "SELECT id_bantuan FROM bantuan JOIN kategori USING(id_kategori) ORDER BY {$this->_order} {$this->_order_direction} LIMIT {$this->_offset},{$this->_limit}";
+                $sql_inner = "SELECT id_bantuan FROM bantuan JOIN kategori USING(id_kategori) WHERE LOWER(kategori.nama) = ? ORDER BY {$this->_order} {$this->_order_direction} LIMIT {$this->_offset},{$this->_limit}";
                 $where = "WHERE LOWER(k.nama) = ?";
                 $filter = array(
+                    'LOWER(kategori.nama)' => Sanitize::escape2($kategori),
                     'LOWER(k.nama)' => Sanitize::escape2($kategori)
                 );
             }

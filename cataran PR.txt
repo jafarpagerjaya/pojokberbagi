@@ -1,8 +1,5 @@
 URGEN MINGGU INI MAX (29 Mei)
-1. Take Down bantuan
 2. Tambah Data Donasi Yang Lalu
-3. Fetch di controller Home cek berbenturan atau engga tokennya dengan setKunjungan() << belum beres
-4. Segera perbaiki bug pada getListBantuan() pada route default controller home
 BONUS KALO CUKUP Bulan Ini
 1. Kelola Banner MAIN bantuan
 2. Lvl Akses => pelajari ALC Lvl Akses

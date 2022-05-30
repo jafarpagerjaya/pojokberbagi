@@ -254,7 +254,7 @@ class BantuanController extends Controller {
         $kategori = null;
         if (count($params) > 0) {
             $params = Sanitize::thisArray($params);
-            $kategori = str_replace("-", " ", $params[0]);
+            $kategori = strtolower(str_replace("-", " ", $params[0]));
             $halaman = 1;
             if (isset($params[1]) && ctype_digit($params[1])) {
                 $halaman = $params[1];
@@ -320,6 +320,49 @@ class BantuanController extends Controller {
                         $halaman = 1;
                     }
                     Redirect::to('admin/bantuan/berjalan/' . $params[0] . '/' . $kategori_param . '/' . $halaman);
+                }
+                $this->data['record'] = $this->_bantuan->affected();
+                $this->data['data_bantuan_kategori'] = $dataBantuanKategori;
+                // Token for fetch
+                $this->data[Config::get('session/token_name')] = Token::generate();
+                $this->script_action = array(
+                    array(
+                        'src' => '/assets/main/js/token.js'
+                    ),
+                    array(
+                        'src' => '/assets/pojok-berbagi-script.js'
+                    ),
+                    array(
+                        'src' => '/assets/route/admin/core/js/admin-script.js'
+                    )
+                );
+            }
+        } else {
+            Redirect::to('admin/bantuan');
+        }
+    }
+
+    public function selesai($params = array()) {
+        if (count($params) > 1) {
+            if ($params[0] == 'kategori') {
+                $kategori_param = $params[1];
+                $params[1] = str_replace("-", " ", $params[1]);
+                $this->data['halaman'] = 1;
+                if (isset($params[2]) && ctype_digit($params[2])) {
+                    $this->_bantuan->setHalaman(Sanitize::escape2($params[2]), 'bantuan');
+                    $this->data['halaman'] = Sanitize::escape2($params[2]);
+                    // return VIEW_PATH.'admin'.DS.'bantuan'.DS.'index.html';
+                }
+                $this->_bantuan->setDataOffsetHalaman($this->data['halaman']);
+                $this->_bantuan->setDataLimit(10);
+                $dataBantuanKategori = $this->_bantuan->dataBantuanKategori(Sanitize::escape2($params[1]), 'S');
+
+                if (empty($dataBantuanKategori)) {
+                    $halaman = $this->data['halaman'] - 1;
+                    if ($halaman < 1) {
+                        $halaman = 1;
+                    }
+                    Redirect::to('admin/bantuan/selesai/' . $params[0] . '/' . $kategori_param . '/' . $halaman);
                 }
                 $this->data['record'] = $this->_bantuan->affected();
                 $this->data['data_bantuan_kategori'] = $dataBantuanKategori;

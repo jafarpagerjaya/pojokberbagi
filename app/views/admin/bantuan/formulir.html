@@ -455,7 +455,7 @@
                         <?php foreach($data['bantuan_selesai'] as $bantuan_selesai) { ?>
                         <tr>
                             <th scope="row">
-                                <a href="<?= (($bantuan_selesai->jumlah_kategori > 0) ? '/admin/bantuan/berjalan/kategori/' . str_replace(" ",'-', strtolower($bantuan_selesai->nama)) : '#') ?>" title="Klik Detil Program"><?= $bantuan_selesai->nama ?></a>
+                                <a href="<?= (($bantuan_selesai->jumlah_kategori > 0) ? '/admin/bantuan/selesai/kategori/' . str_replace(" ",'-', strtolower($bantuan_selesai->nama)) : '#') ?>" title="Klik Detil Program"><?= $bantuan_selesai->nama ?></a>
                             </th>
                             <td>
                                 <?= number_format($bantuan_selesai->jumlah_kategori, 0, ",", ".") ?>
