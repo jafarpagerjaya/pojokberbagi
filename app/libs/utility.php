@@ -8,34 +8,42 @@ class Utility {
         } else if ($params == 'T') {
             $status = "Ditolak oleh admin";
         } else if ($params == 'D') {
-            $status = "Disetujui oleh admin";
+            $status = "Open donasi telah disetujui untuk dibuka";
         } else if ($params == 'S') {
-            $status = "Sudah selesai dilaksanakan";
+            $status = "Open donasinya sudah ditutup";
         } 
         return $status;
     }
 
-    public static function statusBantuan($params) {
+    public static function statusBantuanClassTextColor($params) {
         if ($params == 'B') {
-            $status = "belum disetujui";
+            $status_text = "belum disetujui";
+            $class = 'text-black-50';
         } else if ($params == 'C') {
-            $status = "cek petugas";
+            $status_text = "cek petugas";
+            $class = 'text-warning';
         } else if ($params == 'T') {
-            $status = "ditolak";
+            $status_text = "ditolak";
+            $class = 'text-danger';
         } else if ($params == 'D') {
-            $status = "dibuka";
+            $status_text = "dibuka";
+            $class = 'text-success';
         } else if ($params == 'S') {
-            $status = "ditutup";
+            $status_text = "ditutup";
+            $class = 'text-primary';
         }
-        return $status;
+        return array(
+            'class' => $class,
+            'text' => $status_text
+        );
     }
 
-    public static function statusBantuanClassText($status) {
+    public static function statusBantuanClassTextBadge($status) {
         if(strtolower($status) == 'd') {
             $class = 'badge-primary';
             $status_text = 'Berjalan';
         } elseif (strtolower($status) == 's') {
-            $class = 'badge-success';
+            $class = 'badge-danger';
             $status_text = "Selesai";
         } elseif (strtolower($status) == 'b') {
             $class = 'badge-warning'; 

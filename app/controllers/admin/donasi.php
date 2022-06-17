@@ -80,4 +80,47 @@ class DonasiController extends Controller {
         // Token for fetch
         $this->data[Config::get('session/token_name')] = Token::generate();
     }
+
+    public function buat() {
+        $this->title = 'Buat Donasi Via CR';
+        $this->rel_action = array(
+            array(
+                'href' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+            ),
+            array(
+                'href' => '/vendors/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/form-element.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/pages/css/buat-donasi.css'
+            )
+        );
+        $this->script_action = array(
+            array(
+                'src' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+                'source' => 'trushworty'
+            ),
+            array(
+                'src' => '/vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js'
+            ),
+            array(
+                'src' => '/vendors/bootstrap-datepicker/dist/locales/bootstrap-datepicker.id.min.js',
+                'charset' => 'UTF-8'
+            ),
+            array(
+                'src' => '/assets/pojok-berbagi-script.js'
+            ),
+            array(
+                'src' => '/assets/route/admin/core/js/admin-script.js'
+            ),
+            array(
+                'src' => '/assets/route/admin/core/js/form-function.js'
+            ),
+            array(
+                'src' => '/assets/route/admin/pages/js/buat-donasi.js'
+            )
+        );
+    }
 }

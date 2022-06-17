@@ -3,7 +3,7 @@
     background-color: #f6f9fc;
 }
 
-table tfoot th {
+table.table tfoot th {
     font-size: .65rem !important;
     padding-top: 0.75rem;
     padding-bottom: 0.75rem;
@@ -46,10 +46,6 @@ table td.auto {
     letter-spacing: 1px;
 }
 
-.small {
-    letter-spacing: 0.5px;
-}
-
 @keyframes pulse {
     0% {
         background-color: transparent;
@@ -62,6 +58,14 @@ table td.auto {
     100% {
         background-color: transparent;
     }
+}
+
+body.nav-open {
+    position: fixed;
+}
+
+.small {
+    letter-spacing: 0.5px;
 }
 
 .img-avatar {
@@ -83,12 +87,20 @@ a.disabled {
     background-color: #f7fafc !important;
 }
 
+.gap-x-1 {
+    column-gap: .25em;
+}
+
 .gap-x-2 {
     column-gap: .5em;
 }
 
 .gap-y-3 {
     row-gap: 1em;
+}
+
+.gap-y-5 {
+    row-gap: 2em;
 }
 
 .form-control:focus {
@@ -137,6 +149,36 @@ a.disabled {
     margin-right: 0px !important;
 }
 
+/* Backdrop On Burger Click */
+#panel.main-content {
+    position: relative;
+}
+
+#panel.main-content:not(.backdrop).backdrop-remove-animated::after,
+#panel.main-content:not(.backdrop):not(.backdrop-remove-animated)::after,
+#panel.main-content.backdrop::after {
+    position: absolute;
+    content: '';
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    transition: all .3s ease !important;
+}
+
+#panel.main-content:not(.backdrop).backdrop-remove-animated::after,
+#panel.main-content:not(.backdrop):not(.backdrop-remove-animated)::after {
+    background-color: transparent;
+}
+
+#panel.main-content:not(.backdrop):not(.backdrop-remove-animated)::after {
+    z-index: -1;
+}
+
+#panel.main-content.backdrop::after {
+    background-color: rgb(0 16 32 / 50%)
+}
+
 @media (min-width: 360px) {
     .form-group label {
         font-size: .75rem;
@@ -164,5 +206,12 @@ a.disabled {
 @media (min-width: 768px) {
     .form-group label {
         font-size: .825rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    /* Backdrop On Burger Click */
+    #panel.main-content.backdrop::after {
+        background-color: transparent;
     }
 }

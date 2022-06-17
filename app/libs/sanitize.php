@@ -5,11 +5,11 @@ class Sanitize {
 	}
 
 	public static function noSpace($string){
-		return trim(preg_replace('/\s+/', '', $string));
+		return trim(preg_replace('/\s+/', '', $string) ?? '');
 	}
 
 	public static function noDblSpace($string){
-		return trim(preg_replace('/\s+/', ' ', $string));
+		return trim(preg_replace('/\s+/', ' ', $string) ?? '');
 	}
 
 	public static function toInt($string) {
@@ -17,7 +17,7 @@ class Sanitize {
 	}
 
 	public static function escape2($string) {
-		return htmlentities(trim($string), ENT_QUOTES, 'UTF-8');
+		return htmlentities(trim($string ?? ''), ENT_QUOTES, 'UTF-8');
 	}
 
 	public static function noSpace2($string){

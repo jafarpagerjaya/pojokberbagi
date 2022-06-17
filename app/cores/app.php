@@ -11,13 +11,20 @@ class App {
 		$controller_object = self::$router->getControllerObject();
 		$controller_method = self::$router->getAction();
 		$controller_params = self::$router->getParams();
-		// // Call it
+		// Check it Method Scope
+		if ($controller_method != 'index') {
+			$reflection = new ReflectionMethod($controller_object, $controller_method);
+			if (!$reflection->isPublic()) {
+				Redirect::to('home');
+			}
+		}
+		// Call it
 		$path = $controller_object->$controller_method($controller_params);
 
 		if ($path === false) {
 			return false;
 		} 
 		// Build The View
-		new View($path, $controller_object->getData(), $controller_object);
+		new View($controller_object, $path, $controller_object->getData());
 	}
 }

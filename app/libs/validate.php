@@ -28,13 +28,13 @@ class Validate {
 				} else if (!empty($value)) {
 					switch ($rule) {
 						case 'min':
-							if (strlen($value) < $rule_value) {
+							if ($value && strlen($value) < $rule_value) {
 								$this->addError("{$field} harus lebih dari {$rule_value} karakter");
 								$this->addErrorAtRule($field, $rule);
 							}
 							break;
 						case 'max':
-							if (strlen($value) > $rule_value) {
+							if ($value && strlen($value) > $rule_value) {
 								$this->addError("{$field} harus kurang dari {$rule_value} karakter");
 								$this->addErrorAtRule($field, $rule);
 							}
@@ -47,7 +47,7 @@ class Validate {
 							break;
 						case 'unique':
 							$sql = "SELECT {$field} FROM {$rule_value} WHERE {$field} = '{$value}'";
-							if (count($addConditions) >= 3) {
+							if (count(is_countable($addConditions) ? $addConditions : []) >= 3) {
 								$operators = array('=', '>', '<', '>=', '<=', '!=');
 
 								$addCfield    = trim($addConditions[0]);
@@ -149,7 +149,7 @@ class Validate {
 	}
 
 	public function feedback($name, $showName = false) {
-		if (count($this->_error) > 0) {
+		if (count(is_countable($this->_error) ? $this->_error : []) > 0) {
 			$this->_feedback = $name;
 			foreach ($this->_error as $feedback) {
 				if (preg_match("~\b" . $this->_feedback . "\b~", $feedback)) {
@@ -190,7 +190,7 @@ class Validate {
 				'feedback' => $feedback
 			);
 		}
-		if (strlen($this->feedback($name))) {
+		if ($this->feedback($name) && strlen($this->feedback($name))) {
 			$this->validateData[$name]['rule'] = $this->errorRule($name);
 		}
 	}
@@ -203,11 +203,11 @@ class Validate {
 		$inputName = null;
 		foreach($this->validateData as $key_name => $name_value) {
 			foreach($name_value as $key_item => $item_value) {
-				if (strlen($key_item) > 0 && strtolower($key_item) == 'rule') {
+				if ($key_item && strlen($key_item) > 0 && strtolower($key_item) == 'rule') {
 					$inputName = $key_name;
 				}
 			}
-			if (strlen($inputName)) {
+			if ($inputName && strlen($inputName)) {
 				break;
 			}
 		}
@@ -230,14 +230,14 @@ class Validate {
 	}
 
 	public static function errorArrayRuleList($list_validate_error = array()) {
-		if (count($list_validate_error) > 0) {
+		if (count(is_countable($list_validate_error) ? $list_validate_error : []) > 0) {
 			$newListValidateError = array();
 			$listValidateRule = array();
 			foreach($list_validate_error as $validate_error_key => $validate_error_value) {
 				array_push($newListValidateError, self::errorArrayRule($validate_error_value)[0]);
 				array_push($listValidateRule, self::errorArrayRule($validate_error_value)[1]);
 			}
-			// if (count($listValidateRule) > 0) {
+			// if (count(is_countable($listValidateRule) ? $listValidateRule : []) > 0) {
 			//     $newListValidateRule = array();
 			//     $listValidateRule = array_reverse($listValidateRule);
 			//     foreach($listValidateRule as $validateRuleKey => $validateRuleValue) {

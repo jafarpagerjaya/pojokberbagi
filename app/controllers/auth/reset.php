@@ -101,7 +101,7 @@ class ResetController extends Controller {
     }
 
     public function renew($params) {
-        if (count($params) < 2) {
+        if (count(is_countable($params) ? $params : []) < 2) {
             Session::put('error', 'Anda Tidak Berhak Mengubah Password Akun');
             Redirect::to('auth/signin');
         }

@@ -27,7 +27,7 @@ class FetchController extends Controller {
                 }
             }
 
-            if ($j == count($this->path_gambar)) {
+            if ($j == count(is_countable($this->path_gambar) ? $this->path_gambar : [])) {
                 $this->_result['remove_file_message'] = 'Gambar berhasil dihapus dari database dan direktory';
             }
         }
@@ -60,7 +60,7 @@ class FetchController extends Controller {
     }
 
     public function create($params = array()) {
-        if (count($params) == 0) {
+        if (count(is_countable($params) ? $params : []) == 0) {
             $this->_result['feedback'] = array(
                 'message' => 'Number of params not found'
             );
@@ -97,7 +97,7 @@ class FetchController extends Controller {
     }
 
     public function update($params = array()) {
-        if (count($params) == 0) {
+        if (count(is_countable($params) ? $params : []) == 0) {
             $this->_result['feedback'] = array(
                 'message' => 'Number of params not found'
             );
@@ -134,7 +134,7 @@ class FetchController extends Controller {
     }
 
     public function read($params = array()) {
-        if (count($params) == 0) {
+        if (count(is_countable($params) ? $params : []) == 0) {
             $this->_result['feedback'] = array(
                 'message' => 'Number of params not found'
             );
@@ -205,7 +205,7 @@ class FetchController extends Controller {
     }
 
     private function uploadDataUrlIntoServer($params = array()) {
-        if (count($params) == 0) {
+        if (count(is_countable($params) ? $params : []) == 0) {
             return false;
         }
 
@@ -248,7 +248,7 @@ class FetchController extends Controller {
 
         $this->path_gambar = $arrayPath;
 
-        if (count($params) != $i) {
+        if (count(is_countable($params) ? $params : []) != $i) {
             foreach($this->path_gambar as $key => $path_file) {
                 $this->removeFile(ROOT . DS . 'public' . DS . $path_file['path']);
             }
@@ -319,7 +319,7 @@ class FetchController extends Controller {
             ));
             if ($this->model->affected()) {
                 $array_id_gambar[$key] = $this->model->lastIID();
-                if ($loop == count($this->path_gambar)) {
+                if ($loop == count(is_countable($this->path_gambar) ? $this->path_gambar : [])) {
                     $this->_result['error'] = false;
                     $this->_result['feedback'] = array(
                         'message' => 'Sucess Insert All path_gambar donasi'
@@ -351,6 +351,10 @@ class FetchController extends Controller {
 
         if (isset($decoded['lama_penayangan'])) {
             $decoded['lama_penayangan'] = Sanitize::toInt2($decoded['lama_penayangan']);
+            $decoded['tanggal_awal'] = date('Y-m-d');
+            $endDate = date_create($decoded['tanggal_awal']);
+            date_add($endDate, date_interval_create_from_date_string($decoded['lama_penayangan'] . " day"));
+            $decoded['tanggal_akhir'] = date_format($endDate, 'Y-m-d');
         }
 
         if (isset($decoded['min_donasi'])) {
@@ -498,7 +502,7 @@ class FetchController extends Controller {
                 }
             }
 
-            if (count($old_id_gambar) > 0) {
+            if (count(is_countable($old_id_gambar) ? $old_id_gambar : []) > 0) {
                 $loop = 1;
                 foreach($old_id_gambar as $key => $value) {
                     if (is_null($value['id_gambar'])) {
@@ -515,7 +519,7 @@ class FetchController extends Controller {
                             'path_gambar' => Sanitize::escape2($this->path_gambar[$key]['path'])
                         ), array('id_gambar', '=', Sanitize::escape2($value['id_gambar'])));
                         if ($this->model->affected()) {
-                            if ($loop == count($this->path_gambar)) {
+                            if ($loop == count(is_countable($this->path_gambar) ? $this->path_gambar : [])) {
                                 $this->_result['error'] = false;
                                 $this->_result['feedback'] = array(
                                     'message' => 'Sucess Update All path_gambar bantuan'
@@ -571,7 +575,7 @@ class FetchController extends Controller {
         }
 
         // Update
-        if (count($decoded) > 0) {
+        if (count(is_countable($decoded) ? $decoded : []) > 0) {
             $this->model->update('bantuan', $decoded, array('id_bantuan', '=', Sanitize::escape2($id_bantuan)));
         
             if (!$this->model->affected()) {
@@ -598,6 +602,7 @@ class FetchController extends Controller {
         return false;
     }
 
+    // Daftar Seluruh Donasi
     private function donasiListRead($decoded) {
         $decoded = Sanitize::thisArray($decoded);
 
@@ -653,6 +658,7 @@ class FetchController extends Controller {
         return false;
     }
 
+    // Daftar Donasi Per Bantuan
     private function donasiBantuanRead($decoded) {
         $decoded = Sanitize::thisArray($decoded);
 

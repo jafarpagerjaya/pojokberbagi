@@ -229,6 +229,13 @@
     right: calc(0px - var(--selfwidth));
 }
 
+/* Handler img broken pojok-berbagi-stype extender */
+.single-service>.app-image.img-wrapper>img[src=""] {
+    max-height: inherit;
+    min-height: inherit;
+    width: 100%;
+}
+
 @media (min-width: 320px) {
 
     /* List Service */

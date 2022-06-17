@@ -7,6 +7,9 @@ class BantuanController extends Controller {
     public function __construct() {
         $this->rel_controller = array(
             array(
+                'href' => '/assets/pojok-berbagi-style.css'
+            ),
+            array(
                 'href' => '/assets/route/admin/core/css/admin-style.css'
             )
         );
@@ -88,7 +91,7 @@ class BantuanController extends Controller {
     }
 
     public function halaman($params = array()) {
-        if (count($params)) {
+        if (count(is_countable($params) ? $params : [])) {
             $this->model('Sys');
             $this->data['info-card'] = array(
                 'jumlah_bantuan' => $this->model->jumlahBantuan(),
@@ -149,7 +152,7 @@ class BantuanController extends Controller {
     }
 
     public function blok($params = array()) {
-        if (count($params)) {
+        if (count(is_countable($params) ? $params : [])) {
             $data = $this->_bantuan->getData('blokir, id_bantuan','bantuan',array('id_bantuan','=',$params[0]));
             if (is_null($data->blokir)) {
                 $setBlokir = 1;
@@ -235,24 +238,27 @@ class BantuanController extends Controller {
         // Token for fetch
         $this->data[Config::get('session/token_name')] = Token::generate();
 
-        if (count($params) > 0) {
+        if (count(is_countable($params) ? $params : []) > 0) {
             $this->formUpdate($params[0]);
             $min_jumlah_target = null;
             $this->_bantuan->getData('SUM(jumlah_pelaksanaan) min_jumlah_pelaksanaan','pelaksanaan RIGHT JOIN anggaran_pelaksanaan_donasi USING(id_pelaksanaan) RIGHT JOIN donasi USING(id_donasi)',array('id_bantuan','=',Sanitize::escape($params[0])));
+
             if ($this->_bantuan->affected()) {
                 $min_jumlah_target = $this->_bantuan->data()->min_jumlah_pelaksanaan;    
                 $this->data['min_jumlah_target'] = $min_jumlah_target;
             }
+
             array_push($this->script_action, array(
                 'src' => '/assets/route/admin/pages/js/form-update.js'
             ));
+            
             return VIEW_PATH.'admin'.DS.'bantuan'.DS.'form-update.html';
         }
     }
 
     public function kategori($params = array()) {
         $kategori = null;
-        if (count($params) > 0) {
+        if (count(is_countable($params) ? $params : []) > 0) {
             $params = Sanitize::thisArray($params);
             $kategori = strtolower(str_replace("-", " ", $params[0]));
             $halaman = 1;
@@ -300,7 +306,7 @@ class BantuanController extends Controller {
     }
 
     public function berjalan($params = array()) {
-        if (count($params) > 1) {
+        if (count(is_countable($params) ? $params : []) > 1) {
             if ($params[0] == 'kategori') {
                 $kategori_param = $params[1];
                 $params[1] = str_replace("-", " ", $params[1]);
@@ -343,7 +349,7 @@ class BantuanController extends Controller {
     }
 
     public function selesai($params = array()) {
-        if (count($params) > 1) {
+        if (count(is_countable($params) ? $params : []) > 1) {
             if ($params[0] == 'kategori') {
                 $kategori_param = $params[1];
                 $params[1] = str_replace("-", " ", $params[1]);
@@ -399,7 +405,7 @@ class BantuanController extends Controller {
         $now = new DateTime(date('Y-m-d H:i:s'));
         $action = new DateTime($this->data['detil_bantuan']->action_at);
         $msInterval = $action->diff($now);
-        $this->data['detil_bantuan']->telah_dikelola_selama = $msInterval->days;
+        $this->data['detil_bantuan']->telah_dikelola_selama = ($msInterval->days > 0 ? $msInterval->days . ' hari yang lalu' : 'baru saja hari ini');
 
         $dataSaldo = $this->_bantuan->getSaldoBantuan($params[0]);
         $this->data['saldo_bantuan'] = $dataSaldo;
@@ -497,16 +503,18 @@ class BantuanController extends Controller {
         Redirect::to('admin/bantuan');
     }
 
-    public function formUpdate($id) {
-        if (count($id[0])) {
+    public function formUpdate($id = null) {
+        if (!is_null($id)) {
             $hasil = $this->_bantuan->getData(
                 'gm.nama nama_gambar_medium, gw.nama nama_gambar_wide, gm.path_gambar path_gambar_medium, gw.path_gambar path_gambar_wide, b.*', 
                 'bantuan b LEFT JOIN gambar gm ON(b.id_gambar_medium = gm.id_gambar) LEFT JOIN gambar gw ON(b.id_gambar_wide = gw.id_gambar)', 
                 array('b.id_bantuan', '=', Sanitize::escape2($id)),'AND',array('b.blokir','IS', NULL)
             );
+
             if (!$this->_bantuan->affected()) {
                 Redirect::to('admin/bantuan/formulir');
             }
+
             $this->data['bantuan'] = $hasil;
         }
     }

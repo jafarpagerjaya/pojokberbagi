@@ -60,7 +60,7 @@ class AkunController extends Controller {
     }
 
     public function blok($params = array()) {
-        if (count($params)) {
+        if (count(is_countable($params) ? $params : [])) {
             $data = $this->_auth->get('aktivasi, username',array('id_akun','=',$params[0]));
             if ($data->aktivasi == 1) {
                 $setAktivasi = '0';
@@ -83,7 +83,7 @@ class AkunController extends Controller {
     }
 
     public function halaman($params = array()) {
-        if (count($params)) {
+        if (count(is_countable($params) ? $params : [])) {
             if ($params[0] == 1) {
                 $param1 = 1;
                 $param2 = $param1 + $this->getPageRecordLimit() - 1;
@@ -105,7 +105,7 @@ class AkunController extends Controller {
     }
 
     public function aktivasi($params) {
-        if (count($params)) {
+        if (count(is_countable($params) ? $params : [])) {
             $this->_auth->update('akun',array(
                     'pin'=> '',
                     'aktivasi' => 1

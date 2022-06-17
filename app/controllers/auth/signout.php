@@ -10,7 +10,7 @@ class SignoutController extends Controller {
                 $client = json_decode(base64_decode(Cookie::get(Config::get('client/cookie_name'))), true);
                 $expiry = $client['expiry'];
                 unset($client['auth']);
-                if (count($client) < 2) {
+                if (count(is_countable($client) ? $client : []) < 2) {
                     Cookie::delete(Config::get('client/cookie_name'));
                 } else {
                     $id_pengunjung = $client['id_pengunjung'];

@@ -200,7 +200,7 @@ class SignupController extends Controller {
     }
 
 	public function hook($params = array()) {
-		if (count($params) < 4) {
+		if (count(is_countable($params) ? $params : []) < 4) {
 			Session::flash('danger','Parameter salah');
 			Redirect::to('auth/signup');
 		}
@@ -255,7 +255,7 @@ class SignupController extends Controller {
 	}
 
 	public function activate($params = array()) {
-		if (count($params) < 4) {
+		if (count(is_countable($params) ? $params : []) < 4) {
 			Session::flash('danger','Parameter salah');
 			Redirect::to('auth/signup');
 		}

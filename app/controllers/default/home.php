@@ -5,7 +5,7 @@ class HomeController extends Controller {
 		$this->title = 'Home';
 		$this->rel_controller = array(
             array(
-                'href' => '/assets/pojok-berbagi-style.css?v=1'
+                'href' => '/assets/pojok-berbagi-style.css'
 			)
         );
 		$this->script_controller = array(
@@ -18,10 +18,10 @@ class HomeController extends Controller {
 	public function index() {
 		$this->rel_action = array(
 			array(
-				'href' => '/assets/route/default/pages/css/home.css?v=1'
+				'href' => '/assets/route/default/pages/css/home.css'
 			),
 			array(
-                'href' => '/assets/route/default/core/css/services.css?v=1'
+                'href' => '/assets/route/default/core/css/services.css'
             )
 		);
 

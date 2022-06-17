@@ -41,7 +41,7 @@ class Database {
 		$this->_error = false;
 		if ($this->_query = $this->_pdo->prepare($sql)) {
 			$pos = 1;
-			if (count($params)) {
+			if (count(is_countable($params) ? $params : [])) {
 				foreach ($params as $param) {
 					$param = ($param != '' ? $param : NULL);
 					$this->_query->bindValue($pos, $param);
@@ -84,8 +84,19 @@ class Database {
 						1
 					);
 				} else {
+					$questionMarks = '';
+					$xCol = 1;
+
+					foreach ($where[2] as $questionMark) {
+						$questionMarks .= "?";
+						if ($xCol < count(is_countable($where[2]) ? $where[2] : [])) {
+							$questionMarks .= ", ";
+						}
+						$xCol++;
+					}
+
 					$filter = array(
-						"{$field} {$operator} (?)",
+						"{$field} {$operator} ({$questionMarks})",
 						1
 					);
 				}
@@ -95,14 +106,22 @@ class Database {
 	}
 
 	final public function action($action, $table, $where = array(), $condition = null, $another_filter = array()) {
-		if (count($where) === 3) {
+		if (count(is_countable($where) ? $where : []) === 3) {
 			$value 	= array();
-			array_push($value, $where[2]);
+			if (is_array($where[2])) {
+				$value = array_merge($value, $where[2]);
+			} else {
+				array_push($value, $where[2]);
+			}
 			$filter = $this->filter($where);
 			$filter_sql = $filter[0];
 			if (!is_null($condition)) {
-				if (count($another_filter) === 3) {
-					array_push($value, $another_filter[2]);
+				if (count(is_countable($another_filter) ? $another_filter : []) === 3) {
+					if (is_array($another_filter[2])) {
+						$value = array_merge($value, $another_filter[2]);
+					} else {
+						array_push($value, $another_filter[2]);
+					}
 					$another_filter = $this->filter($another_filter);
 					if ($another_filter[1] == true) {
 						$filter_sql = "{$filter_sql} {$condition} {$another_filter[0]}";
@@ -134,14 +153,14 @@ class Database {
 	}
 
 	final public function insert($table, $fields = array()) {
-		if (count($fields)) {
+		if (count(is_countable($fields) ? $fields : [])) {
 			$keys = array_keys($fields);
 			$values = '';
 			$xCol = 1;
 
 			foreach ($fields as $field) {
 				$values .= "?";
-				if ($xCol < count($fields)) {
+				if ($xCol < count(is_countable($fields) ? $fields : [])) {
 					$values .= ", ";
 				}
 				$xCol++;
@@ -158,17 +177,17 @@ class Database {
 	// Multiple insert Jd PR
 
 	final public function update($table, $fields, $where) {
-		if (count($fields)) {
+		if (count(is_countable($fields) ? $fields : [])) {
 			$set = '';
 			$xSetCOl = 1;
 			foreach ($fields as $column_name => $value) {
 				$set .= "{$column_name} = ?";
-				if ($xSetCOl < count($fields)) {
+				if ($xSetCOl < count(is_countable($fields) ? $fields : [])) {
 					$set .= ", ";
 				}
 				$xSetCOl++;
 			}
-			if (count($where) === 3) {
+			if (count(is_countable($where) ? $where : []) === 3) {
 				$operators = array('=', '>', '<', '>=', '<=', '!=', '<>');
 
 				$field    = $where[0];

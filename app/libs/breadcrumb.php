@@ -8,20 +8,20 @@ class Breadcrumb {
 
         $breadcrumb = '';
         if (strtolower($controller) != "home") {
-            $breadcrumb = '<li class="breadcrumb-item"><a href="/' . $route . '"><i class="fas fa-home"></i></a></li>';
+            $breadcrumb = '<li class="breadcrumb-item"><a href="/' . $route . '" aria-label="Admin Home"><i class="fas fa-home"></i></a></li>';
         }
         if (strtolower($action) != "index") {
             $breadcrumb .= '<li class="breadcrumb-item"><a href="/' . $route . '/' . $controller . '">' . ucfirst($controller) . '</a></li>';
         }
-        if (count($params)) {
-            if (count($params) > 1) {
+        if (count(is_countable($params) ? $params : [])) {
+            if (count(is_countable($params) ? $params : []) > 1) {
                 $breadcrumb .= '<li class="breadcrumb-item"><a href="/' . $route . '/' . $controller . '/' . $action . '">' . ucfirst($action) . '</a></li>';
             }
             $i = 0;
             foreach($params as $param => $param_value) {
-                if ($i == 0 && count($params) == 1 ) {
+                if ($i == 0 && count(is_countable($params) ? $params : []) == 1 ) {
                     $breadcrumb .= '<li class="breadcrumb-item active">' . ucfirst($action) . '</li>';                
-                } elseif ($i < count($params) - 1) {
+                } elseif ($i < count(is_countable($params) ? $params : []) - 1) {
                     $j = 0;
                     $link = array();
                     foreach($params as $keyParams => $valueParams) {

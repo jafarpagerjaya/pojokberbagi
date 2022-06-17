@@ -22,14 +22,14 @@ class BuatController extends Controller {
     }
 
     public function index($params) {
-        if (count($params)) {
+        if (count(is_countable($params) ? $params : [])) {
             $params = implode('/', $params);
         }
         Redirect::to('donasi/buat/baru'. (!is_null($params) ? '/'. $params : ''));
     }
 
     public function baru($params) {
-        if (!count($params)) {
+        if (!count(is_countable($params) ? $params : [])) {
             Redirect::to('home');
         }
         
@@ -59,13 +59,25 @@ class BuatController extends Controller {
             )
         );
 
-        $id_bantuan = Sanitize::escape($params[0]);
+        $id_bantuan = Sanitize::escape2($params[0]);
 
         $this->model('Donasi');
         $data_bantuan = $this->model->isBantuanActive($id_bantuan);
+        // Cek jika bantuan masih dibuka
         if ($data_bantuan->status != 'D') {
             Session::flash('notifikasi', array(
                 'pesan' => 'Bantuan <b>'. $data_bantuan->nama .'</b> ' . Utility::keteranganStatusBantuan($data_bantuan->status),
+                'state' => 'warning'
+            ));
+            Redirect::to('home');
+        }
+        // Cek jika open donasi sudah berakhir
+        if (!is_null($data_bantuan->tanggal_akhir) && strtotime($data_bantuan->tanggal_akhir) <= time()) {
+            $this->model->update('bantuan', array(
+                'status' => 'S'
+            ), array('id_bantuan','=',$id_bantuan));
+            Session::flash('notifikasi', array(
+                'pesan' => 'Mohon maaf bantuan sudah berakhir',
                 'state' => 'warning'
             ));
             Redirect::to('home');
@@ -88,7 +100,7 @@ class BuatController extends Controller {
             } else {
                 $data = $this->_home->getData('nama, email, kontak, samaran', 'donatur', array('id_akun','=', $this->data['akun']->id_akun));
             }
-            if (count($data)) {
+            if ($data) {
                 $this->data['donatur'] = $data;
             }
         }
@@ -97,7 +109,8 @@ class BuatController extends Controller {
         $this->data['bantuan'] = $data_bantuan;
         $this->data[Config::get('session/token_name')] = Token::generate();
 
-        $dataCP = $this->_home->query('SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar FROM channel_payment cp LEFT JOIN gambar USING(id_gambar)', array());
+        // Masih dibatasi TB dulu
+        $dataCP = $this->_home->query("SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar FROM channel_payment cp LEFT JOIN gambar USING(id_gambar) WHERE jenis = 'TB'", array());
         $this->data['metode_pembayaran'] = $this->_home->readAllData();
     }
 

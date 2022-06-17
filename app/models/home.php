@@ -7,7 +7,9 @@ class HomeModel {
     private $_halaman = array(1,10),
             $_offset = 10,
             $_limit = 10,
+            $_order_by = 1,
             $_orderBy = 1,
+            $_order_direction = 'DESC',
             $_ascDsc = 'ASC',
             $_search;
 
@@ -85,21 +87,34 @@ class HomeModel {
 
     public function countData($table, $where = null, $search = null) {
         $table = Sanitize::escape2($table);
-        $sql = "SELECT COUNT(*) jumlah_record FROM {$table}";
-        if (!is_null($search)) {
-            if (is_null($where)) {
-                $where = $search;
-            } else {
-                $where .= " AND {$search}";
+        $sql = array("SELECT COUNT(*) jumlah_record FROM {$table}");
+        $values = array();
+        $filter = null;
+        if (!is_null($where)) {
+            if (is_array($where)) {
+                $values = $where[1];
+                $where = $where[0];
             }
-            $sql .= " WHERE {$where}";
-        } else {
-            if (!is_null($where)) {
-                $sql .= " WHERE {$where}";
-            }
+            $filter = "WHERE {$where}";
+            array_push($sql, $filter);
         }
+        if (!is_null($search)) {
+            if (is_array($search)) {
+                $values = $search[1];
+                $search = $search[0];
+            }
+            if (!is_null($filter)) {
+                $filter = "AND {$search}";
+            } else {
+                $filter = "WHERE {$search}";
+            }
+            array_push($sql, $filter);
+        }
+        
+        $sql = implode(' ', $sql);
 
-		$this->db->query($sql);
+		$this->db->query($sql, $values);
+        
 		if ($this->db->count()) {
 			$this->data = $this->db->result();
 			return $this->data;
@@ -128,6 +143,11 @@ class HomeModel {
 		return false;
     }
 
+    protected function split($string, $spliters) {
+		return preg_split('~'.$spliters.'(?![^()]*\))~', trim($string));
+	}
+
+    // Setter And Getter
     public function setSearch($search) {
         $this->_search = Sanitize::escape2($search);
     }
@@ -150,6 +170,14 @@ class HomeModel {
 
     public function getLimit() {
         return $this->_limit;
+    }
+
+    public function setDirection($direction) {
+        $this->_order_direction = Sanitize::escape2($direction);
+    }
+
+    public function getDirection() {
+        return $this->_order_direction;
     }
 
     public function setAscDsc($asc_dsc) {
@@ -199,8 +227,4 @@ class HomeModel {
     public function getOrderBy() {
         return $this->_orderBy;
     }
-
-    protected function split($string, $spliters) {
-		return preg_split('~'.$spliters.'(?![^()]*\))~', trim($string));
-	}
 }

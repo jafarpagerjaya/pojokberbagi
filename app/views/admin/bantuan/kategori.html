@@ -4,7 +4,9 @@
             <div class="card-header bg-transparent">
                 <div class="row align-items-center">
                     <div class="col">
-                        <h3 class="mb-0"><?= $data['kategori']; ?></h3>
+                        <h3 class="mb-0">
+                            <?= $data['kategori']; ?>
+                        </h3>
                     </div>
                 </div>
             </div>
@@ -16,7 +18,8 @@
                             <th scope="col" class="sort" data-sort="nama_bantuan">Nama Bantuan</th>
                             <th scope="col" class="sort auto" data-sort="target">Target</th>
                             <th scope="col" class="sort" data-sort="jumlah_target">Realisasi</th>
-                            <th scope="col" class="sort text-center fit" data-sort="total_donasi">Total Donasi Donatur</th>
+                            <th scope="col" class="sort text-center fit" data-sort="total_donasi">Total Donasi Donatur
+                            </th>
                             <th scope="col" class="sort text-right fit" data-sort="completion">Pengguliran Donasi</th>
                             <th scope="col" class="sort text-right fit" data-sort="completion">Saldo</th>
                             <th scope="col" class="fit">Aksi</th>
@@ -24,96 +27,126 @@
                     </thead>
                     <tbody>
                         <?php 
-                            if (count($data['list_kategori']) > 0) {
+                            if (count(is_countable($data['list_kategori']) ? $data['list_kategori'] : []) > 0) {
                                 foreach($data['list_kategori'] as $list_kategori) {
-                                        $status = Utility::statusBantuanClassText($list_kategori->status_bantuan);
-                                        $statusClassText = Utility::statusBantuanClassText($list_kategori->status_bantuan);
+                                        $status = Utility::statusBantuanClassTextBadge($list_kategori->status_bantuan);
+                                        $statusClassText = Utility::statusBantuanClassTextBadge($list_kategori->status_bantuan);
                                         $blokUnblock = Utility::blokUnblockClassText($list_kategori->blokir);
                                     ?>
-                                    <tr>
-                                        <td class="py-2 auto">
-                                            <a href="#" class="id-donasi text-primary font-weight-bolder"><?= $list_kategori->id_bantuan; ?></a><span class="text-capitalize font-weight-bold ml-2 badge py-1 px-2 <?= $statusClassText['class'] ?>"><?= $statusClassText['text']; ?></span>
-                                            <div class="time small text-black-50"><?= $list_kategori->create_bantuan_at; ?></div>
-                                        </td>
-                                        <td class="py-2">
-                                            <a href="#" class="font-weight-bolder"<?= ' style="color: ' . $list_kategori->warna .'"' ?>><?= ucwords(strtolower($list_kategori->nama_bantuan)); ?></a>
-                                            <span class="badge badge-dot">
-                                                <?php if ($list_kategori->blokir == 1) {
+                        <tr>
+                            <td class="py-2 auto">
+                                <a href="#" class="id-donasi text-primary font-weight-bolder">
+                                    <?= $list_kategori->id_bantuan; ?>
+                                </a><span
+                                    class="text-capitalize font-weight-bold ml-2 badge py-1 px-2 <?= $statusClassText['class'] ?>">
+                                    <?= $statusClassText['text']; ?>
+                                </span>
+                                <div class="time small text-black-50">
+                                    <?= $list_kategori->create_bantuan_at; ?>
+                                </div>
+                            </td>
+                            <td class="py-2">
+                                <a href="#" class="font-weight-bolder" <?=' style="color: ' . $list_kategori->warna .'"'
+                                    ?>>
+                                    <?= ucwords(strtolower($list_kategori->nama_bantuan)); ?>
+                                </a>
+                                <span class="badge badge-dot">
+                                    <?php if ($list_kategori->blokir == 1) {
                                                     $class = 'bg-danger'; $status = 'Diblok';
                                                 } else {
                                                     $class = 'bg-success'; $status = 'Aktif';
                                                 } ?>
-                                                <i class="<?= $class; ?> m-0 ml-1"></i>
-                                                <span class="status small"><?= $status; ?></span>
+                                    <i class="<?= $class; ?> m-0 ml-1"></i>
+                                    <span class="status small">
+                                        <?= $status; ?>
+                                    </span>
+                                </span>
+                                <p class="small m-0">
+                                    <?= '(' . $list_kategori->nama_kategori . ' - ' . $list_kategori->nama_sektor . ')'; ?>
+                                </p>
+                            </td>
+                            <td class="py-2 auto">
+                                <div class="text-black-50 small font-weight-bolder">
+                                    <?= $list_kategori->jumlah_target; ?>
+                                </div>
+                                <?= (isset($list_kategori->satuan_target) ? '<small>' . $list_kategori->satuan_target .'</small>' : '') ?>
+                            </td>
+                            <td class="py-2">
+                                <div class="progress-wrapper" style="padding-top: 0px;">
+                                    <div class="progress-info">
+                                        <div class="progress-label">
+                                            <span class="py-1 px-2">
+                                                <?= number_format($list_kategori->jumlah_pelaksanaan,0,',','.') ?>
                                             </span>
-                                            <p class="small m-0">
-                                                <?= '(' . $list_kategori->nama_kategori . ' - ' . $list_kategori->nama_sektor . ')'; ?>
-                                            </p>
-                                        </td>
-                                        <td class="py-2 auto">
-                                            <div class="text-black-50 small font-weight-bolder"><?= $list_kategori->jumlah_target; ?></div>
-                                            <?= (isset($list_kategori->satuan_target) ? '<small>' . $list_kategori->satuan_target .'</small>' : '') ?>
-                                        </td>
-                                        <td class="py-2">
-                                            <div class="progress-wrapper" style="padding-top: 0px;">
-                                                <div class="progress-info">
-                                                    <div class="progress-label">
-                                                        <span class="py-1 px-2"><?= number_format($list_kategori->jumlah_pelaksanaan,0,',','.') ?></span>
-                                                    </div>
-                                                    <div class="progress-percentage">
-                                                        <span><?= $list_kategori->persentase_pelaksanaan; ?>%</span>
-                                                    </div>
-                                                </div>
-                                                <div class="progress" style="width: 100%;">
-                                                    <div class="progress-bar bg-default" role="progressbar"
-                                                        aria-valuenow="<?= $list_kategori->persentase_pelaksanaan; ?>"
-                                                        aria-valuemin="0" aria-valuemax="100"
-                                                        <?= 'style="width:'. $list_kategori->persentase_pelaksanaan . '%"'?>></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-2 fit">
-                                            <div class="row">
-                                                <div class="col-6 px-1 font-weight-bold text-right"><?= $list_kategori->jumlah_donasi; ?></div>
-                                                <div class="col-6 px-1 text-left">Donasi</div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-6 px-1 font-weight-bold text-right"><?= $list_kategori->jumlah_donatur; ?></div>
-                                                <div class="col-6 px-1 text-left">Donatur</div>
-                                            </div>
-                                        </td>
-                                        <td class="py-2 fit">
-                                            <div class="text-right"><?= $list_kategori->donasi_terlaksana; ?></div>
-                                        </td>
-                                        <td class="py-2 fit">
-                                            <div class="text-right"><?= $list_kategori->saldo_donasi; ?></div>
-                                        </td>
-                                        <td class="py-2 fit">
-                                            <div class="dropdown">
-                                                <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
-                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <i class="fas fa-ellipsis-v"></i>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                                    <a class="dropdown-item"
-                                                        href="/admin/bantuan/data/<?= $list_kategori->id_bantuan; ?>">Lihat Data</a>
-                                                    <?php if ($list_kategori->status_bantuan != 'S') { ?>
-                                                        <a class="dropdown-item"
-                                                        href="/admin/bantuan/formulir/<?= $list_kategori->id_bantuan; ?>">Ubah Data</a>
-                                                        <a class="dropdown-item font-weight-bold <?= ' '.$blokUnblock['class'];?>"
-                                                        href="/admin/bantuan/blok/<?= $list_kategori->id_bantuan; ?>"><?= $blokUnblock['text']; ?></a>
-                                                    <?php } ?>
-                                                    <?= ($list_kategori->status_bantuan == 'D' ? '<a class="dropdown-item font-weight-bold text-black-50" href="/admin/bantuan/take-down/<?= $list_kategori->id_bantuan; ?>">Take Down</a>' : ''); ?>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <?php
+                                        </div>
+                                        <div class="progress-percentage">
+                                            <span>
+                                                <?= $list_kategori->persentase_pelaksanaan; ?>%
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="progress" style="width: 100%;">
+                                        <div class="progress-bar bg-default" role="progressbar"
+                                            aria-valuenow="<?= $list_kategori->persentase_pelaksanaan; ?>"
+                                            aria-valuemin="0" aria-valuemax="100" <?='style="width:' . $list_kategori->
+                                            persentase_pelaksanaan . '%"'?>></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-2 fit">
+                                <div class="row">
+                                    <div class="col-6 px-1 font-weight-bold text-right">
+                                        <?= $list_kategori->jumlah_donasi; ?>
+                                    </div>
+                                    <div class="col-6 px-1 text-left">Donasi</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 px-1 font-weight-bold text-right">
+                                        <?= $list_kategori->jumlah_donatur; ?>
+                                    </div>
+                                    <div class="col-6 px-1 text-left">Donatur</div>
+                                </div>
+                            </td>
+                            <td class="py-2 fit">
+                                <div class="text-right">
+                                    <?= $list_kategori->donasi_terlaksana; ?>
+                                </div>
+                            </td>
+                            <td class="py-2 fit">
+                                <div class="text-right">
+                                    <?= $list_kategori->saldo_donasi; ?>
+                                </div>
+                            </td>
+                            <td class="py-2 fit">
+                                <div class="dropdown">
+                                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                        <a class="dropdown-item"
+                                            href="/admin/bantuan/data/<?= $list_kategori->id_bantuan; ?>">Lihat Data</a>
+                                        <?php if ($list_kategori->status_bantuan != 'S') { ?>
+                                        <a class="dropdown-item"
+                                            href="/admin/bantuan/formulir/<?= $list_kategori->id_bantuan; ?>">Ubah
+                                            Data</a>
+                                        <a class="dropdown-item font-weight-bold <?= ' '.$blokUnblock['class'];?>"
+                                            href="/admin/bantuan/blok/<?= $list_kategori->id_bantuan; ?>">
+                                            <?= $blokUnblock['text']; ?>
+                                        </a>
+                                        <?php } ?>
+                                        <?= ($list_kategori->status_bantuan == 'D' ? '<a class="dropdown-item font-weight-bold text-black-50" href="/admin/bantuan/take-down/<?= $list_kategori->id_bantuan; ?>">Take
+                                        Down</a>' : ''); ?>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php
                                 }
                             } else {
                                 ?>
 
-                                <?php
+                        <?php
                             }
                         ?>
                     </tbody>

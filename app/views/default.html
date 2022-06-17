@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,7 +23,9 @@
     <?= $this->getLinkRel('controller'); ?>
     <?= $this->getLinkRel('action'); ?>
 </head>
-<body <?= (isset($this->data['uri']) ? 'data-uri="'. $this->data['uri'] .'"' : '') ?><?= (isset($this->data[Config::get('session/token_name')]) ? ' data-token="'. $this->data[Config::get('session/token_name')] .'"' : '') ?>>
+
+<body<?= (isset($this->data['uri']) ? ' data-uri="'. $this->data['uri'] .'"' : '') ?>
+    <?= (isset($this->data[Config::get('session/token_name')]) ? ' data-token="'. $this->data[Config::get('session/token_name')] .'"' : '') ?>>
     <!-- Preloader -->
     <div class="preloader">
         <div class="preloader-inner">
@@ -44,9 +47,10 @@
                             <a class="navbar-brand" href="/">
                                 <img src="/assets/images/brand/pojok-berbagi-transparent.png" alt="Logo">
                             </a>
-                            <button class="navbar-toggler mobile-menu-btn rounded-circle" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                                aria-expanded="false" aria-label="Toggle navigation">
+                            <button class="navbar-toggler mobile-menu-btn rounded-circle" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                                aria-controls="navbarSupportedContent" aria-expanded="false"
+                                aria-label="Toggle navigation">
                                 <span class="toggler-icon"></span>
                                 <span class="toggler-icon"></span>
                                 <span class="toggler-icon"></span>
@@ -59,7 +63,9 @@
                                             <a href="/auth/signin" class="signin fw-bold m-0">Masuk</a>
                                         </div>
                                     </li>
-                                    <li class="d-md-none d-767-none"><hr class="dropdown-divider"></li>
+                                    <li class="d-md-none d-767-none">
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <li class="nav-item">
                                         <a class="active" href="/">Beranda</a>
                                     </li>
@@ -79,9 +85,11 @@
                                             aria-expanded="false" aria-label="Toggle navigation">Layanan</a>
                                         <ul class="sub-menu collapse" id="submenu-1-2">
                                             <li class="nav-item"><a href="/bantuan/berdaya">Pojok Berdaya</a></li>
-                                            <li class="nav-item"><a href="/bantuan/peduli-berbagi">Pojok Peduli Berbagi</a></li>
+                                            <li class="nav-item"><a href="/bantuan/peduli-berbagi">Pojok Peduli
+                                                    Berbagi</a></li>
                                             <li class="nav-item"><a href="/bantuan/wakaf">Pojok Wakaf</a></li>
-                                            <li class="nav-item"><a href="/bantuan/peduli-yatim">Pojok Peduli Yatim</a></li>
+                                            <li class="nav-item"><a href="/bantuan/peduli-yatim">Pojok Peduli Yatim</a>
+                                            </li>
                                             <li class="nav-item"><a href="/bantuan/rescue">Pojok Rescue</a></li>
                                         </ul>
                                     </li>
@@ -197,10 +205,10 @@
                 </div>
             </div>
         </div>
-      </div>
+    </div>
     <?php } ?>
     <!-- Broken Img Handler -->
-    
+
     <!-- Vendor Script -->
     <script src="/vendors/jquery/dist/jquery.min.js"></script>
     <script src="/assets/route/default/core/js/bootstrap.min.js"></script>
@@ -214,6 +222,6 @@
     <script src="/assets/route/auth/js/auth.js"></script>
     <?= $this->getScript('controller'); ?>
     <?= $this->getScript('action'); ?>
-</body>
+    </body>
 
 </html>

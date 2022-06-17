@@ -40,7 +40,7 @@ class FetchController extends Controller {
     }
 
     public function read($params) {
-        if (count($params) == 0) {
+        if (count(is_countable($params) ? $params : []) == 0) {
             $this->_result['feedback'] = array(
                 'message' => 'Number of params not found'
             );
@@ -72,6 +72,13 @@ class FetchController extends Controller {
             switch ($params[1]) {
                 case 'list':
                     // bantuan Params
+                break;
+
+                case 'kategori':
+                    // kategori Params
+                    if (isset($params[2])) {
+                        $decoded['nama_kategori'] = $params[2];
+                    }
                 break;
                 
                 default:
@@ -139,6 +146,73 @@ class FetchController extends Controller {
 
         $this->result();
         
+        return false;
+    }
+
+    // getListBantuanKategori(); Route Default BantuanController
+    private function bantuanKategoriRead($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        $program = null;
+
+        if (isset($decoded['nama_kategori'])) {
+            $program = explode('-', $decoded['nama_kategori']);
+            array_unshift($program, 'pojok');
+            $program = implode(' ', $program);
+        }
+
+        $decoded['list_id'] = json_decode(base64_decode($decoded['list_id']));
+
+        $this->model('Bantuan');
+        $this->model->setStatus(Sanitize::escape2('D'));
+        $this->model->setOffset($decoded['offset']);
+        $this->model->setLimit($decoded['limit']);
+        $this->model->getListBantuanKategori($program);
+
+        if ($this->model->affected()) {
+            $data = $this->model->data();
+            if (count(is_countable($data['data']) ? $data['data'] : [])) {
+                $this->data['list_id'] = base64_encode(json_encode(array_column($data['data'], 'id_bantuan')));
+            }
+        }
+
+        if (!isset($data['data'])) {
+            $data['data'] = array();
+        }
+
+        if (!isset($data['total_record'])) {
+            $data['total_record'] = $this->model->data()['record'];
+        }
+
+        if (!isset($data['load_more'])) {
+            $data['load_more'] = $this->model->data()['load_more'];
+        }
+
+        if (!isset($data['offset'])) {
+            $data['offset'] = $this->model->data()['offset'];
+        }
+
+        if (!isset($data['limit'])) {
+            $data['limit'] = $this->model->data()['limit'];
+        }
+
+        if (!isset($data['list_id'])) {
+            $data['list_id'] = array();
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => $data['data'],
+            'message' => 'ok',
+            'limit' => $data['limit'],
+            'offset' => $data['offset'],
+            'total_record' => $data['record'],
+            'load_more' => $data['load_more'],
+            'list_id' => $data['list_id']
+        );
+
+        $this->result();
+
         return false;
     }
 }

@@ -1,0 +1,265 @@
+<div class="row">
+    <div class="col-lg-7 col-xl-9">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-capitalize mb-0">Tambah Donasi</h3>
+            </div>
+            <div class="card-body form">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group" id="id_bantuan">
+                            <label class="form-control-label" for="input-bantuan-donasi">Bantuan
+                                Program</label>
+                            <select class="form-control" id="input-bantuan-donasi" name="id_bantuan"
+                                data-required="true">
+                                <option></option>
+                                <!-- Butuh Perbaikan => Load 20 Terakhir, Load on scroll sebanyak 20, load on type 20 -->
+                                <?php
+                                    if (isset($data['data_bantuan'])) {
+                                        echo '<option></option>';
+                                        foreach($data['data_bantuan'] as $dataBantuan) {
+                                            echo '<option value="'. $dataBantuan->id_bantuan .'">' . $dataBantuan->nama . '</option>';
+                                        }
+                                    }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="form-group" id="waktu-bayar">
+                            <label for="input-waktu-bayar" class="form-control-label">Tanggal
+                                Bayar</label>
+                            <div class="input-group">
+                                <input spellcheck="false" class="form-control datepicker" placeholder="d M yyyy"
+                                    type="text" name="waktu_bayar" id="input-waktu-bayar" data-date-end-date="0d">
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="ni ni-calendar-grid-58 px-1"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group" id="jumlah_donasi">
+                            <label class="form-control-label" for="input-jumlah-donasi">Jumlah
+                                Donasi</label>
+                            <input spellcheck="false" type="text" id="input-jumlah-donasi" class="form-control"
+                                placeholder="Nominal Donasi" name="jumlah_donasi">
+                        </div>
+                        <div class="form-group" id="id_cp">
+                            <label class="form-control-label" for="input-cp-donasi">Channel
+                                Payment</label>
+                            <select class="form-control" id="input-cp-donasi" name="id_cp" data-required="true">
+                                <option></option>
+                                <?php
+                                    if (isset($data['data_cp'])) {
+                                        echo '<option></option>';
+                                        foreach($data['data_cp'] as $dataCp) {
+                                            echo '<option value="'. $dataCp->id_cp .'">' . $dataCp->nama . '</option>';
+                                        }
+                                    }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex flex-column">
+                        <div class="form-group" id="id_donatur">
+                            <label class="form-control-label" for="input-donatur-donasi">Donatur</label>
+                            <select class="form-control" id="input-donatur-donasi" name="id_donatur"
+                                data-required="true">
+                                <option></option>
+                                <!-- Butuh Perbaikan => Load 20 Terakhir, Load on scroll sebanyak 20, load on type 20 -->
+                                <?php
+                                    if (isset($data['data_doantur'])) {
+                                        echo '<option></option>';
+                                        foreach($data['data_doantur'] as $dataDonatur) {
+                                            echo '<option value="'. $dataDonatur->id_donatur .'">' . $dataDonatur->nama . '</option>';
+                                        }
+                                    }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="form-group" id="alias">
+                            <div class="custom-control custom-checkbox d-flex justify-content-between p-0">
+                                <input type="checkbox" id="input-check-alias" class="custom-control-input"
+                                    name="check_alias">
+                                <label class="custom-control-label" for="input-check-alias">Nama
+                                    dismarkan</label>
+
+                            </div>
+                            <input spellcheck="false" type="text" id="input-alias-donasi" class="form-control"
+                                placeholder="Alias" name="alias" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group w-100">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="input-check-doa"
+                                    name="check_doa">
+                                <label class="custom-control-label" for="input-check-doa">Doa Dari
+                                    Donatur</label>
+                            </div>
+                            <textarea spellcheck="false" maxlength="250" class="form-control textarea d-none"
+                                aria-label="With textarea" name="doa" placeholder="Ketik disini..."
+                                id="textarea-doa"></textarea>
+                            <div id="charLeft" class="d-none">
+                                <span class="text-orange">0</span> / 250
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col d-flex align-items-center">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="notifikasi_bayar" name="notifikasi">
+                            <label class="custom-control-label" for="notifikasi_bayar">Kirim Notifikasi
+                                Sudah Bayar</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-outline-primary float-right">Simpan</button>
+                        <button type="button"
+                            class="btn btn-link float-right mr-2 text-warning font-weight-bolder">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5 col-xl-3">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h3 class="text-capitalize mb-0">Donasi Terverivikasi <i class="fa fa-check-circle text-green"></i></h3>
+                <a href="/admin/donasi" class="btn btn-sm btn-outline-primary">See All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-items-center table-flush table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Donasi</th>
+                            <th class="fit text-right">Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <div class="text-muted font-weight-bold">10.000</div>
+                                    <a href="#" class="font-weight-bolder">Nama bantuan
+                                        1</a>
+                                </div>
+                            </td>
+                            <td class="fit text-right">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <b class="text-muted">10 Juni 2022 17:10:00</b>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="text-muted badge badge-primary text-capitalize py-1 px-2">
+                                            <span class="jenis-cp">Transfer
+                                                Bank</span> - <span class="nama-cp">BSI</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <div class="text-muted font-weight-bold">100.000</div>
+                                    <a href="#" class="font-weight-bolder">Nama bantuan
+                                        2</a>
+                                </div>
+                            </td>
+                            <td class="fit text-right">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <b class="text-muted">9 Juni 2022 17:10:23</b>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="text-muted badge badge-primary text-capitalize py-1 px-2">
+                                            <span class="jenis-cp">Transfer
+                                                Bank</span> - <span class="nama-cp">BRI</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <div class="text-muted font-weight-bold">100.000</div>
+                                    <a href="#" class="font-weight-bolder">Nama bantuan
+                                        2</a>
+                                </div>
+                            </td>
+                            <td class="fit text-right">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <b class="text-muted">9 Juni 2022 17:10:23</b>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="text-muted badge badge-primary text-capitalize py-1 px-2">
+                                            <span class="jenis-cp">Transfer
+                                                Bank</span> - <span class="nama-cp">BRI</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <div class="text-muted font-weight-bold">100.000</div>
+                                    <a href="#" class="font-weight-bolder">Nama bantuan
+                                        2</a>
+                                </div>
+                            </td>
+                            <td class="fit text-right">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <b class="text-muted">9 Juni 2022 17:10:23</b>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="text-muted badge badge-primary text-capitalize py-1 px-2">
+                                            <span class="jenis-cp">Transfer
+                                                Bank</span> - <span class="nama-cp">BRI</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <div class="text-muted font-weight-bold">100.000</div>
+                                    <a href="#" class="font-weight-bolder">Nama bantuan
+                                        2</a>
+                                </div>
+                            </td>
+                            <td class="fit text-right">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <b class="text-muted">9 Juni 2022 17:10:23</b>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="text-muted badge badge-primary text-capitalize py-1 px-2">
+                                            <span class="jenis-cp">Transfer
+                                                Bank</span> - <span class="nama-cp">BRI</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

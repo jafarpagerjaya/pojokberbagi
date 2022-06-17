@@ -7,7 +7,7 @@ class BantuanController extends Controller {
         $this->title = "Bantuan";
         $this->rel_controller = array(
             array(
-                'href' => '/assets/pojok-berbagi-style.css?v=1'
+                'href' => '/assets/pojok-berbagi-style.css'
             )
         );
         $this->script_controller = array(
@@ -24,14 +24,19 @@ class BantuanController extends Controller {
                 'href' => '/assets/route/default/pages/css/kategori.css'
             ),
             array(
-                'href' => '/assets/route/default/core/css/services.css?v=1'
+                'href' => '/assets/route/default/core/css/services.css'
             )
         );
         $this->script_action = array(
             array(
+				'src' => '/assets/main/js/token.js'
+			),
+            array(
                 'src' => '/assets/route/default/pages/js/kategori.js'
             )
         );
+        // Token for fetch
+        $this->data[Config::get('session/token_name')] = Token::generate();
     }
 
     public function index() {
@@ -39,10 +44,10 @@ class BantuanController extends Controller {
     }
 
     public function detil($params) {
-        if (count($params)) {
+        if (count(is_countable($params) ? $params : [])) {
             $this->rel_action = array(
                 array(
-                    'href' => '/assets/route/default/pages/css/detil.css?v=1'
+                    'href' => '/assets/route/default/pages/css/detil.css'
                 )
             );
 
@@ -53,8 +58,12 @@ class BantuanController extends Controller {
             );
 
             $this->model('Bantuan');
-            $this->model->getData('COUNT(id_bantuan) found','bantuan',array('id_bantuan','=',Sanitize::escape2($params[0])));
+            $this->model->getData('COUNT(id_bantuan) found','bantuan',array('id_bantuan','=',Sanitize::escape2($params[0])),'AND',array('status','IN',array('D','S')));
             if ($this->model->data()->found == 0) {
+                Session::flash('notifikasi', array(
+                    'pesan' => 'Halaman detil bantuan yang anda cari tidak ditemukan',
+                    'state' => 'warning'
+                ));
                 Redirect::to('home');
             }
             $this->setKunjungan($params);
@@ -73,8 +82,13 @@ class BantuanController extends Controller {
 
         $program = Sanitize::escape2('Pojok Berdaya');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
+        $this->_bantuan->setOffset(0);
+        $this->_bantuan->setLimit(3);
         $this->_bantuan->getListBantuanKategori($program);
         $this->data['list_bantuan'] = $this->_bantuan->data();
+        if (count(is_countable($this->data['list_bantuan']) ? $this->data['list_bantuan'] : [])) {
+            $this->data['list_id'] = base64_encode(json_encode(array_column($this->data['list_bantuan']['data'], 'id_bantuan')));
+        }
 
         $this->_bantuan->getResumeKategoriBantuan($program);
         if (is_null($this->_bantuan->data())) {
@@ -92,8 +106,13 @@ class BantuanController extends Controller {
 
         $program = Sanitize::escape2('Pojok Peduli Berbagi');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
+        $this->_bantuan->setOffset(0);
+        $this->_bantuan->setLimit(3);
         $this->_bantuan->getListBantuanKategori($program);
         $this->data['list_bantuan'] = $this->_bantuan->data();
+        if (count(is_countable($this->data['list_bantuan']) ? $this->data['list_bantuan'] : [])) {
+            $this->data['list_id'] = base64_encode(json_encode(array_column($this->data['list_bantuan']['data'], 'id_bantuan')));
+        }
 
         $this->_bantuan->getResumeKategoriBantuan($program);
         if (is_null($this->_bantuan->data())) {
@@ -111,8 +130,13 @@ class BantuanController extends Controller {
 
         $program = Sanitize::escape2('Pojok Wakaf');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
+        $this->_bantuan->setOffset(0);
+        $this->_bantuan->setLimit(3);
         $this->_bantuan->getListBantuanKategori($program);
         $this->data['list_bantuan'] = $this->_bantuan->data();
+        if (count(is_countable($this->data['list_bantuan']) ? $this->data['list_bantuan'] : [])) {
+            $this->data['list_id'] = base64_encode(json_encode(array_column($this->data['list_bantuan']['data'], 'id_bantuan')));
+        }
 
         $this->_bantuan->getResumeKategoriBantuan($program);
         if (is_null($this->_bantuan->data())) {
@@ -130,8 +154,13 @@ class BantuanController extends Controller {
 
         $program = Sanitize::escape2('Pojok Peduli Yatim');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
+        $this->_bantuan->setOffset(0);
+        $this->_bantuan->setLimit(3);
         $this->_bantuan->getListBantuanKategori($program);
         $this->data['list_bantuan'] = $this->_bantuan->data();
+        if (count(is_countable($this->data['list_bantuan']) ? $this->data['list_bantuan'] : [])) {
+            $this->data['list_id'] = base64_encode(json_encode(array_column($this->data['list_bantuan']['data'], 'id_bantuan')));
+        }
 
         $this->_bantuan->getResumeKategoriBantuan($program);
         if (is_null($this->_bantuan->data())) {
@@ -149,8 +178,13 @@ class BantuanController extends Controller {
 
         $program = Sanitize::escape2('Pojok Rescue');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
+        $this->_bantuan->setOffset(0);
+        $this->_bantuan->setLimit(3);
         $this->_bantuan->getListBantuanKategori($program);
         $this->data['list_bantuan'] = $this->_bantuan->data();
+        if (count(is_countable($this->data['list_bantuan']) ? $this->data['list_bantuan'] : [])) {
+            $this->data['list_id'] = base64_encode(json_encode(array_column($this->data['list_bantuan']['data'], 'id_bantuan')));
+        }
 
         $this->_bantuan->getResumeKategoriBantuan($program);
         if (is_null($this->_bantuan->data())) {

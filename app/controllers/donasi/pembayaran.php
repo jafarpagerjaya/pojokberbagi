@@ -17,7 +17,7 @@ class PembayaranController extends Controller {
     }
 
     public function index($params) {
-        if (count($params) < 1) {
+        if (count(is_countable($params) ? $params : []) < 1) {
             Redirect::to('home');
         }
         
@@ -126,7 +126,8 @@ class PembayaranController extends Controller {
             'id_cp' => Sanitize::escape(trim(Input::get('metode_pembayaran')))
         );
 
-        $dataCP = $this->model->getData('LOWER(jenis) jenis_payment','channel_payment', array('id_cp','=',$dataDonasi['id_cp']));
+        // Sementara pakai condisional tambahan AND jenis = 'TB'
+        $dataCP = $this->model->getData('LOWER(jenis) jenis_payment','channel_payment', array('id_cp','=',$dataDonasi['id_cp']),'AND',array('jenis','=','TB'));
         if ($dataCP == false) {
             Session::put('notifikasi', array(
                 'pesan' => 'Metode pembayaran tidak ditemukan mohon pilih metode lainnya',
@@ -155,6 +156,9 @@ class PembayaranController extends Controller {
 
         // Cek jika open donasi sudah berakhir
         if (!is_null($data_bantuan->tanggal_akhir) && strtotime($data_bantuan->tanggal_akhir) <= time()) {
+            $this->model->update('bantuan', array(
+                'status' => 'S'
+            ), array('id_bantuan','=',$id_bantuan));
             Session::flash('notifikasi', array(
                 'pesan' => 'Mohon maaf bantuan sudah berakhir',
                 'state' => 'warning'
@@ -183,7 +187,7 @@ class PembayaranController extends Controller {
     }
 
     public function tagihan($params) {
-        if (count($params) < 2) {
+        if (count(is_countable($params) ? $params : []) < 2) {
             Session::flash('notifikasi', array(
                 'pesan' => 'Parameter tidak cocok',
                 'state' => 'error'
@@ -343,7 +347,7 @@ class PembayaranController extends Controller {
     }
 
     public function transaksi($params) {
-        if (count($params) < 1) {
+        if (count(is_countable($params) ? $params : []) < 1) {
             Redirect::to('home');
         }
 
@@ -408,6 +412,7 @@ class PembayaranController extends Controller {
         );
     }
 
+    // Action untuk mengirim notifikasi donasi
     public function notif($params) {
         $arrayNotif = array(
             'nama_donatur' => "Arief Riandi",

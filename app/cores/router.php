@@ -64,7 +64,7 @@
 
 			$path_parts = explode('/', $path);
 
-			if (count($path_parts)) {
+			if (count(is_countable($path_parts) ? $path_parts : [])) {
 				// Get route or lang at first el
 				if (in_array(strtolower(current($path_parts)), array_keys($routes))) {
 					$this->route = strtolower(current($path_parts));

@@ -99,7 +99,7 @@ class DonasiModel extends HomeModel {
     }
 
     public function getListDonasi() {
-        $fields = "b.nama nama_bantuan, k.nama nama_kategori, k.warna, s.nama nama_sektor, d.id_donasi, formatTanggalFull(d.create_at) create_donasi_at, d.bayar, formatTanggalFull(d.waktu_bayar) waktu_bayar, d.jumlah_donasi, d.id_bantuan, d.id_donatur, cp.jenis jenis_cp, IFNULL(gcp.path_gambar,'/assets/images/brand/favicon-pojok-icon.ico') path_gambar_cp, gcp.nama nama_path_gambar_cp";
+        $fields = "b.nama nama_bantuan, k.nama nama_kategori, IFNULL(k.warna,'#727272') warna, s.nama nama_sektor, d.id_donasi, formatTanggalFull(d.create_at) create_donasi_at, d.bayar, formatTanggalFull(d.waktu_bayar) waktu_bayar, FORMAT(d.jumlah_donasi,0,'id_ID') jumlah_donasi, d.id_bantuan, d.id_donatur, cp.jenis jenis_cp, IFNULL(gcp.path_gambar,'/assets/images/brand/favicon-pojok-icon.ico') path_gambar_cp, IFNULL(gcp.nama, CONCAT('Gambar ',cp.nama)) nama_path_gambar_cp";
         $tables = "bantuan b
         LEFT JOIN sektor s ON(s.id_sektor = b.id_sektor)
         LEFT JOIN kategori k ON (k.id_kategori = b.id_kategori)

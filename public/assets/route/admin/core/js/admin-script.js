@@ -44,3 +44,34 @@ $(window).resize(function () {
         }
     }, 50);
 });
+
+const sideNavTogglerBtn = document.querySelector('.sidenav-toggler-inner'),
+      mainContentPanel = document.getElementById('panel');
+sideNavTogglerBtn.addEventListener('click', function () {
+    if (!this.parentElement.classList.contains('active')) {
+        setTimeout(() => {
+            let bodyClick = document.querySelector('.bodyClick'),
+                bodyBackdrop = bodyClick.nextSibling;
+            if (bodyBackdrop) {
+                bodyBackdrop.remove()
+            }
+            mainContentPanel.classList.add('backdrop');
+            bodyClick.addEventListener('click', function () {
+                document.querySelector('body').classList.remove('nav-open')
+                document.querySelector('body').classList.remove('g-sidenav-show')
+                document.querySelector('body').classList.remove('g-sidenav-pinned')
+                document.querySelector('body').classList.add('g-sidenav-hidden')
+                if (sideNavTogglerBtn.parentElement.classList.contains('active')) {
+                    sideNavTogglerBtn.parentElement.classList.remove('active')
+                }
+                if (mainContentPanel.classList.contains('backdrop')) {
+                    mainContentPanel.classList.remove('backdrop');
+                    mainContentPanel.classList.add('backdrop-remove-animated');
+                    setTimeout(() => {
+                        mainContentPanel.classList.remove('backdrop-remove-animated');
+                    }, 300);
+                }
+            });
+        }, 0);
+    }
+});

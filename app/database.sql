@@ -58,11 +58,13 @@ CREATE TABLE gambar (
     CONSTRAINT U_NAMA_PATH_GAMBAR UNIQUE(nama, path_gambar)
 )ENGINE=INNODB;
 
+-- DROP TRIGGER IF EXISTS GEMBOK_CHECK_INSERT;
 CREATE TRIGGER GEMBOK_CHECK_INSERT 
 BEFORE INSERT ON gambar
 FOR EACH ROW
   SET NEW.gembok = IF(NEW.gembok = 1, NEW.gembok, NULL);
 
+-- DROP TRIGGER IF EXISTS GEMBOK_CHECK_UPDATE;
 CREATE TRIGGER GEMBOK_CHECK_UPDATE
 BEFORE UPDATE ON gambar
 FOR EACH ROW
@@ -83,7 +85,11 @@ INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES('default','/assets/im
 ('razka','/uploads/images/bantuan/medium/razka-medium.jpg','bantuan', NULL),
 ('razka-wide','/uploads/images/bantuan/wide/razka-wide.png','bantuan', NULL),
 ('single-wonder-mom','/uploads/images/bantuan/medium/single-wonder-mom-medium.jpeg','bantuan', NULL),
-('single-wonder-mom-wide','/uploads/images/bantuan/wide/single-wonder-mom-wide.png','bantuan', NULL);
+('single-wonder-mom-wide','/uploads/images/bantuan/wide/single-wonder-mom-wide.png','bantuan', NULL),
+('uang tunai','/assets/images/partners/tunai.png','partner',1),
+('GoPay','/assets/images/partners/gopay.png','partner',1),
+('Dana','/assets/images/partners/dana.png','partner',1),
+('Qris','/assets/images/partners/qris.png','partner',1);
 
 
 CREATE TABLE akses (
@@ -142,11 +148,13 @@ CREATE TABLE admin (
     CONSTRAINT F_ID_AKUN_ADMIN_ODR FOREIGN KEY(id_akun) REFERENCES akun(id_akun) ON DELETE RESTRICT ON UPDATE CASCADE
 )ENGINE=INNODB;
 
+-- DROP TRIGGER IF EXISTS ADMIN_CHECK_INSERT;
 CREATE TRIGGER ADMIN_CHECK_INSERT 
 BEFORE INSERT ON admin
 FOR EACH ROW
   SET NEW.level = IF(NEW.level = 'S', UPPER(NEW.level), 'N');
 
+-- DROP TRIGGER IF EXISTS ADMIN_CHECK_UPDATE;
 CREATE TRIGGER ADMIN_CHECK_UPDATE
 BEFORE UPDATE ON admin
 FOR EACH ROW
@@ -160,13 +168,13 @@ INSERT INTO admin(level,id_pegawai,id_akun) VALUES('S', 1, 1),
 CREATE TABLE donatur (
     id_donatur INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     nama VARCHAR(30) NOT NULL,
-    email VARCHAR(96) NOT NULL,
+    email VARCHAR(96),
     kontak VARCHAR(13),
     samaran VARCHAR(30),
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     id_akun INT UNSIGNED,
-    CONSTRAINT NU_EMAIL_DONATUR UNIQUE(email),
+    CONSTRAINT U_EMAIL_DONATUR UNIQUE(email),
     CONSTRAINT U_KONTAK_DONATUR UNIQUE(kontak),
     CONSTRAINT U_ID_AKUN_DONATUR UNIQUE(id_akun),
     CONSTRAINT F_ID_AKUN_DONATUR_ODR FOREIGN KEY(id_akun) REFERENCES akun(id_akun) ON DELETE RESTRICT ON UPDATE CASCADE
@@ -310,7 +318,18 @@ CREATE TABLE bantuan (
     CONSTRAINT F_ID_PENGAWAS_BANTUAN_ODN FOREIGN KEY(id_pengawas) REFERENCES pegawai(id_pegawai) ON DELETE SET NULL ON UPDATE CASCADE
 )ENGINE=INNODB;
 
--- status tabel bantuan B = Belum Disetujui, T = Tidak Disetujui, D = Disetujui, S = Proyek Bantuan sudah selesai
+-- DROP TRIGGER IF EXISTS BANTUAN_CHECK_UPDATE;
+DELIMITER $$
+CREATE TRIGGER BANTUAN_CHECK_UPDATE
+BEFORE UPDATE ON bantuan FOR EACH ROW
+    BEGIN
+        IF OLD.status <> NEW.status THEN
+        SET NEW.action_at = NOW();
+        END IF;
+    END$$
+DELIMITER ;
+
+-- status tabel bantuan B = Belum Disetujui, C = Sedang Proses Cek Data, T = Tidak Disetujui, D = Disetujui, S = Proyek Bantuan sudah selesai
 -- satuan_target = menyatakan sasaran dari jumlah target. contoh paket sembako
 
 INSERT INTO bantuan(nama,status,satuan_target,jumlah_target,tanggal_awal,deskripsi,id_kategori,id_sektor) VALUES
@@ -363,7 +382,15 @@ CREATE TABLE channel_payment (
 
 -- jenis channel_payment TB = Transfer Bank, VA = Virtual Acount, EW = E-Wallet, QR, Qris, GM = Gerai Mart, GI = GIRO, TN = Tunai
 
-INSERT INTO channel_payment(nama, kode, nomor, jenis, atas_nama) VALUES('Bank BJB', '110', '0001000080001', 'TB','POJOK BERBAGI INDONESIA'),('Bank BJB Giro Payment', '110', '0001000080001', 'GI','POJOK BERBAGI INDONESIA'),('Tunai Via CR', '1', '1', 'TN','CR POJOK BERBAGI KANTOR PUSAT'),('Bank BSI','451','7400525255','TB','POJOK BERBAGI INDONESIA'),('Bank BRI','002','107001000272300','TB','POJOK BERBAGI INDONESIA');
+INSERT INTO channel_payment(nama, kode, nomor, jenis, atas_nama, id_gambar) VALUES
+('Bank BJB', '110', '0001000080001', 'TB','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bjb%" AND label = 'partner')),
+('Bank BJB Giro Payment', '110', '0001000080001', 'GI','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bjb%" AND label = 'partner')),
+('Tunai Via CR', '1', '1', 'TN','CR POJOK BERBAGI KANTOR PUSAT', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%tunai%" AND label = 'partner')),
+('Bank BSI','451','7400525255','TB','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bsi%" AND label = 'partner')),
+('Bank BRI','002','107001000272300','TB','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bri%" AND label = 'partner')),
+('GoPay','1','081233311113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'gopay')),
+('Dana','1','081233311113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'dana')),
+('Bank BRI','002','ID1022148253464','QR','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'qris'));
 
 CREATE TABLE donasi (
     id_donasi BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -648,3 +675,160 @@ alter table bantuan modify column nama VARCHAR(50) NOT NULL;
 
 -- INSERT INTO gambar(nama,path_gambar,label,gembok) VALUES('uang tunai','/assets/images/partners/tunai.png','partner',1);
 -- UPDATE channel_payment SET id_gambar = (SELECT id_gambar FROM gambar WHERE nama = 'uang tunai') WHERE jenis = 'TN' AND nama LIKE '%Tunai%';
+
+
+-- MENYESUAIKAN DENGAN DATA DONATUR YANG ADA
+ALTER TABLE donatur RENAME INDEX NU_EMAIL_DONATUR TO U_EMAIL_DONATUR;
+ALTER TABLE donatur MODIFY email VARCHAR(96);
+-- INSERT DONATUR LAMA
+INSERT INTO donatur(nama,email,create_at) VALUES('HAMBA ALLAH','hambaallah@pojokberbagi.id','2021-12-20');
+INSERT INTO donatur(nama, create_at) VALUES
+('SUPRIYADI','2021-11-22'),
+('RIDWAN','2021-11-22'),
+('YBM BRI KC. ASIA AFRIKA','2021-11-28'),
+('YANI SUMARYANI','2021-12-09'),
+('MIKSA','2021-12-29'),
+('PEPEN','2021-12-29'),
+('WIDI HERMAWAN','2021-12-30'),
+('ROHAYATI','2021-12-30'),
+('NUNUNG SUTINI','2021-12-31'),
+('UTI FARZA','2021-12-31'),
+('YENI MARIYANI','2021-12-31'),
+('YAHYA','2021-12-31'),
+('SUJANAH','2021-12-31'),
+('ASIH SALIMA NURRAHMAN','2022-01-05'),
+('ENDANG NURAHMAN','2022-01-05'),
+('NENENG HILAWATY DJAJADIJAKARTA','2022-01-05'),
+('SUMIYATI','2022-01-13'),
+('DITA HALIFATUS SADIAH','2022-01-14'),
+('SELLY MARSELIANI','2022-01-20'),
+('YOHANAH','2022-02-04'),
+('WARDI (ALM)','2022-02-04'),
+('OOM (ALM)','2022-02-18'),
+('ENDANG KARTIWA (ALM)','2022-02-27'),
+('TEH DANDANG','2022-04-09'),
+('DAPUR AQIQAH','2022-04-21'),
+('GIBRAN RIZKI PRATAMA','2022-04-22'),
+('FSLDK','2022-04-25'),
+('KAMMI','2022-04-25');
+
+
+-- INSERT bantuan non kategori
+INSERT INTO bantuan(nama,status,min_donasi,create_at,deskripsi) VALUES
+('Infaq','D',2000,'2021-09-09','Infaq'),
+('Zakat Mal','D',2000,'2021-09-09','Mengeluarkan harta "zakat" seorang muslim sesuai dengan nisab dan haulnya adalah kewajiban'),
+('Jemput Ambulance','D',5000,'2021-09-09','Berdonasi untuk layanan ambulance gratis');
+INSERT INTO bantuan(nama,status,min_donasi,create_at,deskripsi,id_kategori) VALUES
+('Program Pojok Berdaya','D',10000,'2021-09-09','Program pemberdayaan masyarakan untuk mandiri dan unggul.',1),
+('Program Pojok Rescue','D',10000,'2021-09-09','Program bantuan terhadap kebencanaan',5),
+('Program Pojok Yatim','D',10000,'2021-09-09','Program bantuan untuk yatim',2),
+('Program Pojok Peduli','D',10000,'2021-09-09','Program bantuan untuk berbagi kebahagianan dan peduli kepada sesama',3);
+INSERT INTO bantuan(nama,status,min_donasi,create_at,deskripsi,id_kategori,id_sektor) VALUES
+('Banjir Sukawening','S',10000,'2021-12-11','Bantu masyarakat terdampak banjir di Sukawening',5,'B'),
+('Berbagi Hadiah Lebaran Untuk Yatim & Lansia','S',50000,'2022-01-05','Berbagi kebahagian kepada anak yatim dan lansia akhir bulan ramadhan dengan memberikan hadiah lebaran untuk mereka',3,'S'),
+('BERBAGI 1.000 PAKET BERBUKA','S',10000,'2022-04-01','Hidangkan makanan berbuka puasa untuk saudara kita diluar sana yuk! Pojok Berbagi Indonesia menawarkan paket makanan berbuka lengkap yang terdiri dari takjil, makanan utama dan minuman untuk fakir miskin dan masyarakat lainnya.',3,'S');
+
+
+--INSERT INTO gambar
+INSERT INTO gambar(nama,path_gambar,label,gembok) VALUES('GoPay','/assets/images/partners/gopay.png','partner',1),
+('Dana','/assets/images/partners/dana.png','partner',1),
+('Qris','/assets/images/partners/qris.png','partner',1);
+
+
+-- INSERT INTO channel_payment EW & QR
+INSERT INTO channel_payment(nama, kode, nomor, jenis, atas_nama) VALUES
+('GoPay','1','081233311113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'gopay')),
+('Dana','1','081233311113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'dana')),
+('Bank BRI','002','ID1022148253464','QR','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'qris'));
+
+
+-- INSERT DONASI LAMA (Nama Program dan Nama Sementara Sebelum Ada yang Sama Atau Terganti)
+INSERT INTO donasi(id_bantuan,id_donatur,id_cp,create_at,jumlah_donasi,bayar) VALUES
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'arifriandi834@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-11-01',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'maulinda.dinda98@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-11-11',60000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'jemput ambulance'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'SUPRIYADI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-11-22',250000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'jafarpager@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-11-26',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'RIDWAN'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-11-26',5000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'jemput ambulance'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'YBM BRI KC. ASIA AFRIKA'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-11-28',300000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'program pojok berdaya'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'rizky.edu@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-03',235000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli semeru'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'YANI SUMARYANI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2021-12-09',250000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'YANI SUMARYANI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2021-12-17',150000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2021-12-20',100000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'banjir sukawening'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2021-12-20',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2021-12-27',150000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2021-12-29',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'MIKSA'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-29',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'geberr'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'PEPEN'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-29',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'WIDI HERMAWAN'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2021-12-30',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'ROHAYATI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2021-12-30',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'ROHAYATI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2021-12-30',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'geberr'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'NUNUNG SUTINI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-31',100000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'program pojok peduli'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-31',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'UTI FARZA'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-31',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'YENI MARIYANI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-31',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'geberr'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'YAHYA'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-31',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli semeru'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'SUJANAH'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-31',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-31',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'ASIH SALIMA NURRAHMAN'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2022-01-05',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli semeru'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'ENDANG NURAHMAN'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2022-01-05',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli semeru'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'pojokberbagi.id@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-01-05',750000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'NENENG HILAWATY DJAJADIJAKARTA'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2022-01-05',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'jemput ambulance'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'SUPRIYADI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-01-12',250000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'jemput ambulance'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'SUMIYATI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-01-13',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'DITA HALIFATUS SADIAH'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2022-01-14',25000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2022-01-14',25000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2022-01-14',250000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'geberr'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'SELLY MARSELIANI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%DANA%"),'2022-01-20',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'jemput ambulance'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'SUPRIYADI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-01-21',250000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'geberr'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-31',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'geberr'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-31',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'geberr'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-31',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'geberr'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-31',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'geberr'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'hambaallah@pojokberbagi.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-12-31',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'jemput ambulance'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'SUPRIYADI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-01-22',250000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'jemput ambulance'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'SUPRIYADI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-01-22',200000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'DITA HALIFATUS SADIAH'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2022-01-28',25000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'DITA HALIFATUS SADIAH'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2022-01-28',25000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'geberr'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'DITA HALIFATUS SADIAH'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2022-01-28',50000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'YOHANAH'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BJB%"),'2022-01-05',25000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'WARDI (ALM)'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BJB%"),'2022-01-05',25000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'program pojok yatim'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'SELLY MARSELIANI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%DANA%"),'2022-02-08',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'OOM (ALM)'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-02-18',500000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'WARDI (ALM)'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2022-02-25',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'YOHANAH'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2022-02-26',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'ROHAYATI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2022-02-26',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'ENDANG KARTIWA (ALM)'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2022-02-27',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'maulinda.dinda98@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2022-02-28',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'jafarpager@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-03-08',1300000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'program pojok yatim'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'SELLY MARSELIANI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%DANA%"),'2022-03-14',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'WARDI (ALM)'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%DANA%"),'2022-03-18',20000,1),
+(1,(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'csr@bjb.co.id'),(SELECT id_cp FROM channel_payment WHERE jenis = 'GI' AND UPPER(nama) LIKE "%BJB%"),'2022-03-18',3125000000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'YOHANAH'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%DANA%"),'2022-03-18',20000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'ROHAYATI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%DANA%"),'2022-03-18',10000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'ENDANG NURAHMAN'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BJB%"),'2022-03-21',20000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) LIKE "%lebaran untuk yatim%"),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'ENDANG NURAHMAN'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BJB%"),'2022-03-21',250000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) LIKE "%qur'an%"),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'ENDANG NURAHMAN'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BJB%"),'2022-03-21',100000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'arifriandi834@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-04-02',100000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'peduli razka'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'jafarpager@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-04-05',350000,1),
+((SELECT id_bantuan FROM bantuan WHERE UPPER(nama) = 'BERBAGI 1.000 PAKET BERBUKA' AND blokir IS NULL),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'TEH DANDANG'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BJB%"),'2022-04-09',1000000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'program pojok berdaya'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'rizky.edu@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2022-04-11',500000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'BERBAGI 1.000 PAKET BERBUKA' AND blokir IS NULL),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'DAPUR AQIQAH'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BJB%"),'2022-04-21',1250000,1),
+((SELECT id_bantuan FROM bantuan WHERE UPPER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'GIBRAN RIZKI PRATAMA'),(SELECT id_cp FROM channel_payment WHERE jenis = 'QR' AND UPPER(nama) LIKE "%BRI%"),'2022-04-22',250000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'arifriandi834@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-04-22',200000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'BERBAGI 1.000 PAKET BERBUKA' AND blokir IS NULL),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'FSLDK'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BRI%"),'2022-04-25',25000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'BERBAGI 1.000 PAKET BERBUKA' AND blokir IS NULL),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'KAMMI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2022-04-25',250000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'maulinda.dinda98@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2022-04-28',39750,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) LIKE "%lebaran untuk yatim%" AND blokir IS NULL),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'YBM BRI KC. ASIA AFRIKA'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BRI%"),'2022-04-28',6000000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'jafarpager@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-05-12',100000,1);
+
+UPDATE donasi SET waktu_bayar = create_at WHERE bayar = '1' AND waktu_bayar IS NULL;
+
+DELIMITER $$
+CREATE TRIGGER BANTUAN_CHECK_UPDATE
+BEFORE UPDATE ON bantuan FOR EACH ROW
+    BEGIN
+        IF OLD.status <> NEW.status THEN
+        SET NEW.action_at = NOW();
+        END IF;
+    END$$
+DELIMITER ;

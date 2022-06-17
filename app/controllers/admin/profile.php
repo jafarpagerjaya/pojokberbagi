@@ -197,7 +197,7 @@ class ProfileController extends Controller {
     }
 
     public function password($params) {
-        if (count($params)) {
+        if (count(is_countable($params) ? $params : [])) {
             if ($params[0] == "update") {
                 if (Input::exists()) {
                     $vali = new Validate();

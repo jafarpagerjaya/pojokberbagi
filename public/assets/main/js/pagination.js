@@ -290,7 +290,7 @@ controlPaginationButton(0, rootPagi, rootPagi.data('pages'));
 
 $('.pagination').on('click', '.page-link:not(.next):not(.prev):not(.disabled)', function () {
     $(this).addClass('active').siblings().removeClass('active');
-    controlPaginationButton.call( $(this), 1, rootPagi, $(this).parent('.pagination').data('pages'));
+    controlPaginationButton.call( $(this), 1, rootPagi, rootPagi[0].dataset.pages);
 });
 
 $('.pagination').on('click', '.page-link.next:not(.disabled)', function () {

@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $this->getTitle() . Config::get('defaults/default_title') ?></title>
+    <title>
+        <?= $this->getTitle() . Config::get('defaults/default_title') ?>
+    </title>
     <link rel="shortcut icon" href="/assets/images/brand/favicon-pojok-icon.ico" type="image/x-icon">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +20,7 @@
     <?= $this->getLinkRel('controller'); ?>
     <?= $this->getLinkRel('action'); ?>
 </head>
-<body <?= (isset($this->data['uri']) ? 'data-uri="'. $this->data['uri'] .'"' : '') ?>>
+<body<?= (isset($this->data['uri']) ? ' data-uri="'. $this->data['uri'] .'"' : '') ?>>
     <!-- Preloader -->
     <div class="preloader">
         <div class="preloader-inner">
@@ -36,12 +39,13 @@
         <i class="lni lni-chevron-up"></i>
     </a>
     <!-- Broken Img Handler -->
-    
+
     <!-- Vendor Script -->
     <script src="/vendors/jquery/dist/jquery.min.js"></script>
     <!-- Core Script -->
     <script src="/assets/route/auth/js/auth.js"></script>
     <?= $this->getScript('controller'); ?>
     <?= $this->getScript('action'); ?>
-</body>
+    </body>
+
 </html>

@@ -9,7 +9,7 @@ class Ui {
             if ($action == 'index') {
                 $action = 'halaman';
             } else {
-                if (count($params) && ctype_digit(end($params))) {
+                if (count(is_countable($params) ? $params : []) && ctype_digit(end($params))) {
                     $removed = array_pop($params);
                 }
             }
@@ -53,18 +53,18 @@ class Ui {
             $y = 1;
         }
         $button = '<li class="page-item '. (($dataHalaman == 1) ? 'disabled':'') .'">
-                        <a class="page-link" href="/'. $route .'/'. $controller .'/'. $action . '/'. ((count($params)) ? implode('/', $params) : (!is_null($deep_params) ? $deep_params .'/' : '') . $prevHref ).'" tabindex="-1">
+                        <a class="page-link" href="/'. $route .'/'. $controller .'/'. $action . '/'. ((count(is_countable($params) ? $params : [])) ? implode('/', $params) : (!is_null($deep_params) ? $deep_params .'/' : '') . $prevHref ).'" tabindex="-1">
                             <i class="fas fa-angle-left"></i>
                             <span class="sr-only">Previous</span>
                         </a>
                     </li>';
         for ($x = $y; $x <= $jumlah_halaman; $x++) {
             $button .= '<li class="page-item '. (($dataHalaman == $x) ? 'active' : '') .'">
-                            <a class="page-link" href="/'. $route .'/'. $controller .'/'. $action . '/'. ((count($params)) ? implode('/', $params).'/'.$x : (!is_null($deep_params) ? $deep_params .'/' : '') . $x) .'">'. $x .'</a>
+                            <a class="page-link" href="/'. $route .'/'. $controller .'/'. $action . '/'. ((count(is_countable($params) ? $params : [])) ? implode('/', $params).'/'.$x : (!is_null($deep_params) ? $deep_params .'/' : '') . $x) .'">'. $x .'</a>
                         </li>';
         }
         $button .= '<li class="page-item '. (($dataHalaman == $batas_halaman) ? 'disabled':'') .'">
-                        <a class="page-link" href="/'. $route .'/'. $controller .'/'. $action . '/'. ((count($params)) ? implode('/', $params) : (!is_null($deep_params) ? $deep_params .'/' : '') . $nextHref) .'">
+                        <a class="page-link" href="/'. $route .'/'. $controller .'/'. $action . '/'. ((count(is_countable($params) ? $params : [])) ? implode('/', $params) : (!is_null($deep_params) ? $deep_params .'/' : '') . $nextHref) .'">
                             <i class="fas fa-angle-right"></i>
                             <span class="sr-only">Next</span>
                         </a>
@@ -80,7 +80,7 @@ class Ui {
     //         if ($action == 'index') {
     //             $action = 'halaman';
     //         } else {
-    //             if (count($params) && ctype_digit(end($params))) {
+    //             if (count(is_countable($params) ? $params : []) && ctype_digit(end($params))) {
     //                 $removed = array_pop($params);
     //             }
     //         }
@@ -124,18 +124,18 @@ class Ui {
     //         $y = 1;
     //     }
     //     $button = '<li class="page-item '. (($dataHalaman == 1) ? 'disabled':'') .'">
-    //                     <a class="page-link" href="/admin/'. $controller .'/'. $action . '/'. ((count($params)) ? implode('/', $params) : (!is_null($deep_params) ? $deep_params .'/' : '') . $prevHref ).'" tabindex="-1">
+    //                     <a class="page-link" href="/admin/'. $controller .'/'. $action . '/'. ((count(is_countable($params) ? $params : [])) ? implode('/', $params) : (!is_null($deep_params) ? $deep_params .'/' : '') . $prevHref ).'" tabindex="-1">
     //                         <i class="fas fa-angle-left"></i>
     //                         <span class="sr-only">Previous</span>
     //                     </a>
     //                 </li>';
     //     for ($x = $y; $x <= $jumlah_halaman; $x++) {
     //         $button .= '<li class="page-item '. (($dataHalaman == $x) ? 'active' : '') .'">
-    //                         <a class="page-link" href="/admin/'. $controller .'/'. $action . '/'. ((count($params)) ? implode('/', $params).'/'.$x : (!is_null($deep_params) ? $deep_params .'/' : '') . $links[$x-1][$key]) .'">'. $x .'</a>
+    //                         <a class="page-link" href="/admin/'. $controller .'/'. $action . '/'. ((count(is_countable($params) ? $params : [])) ? implode('/', $params).'/'.$x : (!is_null($deep_params) ? $deep_params .'/' : '') . $links[$x-1][$key]) .'">'. $x .'</a>
     //                     </li>';
     //     }
     //     $button .= '<li class="page-item '. (($dataHalaman == $batas_halaman) ? 'disabled':'') .'">
-    //                     <a class="page-link" href="/admin/'. $controller .'/'. $action . '/'. ((count($params)) ? implode('/', $params) : (!is_null($deep_params) ? $deep_params .'/' : '') . $nextHref) .'">
+    //                     <a class="page-link" href="/admin/'. $controller .'/'. $action . '/'. ((count(is_countable($params) ? $params : [])) ? implode('/', $params) : (!is_null($deep_params) ? $deep_params .'/' : '') . $nextHref) .'">
     //                         <i class="fas fa-angle-right"></i>
     //                         <span class="sr-only">Next</span>
     //                     </a>

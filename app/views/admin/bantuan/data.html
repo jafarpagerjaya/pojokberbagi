@@ -1,21 +1,41 @@
 <div class="row">
     <div class="col-lg-8">
         <div class="card">
-            <!-- <?= Debug::pr($this->data['detil_bantuan']); ?> -->
-
-            <div class="card-header d-flex align-items-baseline" style="column-gap: .25rem;">
-                <div class="heading m-0">overview</div>
-                <div class="text-black-50" data-id-bantuan="<?= $this->data['detil_bantuan']->id_bantuan; ?>"><?= $this->data['detil_bantuan']->nama; ?></div>
-                <div class="status position-absolute" style="font-size: .5rem; right: 1.25rem;">
-                    <div class="font-weight-bold text-black-50">Telah <span class="text-green"><?= Utility::statusBantuan($this->data['detil_bantuan']->status); ?></span> selama</div>
-                    <div class="float-right badge badge-pill badge-primary"><?= $this->data['detil_bantuan']->telah_dikelola_selama; ?> hari</div>
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-12 col-md">
+                        <div class="heading m-0">overview</div>
+                        <div class="text-black-50 small"
+                            data-id-bantuan="<?= $this->data['detil_bantuan']->id_bantuan; ?>">
+                            <?= $this->data['detil_bantuan']->nama; ?>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md">
+                        <div class="small d-flex gap-x-1 justify-content-between flex-md-column status align-items-end">
+                            <span>
+                                Telah
+                                <span
+                                    class="font-weight-bold <?= Utility::statusBantuanClassTextColor($this->data['detil_bantuan']->status)['class']; ?>">
+                                    <?= Utility::statusBantuanClassTextColor($this->data['detil_bantuan']->status)['text']; ?>
+                                </span>
+                            </span>
+                            <span class="text-lowercase badge badge-primary px-2">
+                                <?= $this->data['detil_bantuan']->telah_dikelola_selama; ?>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="card-body p-0">
-                <img src="<?= $this->data['detil_bantuan']->path_gambar_wide; ?>" alt="<?= $this->data['detil_bantuan']->nama_gambar_wide; ?>" class="img-fluid">
+                <img src="<?= $this->data['detil_bantuan']->path_gambar_wide; ?>"
+                    alt="<?= 'Gambar ' . $this->data['detil_bantuan']->nama_gambar_wide; ?>"
+                    class="img-fluid d-none d-md-flex">
+                <img src="<?= $this->data['detil_bantuan']->path_gambar_medium; ?>"
+                    alt="<?= 'Gambar ' . $this->data['detil_bantuan']->nama_gambar_medium; ?>"
+                    class="img-fluid d-flex d-md-none">
             </div>
-            <div class="card-footer p-0 pb-2">
-                <table class="table table-borderless table-hover table-responsive-sm">
+            <div class="table-responsive p-0 pb-2">
+                <table class="table table-borderless table-hover">
                     <thead>
                         <tr>
                             <td class="font-weight-bold">Id Donasi</td>
@@ -23,43 +43,61 @@
                             <td class="font-weight-bold">Nominal (Rp)</td>
                         </tr>
                     </thead>
-                    <tbody <?= (isset($this->data['limit']) ? 'data-limit="'. $this->data['limit'] .'"' : '') ?>>
+                    <tbody <?=(isset($this->data['limit']) ? 'data-limit="'. $this->data['limit'] .'"' : '') ?>>
                         <?php 
                             if (isset($this->data['donasi_bantuan'])) {
                                 foreach($this->data['donasi_bantuan'] as $donasiBantuan) {
                                     ?>
-                                    <tr>
-                                        <td class="py-2">
-                                            <a href="#" class="id-donasi text-primary font-weight-bolder"><?= $donasiBantuan->id_donasi; ?></a>
-                                            <div class="time small text-black-50 font-weight-bold"><?= $donasiBantuan->waktu_bayar; ?></div>
-                                        </td>
-                                        <td class="py-2">
-                                            <div class="media align-items-center">
-                                                <a href="#" class="avatar rounded-circle mr-3" data-id-donatur="<?= $donasiBantuan->id_donatur; ?>">
-                                                    <img alt="<?= $donasiBantuan->nama_path_gambar_akun; ?>" src="<?= $donasiBantuan->path_gambar_akun; ?>">
-                                                </a>
-                                                <div class="media-body">
-                                                    <div class="name mb-0 text-black-50 font-weight-bolder"><?= ucwords(strtolower($donasiBantuan->nama_donatur)); ?></div>
-                                                    <div class="small text-black-50 font-weight-bold">
-                                                        <span class="kontak"><?= $donasiBantuan->kontak; ?></span>
-                                                        <span class="email"><?= $donasiBantuan->email; ?></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-2">
-                                            <div class="media align-items-center">
-                                                <div class="media-body">
-                                                    <div class="name mb-0 text-black-50 font-weight-bolder"><?= Output::tSparator($donasiBantuan->jumlah_donasi); ?></div>
-                                                    <div class="small text-muted font-weight-bold"><?= Utility::keteranganJenisChannelPayment($donasiBantuan->jenis); ?></div>
-                                                </div>
-                                                <div class="avatar rounded ml-3 bg-transparent border" data-id-cp="<?= $donasiBantuan->id_cp; ?>">
-                                                    <img src="<?= $donasiBantuan->path_gambar_cp; ?>" alt="<?= $donasiBantuan->nama_path_gambar_cp; ?>" class="img-fluid">
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <?php
+                        <tr>
+                            <td class="py-2">
+                                <a href="#" class="id-donasi text-primary font-weight-bolder">
+                                    <?= $donasiBantuan->id_donasi; ?>
+                                </a>
+                                <div class="time small text-black-50 font-weight-bold">
+                                    <?= $donasiBantuan->waktu_bayar; ?>
+                                </div>
+                            </td>
+                            <td class="py-2">
+                                <div class="media align-items-center">
+                                    <a href="#" class="avatar rounded-circle mr-3"
+                                        data-id-donatur="<?= $donasiBantuan->id_donatur; ?>">
+                                        <img alt="<?= $donasiBantuan->nama_path_gambar_akun; ?>"
+                                            src="<?= $donasiBantuan->path_gambar_akun; ?>">
+                                    </a>
+                                    <div class="media-body">
+                                        <div class="name mb-0 text-black-50 font-weight-bolder">
+                                            <?= ucwords(strtolower($donasiBantuan->nama_donatur)); ?>
+                                        </div>
+                                        <div class="small text-black-50 font-weight-bold">
+                                            <span class="kontak">
+                                                <?= $donasiBantuan->kontak; ?>
+                                            </span>
+                                            <span class="email">
+                                                <?= $donasiBantuan->email; ?>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-2">
+                                <div class="media align-items-center">
+                                    <div class="media-body">
+                                        <div class="name mb-0 text-black-50 font-weight-bolder">
+                                            <?= $donasiBantuan->jumlah_donasi; ?>
+                                        </div>
+                                        <div class="small text-muted font-weight-bold">
+                                            <?= Utility::keteranganJenisChannelPayment($donasiBantuan->jenis); ?>
+                                        </div>
+                                    </div>
+                                    <div class="avatar rounded ml-3 bg-transparent border"
+                                        data-id-cp="<?= $donasiBantuan->id_cp; ?>">
+                                        <img src="<?= $donasiBantuan->path_gambar_cp; ?>"
+                                            alt="<?= $donasiBantuan->nama_path_gambar_cp; ?>" class="img-fluid">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php
                                 }
                             } else {
                                 Ui::tableIsNull(3,'Donasi');
@@ -73,12 +111,14 @@
                                     <div class="col">
                                         <form>
                                             <div class="input-group">
-                                                <input type="text" class="form-control" placeholder="Cari.." name="search" autocomplete="off">
+                                                <input type="text" class="form-control" placeholder="Cari.."
+                                                    name="search" autocomplete="off">
                                             </div>
                                         </form>
                                     </div>
                                     <div class="col">
-                                        <div class="pagination justify-content-end mb-0" data-pages="<?= $this->data['pages']; ?>">
+                                        <div class="pagination justify-content-end mb-0"
+                                            data-pages="<?= $this->data['pages']; ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -90,93 +130,108 @@
         </div>
     </div>
     <div class="col">
-        <div class="row">
-            <div class="col-12 col-md-6 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="heading">
-                            donasi
-                        </div>
-                        <div class="row">
-                            <div class="col-6">Total Masuk</div>
-                            <div class="col-6 text-right"><?= Output::tSparator($this->data['detil_bantuan']->total_donasi); ?></div>
-                        </div>
-                        <div class="row small">
-                            <div class="col-6 small text-muted">Total Pencairan/Kali</div>
-                            <div class="col-6 small text-right"><span class="pencairan"><?= Output::tSparator($this->data['detil_bantuan']->donasi_terlaksana); ?></span>/<span class="font-weight-bold"><?= $this->data['detil_bantuan']->sekian_kali_pencairan; ?></span></div>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-gradient-info text-white">
-                        <b>Total Saldo <span class="float-right"><?= Output::tSparator($this->data['detil_bantuan']->saldo_donasi); ?></span></b>
-                    </div>
-                </div>
-            </div>
+        <div class="row gap-y-5" id="cp-list">
             <!-- Channel Payment Col Card -->
-            <div class="col-12 col-md-6 col-lg-12">
-                <div class="card">
-                    <div class="card-header rounded py-3">
-                        <div class="row justify-content-between align-items-end">
-                            <div class="col-auto">
-                                <b>Saldo</b>
-                                <span class="text-muted"><?= Output::tSparator($this->data['saldo_bantuan']->saldo_bjb); ?></span>
+            <div class="col-12 col-md-6 col-lg-12 card">
+                <div class="card-header rounded py-3">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-auto">
+                            <b>Saldo</b>
+                            <span class="text-muted">
+                                <?= Output::tSparator($this->data['saldo_bantuan']->saldo_bsi); ?>
+                            </span>
+                        </div>
+                        <div class="col-3">
+                            <img src="<?= $this->data['saldo_bantuan']->path_gambar_bsi; ?>" alt="BSI"
+                                class="img-fluid saldo">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-12 card">
+                <div class="card-header rounded py-3">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-auto">
+                            <b>Saldo</b>
+                            <span class="text-muted">
+                                <?= Output::tSparator($this->data['saldo_bantuan']->saldo_bri); ?>
+                            </span>
+                        </div>
+                        <div class="col-3">
+                            <img src="<?= $this->data['saldo_bantuan']->path_gambar_bri; ?>" alt="BRI"
+                                class="img-fluid saldo">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-12 card bg-transparent">
+                <div class="row flex-column">
+                    <div class="col">
+                        <div class="card-header rounded py-3">
+                            <div class="row justify-content-between align-items-center">
+                                <div class="col-auto">
+                                    <b>Saldo</b>
+                                    <span class="text-muted">
+                                        <?= Output::tSparator($this->data['saldo_bantuan']->saldo_bjb); ?>
+                                    </span>
+                                </div>
+                                <div class="col-3">
+                                    <img src="<?= $this->data['saldo_bantuan']->path_gambar_bjb; ?>" alt="BJB"
+                                        class="img-fluid saldo">
+                                </div>
                             </div>
-                            <div class="col-3">
-                                <img src="<?= $this->data['saldo_bantuan']->path_gambar_bjb; ?>" alt="BJB" class="img-fluid saldo">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card-header rounded py-3">
+                            <div class="row justify-content-between align-items-center">
+                                <div class="col-auto">
+                                    <b>Saldo</b>
+                                    <span class="text-muted">
+                                        <?= Output::tSparator($this->data['saldo_bantuan']->saldo_tunai); ?>
+                                    </span>
+                                </div>
+                                <div class="col-3">
+                                    <img src="<?= $this->data['saldo_bantuan']->path_gambar_tunai; ?>" alt="TUNAI CR"
+                                        class="img-fluid saldo">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-6 col-lg-12">
-                <div class="card">
-                    <div class="card-header rounded py-3">
-                        <div class="row justify-content-between align-items-end">
-                            <div class="col-auto">
-                                <b>Saldo</b>
-                                <span class="text-muted"><?= Output::tSparator($this->data['saldo_bantuan']->saldo_bsi); ?></span>
-                            </div>
-                            <div class="col-3">
-                                <img src="<?= $this->data['saldo_bantuan']->path_gambar_bsi; ?>" alt="BSI" class="img-fluid saldo">
-                            </div>
+            <div class="col-12 col-md-6 col-lg-12 card summary justify-content-between">
+                <div class="card-header border-0">
+                    <div class="heading">
+                        donasi
+                    </div>
+                    <div class="row">
+                        <div class="col-6">Total Masuk</div>
+                        <div class="col-6 text-right">
+                            <?= Output::tSparator($this->data['detil_bantuan']->total_donasi); ?>
                         </div>
+                    </div>
+                    <div class="row small">
+                        <div class="col-6 small text-muted">Total Pencairan/Kali</div>
+                        <div class="col-6 small text-right"><span class="pencairan">
+                                <?= Output::tSparator($this->data['detil_bantuan']->donasi_terlaksana); ?>
+                            </span>/<span class="font-weight-bold">
+                                <?= $this->data['detil_bantuan']->sekian_kali_pencairan; ?>
+                            </span></div>
                     </div>
                 </div>
-            </div>
-            <div class="col-12 col-md-6 col-lg-12">
-                <div class="card">
-                    <div class="card-header rounded py-3">
-                        <div class="row justify-content-between align-items-end">
-                            <div class="col-auto">
-                                <b>Saldo</b>
-                                <span class="text-muted"><?= Output::tSparator($this->data['saldo_bantuan']->saldo_bri); ?></span>
-                            </div>
-                            <div class="col-3">
-                                <img src="<?= $this->data['saldo_bantuan']->path_gambar_bri; ?>" alt="BRI" class="img-fluid saldo">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-6 col-lg-12">
-                <div class="card">
-                    <div class="card-header rounded py-3">
-                        <div class="row justify-content-between align-items-end">
-                            <div class="col-auto">
-                                <b>Saldo</b>
-                                <span class="text-muted"><?= Output::tSparator($this->data['saldo_bantuan']->saldo_tunai); ?></span>
-                            </div>
-                            <div class="col-3">
-                                <img src="<?= $this->data['saldo_bantuan']->path_gambar_tunai; ?>" alt="TUNAI CR" class="img-fluid saldo">
-                            </div>
-                        </div>
-                    </div>
+                <div class="card-footer bg-gradient-info text-white">
+                    <b>Total Saldo <span class="float-right">
+                            <?= Output::tSparator($this->data['detil_bantuan']->saldo_donasi); ?>
+                        </span></b>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <!-- Toast -->
-<div aria-live="polite" aria-atomic="true" style="bottom: 1em; right: 1em;" class="position-fixed d-flex justify-content-end flex-column align-items-end">
+<div aria-live="polite" aria-atomic="true" style="bottom: 1em; right: 1em;"
+    class="position-fixed d-flex justify-content-end flex-column align-items-end">
     <div class="toast w-100 fade hide bg-white" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header d-flex gap-x-2 justify-content-center align-items-center">
             <div class="small-box rounded bg-danger p-2 ailgn-items-center"></div>

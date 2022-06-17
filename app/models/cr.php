@@ -79,6 +79,14 @@ class CrModel {
         return false;
     }
 
+    public function jumlahAkunDonatur() {
+        $this->_db->query("SELECT COUNT(a.id_akun) jumlah_akun_donatur FROM akun a JOIN donatur d USING(id_akun) WHERE LOWER(a.email) = LOWER(d.email)");
+        if ($this->_db->count()) {
+            return $this->_db->result()->jumlah_akun_donatur;
+        }
+        return false;
+    }
+
     public function setFilterBy($filter) {
         $this->_filter = $filter;
     }

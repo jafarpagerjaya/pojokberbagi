@@ -19,16 +19,20 @@ let fetchData = function(url, data, root) {
     })
     .then(response => response.json())
     .then(function(result) {
+        // console.log(result);
         if (result.error == false) {
             // Success
             // $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
             // $('.toast[data-toast="feedback"] .toast-header strong').text('Pemberitahuan');
             let data = result.feedback.data;
 
+            // console.log(data.length);
+
             // console.log(jumlah_halaman != result.feedback.pages);
             // console.log(jumlah_halaman, result.feedback.pages);
 
             if (jumlah_halaman != result.feedback.pages) {
+                console.log(jumlah_halaman, result.feedback.pages);
                 jumlah_halaman = result.feedback.pages;
                 root.find('.pagination').attr('data-pages', result.feedback.pages);
                 controlPaginationButton(0, root.find('.pagination'), result.feedback.pages);
@@ -58,7 +62,11 @@ let fetchData = function(url, data, root) {
                     if (element.email == null) {
                         element.email = '';
                     }
-                    let tr = '<tr><td class="py-2"><a href="#" class="id-donasi text-primary font-weight-bolder">'+ element.id_donasi +'</a><div class="time small text-black-50 font-weight-bold">'+ element.waktu_bayar +'</div></td><td class="py-2"><div class="media align-items-center"><a href="#" class="avatar rounded-circle mr-3" data-id-donatur="'+ element.id_donatur +'"><img alt="'+ element.nama_path_gambar_akun +'" src="'+ element.path_gambar_akun +'"></a><div class="media-body"><div class="name mb-0 text-black-50 font-weight-bolder">'+ ucwords(element.nama_donatur) +'</div><div class="small text-black-50 font-weight-bold"><span class="kontak">'+ element.kontak +' </span><span class="email">'+ element.email +'</span></div></div></div></td><td class="py-2"><div class="media align-items-center"><div class="media-body"><div class="name mb-0 text-black-50 font-weight-bolder">'+ numberToPrice(element.jumlah_donasi) +'</div><div class="small text-muted font-weight-bold">'+ keteranganJenisChannelPayment(element.jenis) +'</div></div><div class="avatar rounded ml-3 bg-transparent border" data-id-cp="'+ element.id_cp +'"><img src="'+ element.path_gambar_cp +'" alt="'+ element.nama_path_gambar_cp +'" class="img-fluid"></div></div></td></tr>';
+
+                    element.nama_donatur = ucwords(element.nama_donatur);
+                    element.jenis = keteranganJenisChannelPayment(element.jenis);
+                    
+                    let tr = '<tr><td class="py-2"><a href="#" class="id-donasi text-primary font-weight-bolder">'+ element.id_donasi +'</a><div class="time small text-black-50 font-weight-bold">'+ element.waktu_bayar +'</div></td><td class="py-2"><div class="media align-items-center"><a href="#" class="avatar rounded-circle mr-3" data-id-donatur="'+ element.id_donatur +'"><img alt="'+ element.nama_path_gambar_akun +'" src="'+ element.path_gambar_akun +'"></a><div class="media-body"><div class="name mb-0 text-black-50 font-weight-bolder">'+ element.nama_donatur +'</div><div class="small text-black-50 font-weight-bold"><span class="kontak">'+ element.kontak +' </span><span class="email">'+ element.email +'</span></div></div></div></td><td class="py-2"><div class="media align-items-center"><div class="media-body"><div class="name mb-0 text-black-50 font-weight-bolder">'+ element.jumlah_donasi +'</div><div class="small text-muted font-weight-bold">'+ element.jenis +'</div></div><div class="avatar rounded ml-3 bg-transparent border" data-id-cp="'+ element.id_cp +'"><img src="'+ element.path_gambar_cp +'" alt="'+ element.nama_path_gambar_cp +'" class="img-fluid"></div></div></td></tr>';
                     root.find('tbody').append(tr);
                 });
                 if (root.find('table thead').width() > root.find('table').parent().width()) {

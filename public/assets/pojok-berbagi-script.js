@@ -135,6 +135,9 @@ const detectTab = function() {
 
 function keteranganJenisChannelPayment(jenis_cp) {
     let keterangan_cp;
+    if (jenis_cp != null) {
+        jenis_cp = jenis_cp.toUpperCase();
+    }
     jenis_cp = jenis_cp.toUpperCase();
     if (jenis_cp == 'TB') {
         keterangan_cp = "Transfer Bank";
@@ -158,7 +161,9 @@ function keteranganJenisChannelPayment(jenis_cp) {
 
 function iconSektor(id_sektor) {
     let icon = '';
-    id_sektor = id_sektor.toUpperCase();
+    if (id_sektor != null) {
+        id_sektor = id_sektor.toUpperCase();
+    }
     if (id_sektor == 'S') {
         icon = '<i class="lni lni-heart"></i>';
     } else if (id_sektor == 'E') {

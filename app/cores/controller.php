@@ -366,7 +366,7 @@ class Controller {
 	// 			App::getRouter()->getAction()
 	// 		);
 	
-	// 		if (count($params)) {
+	// 		if (count(is_countable($params) ? $params : [])) {
 	// 			if (!is_array($params)) {
 	// 				$params = array($params);
 	// 			}
@@ -393,7 +393,7 @@ class Controller {
 			);
 			// PHP 7.2 + count()
 			// count(is_countable($params) ? $params : [])
-			if (count($params)) {
+			if (count(is_countable($params) ? $params : [])) {
 				if (!is_array($params)) {
 					$params = array($params);
 				}

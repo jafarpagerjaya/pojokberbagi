@@ -68,16 +68,8 @@ let fetchData = function(url, data, root) {
                         element.nama_donatur = 'Hamba Allah';
                     }
     
-                    if (element.kontak == null) {
-                        element.kontak = '';
-                    }
-                    
-                    if (element.kontak == '' && element.email == null) {
-                        element.kontak = 'Tanpa Kontak dan Email';
-                    }
-    
-                    if (element.email == null) {
-                        element.email = '';
+                    if (element.warna == null) {
+                        element.warna = '#727272';
                     }
     
                     let badge,
@@ -97,7 +89,7 @@ let fetchData = function(url, data, root) {
                         verivikasi_link_text = 'Verivikasi';
                     }
     
-                    let tr = '<tr><td class="py-2"><a href="#" class="id-donasi text-primary font-weight-bolder">'+ element.id_donasi +'</a><span class="font-weight-bolder"'+ (element.warna.length > 0 ? ' style="color: '+ element.warna +'"' : '') +'> '+ element.nama_bantuan +'</span>'+ (element.nama_sektor.length > 0 ? '<span class="text-muted"> ('+ element.nama_sektor +')</span>' : '') +'<div class="time small font-weight-bolder text-black-50">'+ element.create_donasi_at +'</div></td><td class="py-2"><span class="badge '+ badge +'">'+ verivikasi_text +'</span>'+ (waktu_bayar != undefined ? '<div class="small font-weight-bolder text-black-50"> '+ waktu_bayar +' </div>' : '') +'</td><td class="py-2"><div class="media align-items-center"><div class="media-body"><div class="name mb-0 text-black-50 font-weight-bold">'+ numberToPrice(element.jumlah_donasi) +'</div><div class="small font-weight-bolder text-black-50">'+ keteranganJenisChannelPayment(element.jenis_cp) +'</div></div><div class="avatar rounded ml-3 bg-transparent border" data-id-donatur="'+ element.id_donatur +'"><img src="'+ element.path_gambar_cp +'" alt="'+ element.nama_path_gambar_cp +'" class="img-fluid"></div></div></td><td class="text-right auto"><div class="dropdown"><a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="top-end"><a class="dropdown-item" href="/admin/bantuan/data/'+ element.id_bantuan +'">Lihat Program Donasi</a><a class="dropdown-item'+ verivikasi_class +'" href="#">'+ verivikasi_link_text +'</a></div></div></td></tr>';
+                    let tr = '<tr><td class="py-2"><a href="#" class="id-donasi text-primary font-weight-bolder">'+ element.id_donasi +'</a><span class="font-weight-bolder"'+ (element.warna.length > 0 ? ' style="color: '+ element.warna +'"' : '') +'> '+ element.nama_bantuan +'</span>'+ (element.nama_sektor != null ? '<span class="text-muted"> ('+ element.nama_sektor +')</span>' : '') +'<div class="time small font-weight-bolder text-black-50">'+ element.create_donasi_at +'</div></td><td class="py-2"><span class="badge '+ badge +'">'+ verivikasi_text +'</span>'+ (waktu_bayar != undefined ? '<div class="small font-weight-bolder text-black-50"> '+ waktu_bayar +' </div>' : '') +'</td><td class="py-2"><div class="media align-items-center"><div class="media-body"><div class="name mb-0 text-black-50 font-weight-bold">'+ element.jumlah_donasi +'</div><div class="small font-weight-bolder text-black-50">'+ keteranganJenisChannelPayment(element.jenis_cp) +'</div></div><div class="avatar rounded ml-3 bg-transparent border" data-id-donatur="'+ element.id_donatur +'"><img src="'+ element.path_gambar_cp +'" alt="'+ element.nama_path_gambar_cp +'" class="img-fluid"></div></div></td><td class="text-right auto"><div class="dropdown"><a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="top-end"><a class="dropdown-item" href="/admin/bantuan/data/'+ element.id_bantuan +'">Lihat Program Donasi</a><a class="dropdown-item'+ verivikasi_class +'" href="#">'+ verivikasi_link_text +'</a></div></div></td></tr>';
                     root.find('tbody').append(tr);
                 });
                 if (root.find('table thead').width() > root.find('table').parent().width()) {
@@ -138,8 +130,6 @@ $('.pagination').on('click', '.page-link:not(.disabled)[data-id!="?"]:not(.prev)
     let page = $(this).data('id'),
         limit = root.find('tbody').data('limit'),
         token = document.querySelector('body').getAttribute('data-token');
-
-    let bayar = 1;
             
     let data = {
         'token': token,
@@ -152,8 +142,6 @@ $('.pagination').on('click', '.page-link:not(.disabled)[data-id!="?"]:not(.prev)
     if (search.val().length > 0) {
         data.search = search.val();
     }
-
-    // console.log(data);
     
     fetchData('/admin/fetch/read/donasi/list', data, root);
 

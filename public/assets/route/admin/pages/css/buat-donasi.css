@@ -1,0 +1,90 @@
+textarea {
+    min-height: 148px !important;
+    max-height: 148px !important;
+}
+
+.datepicker.datepicker-dropdown thead .datepicker-switch {
+    font-weight: bolder;
+}
+
+.datepicker.datepicker-dropdown thead .dow {
+    font-weight: bold;
+}
+
+.datepicker table tr td.active.active,
+.datepicker table tr td.active.active:hover {
+    background-color: var(--primary);
+}
+
+.datepicker table tr td.active.active:hover {
+    opacity: 0.75;
+}
+
+.datepicker.datepicker-dropdown tfoot th {
+    text-transform: capitalize !important;
+}
+
+.datepicker.datepicker-dropdown tfoot tr:first-child th {
+    color: var(--primary) !important;
+    font-weight: bold !important;
+}
+
+.datepicker.datepicker-dropdown tfoot tr:last-child th {
+    color: var(--gray);
+}
+
+.datepicker table tr td span.new.disabled, 
+.datepicker table tr td span.old.disabled {
+    color: #dee2e6;
+}
+
+.select2 span.select2-selection {
+    height: 46px;
+    align-items: center;
+    display: flex;
+}
+
+.card-body.form .row .col {
+    flex-basis: 100%;
+}
+
+.badge {
+    font-size: 0.6rem;
+}
+
+.badge.text-capitalize {
+    letter-spacing: 1px;
+}
+
+@media (min-width: 556px) {
+    .card-body.form>.row:not(:last-child)>.col {
+        flex-basis: 50%;
+    }
+
+    .card-body.form>.row:last-child>.col:first-child {
+        flex-direction: row !important;
+        column-gap: 2em;
+    }
+
+    .card-body.form>.row:last-child>.col.d-flex:first-child>.form-group {
+        width: 50%;
+    }
+}
+
+@media (min-width: 992px) {
+    .card-body.form>.row:last-child>.col:first-child {
+        flex-direction: column !important;
+    }
+
+    .card-body.form>.row:last-child>.col {
+        flex-basis: 50%;
+    }
+
+    .card-body.form>.row:last-child>.col.d-flex:first-child>.form-group {
+        width: 100%;
+    }
+
+    .custom-control.custom-checkbox:not(.checked) {
+        padding-top: 2.6em;
+    }
+}

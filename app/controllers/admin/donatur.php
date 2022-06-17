@@ -93,7 +93,7 @@ class DonaturController extends Controller {
     }
 
     public function halaman($params) {
-        if (count($params)) {
+        if (count(is_countable($params) ? $params : [])) {
             $this->script_action = array(
                 array(
                     'type' => 'text/javascript',
@@ -103,7 +103,7 @@ class DonaturController extends Controller {
             $this->model('Cr');
             $this->data['info-card'] = array(
                 'jumlah_donatur' => $this->model->jumlahDonatur(),
-                'jumlah_akun' => $this->model->jumlahAkun(),
+                'jumlah_akun' => $this->model->jumlahAkunDonatur(),
             );
             $this->_donatur->dataDonatur($params[0]);
             $this->data['donatur'] = $this->_donatur->data();
@@ -119,7 +119,7 @@ class DonaturController extends Controller {
 
     public function formulir($params = null) {
         $this->data['token'] = Token::generate();
-        if (count($params)) {
+        if (count(is_countable($params) ? $params : [])) {
             $this->formUpdate($params[0]);
             return VIEW_PATH.'admin'.DS.'donatur'.DS.'form-update.html';
         }
@@ -133,7 +133,7 @@ class DonaturController extends Controller {
     }
 
     public function update($params) {
-        if (count($params[0])) {
+        if (count(is_countable($params[0]) ? $params[0] : [])) {
             if (Input::exists()) {
                 if (Token::check(Input::get('token'))) {
                     if ($params[0] != Input::get('id_donatur')) {
@@ -213,14 +213,12 @@ class DonaturController extends Controller {
                         'max' => 30
                     ),
                     'kontak' => array(
-                        'required' => true,
                         'digit' => true,
                         'min' => 11,
                         'max' => 13,
                         'unique' => 'donatur'
                     ),
                     'email' => array(
-                        'required' => true,
                         'max' => 100,
                         'unique' => 'donatur'
                     )
@@ -248,7 +246,7 @@ class DonaturController extends Controller {
     }
 
     public function data($params) {
-        if (count($params[0])) {
+        if (count(is_countable($params[0]) ? $params[0] : [])) {
             $this->rel_action = array(
                 array(
                     'href' => ASSET_PATH.basename(dirname(__FILE__)).DS.'pages'.DS.'css'.DS.'data.css'
@@ -282,7 +280,7 @@ class DonaturController extends Controller {
     }
 
     public function kaitkan($params) {
-        if (!count($params)>1) {
+        if (!count(is_countable($params) ? $params : [])>1) {
             Redirect::to('admin/donatur');
         }
         if (Token::check($params[1])) {

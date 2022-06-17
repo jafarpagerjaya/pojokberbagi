@@ -5,7 +5,17 @@
 .card img[alt="BJB"],
 .card img[alt="BSI"],
 .card img[alt="BRI"] {
-    margin-bottom: .25rem;
+    margin-top: -0.5rem;
+}
+
+.card table .media img[alt="bank-bjb"],
+.card table .media img[alt="bank-bsi"],
+.card table .media img[alt="bank-bri"],
+.card table .media img[alt="qris"],
+.card table .media img[alt="BJB"],
+.card table .media img[alt="BSI"],
+.card table .media img[alt="BRI"] {
+    margin-top: -0.3rem;
 }
 
 /* Overview Table */
@@ -15,27 +25,155 @@ table .avatar {
     height: var(--avatar);
 }
 
+/* Image Handler */
+img[src=""].img-fluid.d-flex.d-md-none {
+    max-height: calc((100vw - 30px) / 16 * 9);
+    min-height: calc((100vw - 30px) / 16 * 9);
+}
+
+img[src=""].img-fluid.d-none.d-md-flex {
+    max-height: 0px;
+    min-height: 0px;
+}
+
+/* Custom Card */
+#cp-list {
+    --card-gap: 2rem;
+    row-gap: 30px;
+    width: 100%;
+    margin: 0px;
+}
+
+#cp-list .card {
+    margin: 0px;
+    padding: 0px !important;
+}
+
+#cp-list .card.bg-transparent {
+    box-shadow: none;
+}
+
+#cp-list .card.bg-transparent > .row {
+    row-gap: var(--card-gap);
+    background-color: inherit;
+    margin: 0px;
+}
+
+#cp-list .card.bg-transparent > .row > .col {
+    box-shadow: 0 0 2rem 0 rgb(136 152 170 / 15%);
+    padding: 0px;
+}
+
+#cp-list .card-header {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
 /* Media Query */
-@media (min-width: 1548px) {
-    #main-content .row .col-lg-8 {
-        flex: 1 1;
+@media (min-width: 360px) {
+    #cp-list .card {
+        width: calc(100% - var(--card-gap)) !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .status {
+        text-align: right;
+    }
+    .status .badge {
+        width: fit-content;
     }
 
-    #main-content .row .col-lg-8~.col .col-lg-12 {
+    /* Image Handler */
+    img[src=""].img-fluid.d-flex.d-md-none {
+        max-height: 0px;
+        min-height: 0px;
+    }
+    img[src=""].img-fluid.d-none.d-md-flex {
+        max-height: calc((100vw - 60px) / 648 * 193);
+        min-height: calc((100vw - 60px) / 648 * 193);
+    }
+
+    /* Custom Card */
+    #cp-list {
+        column-gap: var(--card-gap);
+    }
+
+    #cp-list .card {
+        flex-basis: calc(50% - var(--card-gap)*0.5);
+    }
+
+    #cp-list .card.summary > .card-header {
+        padding-top: 13px;
+        padding-bottom: 13px;
+    }
+
+    #cp-list .card.summary > .card-footer {
+        padding-top: 16px;
+        padding-bottom: 16px;
+    }
+}
+
+@media (min-width: 992px) {
+    .card img[alt="bank-bjb"],
+    .card img[alt="bank-bsi"],
+    .card img[alt="bank-bri"],
+    .card img[alt="qris"],
+    .card img[alt="BJB"],
+    .card img[alt="BSI"],
+    .card img[alt="BRI"] {
+        margin-top: -0.25rem;
+    }
+
+    /* Image Handler */
+    img[src=""].img-fluid.d-none.d-md-flex {
+        max-height: calc((66.67vw - 60px + 10px - 0.04px) / 648 * 193);
+        min-height: calc((66.67vw - 60px + 10px - 0.04px) / 648 * 193);
+    }
+
+    /* Custom Card */
+    #cp-list .card {
+        flex-basis: 100%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .card img[alt="bank-bjb"],
+    .card img[alt="bank-bsi"],
+    .card img[alt="bank-bri"],
+    .card img[alt="qris"],
+    .card img[alt="BJB"],
+    .card img[alt="BSI"],
+    .card img[alt="BRI"] {
+        margin-top: -0.5rem;
+    }
+
+    /* Image Handler */
+    img[src=""].img-fluid.d-none.d-md-flex {
+        max-height: calc((66.67vw - 250px + 60px - 27px + 0.29px) / 648 * 193);
+        min-height: calc((66.67vw - 250px + 60px - 27px + 0.29px) / 648 * 193);
+    }
+}
+
+@media (min-width: 1548px) {
+
+    #main-content > .row > * {
+        width: 50% !important;
+    }
+
+    #main-content > .row > .col-lg-8,
+    #main-content > .row > .col-lg-8~.col {
         flex: 0 1 50%;
     }
 
-    .card img[alt="bank-bjb"].saldo,
-    .card img[alt="bank-bsi"].saldo,
-    .card img[alt="bank-bri"].saldo,
-    .card img[alt="qris"].saldo,
-    .card img[alt="BJB"].saldo,
-    .card img[alt="BSI"].saldo,
-    .card img[alt="BRI"].saldo {
-        margin-bottom: .5rem;
+    /* Image Handler */
+    img[src=""].img-fluid.d-none.d-md-flex {
+        max-height: calc(((100vw - 250px) / 2 - 45px) / 648 * 193);
+        min-height: calc(((100vw - 250px) / 2 - 45px) / 648 * 193);
     }
 
-    .card .row.align-items-end {
-        align-items: center !important;
+    /* Custom Card */
+    #cp-list .card {
+        flex-basis: calc(50% - var(--card-gap) * 0.5);
     }
 }

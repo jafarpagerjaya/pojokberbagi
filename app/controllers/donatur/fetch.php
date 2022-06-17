@@ -9,7 +9,7 @@ class FetchController extends Controller {
     }
 
     public function update($params = array()) {
-        if (count($params) == 0) {
+        if (count(is_countable($params) ? $params : []) == 0) {
             $this->_result['server_feedback'] = 'Number of params not found';
             $this->result();
             return false;

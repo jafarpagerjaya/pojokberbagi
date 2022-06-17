@@ -65,7 +65,7 @@ class View {
 
 	private function getLinkRel($property_param) {
 		$property = 'rel_'.$property_param;
-		if (count($this->$property) > 0) {
+		if (count(is_countable($this->$property) ? $this->$property : []) > 0) {
 			echo '<!-- Added Linked Rel Based On '.ucfirst($property_param).' Style -->';
 			foreach ($this->$property as $link_rel_key => $link_rel_value) {
 				$rel = 'stylesheet';
@@ -146,7 +146,7 @@ class View {
 	
 	private function getScript($property_param) {
 		$property = 'script_'.$property_param;
-		if (count($this->$property)) {
+		if (count(is_countable($this->$property) ? $this->$property : [])) {
 			$type = 'text/javascript';
 			echo '<!-- Added Script Src Based On '.ucfirst($property_param).' -->';
 			foreach ($this->$property as $script_key => $script_value) {
@@ -211,7 +211,7 @@ class View {
 	}
 
 	public function getNav() {
-		if (count($this->nav)) {
+		if (count(is_countable($this->nav) ? $this->nav : [])) {
 			$nav = '';
 			foreach ($this->nav as $route => $controllers) {
 				if ($this->getRoute() == $route) {
@@ -280,7 +280,7 @@ class View {
 		return $this->_params;
 	}
 
-	public function __construct($path = null, $data = array(), $controller) {
+	public function __construct($controller, $path = null, $data = array()) {
 		$this->_route = App::getRouter()->getRoute();
 		$this->_controller = App::getRouter()->getController();
 		$this->_action = App::getRouter()->getAction();

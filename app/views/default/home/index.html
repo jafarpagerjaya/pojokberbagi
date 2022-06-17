@@ -5,11 +5,14 @@
     <div id="banner-carousel" class="carousel slide carousel-dark" data-bs-ride="carousel" data-bs-interval="10000">
         <div class="carousel-indicators">
             <?php 
-            if (count($data['banner'])) {
+            if (count(is_countable($data['banner']) ? $data['banner'] : [])) {
                 $loop = 0;
-                while($loop < count($data['banner'])) {
+                while($loop < count(is_countable($data['banner']) ? $data['banner'] : [])) {
             ?>
-                <button type="button" data-bs-target="#banner-carousel" data-bs-slide-to="<?= $loop ?>" <?= ($loop == 0 ? 'class="active" aria-current="true"' : '') ?>  aria-label="Slide <?= $loop ?>"></button>
+            <button type="button" data-bs-target="#banner-carousel" data-bs-slide-to="<?= $loop ?>" <?=($loop==0
+                ? 'class="active" aria-current="true"' : '' ) ?> aria-label="Slide
+                <?= $loop ?>">
+            </button>
             <?php 
                     $loop++;
                 }
@@ -18,7 +21,7 @@
         </div>
         <div class="carousel-inner overflow-visible">
             <?php 
-            if (count($data['banner'])) {
+            if (count(is_countable($data['banner']) ? $data['banner'] : [])) {
                 $loop = 0;
                 foreach($data['banner'] as $banner) {
                     $delay = 0.2;
@@ -26,41 +29,58 @@
             ?>
             <div class="carousel-item <?= ($loop == 0 ? 'active' : '') ?>">
                 <div class="container">
-                    <div class="row align-items-center" style="row-gap: 2em;" data-start-delay-wow="<?php $time += $delay; echo $time; ?>">
+                    <div class="row align-items-center" style="row-gap: 2em;"
+                        data-start-delay-wow="<?php $time += $delay; echo $time; ?>">
                         <div class="wow-delay-shuffle-parent col-lg-5 col-md-12 col-12 order-1 order-lg-0">
                             <div class="hero-content d-grid d-lg-block wow fadeInUp" data-wow-delay="<?= $time.'s'; ?>">
                                 <div class="info-content overflow-hidden">
                                     <h1 class="d-flex d-lg-block gap-1 flex-wrap flex-md-nowrap">
                                         <?php 
-                                            $nama_kategori = $banner->nama_kategori;
-                                            $nama_kategori = explode(' ', $nama_kategori);
-                                            echo '<div>'. $nama_kategori[0] .'</div>';
-                                            unset($nama_kategori[0]);
-                                            $nama_kategori = implode(' ', $nama_kategori);
-                                            echo '<div>'. $nama_kategori .'</div>';
+                                            if (!is_null($banner->nama_kategori)) {
+                                                $nama_kategori = $banner->nama_kategori;
+                                                $nama_kategori = explode(' ', $nama_kategori);
+                                                echo '<div>'. $nama_kategori[0] .'</div>';
+                                                unset($nama_kategori[0]);
+                                                $nama_kategori = implode(' ', $nama_kategori);
+                                                echo '<div>'. $nama_kategori .'</div>';
+                                            }
+                                            if (!is_null($banner->layanan)) {
+                                                echo '<div>'. $banner->layanan .'</div>';
+                                            }
                                         ?>
-                                        <div><?= $banner->layanan; ?></div>
-                                        <div class="text-orange"><?= $banner->nama_bantuan; ?></div>
+                                        <div class="text-orange">
+                                            <?= $banner->nama_bantuan; ?>
+                                        </div>
                                     </h1>
-                                    <p><?= $banner->deskripsi; ?></p>
+                                    <p>
+                                        <?= $banner->deskripsi; ?>
+                                    </p>
                                 </div>
                                 <div class="button">
-                                    <a href="<?= '/donasi/buat/baru/'.$banner->id_bantuan; ?>" class="btn w-100 shadow rounded-box">Donasi Sekarang</a>
+                                    <a href="<?= '/donasi/buat/baru/'.$banner->id_bantuan; ?>"
+                                        class="btn w-100 shadow rounded-box">Donasi Sekarang</a>
                                 </div>
                             </div>
                         </div>
-                        <div class="animation wow-delay-shuffle-parent col-lg-7 col-12 d-flex flex-column gap-3 order-0">
-                            <div class="app-image shadow-lg wow fadeInUp" data-wow-delay="<?php $time += $delay; echo $time.'s'; ?>" data-animation-name="pojokers">
-                                <div class="col-12 bg-white overflow-hidden img-wrapper d-flex justify-content-center align-items-center">
+                        <div
+                            class="animation wow-delay-shuffle-parent col-lg-7 col-12 d-flex flex-column gap-3 order-0">
+                            <div class="app-image shadow-lg wow fadeInUp"
+                                data-wow-delay="<?php $time += $delay; echo $time.'s'; ?>"
+                                data-animation-name="pojokers">
+                                <div
+                                    class="col-12 bg-white overflow-hidden img-wrapper d-flex justify-content-center align-items-center">
                                     <a href="<?= '/bantuan/detil/'.$banner->id_bantuan; ?>">
-                                        <img src="<?= $banner->path_gambar_medium; ?>" alt="<?= $banner->nama_gambar_medium; ?>" class="img-fluid">
+                                        <img src="<?= $banner->path_gambar_medium; ?>"
+                                            alt="<?= $banner->nama_gambar_medium; ?>" class="img-fluid">
                                     </a>
                                 </div>
                             </div>
                         </div>
                         <div class="col-12 order-2">
-                            <div class="row mx-0 flex-wrap custom-height-setter custom-gap" data-start-delay-wow="<?php $time += $delay; echo $time; ?>">
-                                <div data-wow-delay="<?= $time.'s'; ?>" class="align-items-center wow fadeInUp col box bg-light p-3 d-flex rounded-box order-1 shadow-sm">
+                            <div class="row mx-0 flex-wrap custom-height-setter custom-gap"
+                                data-start-delay-wow="<?php $time += $delay; echo $time; ?>">
+                                <div data-wow-delay="<?= $time.'s'; ?>"
+                                    class="align-items-center wow fadeInUp col box bg-light p-3 d-flex rounded-box order-1 shadow-sm">
                                     <div class="box-icon bg-primary">
                                         <i class="lni lni-wallet"></i>
                                     </div>
@@ -69,7 +89,8 @@
                                         <p><small class="text-muted">Terkumpul</small></p>
                                     </div>
                                 </div>
-                                <div data-wow-delay="<?php $time += $delay; echo $time.'s'; ?>" class="align-items-center wow fadeInUp col box bg-light p-3 d-flex rounded-box order-1 shadow-sm">
+                                <div data-wow-delay="<?php $time += $delay; echo $time.'s'; ?>"
+                                    class="align-items-center wow fadeInUp col box bg-light p-3 d-flex rounded-box order-1 shadow-sm">
                                     <div class="box-icon bg-info">
                                         <i class="lni lni-handshake"></i>
                                     </div>
@@ -78,37 +99,47 @@
                                         <p><small class="text-muted">Donatur</small></p>
                                     </div>
                                 </div>
-                                <div data-wow-delay="<?php $time += $delay; echo $time.'s'; ?>" class="align-items-center wow fadeInUp col-12 col-md box bg-light p-3 d-flex rounded-box order-1 shadow-sm">
+                                <div data-wow-delay="<?php $time += $delay; echo $time.'s'; ?>"
+                                    class="align-items-center wow fadeInUp col-12 col-md box bg-light p-3 d-flex rounded-box order-1 shadow-sm">
                                     <div class="box-icon bg-orange">
                                         <i class="lni lni-target-customer"></i>
                                     </div>
                                     <div class="box-info d-flex flex-column">
-                                        <h6 class="mb-0"<?= (!is_null($banner->jumlah_target) ? ' data-count-up-value="' . $banner->jumlah_target . '">' : '>Unlimited') ?></h6>
+                                        <h6 class="mb-0" <?=(!is_null($banner->jumlah_target) ? ' data-count-up-value="'
+                                            . $banner->jumlah_target . '">' : '>Unlimited') ?></h6>
                                         <p><small class="text-muted">Target</small></p>
                                     </div>
                                 </div>
-                                <div data-wow-delay="<?php $time += $delay; echo $time.'s'; ?>" class="align-items-center wow fadeInUp col-6 col-md-12 col-lg box bg-light p-3 d-grid rounded-box progress-box order-0 order-md-1 shadow-sm">
+                                <div data-wow-delay="<?php $time += $delay; echo $time.'s'; ?>"
+                                    class="align-items-center wow fadeInUp col-6 col-md-12 col-lg box bg-light p-3 d-grid rounded-box progress-box order-0 order-md-1 shadow-sm">
                                     <div class="box-icon bg-green">
                                         <i class="lni lni-grow"></i>
                                     </div>
                                     <div class="box-info d-flex flex-column">
                                         <h6 class="mb-0" data-count-up-value="<?= $banner->donasi_disalurkan ?>">0</h6>
-                                        <p><small class="text-muted"><?= (isset($banner->jenis_penyaluran) ? $banner->jenis_penyaluran . ' ' : ''); ?>Tersalurkan</small></p>
+                                        <p><small class="text-muted">
+                                                <?= (isset($banner->jenis_penyaluran) ? $banner->jenis_penyaluran . ' ' : ''); ?>Tersalurkan
+                                            </small></p>
                                         <div class="progress mt-1">
-                                            <div class="progress-bar bg-green" role="progressbar"
-                                                style="width: 0%" aria-valuenow="<?= $banner->persentase_donasi_dilaksanakan; ?>" aria-valuemin="0"
-                                                aria-valuemax="100"></div>
+                                            <div class="progress-bar bg-green" role="progressbar" style="width: 0%"
+                                                aria-valuenow="<?= $banner->persentase_donasi_dilaksanakan; ?>"
+                                                aria-valuemin="0" aria-valuemax="100"></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div data-wow-delay="<?php $time += $delay; echo $time.'s'; ?>" class="align-items-center wow fadeInUp col-6 col-md box bg-light p-3 d-grid rounded-box timeup order-0 order-md-0 order-lg-1 shadow-sm">
+                                <div data-wow-delay="<?php $time += $delay; echo $time.'s'; ?>"
+                                    class="align-items-center wow fadeInUp col-6 col-md box bg-light p-3 d-grid rounded-box timeup order-0 order-md-0 order-lg-1 shadow-sm">
                                     <div class="box-icon bg-warning">
                                         <i class="lni lni-timer"></i>
                                     </div>
                                     <div class="box-info d-flex flex-column">
-                                        <h6 class="mb-0"<?= (!is_null($banner->sisa_waktu) ? ' data-count-up-value="' . $banner->sisa_waktu . '" data-count-up-date="true">' : '>Unlimited') ?></h6>
+                                        <h6 class="mb-0" <?=((is_numeric($banner->sisa_waktu)) ?
+                                            'data-count-up-value="' . $banner->sisa_waktu .'"
+                                            data-count-up-date="true">' :
+                                            '>' . $banner->sisa_waktu); ?></h6>
                                         <p><small class="text-muted">Sisa Waktu</small></p>
-                                        <a role="button" class="d-flex justify-content-between text-primary align-items-center d-md-none collapseButton mt-1">
+                                        <a role="button"
+                                            class="d-flex justify-content-between text-primary align-items-center d-md-none collapseButton mt-1">
                                             <span>Lebih detil</span>
                                             <i class="lni lni-chevron-down"></i>
                                         </a>
@@ -125,11 +156,13 @@
             }
             ?>
         </div>
-        <button class="carousel-control-prev d-none d-lg-flex" type="button" data-bs-target="#banner-carousel" data-bs-slide="prev">
+        <button class="carousel-control-prev d-none d-lg-flex" type="button" data-bs-target="#banner-carousel"
+            data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next d-none d-lg-flex" type="button" data-bs-target="#banner-carousel" data-bs-slide="next">
+        <button class="carousel-control-next d-none d-lg-flex" type="button" data-bs-target="#banner-carousel"
+            data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
         </button>
@@ -189,37 +222,52 @@
                 foreach($data['list_bantuan']['data'] as $list_bantuan) { 
                     $delay_card = $delay_card + $time_card; 
             ?>
-                    <div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay="<?= $delay_card.'s'; ?>">
-                        <!-- Start Single Service -->
-                        <div class="p-4 single-service animation">
-                            <div class="app-image img-wrapper rounded-box top overflow-hidden d-flex justify-content-center align-items-center position-relative mb-3">
-                                <img src="<?= $list_bantuan->path_gambar_medium; ?>" alt="<?= $list_bantuan->nama_gambar_medium; ?>" class="img-fluid opacity" data-animation-name="zoom-in">
-                                <div class="service-logo shadow bg-white d-flex justify-content-center align-items-center p-2 position-absolute top left margin-left" data-animation-name="slide">
-                                    <img src="<?= $list_bantuan->path_gambar_pengaju; ?>" alt="<?= $list_bantuan->pengaju_bantuan; ?>">
-                                </div>
-                                <div class="service-icon shadow d-flex justify-content-center align-items-center position-absolute bottom left" data-animation-name="slide" <?= (isset($list_bantuan->warna) ? 'style="background-color:' . $list_bantuan->warna .'"' : '') ?>>
-                                    <?= Utility::iconSektor($list_bantuan->layanan); ?>
-                                </div>
-                            </div>
-                            <h6 class="my-3 overflow-hidden title"><?= $list_bantuan->nama_bantuan ?></h6>
-                            <div class="row mb-2 align-items-end">
-                                <div class="col">
-                                    <h6>Terkumpul</h6>
-                                    <p class="text-muted">Rp. <?= Output::tSparator($list_bantuan->total_donasi); ?></p>
-                                </div>
-                                <div class="col-auto text-end">
-                                    <small>
-                                        <?= ($list_bantuan->sisa_waktu != 'Unlimited' ? $list_bantuan->sisa_waktu.' hari lagi' : $list_bantuan->sisa_waktu) ?>
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?= $list_bantuan->persentase_donasi_dilaksanakan; ?>" <?= 'style="width: '. $list_bantuan->persentase_donasi_dilaksanakan .'%"'; ?>></div>
-                            </div>
-                            <a href="<?= '/bantuan/detil/'. $list_bantuan->id_bantuan; ?>" class="mt-3" <?= (isset($list_bantuan->warna) ? 'style="color:' . $list_bantuan->warna .'"' : '') ?>>Lihat lebih lanjut <i class="lni lni-arrow-right"></i></a>
+            <div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay="<?= $delay_card.'s'; ?>">
+                <!-- Start Single Service -->
+                <div class="p-4 single-service animation">
+                    <div
+                        class="app-image img-wrapper rounded-box top overflow-hidden d-flex justify-content-center align-items-center position-relative mb-3">
+                        <img src="<?= $list_bantuan->path_gambar_medium; ?>"
+                            alt="<?= $list_bantuan->nama_gambar_medium; ?>" class="img-fluid opacity"
+                            data-animation-name="zoom-in">
+                        <div class="service-logo shadow bg-white d-flex justify-content-center align-items-center p-2 position-absolute top left margin-left"
+                            data-animation-name="slide">
+                            <img src="<?= $list_bantuan->path_gambar_pengaju; ?>"
+                                alt="<?= $list_bantuan->pengaju_bantuan; ?>">
                         </div>
-                        <!-- End Single Service -->
+                        <div class="service-icon shadow d-flex justify-content-center align-items-center position-absolute bottom left"
+                            data-animation-name="slide" <?=(isset($list_bantuan->warna) ? 'style="background-color:' .
+                            $list_bantuan->warna .'"' : '') ?>>
+                            <?= Utility::iconSektor($list_bantuan->layanan); ?>
+                        </div>
                     </div>
+                    <h6 class="my-3 overflow-hidden title">
+                        <?= $list_bantuan->nama_bantuan ?>
+                    </h6>
+                    <div class="row mb-2 align-items-end">
+                        <div class="col">
+                            <h6>Terkumpul</h6>
+                            <p class="text-muted">Rp.
+                                <?= $list_bantuan->total_donasi; ?>
+                            </p>
+                        </div>
+                        <div class="col-auto text-end">
+                            <small>
+                                <?= $list_bantuan->sisa_waktu; ?>
+                            </small>
+                        </div>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                            aria-valuenow="<?= $list_bantuan->persentase_donasi_dilaksanakan; ?>" <?='style="width: ' .
+                            $list_bantuan->persentase_donasi_dilaksanakan .'%"'; ?>></div>
+                    </div>
+                    <a href="<?= '/bantuan/detil/'. $list_bantuan->id_bantuan; ?>" class="mt-3"
+                        <?=(isset($list_bantuan->warna) ? 'style="color:' . $list_bantuan->warna .'"' : '') ?>>Lihat
+                        lebih lanjut <i class="lni lni-arrow-right"></i></a>
+                </div>
+                <!-- End Single Service -->
+            </div>
             <?php 
                 }
             } 
@@ -229,12 +277,14 @@
             if ($data['list_bantuan']['load_more'] == 'true') {
                     $delay_card = $delay_card + $time_card; 
                 ?>
-                <div class="row mt-5">
-                    <div class="col-12 text-center wow fadeInUp" data-wow-delay="<?= $delay_card.'s'; ?>">
-                        <a href="javascript:;" class="btn btn-outline-orange rounded-box py-2 px-4" id="load-more" data-offset="<?= $data['list_bantuan']['offset']; ?>" data-limit="<?= $data['list_bantuan']['limit']; ?>">Load More</a>
-                    </div>
-                </div>
-                <?php
+        <div class="row mt-5">
+            <div class="col-12 text-center wow fadeInUp" data-wow-delay="<?= $delay_card.'s'; ?>">
+                <a href="javascript:;" class="btn btn-outline-orange rounded-box py-2 px-4" id="load-more"
+                    data-offset="<?= $data['list_bantuan']['offset']; ?>"
+                    data-limit="<?= $data['list_bantuan']['limit']; ?>">Load More</a>
+            </div>
+        </div>
+        <?php
             }
         ?>
     </div>

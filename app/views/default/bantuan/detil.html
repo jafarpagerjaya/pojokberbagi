@@ -2,14 +2,21 @@
     <div class="container">
         <div class="row" id="visual-banner-area">
             <div class="col">
-                <div class="app-image img-wrapper d-flex align-items-center justify-content-center overflow-hidden rounded-box wow fadeInUp shadow-none" data-wow-delay=".2s">
-                    <img src="<?= $data['detil_bantuan']->path_gambar_medium; ?>" alt="Gambar <?= $data['detil_bantuan']->nama_gambar_medium; ?>" class="img-fluid d-flex d-lg-none">
-                    <img src="<?= $data['detil_bantuan']->path_gambar_wide; ?>" alt="Gambar <?= $data['detil_bantuan']->nama_gambar_wide; ?>" class="img-fluid d-none d-lg-flex">
+                <div class="app-image img-wrapper d-flex align-items-center justify-content-center overflow-hidden rounded-box wow fadeInUp shadow-none"
+                    data-wow-delay=".2s">
+                    <img src="<?= $data['detil_bantuan']->path_gambar_medium; ?>"
+                        alt="Gambar <?= $data['detil_bantuan']->nama_gambar_medium; ?>"
+                        class="img-fluid d-flex d-lg-none">
+                    <img src="<?= $data['detil_bantuan']->path_gambar_wide; ?>"
+                        alt="Gambar <?= $data['detil_bantuan']->nama_gambar_wide; ?>"
+                        class="img-fluid d-none d-lg-flex">
                 </div>
             </div>
         </div>
-        <div class="row mx-0 flex-wrap custom-gap custom-height-setter mt-3 mt-lg-4 pb-2 toggle" data-start-delay-wow="0.4" id="info-box-area">
-            <div data-wow-delay=".4s" class="align-items-center wow fadeInUp col box bg-light p-3 d-flex rounded-box order-1 shadow-none">
+        <div class="row mx-0 flex-wrap custom-gap custom-height-setter mt-3 mt-lg-4 pb-2 toggle"
+            data-start-delay-wow="0.4" id="info-box-area">
+            <div data-wow-delay=".4s"
+                class="align-items-center wow fadeInUp col box bg-light p-3 d-flex rounded-box order-1 shadow-none">
                 <div class="box-icon bg-primary">
                     <i class="lni lni-wallet"></i>
                 </div>
@@ -18,7 +25,8 @@
                     <p><small class="text-muted">Terkumpul</small></p>
                 </div>
             </div>
-            <div data-wow-delay=".6s" class="align-items-center wow fadeInUp col box bg-light p-3 d-flex rounded-box order-1 shadow-none">
+            <div data-wow-delay=".6s"
+                class="align-items-center wow fadeInUp col box bg-light p-3 d-flex rounded-box order-1 shadow-none">
                 <div class="box-icon bg-info">
                     <i class="lni lni-handshake"></i>
                 </div>
@@ -27,56 +35,83 @@
                     <p><small class="text-muted">Donatur</small></p>
                 </div>
             </div>
-            <div data-wow-delay=".8s" class="align-items-center wow fadeInUp col-12 col-md box bg-light p-3 d-flex rounded-box order-1 shadow-none">
+            <div data-wow-delay=".8s"
+                class="align-items-center wow fadeInUp col-12 col-md box bg-light p-3 d-flex rounded-box order-1 shadow-none">
                 <div class="box-icon bg-orange">
                     <i class="lni lni-target-customer"></i>
                 </div>
                 <div class="box-info d-flex flex-column">
-                    <h6 class="mb-0" <?= ((strtolower($data['detil_bantuan']->jumlah_target) != 'unlimited') ? 'data-count-up-value="' . $data['detil_bantuan']->jumlah_target . '">' : '>' . $data['detil_bantuan']->jumlah_target); ?></h6>
+                    <h6 class="mb-0" <?=((strtolower($data['detil_bantuan']->jumlah_target) != 'unlimited') ?
+                        'data-count-up-value="' . $data['detil_bantuan']->jumlah_target . '">' : '>' .
+                        $data['detil_bantuan']->jumlah_target); ?></h6>
                     <p><small class="text-muted">Target</small></p>
                 </div>
             </div>
-            <div data-wow-delay="1s" class="align-items-center wow fadeInUp col-6 col-md-12 col-lg box bg-light p-3 d-grid rounded-box progress-box order-0 order-md-1 shadow-none">
+            <div data-wow-delay="1s"
+                class="align-items-center wow fadeInUp col-6 col-md-12 col-lg box bg-light p-3 d-grid rounded-box progress-box order-0 order-md-1 shadow-none">
                 <div class="box-icon bg-green">
                     <i class="lni lni-grow"></i>
                 </div>
                 <div class="box-info d-flex flex-column">
                     <h6 class="mb-0" data-count-up-value="<?= $data['detil_bantuan']->donasi_terlaksana ?>">0</h6>
-                    <p><small class="text-muted"><?= (isset($data['detil_bantuan']->jenis_penyaluran) ? $data['detil_bantuan']->jenis_penyaluran : 'Donasi') ?> Tersalurkan</small></p>
+                    <p><small class="text-muted">
+                            <?= (isset($data['detil_bantuan']->jenis_penyaluran) ? $data['detil_bantuan']->jenis_penyaluran : 'Donasi') ?>
+                            Tersalurkan
+                        </small></p>
                     <div class="progress mt-1">
-                        <div class="progress-bar bg-green" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0%" aria-valuenow="<?= $data['detil_bantuan']->persentase_pelaksanaan; ?>"></div>
+                        <div class="progress-bar bg-green" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                            style="width: 0%" aria-valuenow="<?= $data['detil_bantuan']->persentase_pelaksanaan; ?>">
+                        </div>
                     </div>
                 </div>
             </div>
-            <div data-wow-delay="1s" class="align-items-center wow fadeInUp col-6 col-md col-lg box bg-light p-3 d-grid rounded-box timeup order-0 order-md-0 order-lg-1 shadow-none">
+            <div data-wow-delay="1s"
+                class="align-items-center wow fadeInUp col-6 col-md col-lg box bg-light p-3 d-grid rounded-box timeup order-0 order-md-0 order-lg-1 shadow-none">
                 <div class="box-icon bg-warning">
                     <i class="lni lni-timer"></i>
                 </div>
                 <div class="box-info d-flex flex-column">
-                    <h6 class="mb-0" <?= ((strtolower($data['detil_bantuan']->sisa_waktu) != 'unlimited') ? 'data-count-up-value="' . $data['detil_bantuan']->sisa_waktu .'" data-count-up-date="true">' : '>' . $data['detil_bantuan']->sisa_waktu); ?></h6>
+                    <h6 class="mb-0" <?=((is_numeric($data['detil_bantuan']->sisa_waktu)) ?
+                        'data-count-up-value="' . $data['detil_bantuan']->sisa_waktu .'" data-count-up-date="true">' :
+                        '>' . $data['detil_bantuan']->sisa_waktu); ?></h6>
                     <p><small class="text-muted">Sisa Waktu</small></p>
-                    <a role="button" class="d-flex justify-content-between text-primary align-items-center d-md-none collapseButton mt-1 toggle">
+                    <a role="button"
+                        class="d-flex justify-content-between text-primary align-items-center d-md-none collapseButton mt-1 toggle">
                         <span>Sembunyikan detil</span>
-                        <i class="lni lni-chevron-down" style="transform: rotate(90deg); transition: transform 0.3s ease 0s;"></i>
+                        <i class="lni lni-chevron-down"
+                            style="transform: rotate(90deg); transition: transform 0.3s ease 0s;"></i>
                     </a>
                 </div>
             </div>
         </div>
-        <div class="row g-0 gap-3 gap-md-4 bg-white position-relative pt-2 pt-lg-3" id="commit-bantuan-area" data-start-delay-wow="1.2">
-            <div class="col justify-content-center d-flex flex-column wow fadeInUp bg-light rounded-box align-items-center py-4" data-wow-delay="1.2s">
-                <div class="logo d-flex align-items-center justify-content-center border-1 rounded-box bg-white overflow-hidden border border-light shadow-none text-center">
-                    <img class="img-fluid" src="<?= $data['detil_bantuan']->path_gambar_logo_pengaju_bantuan; ?>" alt="Logo <?= $data['detil_bantuan']->pengaju_bantuan; ?>">
+        <div class="row g-0 gap-3 gap-md-4 bg-white position-relative pt-2 pt-lg-3" id="commit-bantuan-area"
+            data-start-delay-wow="1.2">
+            <div class="col justify-content-center d-flex flex-column wow fadeInUp bg-light rounded-box align-items-center py-4"
+                data-wow-delay="1.2s">
+                <div
+                    class="logo d-flex align-items-center justify-content-center border-1 rounded-box bg-white overflow-hidden border border-light shadow-none text-center">
+                    <img class="img-fluid" src="<?= $data['detil_bantuan']->path_gambar_logo_pengaju_bantuan; ?>"
+                        alt="Logo <?= $data['detil_bantuan']->pengaju_bantuan; ?>">
                 </div>
-                <h6 class="mt-3 text-black fw-bold text-center"><?= $data['detil_bantuan']->pengaju_bantuan; ?></h6>
+                <h6 class="mt-3 text-black fw-bold text-center">
+                    <?= $data['detil_bantuan']->pengaju_bantuan; ?>
+                </h6>
             </div>
             <div class="col order-first order-md-last wow fadeInUp" data-wow-delay="1.4s">
                 <div class="row">
+                    <?php if (strtoupper($data['detil_bantuan']->status) == 'D') { ?>
                     <div class="col-12">
-                        <a href="<?= '/donasi/buat/baru/'. $data['detil_bantuan']->id_bantuan; ?>" class="btn button donasi btn-lg w-100 shadow-none">Donasi Sekarang</a>
+                        <a href="<?= '/donasi/buat/baru/'. $data['detil_bantuan']->id_bantuan; ?>"
+                            class="btn button donasi btn-lg w-100 shadow-none mb-5">Donasi Sekarang</a>
                     </div>
+                    <?php } ?>
                     <div class="col-12">
-                        <h5 class="mb-3 mt-5"><?= $data['detil_bantuan']->nama; ?></h5>
-                        <p class="lh-lg"><?= $data['detil_bantuan']->deskripsi; ?></p>
+                        <h5 class="mb-3">
+                            <?= $data['detil_bantuan']->nama; ?>
+                        </h5>
+                        <p class="lh-lg">
+                            <?= $data['detil_bantuan']->deskripsi; ?>
+                        </p>
                     </div>
                 </div>
             </div>
