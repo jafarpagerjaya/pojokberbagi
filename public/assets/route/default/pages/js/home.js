@@ -365,14 +365,11 @@ if (loadMoreBtn != null) {
                 data.load_more = result.feedback.load_more;
                 data.record = result.feedback.total_record;
 
-                let allWows = targetRow.querySelectorAll(':scope > .wow'),
-                    lastWow = allWows[allWows.length - 1],
-                    lastWowDelay = parseFloat(getComputedStyle(lastWow).getPropertyValue('animation-delay').slice(0, -1)),
-                    delay_card = null;
+                let delay_card = null;
 
                 result.feedback.data.forEach(element => {  
                     if (delay_card == null) {
-                        delay_card = lastWowDelay + wowDelay;
+                        delay_card = wowDelay * 2;
                     } else {
                         delay_card = delay_card + wowDelay;
                     }

@@ -7,7 +7,7 @@ class HomeModel {
     private $_halaman = array(1,10),
             $_offset = 10,
             $_limit = 10,
-            $_order_by = 1,
+            $_order = 1,
             $_orderBy = 1,
             $_order_direction = 'DESC',
             $_ascDsc = 'ASC',
@@ -178,6 +178,14 @@ class HomeModel {
 
     public function getDirection() {
         return $this->_order_direction;
+    }
+
+    public function setOrder($order_by) {
+        $this->_order = $order_by;
+    }
+
+    public function getOrder() {
+        return $this->_order;
     }
 
     public function setAscDsc($asc_dsc) {

@@ -38,6 +38,7 @@ class HomeController extends Controller {
 		$this->model->getBanner();
 		$this->data['banner'] = $this->model->data();
 		
+		// $this->model->setOrder('b.action_at');
 		$this->model->setOffset(0);
 		$this->model->setLimit(3);
 		$this->model->getListBantuan();

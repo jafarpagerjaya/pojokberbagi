@@ -106,6 +106,8 @@ class BantuanController extends Controller {
 
         $program = Sanitize::escape2('Pojok Peduli Berbagi');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
+        $this->_bantuan->setOrder('b.action_at');
+        $this->_bantuan->setDirection('DESC');
         $this->_bantuan->setOffset(0);
         $this->_bantuan->setLimit(3);
         $this->_bantuan->getListBantuanKategori($program);
