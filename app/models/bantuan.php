@@ -428,9 +428,11 @@ class BantuanModel extends HomeModel {
     public function getCurrentListIdBantuanKategori($nama_kategori = null, $list_id = array()) {
         $values = array();
         $innerArrayFilter = array();
+        $status = '';
         if (isset($this->_status)) {
             array_push($innerArrayFilter, "AND UPPER(b.status) = UPPER(?)");
             array_push($values, $this->_status);
+            $status = " AND status = ?";
         }
 
         if (!is_null($nama_kategori)) {
@@ -452,18 +454,25 @@ class BantuanModel extends HomeModel {
 
             $lastListId = array_reverse($list_id)[0];
 
-            array_push($innerArrayFilter, "AND b.action_at >= (SELECT MIN(action_at) FROM bantuan WHERE id_bantuan IN ({$questionMarks}))");
+            array_push($innerArrayFilter, "AND b.action_at >= (SELECT IFNULL((SELECT MAX(action_at) FROM bantuan WHERE prioritas IS NULL AND id_bantuan IN ({$questionMarks}){$status}),(SELECT MAX(action_at) FROM bantuan WHERE id_bantuan NOT IN($questionMarks){$status}))) OR b.id_bantuan IN (SELECT id_bantuan FROM bantuan WHERE id_bantuan IN ({$questionMarks}){$status})");
             $values = array_merge($values, $list_id);
+            if (!is_null($status)) {
+                array_push($values, $this->_status);
+            }
+            $values = array_merge($values, $list_id);
+            if (!is_null($status)) {
+                array_push($values, $this->_status);
+            }
+            $values = array_merge($values, $list_id);
+            if (!is_null($status)) {
+                array_push($values, $this->_status);
+            }
         }
 
         $innerArrayFilter = implode(' ', $innerArrayFilter);
 
         $sql = "SELECT b.id_bantuan FROM bantuan b JOIN kategori k ON (b.id_kategori = k.id_kategori) WHERE b.blokir IS NULL {$innerArrayFilter} ORDER BY b.prioritas {$this->getDirection()}, {$this->getOrder()} {$this->getDIrection()}";
         $this->db->query($sql, $values);
-
-//         Debug::pr($sql);
-//         Debug::pr($values);
-// die();
 
         if (!$this->db->count()) {
             return false;
@@ -578,18 +587,37 @@ class BantuanModel extends HomeModel {
         }
 
         $return['data'] = $this->db->results();
+
+        $list_id = array_column($return['data'],'id_bantuan');
+
+        if (count($list_id)) {
+            $questionMarks = '';
+            $xCol = 1;
+
+            foreach ($list_id as $questionMark) {
+                $questionMarks .= "?";
+                if ($xCol < count($list_id)) {
+                    $questionMarks .= ", ";
+                }
+                $xCol++;
+            }
+        }
         
         if (!is_null($nama_kategori)) {
-            $result = $this->countData("bantuan JOIN kategori USING(id_kategori)", array("(blokir IS NULL OR blokir != '1') AND status = ? AND kategori.nama = ?", array(
-                    Sanitize::escape2($this->_status),
-                    $nama_kategori
-                )
-            ));
+            $countValues = array(
+                Sanitize::escape2($this->_status),
+                $nama_kategori
+            );
+            // $countValues = array_merge($countValues, $list_id);
+            // array_push($countValues, Sanitize::escape2($this->_status));
+            $result = $this->countData("bantuan JOIN kategori USING(id_kategori)", array("(blokir IS NULL OR blokir != '1') AND status = ? AND kategori.nama = ?", $countValues));
         } else {
-            $result = $this->countData("bantuan JOIN kategori", array("(blokir IS NULL OR blokir != '1') AND status = ?", array(
-                Sanitize::escape2($this->_status)
-            )
-        ));
+            $countValues = array(
+                Sanitize::escape2($this->_status),
+            );
+            // $countValues = array_merge($countValues, $list_id);
+            // array_push($countValues, Sanitize::escape2($this->_status));
+            $result = $this->countData("bantuan JOIN kategori", array("(blokir IS NULL OR blokir != '1') AND status = ?", $countValues));
         }
 
         $return['record'] = $result->jumlah_record;

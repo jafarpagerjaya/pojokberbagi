@@ -1,11 +1,10 @@
 URGEN MINGGU INI
 6. Cari tau penyebab token fetch gagal jika tab inspect elemet dibuka kecuali di home Controller route default
-7. Cek dan Tambahkan Fungsi Load More Bantuan pada tiap kategori
 10. Jika Waktu akhir bantuan ada dan sudah lewat dan status bantuan sudah selesai DAN ingin reenable (buka ulang) maka arahkan ke halaman update ulang bantuan dengan update status bantuan menjadi D
 11. Cek dan atur min ukuran dimensi upload medium img ke width 726px
 13. Buat fitur tambah donasi via CR
 14. Cek penyebab login gagal jika inspect elment di buka
-15. Perbaiki fungsi load more pada default jika terjadi penambahan atau pengurangan result total record ketika melakukan load more
+16. 
 BONUS KALO CUKUP Bulan Ini
 1. Kelola Banner MAIN bantuan
 2. Lvl Akses => pelajari ALC Lvl Akses

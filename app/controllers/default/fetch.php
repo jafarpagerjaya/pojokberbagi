@@ -167,45 +167,36 @@ class FetchController extends Controller {
         $this->model('Bantuan');
         $this->model->setStatus(Sanitize::escape2('D'));
         $this->model->setOrder('b.action_at');
-        // check Last Showed ID in current time are still valid
-        // $this->model->setOffset(0);
-        // if ($decoded['offset'] > $decoded['limit']) {
-        //     $limit = $decoded['offset'] - $decoded['limit'];
-        // } else {
-        //     $limit = $decoded['limit'];
-        // }
-        // $this->model->setLimit($limit);
-        Debug::pr($decoded['list_id']);
         $this->model->getCurrentListIdBantuanKategori($program, $decoded['list_id']);
         $currentListId = $this->model->data();
         foreach ($currentListId as $value) {
             $arrayList[] = $value->id_bantuan;
         }
         $currentListId = $arrayList;
-        Debug::pr($currentListId);
 
         // compare with the last list
         $newListId = array_diff($currentListId, $decoded['list_id']);
         $removeData = array_diff($decoded['list_id'], $currentListId);
-        // Debug::pr($newListId);
-        // Debug::pr($removeData);
 
         if (count(is_countable($newListId) ? $newListId : [])) {
             // new data founded
-            // $this->model->setOffset(0);
-            // $this->model->setLimit(count(is_countable($newListId) ? $newListId : []));
-            // $this->model->getListBantuanKategori($program);
-            // $newListId = $this->model->data()['data'];
             $this->model->getListIdBantuan($program, $newListId);
             $newestData = $this->model->data();
             if ($newestData) {
                 $decoded['offset'] = count($currentListId);
-                $limit = $decoded['limit'] - (count($newestData) % $decoded['limit']);
+                if ((count($newestData) % $decoded['limit']) != 0) {
+                    $limit += $decoded['limit'] - (count($newestData) % $decoded['limit']);
+                }
             }
         }
 
         if (count(is_countable($removeData) ? $removeData : [])) {
             $decoded['offset'] -= sizeof($removeData);
+            if (count(is_countable($newListId) ? $newListId : [])) {
+                $limit += $decoded['limit'] - (count($removeData) % $decoded['limit']) - ($limit - $decoded['limit']);
+            } else {
+                $limit += $decoded['limit'] - (count($removeData) % $decoded['limit']);
+            }
         }
 
         $this->model->setOffset($decoded['offset']);
@@ -214,42 +205,20 @@ class FetchController extends Controller {
 
         if ($this->model->affected()) {
             $data = $this->model->data();
-        //     if (count(is_countable($data['data']) ? $data['data'] : [])) {
-        //         // data ada
-        //         $data['list_id'] = array_column($data['data'], 'id_bantuan');
-        //         $removeList = array_intersect($data['list_id'], $decoded['list_id']);
-        //         if (count(is_countable($removeList) ? $removeList : []) > 0) {
-        //             $firstLimit = sizeof($removeList);
-        //             // akan ada penghapusan result terhadap data yang sama akibat adanya penambahan data pada result query sehingga data yang sama muncul
-        //             foreach($data['data'] as $list => $record) {
-        //                 if (is_array($record)) {
-        //                     if (in_array($record['id_bantuan'], $removeList)) {
-        //                         unset($data['data'][$list]);
-        //                         unset($removeList[$record['id_bantuan']]);
-        //                     }
-        //                 }
-        //             }
-        //             array_values($data['data']);
-                    
-        //             $this->model->setOffset(0);
-        //             $this->model->getListBantuanKategori($program);
-        //             $n_data['data'] = 
-        //             $this->model->setOffset($decoded['offset']);
-        //         }
-                
-        //         // Debug::pr($data['list_id']);
-        //     } else {
-        //         // data tidak ada akibat terjadi pengurangan jumlah result query, maka lakukan load data offset paling pertama
-        //         $this->model->setOffset(0);
-        //         $this->model->getListBantuanKategori($program);
-
-        //         // reset
-        //         $data['load_more'] = false;
-        //     }
             if (count(is_countable($newListId) ? $newListId : []) == 0) {
                 $decoded['list_id'] = array_map('intval', $decoded['list_id']);
                 $list_id = $decoded['list_id'];
             } else {
+                $intersetct = array_intersect(array_column($data['data'], 'id_bantuan'), $currentListId);
+                if (count(is_countable($intersetct) ? $intersetct : [])) {
+                    foreach($intersetct as $key => $value) {
+                        foreach($newestData as $listNewst => $newestRecord) {
+                            if ($newestRecord->id_bantuan == $value) {
+                                array_splice($newestData, $listNewst, 1);
+                            }
+                        }
+                    }
+                }
                 $list_id = $currentListId;
             }
             $data['list_id'] = base64_encode(json_encode(array_unique(array_merge($list_id, array_column($data['data'], 'id_bantuan')))));
@@ -259,7 +228,7 @@ class FetchController extends Controller {
             $data['data'] = array();
         }
 
-        if (!isset($data['total_record'])) {
+        if (!isset($data['record'])) {
             $data['record'] = count($currentListId);
         }
 
@@ -280,6 +249,7 @@ class FetchController extends Controller {
         }
 
         if ($data['limit'] != $decoded['limit']) {
+            $data['offset'] = $limit - $decoded['limit'];
             $data['limit'] = $decoded['limit'];
         }
 

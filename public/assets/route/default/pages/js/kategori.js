@@ -26,7 +26,6 @@ if (loadMoreBtn != null) {
         })
         .then(response => response.json())
         .then(function(result) {
-            console.log(result);
             
             if (result.error == false) {
                 // Success
@@ -37,7 +36,7 @@ if (loadMoreBtn != null) {
                 // List Id has been load;
                 data.list_id = JSON.parse(atob(decodeURIComponent(result.feedback.list_id)));
 
-                console.log(data.list_id);
+                listId = data.list_id;
 
                 let delay_card = null;
                 

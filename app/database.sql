@@ -832,3 +832,5 @@ BEFORE UPDATE ON bantuan FOR EACH ROW
         END IF;
     END$$
 DELIMITER ;
+
+ALTER TABLE bantuan ADD COLUMN prioritas CHAR(1) AFTER status;
