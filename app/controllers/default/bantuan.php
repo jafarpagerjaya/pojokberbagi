@@ -82,6 +82,8 @@ class BantuanController extends Controller {
 
         $program = Sanitize::escape2('Pojok Berdaya');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
+        $this->_bantuan->setOrder('b.action_at');
+        $this->_bantuan->setDirection('DESC');
         $this->_bantuan->setOffset(0);
         $this->_bantuan->setLimit(3);
         $this->_bantuan->getListBantuanKategori($program);
@@ -132,6 +134,8 @@ class BantuanController extends Controller {
 
         $program = Sanitize::escape2('Pojok Wakaf');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
+        $this->_bantuan->setOrder('b.action_at');
+        $this->_bantuan->setDirection('DESC');
         $this->_bantuan->setOffset(0);
         $this->_bantuan->setLimit(3);
         $this->_bantuan->getListBantuanKategori($program);
@@ -156,6 +160,8 @@ class BantuanController extends Controller {
 
         $program = Sanitize::escape2('Pojok Peduli Yatim');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
+        $this->_bantuan->setOrder('b.action_at');
+        $this->_bantuan->setDirection('DESC');
         $this->_bantuan->setOffset(0);
         $this->_bantuan->setLimit(3);
         $this->_bantuan->getListBantuanKategori($program);
@@ -180,6 +186,8 @@ class BantuanController extends Controller {
 
         $program = Sanitize::escape2('Pojok Rescue');
         $this->_bantuan->setStatus(Sanitize::escape2('D'));
+        $this->_bantuan->setOrder('b.action_at');
+        $this->_bantuan->setDirection('DESC');
         $this->_bantuan->setOffset(0);
         $this->_bantuan->setLimit(3);
         $this->_bantuan->getListBantuanKategori($program);
