@@ -123,7 +123,7 @@ CREATE TABLE akun (
     CONSTRAINT F_ID_GAMBAR_AKUN_ODN FOREIGN KEY(id_gambar) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE
 )ENGINE=INNODB;
 
-INSERT INTO akun(username,password,email,aktivasi,salt,hak_akses) VALUES('Pojok Berbagi', '595bfd08e98ea60c77d9949233761d0b', 'pojokberbagi.id@gmail.com', '1', '214fdcc52049c81fe814d92778168771', 'A');
+INSERT INTO akun(username,password,email,aktivasi,salt,hak_akses) VALUES('Pojok Berbagi', '595bfd08e98ea60c77d9949233761d0b', 'pojokberbagi.id@gmail.com', '1', '214fdcc52049c81fe814d92778168771', 'A'),('Jadi Anak Sholeh', '595bfd08e98ea60c77d9949233761d0b', 'pojokberbagi.id@gmail.com', '1', '214fdcc52049c81fe814d92778168771', 'A');
 
 CREATE TABLE sesi_akun(
     id_sesi INT UNSIGNED AUTO_INCREMENT,
@@ -160,8 +160,7 @@ BEFORE UPDATE ON admin
 FOR EACH ROW
   SET NEW.level = IF(NEW.level = 'S', UPPER(NEW.level), 'N');
 
-INSERT INTO admin(level,id_pegawai,id_akun) VALUES('S', 1, 1),
-('N', 2, 2);
+INSERT INTO admin(level,id_pegawai,id_akun) VALUES('S', 1, 1),('N', 2, 2);
 
 -- SELECT AUTO_INCREMENT FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'tes' AND TABLE_NAME = 'admin';
 
@@ -180,7 +179,10 @@ CREATE TABLE donatur (
     CONSTRAINT F_ID_AKUN_DONATUR_ODR FOREIGN KEY(id_akun) REFERENCES akun(id_akun) ON DELETE RESTRICT ON UPDATE CASCADE
 )ENGINE=INNODB;
 
-INSERT INTO donatur(nama,email,id_akun) VALUES('Bank BJB','csr@bjb.co.id',null),('SYSROOT','pojokberbagi.id@gmail.com',1);
+INSERT INTO donatur(nama,email,id_akun) VALUES('Bank BJB','csr@bjb.co.id',null),('Hamba Allah','handysantika@gmail.com',null),('SYSROOT','pojokberbagi.id@gmail.com',2),('Kiki Rejeki','rizky.edu@gmail.com',null),('Jafar Pager Jaya','jafarpager@gmail.com',2),('DINDA','maulinda.dinda98@gmail.com',null),('HAJI ARIEF','arifriandi834@gmail.com',null);
+UPDATE donatur SET kontak = '085211307060' WHERE email = 'rizky.edu@gmail.com';
+UPDATE donatur SET kontak = '082219069999' WHERE email = 'handysantika@gmail.com';
+UPDATE donatur SET kontak = '0895389564902' WHERE email = 'maulinda.dinda98@gmail.com';
 
 CREATE TABLE pemohon (
     id_pemohon INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -290,6 +292,7 @@ CREATE TABLE bantuan (
     tag VARCHAR(30),
     blokir ENUM('1') DEFAULT NULL,
     status ENUM('B','C','T','D','S') NOT NULL DEFAULT 'B',
+    prioritas CHAR(1) DEFAULT NULL,
     nama_penerima VARCHAR(50),
     satuan_target VARCHAR(15),
     jumlah_target INT UNSIGNED,
@@ -368,7 +371,7 @@ INSERT INTO pelaksanaan(deskripsi, jumlah_pelaksanaan, status, total_anggaran) V
 
 CREATE TABLE channel_payment (
     id_cp TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    nama VARCHAR(20) NOT NULL,
+    nama VARCHAR(25) NOT NULL,
     kode CHAR(3) DEFAULT NULL,
     nomor VARCHAR(30) NOT NULL,
     atas_nama VARCHAR(30) NOT NULL,
@@ -416,7 +419,7 @@ CREATE TABLE donasi (
 -- status donasi 0 = pembayaran belum dilakukan, 1 = pembayaran berhasil;
 
 -- INSERT INTO donasi(id_bantuan,id_donatur,alias,jumlah_donasi, id_pelaksanaan, bayar, id_cp) VALUES(1,1,'CSR BJB',2312500000,1,'1'),(1,1,'CSR BJB',3125000000,2,'1','1');
-INSERT INTO donasi(id_bantuan,id_donatur,alias,jumlah_donasi, bayar, id_cp, waktu_bayar) VALUES(1,1,'CSR BJB',2312500000,'1',1,'2021-08-11'),(1,1,'CSR BJB',3125000000,'1',1, '2021-10-10'),(2,2,"PROGRAM",750000,'1',2,'2021-10-16');
+INSERT INTO donasi(id_bantuan,id_donatur,alias,jumlah_donasi, bayar, id_cp, waktu_bayar) VALUES(1,1,'CSR BJB',2312500000,'1',2,'2021-08-11'),(1,1,'CSR BJB',3125000000,'1',2, '2021-10-10'),(2,2,"PROGRAM",750000,'1',3,'2021-10-16');
 
 CREATE TABLE anggaran_pelaksanaan_donasi (
     nominal_penggunaan_donasi INT UNSIGNED NOT NULL,
@@ -727,7 +730,7 @@ INSERT INTO bantuan(nama,status,min_donasi,create_at,deskripsi,id_kategori,id_se
 ('Banjir Sukawening','S',10000,'2021-12-11','Bantu masyarakat terdampak banjir di Sukawening',5,'B'),
 ('Berbagi Hadiah Lebaran Untuk Yatim & Lansia','S',50000,'2022-01-05','Berbagi kebahagian kepada anak yatim dan lansia akhir bulan ramadhan dengan memberikan hadiah lebaran untuk mereka',3,'S'),
 ('BERBAGI 1.000 PAKET BERBUKA','S',10000,'2022-04-01','Hidangkan makanan berbuka puasa untuk saudara kita diluar sana yuk! Pojok Berbagi Indonesia menawarkan paket makanan berbuka lengkap yang terdiri dari takjil, makanan utama dan minuman untuk fakir miskin dan masyarakat lainnya.',3,'S');
-
+-- ("SEDEKAH AL-QUR'AN UNTUK ORANG TUA",'D',20000,'2022-04-18','*Wakaf Al-Qur&#039;an atas nama orang tua* bisa menjadi bentuk ikhtiar kita untuk membahagiakan kedua orang tua, hadiah luar biasa yang insya Allah pahalanya akan terus mengalir serta menjadi syafaat untuk keduanya di hari akhir nanti.',4,'S');
 
 --INSERT INTO gambar
 INSERT INTO gambar(nama,path_gambar,label,gembok) VALUES('GoPay','/assets/images/partners/gopay.png','partner',1),

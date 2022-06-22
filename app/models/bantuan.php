@@ -471,7 +471,7 @@ class BantuanModel extends HomeModel {
 
         $innerArrayFilter = implode(' ', $innerArrayFilter);
 
-        $sql = "SELECT b.id_bantuan FROM bantuan b JOIN kategori k ON (b.id_kategori = k.id_kategori) WHERE b.blokir IS NULL {$innerArrayFilter} ORDER BY b.prioritas {$this->getDirection()}, {$this->getOrder()} {$this->getDIrection()}";
+        $sql = "SELECT b.id_bantuan FROM bantuan b LEFT JOIN kategori k ON (b.id_kategori = k.id_kategori) WHERE b.blokir IS NULL {$innerArrayFilter} ORDER BY b.prioritas {$this->getDirection()}, {$this->getOrder()} {$this->getDIrection()}, b.id_bantuan ASC";
         $this->db->query($sql, $values);
 
         if (!$this->db->count()) {
@@ -531,7 +531,7 @@ class BantuanModel extends HomeModel {
 
         $innerArrayFilter = implode(' ', $innerArrayFilter);
 
-        $sql = "SELECT {$columns} FROM {$tables} WHERE b.blokir IS NULL {$innerArrayFilter} GROUP BY b.id_bantuan ORDER BY b.prioritas {$this->getDirection()}, {$this->getOrder()} {$this->getDirection()}";
+        $sql = "SELECT {$columns} FROM {$tables} WHERE b.blokir IS NULL {$innerArrayFilter} GROUP BY b.id_bantuan ORDER BY b.prioritas {$this->getDirection()}, {$this->getOrder()} {$this->getDirection()}, b.id_bantuan ASC";
         $this->db->query($sql, $values);
 
         if (!$this->db->count()) {
@@ -576,11 +576,12 @@ class BantuanModel extends HomeModel {
 
         $innerArrayFilter = implode(' ', $innerArrayFilter);
 
-        $innerTable = "(SELECT bi.id_bantuan FROM bantuan bi JOIN kategori ki ON (bi.id_kategori = ki.id_kategori) WHERE bi.blokir IS NULL {$innerArrayFilter} ORDER BY bi.prioritas {$this->getDirection()}, bi.action_at {$this->getDirection()} LIMIT {$this->getOffset()}, {$this->getLimit()})";
+        $innerTable = "(SELECT bi.id_bantuan FROM bantuan bi LEFT JOIN kategori ki ON (bi.id_kategori = ki.id_kategori) WHERE bi.blokir IS NULL {$innerArrayFilter} ORDER BY bi.prioritas {$this->getDirection()}, bi.action_at {$this->getDirection()}, bi.id_bantuan ASC LIMIT {$this->getOffset()}, {$this->getLimit()})";
 
-        $sql = "SELECT {$columns} FROM {$innerTable} bin JOIN bantuan b ON (bin.id_bantuan = b.id_bantuan) {$tables} GROUP BY b.id_bantuan ORDER BY b.prioritas {$this->getDirection()}, {$this->getOrder()} {$this->getDirection()} LIMIT {$this->getLimit()}";
+        $sql = "SELECT {$columns} FROM {$innerTable} bin JOIN bantuan b ON (bin.id_bantuan = b.id_bantuan) {$tables} GROUP BY b.id_bantuan ORDER BY b.prioritas {$this->getDirection()}, {$this->getOrder()} {$this->getDirection()}, b.id_bantuan ASC LIMIT {$this->getLimit()}";
         $this->db->query($sql, $values);
 
+        // Debug::pr($this->db);
 
         if (!$this->db->count()) {
             return false;
@@ -617,7 +618,7 @@ class BantuanModel extends HomeModel {
             );
             // $countValues = array_merge($countValues, $list_id);
             // array_push($countValues, Sanitize::escape2($this->_status));
-            $result = $this->countData("bantuan JOIN kategori", array("(blokir IS NULL OR blokir != '1') AND status = ?", $countValues));
+            $result = $this->countData("bantuan LEFT JOIN kategori USING(id_kategori)", array("(blokir IS NULL OR blokir != '1') AND status = ?", $countValues));
         }
 
         $return['record'] = $result->jumlah_record;

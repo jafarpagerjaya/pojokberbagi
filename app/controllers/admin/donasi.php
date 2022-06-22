@@ -5,6 +5,9 @@ class DonasiController extends Controller {
 
         $this->rel_controller = array(
             array(
+                'href' => '/assets/pojok-berbagi-style.css'
+			),
+            array(
                 'href' => '/assets/route/admin/core/css/admin-style.css'
 			)
         );

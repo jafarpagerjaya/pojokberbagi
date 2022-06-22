@@ -38,11 +38,21 @@ class HomeController extends Controller {
 		$this->model->getBanner();
 		$this->data['banner'] = $this->model->data();
 		
-		// $this->model->setOrder('b.action_at');
-		$this->model->setOffset(0);
-		$this->model->setLimit(3);
-		$this->model->getListBantuan();
+		$this->model->setStatus(Sanitize::escape2('D'));
+        $this->model->setOrder('b.action_at');
+        $this->model->setDirection('DESC');
+        $this->model->setOffset(0);
+        $this->model->setLimit(3);
+        $this->model->getListBantuanKategori(null);
         $this->data['list_bantuan'] = $this->model->data();
+		if (count(is_countable($this->data['list_bantuan']) ? $this->data['list_bantuan'] : [])) {
+            $this->data['list_id'] = base64_encode(json_encode(array_column($this->data['list_bantuan']['data'], 'id_bantuan')));
+        }
+
+		// $this->model->setOffset(0);
+		// $this->model->setLimit(3);
+		// $this->model->getListBantuan();
+        // $this->data['list_bantuan'] = $this->model->data();
 		// $this->setKunjungan();
 		// Track real path based on return php request for js dom
 		$this->data['uri'] = base64_encode($this->getRealUri());
