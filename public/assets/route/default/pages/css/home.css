@@ -142,6 +142,18 @@ header.header+.hero-area {
     padding-bottom: 120px;
 }
 
+/* Handler img broken pojok-berbagi-stype extender */
+.app-image > .img-wrapper > a[href] {
+    max-height: inherit;
+    min-height: inherit;
+    width: 100%;
+}
+.app-image > .img-wrapper > a[href] > img[src=""] {
+    max-height: inherit;
+    min-height: inherit;
+    width: 100%;
+}
+
 @media (min-width: 320px) {
 
     .hero-area .app-image .img-wrapper {

@@ -90,8 +90,8 @@ class BantuanModel extends HomeModel {
         k.warna, k.nama nama_kategori,
         COUNT(p.id_pelaksanaan) sekian_kali_pencairan,
         IF(SUM(p.jumlah_pelaksanaan) IS NULL, 0, SUM(p.jumlah_pelaksanaan)) jumlah_pelaksanaan,
-        FORMAT(SUM(d.jumlah_donasi),0,'id_ID') total_donasi, 
-        FORMAT(COUNT(d.id_donatur),0,'id_ID') total_donatur,
+        FORMAT(SUM(CASE WHEN d.bayar = 1 THEN d.jumlah_donasi ELSE 0 END),0,'id_ID') total_donasi, 
+        FORMAT(COUNT(DISTINCT(d.id_donatur)),0,'id_ID') total_donatur,
         FORMAT(SUM(CASE WHEN apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END),0,'id_ID') donasi_terlaksana,
         IFNULL(FORMAT(SUM(CASE WHEN apd.id_pelaksanaan IS NULL THEN d.jumlah_donasi END),0,'id_ID'),0) saldo_donasi,
 		TRUNCATE(COALESCE(IF(b.jumlah_target IS NULL, TRUNCATE(SUM(CASE WHEN apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END)/SUM(d.jumlah_donasi)*100,1), IF(TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1))),0),0) persentase_pelaksanaan
@@ -418,7 +418,16 @@ class BantuanModel extends HomeModel {
 
             $lastListId = array_reverse($list_id)[0];
 
-            array_push($innerArrayFilter, "AND b.action_at >= (SELECT IFNULL((SELECT MAX(action_at) FROM bantuan WHERE prioritas IS NULL AND id_bantuan IN ({$questionMarks}){$status}),(SELECT MAX(action_at) FROM bantuan WHERE id_bantuan NOT IN($questionMarks){$status}))) OR b.id_bantuan IN (SELECT id_bantuan FROM bantuan WHERE id_bantuan IN ({$questionMarks}){$status})");
+            array_push($innerArrayFilter, "AND b.action_at >= (
+                SELECT IFNULL(
+                    (
+                        SELECT MAX(action_at) FROM bantuan WHERE prioritas IS NULL AND id_bantuan IN ({$questionMarks}){$status}
+                    ),
+                    (
+                        SELECT MAX(action_at) FROM bantuan WHERE id_bantuan NOT IN($questionMarks){$status}
+                    )
+                )
+            ) OR b.id_bantuan IN (SELECT id_bantuan FROM bantuan WHERE id_bantuan IN ({$questionMarks}){$status})");
             $values = array_merge($values, $list_id);
             if (!is_null($status)) {
                 array_push($values, $this->_status);
@@ -595,7 +604,7 @@ class BantuanModel extends HomeModel {
     }
 
     public function getBanner() {
-        $data = $this->db->query("SELECT b.id_bantuan, b.jumlah_target, b.deskripsi, b.nama nama_bantuan, gm.path_gambar path_gambar_medium, gm.nama nama_gambar_medium, gw.path_gambar path_gambar_wide, gw.nama nama_gambar_wide, k.nama nama_kategori,
+        $data = $this->db->query("SELECT b.id_bantuan, b.jumlah_target, b.deskripsi, b.nama nama_bantuan, gm.path_gambar path_gambar_medium, IFNULL(gm.nama,CONCAT('Gambar ',b.nama)) nama_gambar_medium, gw.path_gambar path_gambar_wide, IFNULL(gw.nama,CONCAT('Gambar ',b.nama)) nama_gambar_wide, k.nama nama_kategori,
         CASE WHEN b.id_sektor = 'S' THEN 'Sosial Kemanusiaan' WHEN b.id_sektor = 'P' THEN 'Pendidikan Umat' WHEN b.id_sektor = 'E' THEN 'Pemandirian Ekonomi' WHEN b.id_sektor = 'K' THEN 'Kesehatan Masyarakat' WHEN b.id_sektor = 'L' THEN 'Lingkungan Asri' WHEN b.id_sektor = 'B' THEN 'Tanggap Bencana' END layanan,
 		IF(b.tanggal_akhir IS NULL, 'Unlimited', CASE WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(b.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) < 0 THEN 'Sudah lewat' WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(b.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) = 0 THEN 'Terakhir hari ini' ELSE TIMESTAMPDIFF(DAY,NOW(), CONCAT(b.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) END ) sisa_waktu,
         IF(b.id_bantuan = 1, COUNT(d.id_donatur)+1999, COUNT(d.id_donatur)) jumlah_donatur,

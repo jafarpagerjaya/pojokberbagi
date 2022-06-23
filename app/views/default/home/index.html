@@ -215,14 +215,16 @@
             </div>
         </div>
         <?php $delay_card = 0.2; ?>
-        <div class="row" id="list-bantuan-row" data-delay="<?= $delay_card; ?>"<?= (isset($data['list_id']) ? ' data-list-id="' . $data['list_id'] . '"' : '' );?>>
+        <div class="row" id="list-bantuan-row" data-delay="<?= $delay_card; ?>" <?=(isset($data['list_id'])
+            ? ' data-list-id="' . $data['list_id'] . '"' : '' );?>>
             <?php 
             if (!is_null($data['list_bantuan']['data'])) {
                 $time_card = 0.2;
                 foreach($data['list_bantuan']['data'] as $list_bantuan) { 
                     $delay_card = $delay_card + $time_card; 
             ?>
-            <div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay="<?= $delay_card.'s'; ?>" data-id-bantuan="<?= $list_bantuan->id_bantuan; ?>">
+            <div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay="<?= $delay_card.'s'; ?>"
+                data-id-bantuan="<?= $list_bantuan->id_bantuan; ?>">
                 <!-- Start Single Service -->
                 <div class="p-4 single-service animation">
                     <div
