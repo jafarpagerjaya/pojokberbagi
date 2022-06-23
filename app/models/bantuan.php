@@ -389,7 +389,7 @@ class BantuanModel extends HomeModel {
         }
     }
 
-    public function getListBantuan() {
+    public function getListBantuans() {
         $sql = "SELECT b.id_bantuan, s.id_sektor layanan, b.nama nama_bantuan, gm.path_gambar path_gambar_medium, IFNULL(gm.nama,CONCAT('Gambar ',b.nama)) nama_gambar_medium, gw.path_gambar path_gambar_wide, IFNULL(gw.nama,CONCAT('Gambar ',b.nama)) nama_gambar_wide, s.nama nama_sektor, k.nama nama_kategori, IF(k.warna IS NULL, '#727272', k.warna) warna,
         IF(p2.id_gambar IS NULL, '/assets/images/brand/pojok-berbagi-transparent.png', gp2.path_gambar) path_gambar_pengaju,
         IF(p2.nama IS NULL, 'Pojok Berbagi Indonesia', p2.nama) pengaju_bantuan,
@@ -542,7 +542,7 @@ class BantuanModel extends HomeModel {
         return $this->data;
     }
 
-    public function getListBantuanKategori($nama_kategori = null) {
+    public function getListBantuan($nama_kategori = null) {
         $values = array();
         $innerArrayFilter = array();
         $columns ="b.id_bantuan, s.id_sektor layanan, b.nama nama_bantuan, gm.path_gambar path_gambar_medium, IFNULL(gm.nama,CONCAT('Gambar ',b.nama)) nama_gambar_medium, gw.path_gambar path_gambar_wide, IFNULL(gw.nama,CONCAT('Gambar ',b.nama)) nama_gambar_wide, s.nama nama_sektor, k.nama nama_kategori, IF(k.warna IS NULL, '#727272', k.warna) warna,

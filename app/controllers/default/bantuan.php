@@ -85,8 +85,8 @@ class BantuanController extends Controller {
         $this->_bantuan->setOrder('b.action_at');
         $this->_bantuan->setDirection('DESC');
         $this->_bantuan->setOffset(0);
-        $this->_bantuan->setLimit(3);
-        $this->_bantuan->getListBantuanKategori($program);
+        $this->_bantuan->setLimit(6);
+        $this->_bantuan->getListBantuan($program);
         $this->data['list_bantuan'] = $this->_bantuan->data();
         if (count(is_countable($this->data['list_bantuan']) ? $this->data['list_bantuan'] : [])) {
             $this->data['list_id'] = base64_encode(json_encode(array_column($this->data['list_bantuan']['data'], 'id_bantuan')));
@@ -111,8 +111,8 @@ class BantuanController extends Controller {
         $this->_bantuan->setOrder('b.action_at');
         $this->_bantuan->setDirection('DESC');
         $this->_bantuan->setOffset(0);
-        $this->_bantuan->setLimit(3);
-        $this->_bantuan->getListBantuanKategori($program);
+        $this->_bantuan->setLimit(6);
+        $this->_bantuan->getListBantuan($program);
         $this->data['list_bantuan'] = $this->_bantuan->data();
         if (count(is_countable($this->data['list_bantuan']) ? $this->data['list_bantuan'] : [])) {
             $this->data['list_id'] = base64_encode(json_encode(array_column($this->data['list_bantuan']['data'], 'id_bantuan')));
@@ -137,8 +137,8 @@ class BantuanController extends Controller {
         $this->_bantuan->setOrder('b.action_at');
         $this->_bantuan->setDirection('DESC');
         $this->_bantuan->setOffset(0);
-        $this->_bantuan->setLimit(3);
-        $this->_bantuan->getListBantuanKategori($program);
+        $this->_bantuan->setLimit(6);
+        $this->_bantuan->getListBantuan($program);
         $this->data['list_bantuan'] = $this->_bantuan->data();
         if (count(is_countable($this->data['list_bantuan']) ? $this->data['list_bantuan'] : [])) {
             $this->data['list_id'] = base64_encode(json_encode(array_column($this->data['list_bantuan']['data'], 'id_bantuan')));
@@ -163,8 +163,8 @@ class BantuanController extends Controller {
         $this->_bantuan->setOrder('b.action_at');
         $this->_bantuan->setDirection('DESC');
         $this->_bantuan->setOffset(0);
-        $this->_bantuan->setLimit(3);
-        $this->_bantuan->getListBantuanKategori($program);
+        $this->_bantuan->setLimit(6);
+        $this->_bantuan->getListBantuan($program);
         $this->data['list_bantuan'] = $this->_bantuan->data();
         if (count(is_countable($this->data['list_bantuan']) ? $this->data['list_bantuan'] : [])) {
             $this->data['list_id'] = base64_encode(json_encode(array_column($this->data['list_bantuan']['data'], 'id_bantuan')));
@@ -189,8 +189,8 @@ class BantuanController extends Controller {
         $this->_bantuan->setOrder('b.action_at');
         $this->_bantuan->setDirection('DESC');
         $this->_bantuan->setOffset(0);
-        $this->_bantuan->setLimit(3);
-        $this->_bantuan->getListBantuanKategori($program);
+        $this->_bantuan->setLimit(6);
+        $this->_bantuan->getListBantuan($program);
         $this->data['list_bantuan'] = $this->_bantuan->data();
         if (count(is_countable($this->data['list_bantuan']) ? $this->data['list_bantuan'] : [])) {
             $this->data['list_id'] = base64_encode(json_encode(array_column($this->data['list_bantuan']['data'], 'id_bantuan')));

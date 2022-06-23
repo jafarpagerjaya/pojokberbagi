@@ -153,7 +153,7 @@ class FetchController extends Controller {
 
         $this->model->setOffset($decoded['offset']);
         $this->model->setLimit($limit);
-        $this->model->getListBantuanKategori($program);
+        $this->model->getListBantuan($program);
 
         if ($this->model->affected()) {
             $data = $this->model->data();
@@ -200,8 +200,9 @@ class FetchController extends Controller {
             $data['list_id'] = base64_encode(json_encode($currentListId));
         }
 
+        // $data['limit'] == $limit
         if ($data['limit'] != $decoded['limit']) {
-            $data['offset'] = $limit - $decoded['limit'];
+            $data['offset'] += $limit - $decoded['limit'];
             $data['limit'] = $decoded['limit'];
         }
 
@@ -224,51 +225,12 @@ class FetchController extends Controller {
             $this->_result['feedback']['removed_id'] = $removeData;
         }
 
-        // $this->model('Bantuan');
-        // $this->model->setOffset($decoded['offset']);
-        // $this->model->setLimit($decoded['limit']);
-        // $this->model->getListBantuan();
-
-        // if ($this->model->affected()) {
-        //     $data = $this->model->data();
-        // }
-
-        // if (!isset($data['data'])) {
-        //     $data['data'] = array();
-        // }
-
-        // if (!isset($data['total_record'])) {
-        //     $data['total_record'] = $this->model->data()['record'];
-        // }
-
-        // if (!isset($data['load_more'])) {
-        //     $data['load_more'] = $this->model->data()['load_more'];
-        // }
-
-        // if (!isset($data['offset'])) {
-        //     $data['offset'] = $this->model->data()['offset'];
-        // }
-
-        // if (!isset($data['limit'])) {
-        //     $data['limit'] = $this->model->data()['limit'];
-        // }
-
-        // $this->_result['error'] = false;
-        // $this->_result['feedback'] = array(
-        //     'data' => $data['data'],
-        //     'message' => 'ok',
-        //     'limit' => $data['limit'],
-        //     'offset' => $data['offset'],
-        //     'total_record' => $data['record'],
-        //     'load_more' => $data['load_more']
-        // );
-
         $this->result();
         
         return false;
     }
 
-    // getListBantuanKategori(); Route Default BantuanController
+    // getListBantuan(); Route Default BantuanController
     private function bantuanKategoriRead($decoded) {
         $decoded = Sanitize::thisArray($decoded);
 
@@ -320,7 +282,7 @@ class FetchController extends Controller {
 
         $this->model->setOffset($decoded['offset']);
         $this->model->setLimit($limit);
-        $this->model->getListBantuanKategori($program);
+        $this->model->getListBantuan($program);
 
         if ($this->model->affected()) {
             $data = $this->model->data();
@@ -367,8 +329,9 @@ class FetchController extends Controller {
             $data['list_id'] = base64_encode(json_encode($currentListId));
         }
 
+        // $data['limit'] == $limit
         if ($data['limit'] != $decoded['limit']) {
-            $data['offset'] = $limit - $decoded['limit'];
+            $data['offset'] += $limit - $decoded['limit'];
             $data['limit'] = $decoded['limit'];
         }
 

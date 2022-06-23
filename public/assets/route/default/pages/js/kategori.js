@@ -38,6 +38,9 @@ if (loadMoreBtn != null) {
 
                 listId = data.list_id;
 
+                console.log(listId);
+                console.log(data);
+
                 let delay_card = null;
                 
                 if (result.feedback.newest_data != null) {
