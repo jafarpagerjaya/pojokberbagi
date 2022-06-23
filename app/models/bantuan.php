@@ -418,7 +418,7 @@ class BantuanModel extends HomeModel {
 
             $lastListId = array_reverse($list_id)[0];
 
-            array_push($innerArrayFilter, "AND b.action_at >= (
+            array_push($innerArrayFilter, "AND b.action_at > (
                 SELECT IFNULL(
                     (
                         SELECT MAX(action_at) FROM bantuan WHERE prioritas IS NULL AND id_bantuan IN ({$questionMarks}){$status}
