@@ -389,42 +389,6 @@ class BantuanModel extends HomeModel {
         }
     }
 
-    public function getListBantuans() {
-        $sql = "SELECT b.id_bantuan, s.id_sektor layanan, b.nama nama_bantuan, gm.path_gambar path_gambar_medium, IFNULL(gm.nama,CONCAT('Gambar ',b.nama)) nama_gambar_medium, gw.path_gambar path_gambar_wide, IFNULL(gw.nama,CONCAT('Gambar ',b.nama)) nama_gambar_wide, s.nama nama_sektor, k.nama nama_kategori, IF(k.warna IS NULL, '#727272', k.warna) warna,
-        IF(p2.id_gambar IS NULL, '/assets/images/brand/pojok-berbagi-transparent.png', gp2.path_gambar) path_gambar_pengaju,
-        IF(p2.nama IS NULL, 'Pojok Berbagi Indonesia', p2.nama) pengaju_bantuan,
-        FORMAT(SUM(CASE WHEN d.bayar = 1 THEN d.jumlah_donasi ELSE 0 END),0,'id_ID') total_donasi,
-        SUM(CASE WHEN d.bayar = 1 AND apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi ELSE 0 END) donasi_disalurkan,
-        IF(b.tanggal_akhir IS NULL, 'Unlimited', CASE WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(b.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) < 0 THEN 'Sudah lewat' WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(b.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) = 0 THEN 'Terakhir hari ini' ELSE CONCAT(TIMESTAMPDIFF(DAY,NOW(), CONCAT(b.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))),' hari lagi') END ) sisa_waktu,
-        IF(b.jumlah_target IS NULL,
-        IF(TRUNCATE((SUM(IF(apd.id_pelaksanaan IS NULL, 0, d.jumlah_donasi))/IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)))*100,1) IS NULL, 0, TRUNCATE((SUM(IF(apd.id_pelaksanaan IS NULL, 0, d.jumlah_donasi))/IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)))*100,1))
-        , IF(TRUNCATE((SUM(p1.jumlah_pelaksanaan)/b.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p1.jumlah_pelaksanaan)/b.jumlah_target)*100,1))) persentase_donasi_dilaksanakan
-        FROM (SELECT id_bantuan FROM bantuan WHERE status = 'D' AND (blokir IS NULL OR blokir != '1') AND (tanggal_akhir IS NULL OR TIMESTAMPDIFF(DAY,NOW(), CONCAT(tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) >= 0) ORDER BY bantuan.prioritas {$this->getDirection()}, {$this->getOrder()} {$this->getDirection()} LIMIT {$this->getOffset()},{$this->getLimit()}) bi JOIN bantuan b ON (bi.id_bantuan = b.id_bantuan)
-        LEFT JOIN donasi d ON (d.id_bantuan = b.id_bantuan)
-        LEFT JOIN anggaran_pelaksanaan_donasi apd ON (d.id_donasi = apd.id_donasi)
-        LEFT JOIN pelaksanaan p1 USING(id_pelaksanaan)
-        LEFT JOIN gambar gm ON (b.id_gambar_medium = gm.id_gambar)
-        LEFT JOIN gambar gw ON (b.id_gambar_wide = gw.id_gambar)
-        LEFT JOIN pemohon p2 USING(id_pemohon)
-        LEFT JOIN gambar gp2 ON (gp2.id_gambar = p2.id_gambar)
-        LEFT JOIN sektor s USING(id_sektor)
-        LEFT JOIN kategori k USING(id_kategori)
-        GROUP BY b.id_bantuan
-        ORDER BY b.prioritas {$this->getDirection()}, {$this->getOrder()} {$this->getDirection()} LIMIT {$this->getLimit()}";
-        $data = $this->db->query($sql);
-        if ($data->count() || !$data->error()) {
-            $return['data'] = $data->results();
-            $result = $this->countData("bantuan","(blokir IS NULL OR blokir != '1') AND status = 'D'");
-            $return['record'] = $result->jumlah_record;
-            $return['load_more'] = ($return['record'] > ($this->getOffset() + $this->getLimit()) ? true : false);
-            $return['offset'] = $this->getOffset();
-            $return['limit'] = $this->getLimit();
-            $this->data = $return;
-            return $this->data;
-        }
-        return false;
-    }
-
     public function getCurrentListIdBantuanKategori($nama_kategori = null, $list_id = array()) {
         $values = array();
         $innerArrayFilter = array();

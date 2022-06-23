@@ -356,7 +356,6 @@ if (loadMoreBtn != null) {
         })
         .then(response => response.json())
         .then(function(result) {
-            console.log(result);
             
             if (result.error == false) {
                 // Success
@@ -368,8 +367,6 @@ if (loadMoreBtn != null) {
                 data.list_id = JSON.parse(atob(decodeURIComponent(result.feedback.list_id)));
 
                 listId = data.list_id;
-
-                console.log(listId);
 
                 let delay_card = null;
 
