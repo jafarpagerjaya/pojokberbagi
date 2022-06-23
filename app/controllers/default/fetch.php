@@ -119,7 +119,16 @@ class FetchController extends Controller {
         $this->model('Bantuan');
         $this->model->setStatus(Sanitize::escape2('D'));
         $this->model->setOrder('b.action_at');
-        $this->model->getCurrentListIdBantuanKategori($program, $decoded['list_id']);
+        $this->model->getCurrentListIdBantuan($program, $decoded['list_id']);
+
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Bantuan method getCurrentListIdBantuan goes wrong'
+            );
+            $this->result();
+            return false;
+        }
+
         $currentListId = $this->model->data();
         foreach ($currentListId as $value) {
             $arrayList[] = $value->id_bantuan;
@@ -133,6 +142,15 @@ class FetchController extends Controller {
         if (count(is_countable($newListId) ? $newListId : [])) {
             // new data founded
             $this->model->getListIdBantuan($program, $newListId);
+
+            if (!$this->model->affected()) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Bantuan method getListIdBantuan goes wrong'
+                );
+                $this->result();
+                return false;
+            }
+
             $newestData = $this->model->data();
             if ($newestData) {
                 $decoded['offset'] = count($currentListId);
@@ -174,6 +192,12 @@ class FetchController extends Controller {
                 $list_id = $currentListId;
             }
             $data['list_id'] = base64_encode(json_encode(array_unique(array_merge($list_id, array_column($data['data'], 'id_bantuan')))));
+        } else {
+            $this->_result['feedback'] = array(
+                'message' => 'Bantuan method getListBantuan goes wrong'
+            );
+            $this->result();
+            return false;
         }
 
         if (!isset($data['data'])) {
@@ -248,7 +272,16 @@ class FetchController extends Controller {
         $this->model('Bantuan');
         $this->model->setStatus(Sanitize::escape2('D'));
         $this->model->setOrder('b.action_at');
-        $this->model->getCurrentListIdBantuanKategori($program, $decoded['list_id']);
+        $this->model->getCurrentListIdBantuan($program, $decoded['list_id']);
+
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Bantuan method getCurrentListIdBantuan goes wrong'
+            );
+            $this->result();
+            return false;
+        }
+
         $currentListId = $this->model->data();
         foreach ($currentListId as $value) {
             $arrayList[] = $value->id_bantuan;
@@ -262,6 +295,15 @@ class FetchController extends Controller {
         if (count(is_countable($newListId) ? $newListId : [])) {
             // new data founded
             $this->model->getListIdBantuan($program, $newListId);
+
+            if (!$this->model->affected()) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Bantuan method getListIdBantuan goes wrong'
+                );
+                $this->result();
+                return false;
+            }
+
             $newestData = $this->model->data();
             if ($newestData) {
                 $decoded['offset'] = count($currentListId);
@@ -286,10 +328,7 @@ class FetchController extends Controller {
 
         if ($this->model->affected()) {
             $data = $this->model->data();
-            if (count(is_countable($newListId) ? $newListId : []) == 0) {
-                $decoded['list_id'] = array_map('intval', $decoded['list_id']);
-                $list_id = $decoded['list_id'];
-            } else {
+            if (count(is_countable($newListId) ? $newListId : []) > 0) {
                 $intersetct = array_intersect(array_column($data['data'], 'id_bantuan'), $currentListId);
                 if (count(is_countable($intersetct) ? $intersetct : [])) {
                     foreach($intersetct as $key => $value) {
@@ -300,9 +339,17 @@ class FetchController extends Controller {
                         }
                     }
                 }
-                $list_id = $currentListId;
             }
+
+            $list_id = $currentListId;
+
             $data['list_id'] = base64_encode(json_encode(array_unique(array_merge($list_id, array_column($data['data'], 'id_bantuan')))));
+        } else {
+            $this->_result['feedback'] = array(
+                'message' => 'Bantuan method getListBantuan goes wrong'
+            );
+            $this->result();
+            return false;
         }
 
         if (!isset($data['data'])) {

@@ -389,7 +389,7 @@ class BantuanModel extends HomeModel {
         }
     }
 
-    public function getCurrentListIdBantuanKategori($nama_kategori = null, $list_id = array()) {
+    public function getCurrentListIdBantuan($nama_kategori = null, $list_id = array()) {
         $values = array();
         $innerArrayFilter = array();
         $status = '';
@@ -421,13 +421,13 @@ class BantuanModel extends HomeModel {
             array_push($innerArrayFilter, "AND b.action_at > (
                 SELECT IFNULL(
                     (
-                        SELECT MAX(action_at) FROM bantuan WHERE prioritas IS NULL AND id_bantuan IN ({$questionMarks}){$status}
+                        SELECT MAX(action_at) FROM bantuan WHERE prioritas IS NULL AND id_bantuan IN ({$questionMarks}){$status} AND blokir IS NULL
                     ),
                     (
-                        SELECT MAX(action_at) FROM bantuan WHERE id_bantuan NOT IN($questionMarks){$status}
+                        SELECT MAX(action_at) FROM bantuan WHERE id_bantuan NOT IN($questionMarks){$status} AND blokir IS NULL
                     )
                 )
-            ) OR b.id_bantuan IN (SELECT id_bantuan FROM bantuan WHERE id_bantuan IN ({$questionMarks}){$status})");
+            ) OR b.id_bantuan IN (SELECT id_bantuan FROM bantuan WHERE id_bantuan IN ({$questionMarks}){$status}) AND blokir IS NULL");
             $values = array_merge($values, $list_id);
             if (!is_null($status)) {
                 array_push($values, $this->_status);
