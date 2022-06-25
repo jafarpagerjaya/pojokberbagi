@@ -197,11 +197,11 @@ class HomeModel {
     }
 
     public function setHalaman($params, $table) {   
-        $param1 = (($params-1) * $this->getOffset()) + 1;
+        $param1 = (($params-1) * $this->getLimit()) + 1;
         if ($param1 < 0) {
             $param1 = 0;
         }
-        $param2 = $params * $this->getOffset();
+        $param2 = $params * $this->getLimit();
         // Cek apakah OFFSET ATAU SEEK
         if ($this->_search == null) {
             // SEEK

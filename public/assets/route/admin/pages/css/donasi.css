@@ -1,3 +1,19 @@
+table .avatar {
+    --avatar: 35px;
+    width: var(--avatar);
+    height: var(--avatar);
+}
+
+.card table .media img[alt="bank-bjb"],
+.card table .media img[alt="bank-bsi"],
+.card table .media img[alt="bank-bri"],
+.card table .media img[alt="qris"],
+.card table .media img[alt="BJB"],
+.card table .media img[alt="BSI"],
+.card table .media img[alt="BRI"] {
+    margin-top: -0.3rem;
+}
+
 .card#list-donasi>.card-header,
 .card#list-donasi>.card-footer {
     border: 0px;
@@ -49,6 +65,10 @@
     max-width: 40px;
 }
 
+.card img[alt="Pojok Berbagi"] {
+    max-width: 60px;
+}
+
 /* Media Query */
 @media (min-width: 768px) {
     /* Percobaan */
@@ -74,6 +94,10 @@
         flex-basis: calc(33.3% - 1em);
     }
     /* Akhir Percobaan */
+
+    #cp-card .logo-cp > img {
+        padding: 0px .75em;
+    }
 }
 
 @media (min-width: 1200px) {
@@ -82,27 +106,48 @@
         width: 100%;
         flex: 1 1 100%;
     }
+
+    .card img[alt="Pojok Berbagi"] {
+        max-width: 100%;
+    }
+
+    #cp-card .logo-cp > img {
+        padding: 0px;
+    }
+
+    .col-12.col-md-6.card[data-cp] {
+        min-height: 141px;
+    }
+
+    .col.saldo {
+        font-size: .8em;
+    }
 }
 
 @media (min-width: 1200px) and (max-width: 1277px) {
-    .card table {
+    /* .card table {
         display: block;
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+    } */
+}
+
+@media (min-width: 1548px) {
+    .col-12.col-md-6.card[data-cp] {
+        min-height: 168.5px;
+    }
+
+    .card img[alt="Pojok Berbagi"] {
+        max-width: 60px;
     }
 }
 
 @media (min-width: 1617px) {
-  #main-content .row .col-xl-8 {
-      flex-basis: 50%;
-  }
 
-  #main-content .row .col-xl-8~.col-xl-4 {
-      width: 100%;
-      max-width: 100%;
-      flex: 0 1 50%;
-  }
+    .col-12.col-md-6.card[data-cp] {
+        min-height: 138.5px;
+    }
 
   /* Percobaan */
 
@@ -113,17 +158,29 @@
     }
   /* Akhir Percobaan */
 
-  .card img[alt="bank-bjb"].saldo,
-  .card img[alt="bank-bsi"].saldo,
-  .card img[alt="bank-bri"].saldo,
-  .card img[alt="qris"].saldo,
-  .card img[alt="BJB"].saldo,
-  .card img[alt="BSI"].saldo,
-  .card img[alt="BRI"].saldo {
-      margin-bottom: .5rem;
-  }
+    .card img[alt="bank-bjb"].saldo,
+    .card img[alt="bank-bsi"].saldo,
+    .card img[alt="bank-bri"].saldo,
+    .card img[alt="qris"].saldo,
+    .card img[alt="BJB"].saldo,
+    .card img[alt="BSI"].saldo,
+    .card img[alt="BRI"].saldo {
+        margin-bottom: .5rem;
+    }
 
-  .card .row.align-items-end {
-      align-items: center !important;
-  }
+    .card img[alt="Pojok Berbagi"],
+    .card img[alt="GPN"] {
+        max-width: 100%;
+    }
+
+    .card .row.align-items-end {
+        align-items: center !important;
+    }
+
+    .card.overflow-hidden[data-cp="bank-bri"]>.strip-bottom,
+    .card.overflow-hidden[data-cp="bank-bri"]>.strip-top {
+        right: 3em;
+        height: 100%;
+        width: 70px;
+    }
 }

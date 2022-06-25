@@ -133,12 +133,11 @@ const detectTab = function() {
     return ( window.innerWidth <= 768 );
 };
 
-function keteranganJenisChannelPayment(jenis_cp) {
+function keteranganJenisChannelPayment(jenis_cp, skip) {
     let keterangan_cp;
     if (jenis_cp != null) {
         jenis_cp = jenis_cp.toUpperCase();
     }
-    jenis_cp = jenis_cp.toUpperCase();
     if (jenis_cp == 'TB') {
         keterangan_cp = "Transfer Bank";
     } else if (jenis_cp == 'QR') {

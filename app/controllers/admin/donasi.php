@@ -32,9 +32,6 @@ class DonasiController extends Controller {
         $this->title = 'Kelola Donasi';
         $this->rel_action = array(
             array(
-                'href' => '/assets/route/admin/pages/css/data.css'
-            ),
-            array(
                 'href' => '/assets/main/css/pagination.css'
             ),
             array(
@@ -71,15 +68,18 @@ class DonasiController extends Controller {
 
         // $search_value = 'tr';
         // $this->model->setSearch($search_value);
-        $this->model->setOffset(2);
+        $this->model->setLimit(5);
         $this->model->setAscDsc('Desc');
         $table = 'donasi';
         $this->model->setHalaman(1, $table);
         $this->model->setOrderBy('d.create_at');
         $this->model->getListDonasi();
+
+        // Debug::pr($this->model);die();
+
         $this->data['list_donasi'] = $this->model->data();
-        $this->data['limit'] = $this->model->getOffset();
-        $this->data['pages'] = ceil($this->data['list_donasi']['total_record'] / $this->model->getOffset());
+        $this->data['limit'] = $this->model->getLimit();
+        $this->data['pages'] = ceil($this->data['list_donasi']['total_record'] / $this->model->getLimit());
         // Token for fetch
         $this->data[Config::get('session/token_name')] = Token::generate();
     }
@@ -125,5 +125,30 @@ class DonasiController extends Controller {
                 'src' => '/assets/route/admin/pages/js/buat-donasi.js'
             )
         );
+
+        $this->model('Donasi');
+
+        $lastDonasi = $this->model->getLastDonasi(5);
+        if ($lastDonasi) {
+            $this->data['donasi_terverivikasi_terakhir'] = $lastDonasi;
+        }
+
+        $cp = $this->model->query("SELECT cp.id_cp, cp.nama, cp.jenis, g.path_gambar FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
+        if ($cp) {
+            $this->data['data_cp'] = $this->model->readAllData();
+        }
+
+        $bantuan = $this->model->query("SELECT b.id_bantuan, b.nama nama_bantuan, IFNULL(k.nama, '') nama_kategori, IFNULL(s.nama,'') nama_sektor FROM bantuan b LEFT JOIN kategori k USING(id_kategori) LEFT JOIN sektor s USING(id_sektor) WHERE blokir IS NULL ORDER BY b.prioritas DESC, b.create_at DESC, b.id_bantuan ASC LIMIT 15");
+        if ($bantuan) {
+            $this->data['data_bantuan'] = $this->model->readAllData();
+        }
+
+        $donatur = $this->model->query("SELECT id_donatur, nama, email, kontak FROM donatur ORDER BY id_donatur DESC LIMIT 15");
+        if ($donatur) {
+            $this->data['data_donatur'] = $this->model->readAllData();
+        }
+
+        // Token for fetch
+        $this->data[Config::get('session/token_name')] = Token::generate();
     }
 }

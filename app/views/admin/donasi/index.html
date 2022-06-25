@@ -65,14 +65,21 @@
                     Kelola
                     <span class="text-green">List Donasi</span>
                 </div>
-                <div class="right-header d-flex">
-                    <!-- <a href="/admin/donasi/buat" class="btn btn-sm btn-outline-primary">Buat Donasi</a> -->
-                    <div class="status" style="font-size: .5rem; right: 1.25rem;">
-                        <div class="font-weight-bold text-black-50">Menampilkan <span class="text-orange">
+                <div class="right-header d-flex align-items-center gap-x-2">
+                    <a href="/admin/donasi/buat" class="btn btn-sm btn-outline-primary py-2 px-3">Buat Data Donasi</a>
+                    <div class="status" style="font-size: .75rem; right: 1.25rem;">
+                        <div class="font-weight-bold text-black-50">
+                            Menampilkan
+                            <span class="text-orange">
                                 <?= count(is_countable($data['list_donasi']['data']) ? $data['list_donasi']['data'] : []); ?>
-                            </span> dari</div>
-                        <div class="float-right badge badge-pill badge-primary"><span class="counter-card"
-                                data-count-up-value="<?= $data['list_donasi']['total_record']; ?>"></span> Donasi</div>
+                            </span>
+                            dari
+                        </div>
+                        <div class="float-right badge badge-pill badge-primary">
+                            <span class="counter-card"
+                                data-count-up-value="<?= $data['list_donasi']['total_record']; ?>"></span>
+                            Donasi
+                        </div>
                     </div>
                 </div>
             </div>
@@ -81,8 +88,8 @@
                     <thead>
                         <tr>
                             <th class="font-weight-bold">Id Donasi</th>
-                            <th class="font-weight-bold">Status</th>
-                            <th class="font-weight-bold fit">Nominal (Rp)</th>
+                            <th class="font-weight-bold auto">Status</th>
+                            <th class="font-weight-bold auto">Nominal (Rp)</th>
                             <th class="font-weight-bold auto">Aksi</th>
                         </tr>
                     </thead>
@@ -186,7 +193,7 @@
         </div>
     </div>
     <div class="col-12 col-xl-4">
-        <div class="row px-3">
+        <div class="row px-3" id="cp-card">
             <div class="col-12 col-md-6 card p-0 bg-gradient-gray overflow-hidden text-white d-flex align-items-center"
                 data-cp="bank-bjb">
                 <img src="/assets/images/partners/gunung-gunungan.png" alt="Gunung-gunungan" class="py-3">

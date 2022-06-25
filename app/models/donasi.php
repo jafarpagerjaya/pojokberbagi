@@ -136,4 +136,13 @@ class DonasiModel extends HomeModel {
         return true;
         // return false;
     }
+
+    public function getLastDonasi($limit) {
+        $this->db->query("SELECT FORMAT(d.jumlah_donasi,0,'id_ID') jumlah_donasi, formatTanggal(d.waktu_bayar) waktu_bayar, b.nama nama_bantuan, b.id_bantuan, cp.jenis jenis_cp, cp.nama nama_cp FROM donasi d JOIN bantuan b USING(id_bantuan) LEFT JOIN channel_payment cp USING(id_cp) WHERE d.bayar = 1 ORDER BY d.waktu_bayar DESC LIMIT {$limit}");
+        if ($this->db->count()) {
+            $this->data = $this->db->results();
+            return $this->data;
+        }
+        return false;
+    }
 }

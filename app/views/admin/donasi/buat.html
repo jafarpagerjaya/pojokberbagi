@@ -18,7 +18,14 @@
                                     if (isset($data['data_bantuan'])) {
                                         echo '<option></option>';
                                         foreach($data['data_bantuan'] as $dataBantuan) {
-                                            echo '<option value="'. $dataBantuan->id_bantuan .'">' . $dataBantuan->nama . '</option>';
+                                            $kategori_sektor = array();
+                                            if (strlen($dataBantuan->nama_kategori) > 0) {
+                                                array_push($kategori_sektor, $dataBantuan->nama_kategori);
+                                            }
+                                            if (strlen($dataBantuan->nama_sektor) > 0) {
+                                                array_push($kategori_sektor, $dataBantuan->nama_sektor);
+                                            }
+                                            echo '<option value="'. $dataBantuan->id_bantuan .'">' . $dataBantuan->nama_bantuan . '' . (count(is_countable($kategori_sektor) ? $kategori_sektor : []) > 0 ? " (" . $kategori_sektor = implode(' - ', $kategori_sektor) . ")" : "") . '</option>';
                                         }
                                     }
                                 ?>
@@ -48,14 +55,14 @@
                                 Payment</label>
                             <select class="form-control" id="input-cp-donasi" name="id_cp" data-required="true">
                                 <option></option>
-                                <?php
+                                <!-- <?php
                                     if (isset($data['data_cp'])) {
                                         echo '<option></option>';
                                         foreach($data['data_cp'] as $dataCp) {
                                             echo '<option value="'. $dataCp->id_cp .'">' . $dataCp->nama . '</option>';
                                         }
                                     }
-                                ?>
+                                ?> -->
                             </select>
                         </div>
                     </div>
@@ -69,9 +76,9 @@
                                 <option></option>
                                 <!-- Butuh Perbaikan => Load 20 Terakhir, Load on scroll sebanyak 20, load on type 20 -->
                                 <?php
-                                    if (isset($data['data_doantur'])) {
+                                    if (isset($data['data_donatur'])) {
                                         echo '<option></option>';
-                                        foreach($data['data_doantur'] as $dataDonatur) {
+                                        foreach($data['data_donatur'] as $dataDonatur) {
                                             echo '<option value="'. $dataDonatur->id_donatur .'">' . $dataDonatur->nama . '</option>';
                                         }
                                     }
@@ -134,7 +141,7 @@
                 <h3 class="text-capitalize mb-0">Donasi Terverivikasi <i class="fa fa-check-circle text-green"></i></h3>
                 <a href="/admin/donasi" class="btn btn-sm btn-outline-primary">See All</a>
             </div>
-            <div class="table-responsive">
+            <div class="">
                 <table class="table align-items-center table-flush table-hover">
                     <thead class="thead-light">
                         <tr>
@@ -143,120 +150,44 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <?php 
+                        if(isset($data['donasi_terverivikasi_terakhir'])) { 
+                            foreach($data['donasi_terverivikasi_terakhir'] as $key => $donasi_terakhir) {
+                                ?>
                         <tr>
                             <td>
                                 <div class="d-flex flex-column">
-                                    <div class="text-muted font-weight-bold">10.000</div>
-                                    <a href="#" class="font-weight-bolder">Nama bantuan
-                                        1</a>
+                                    <div class="text-muted font-weight-bold">
+                                        <?= $donasi_terakhir->jumlah_donasi; ?>
+                                    </div>
+                                    <div class="font-weight-bolder">
+                                        <?= $donasi_terakhir->nama_bantuan; ?>
+                                    </div>
                                 </div>
                             </td>
                             <td class="fit text-right">
                                 <div class="row">
                                     <div class="col-12">
-                                        <b class="text-muted">10 Juni 2022 17:10:00</b>
+                                        <b class="text-muted">
+                                            <?= $donasi_terakhir->waktu_bayar; ?>
+                                        </b>
                                     </div>
                                     <div class="col-12">
                                         <div class="text-muted badge badge-primary text-capitalize py-1 px-2">
-                                            <span class="jenis-cp">Transfer
-                                                Bank</span> - <span class="nama-cp">BSI</span>
+                                            <span class="jenis-cp">
+                                                <?= Utility::keteranganJenisChannelPayment($donasi_terakhir->jenis_cp); ?>
+                                            </span> - <span class="nama-cp">
+                                                <?= $donasi_terakhir->nama_cp; ?>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex flex-column">
-                                    <div class="text-muted font-weight-bold">100.000</div>
-                                    <a href="#" class="font-weight-bolder">Nama bantuan
-                                        2</a>
-                                </div>
-                            </td>
-                            <td class="fit text-right">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <b class="text-muted">9 Juni 2022 17:10:23</b>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="text-muted badge badge-primary text-capitalize py-1 px-2">
-                                            <span class="jenis-cp">Transfer
-                                                Bank</span> - <span class="nama-cp">BRI</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex flex-column">
-                                    <div class="text-muted font-weight-bold">100.000</div>
-                                    <a href="#" class="font-weight-bolder">Nama bantuan
-                                        2</a>
-                                </div>
-                            </td>
-                            <td class="fit text-right">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <b class="text-muted">9 Juni 2022 17:10:23</b>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="text-muted badge badge-primary text-capitalize py-1 px-2">
-                                            <span class="jenis-cp">Transfer
-                                                Bank</span> - <span class="nama-cp">BRI</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex flex-column">
-                                    <div class="text-muted font-weight-bold">100.000</div>
-                                    <a href="#" class="font-weight-bolder">Nama bantuan
-                                        2</a>
-                                </div>
-                            </td>
-                            <td class="fit text-right">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <b class="text-muted">9 Juni 2022 17:10:23</b>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="text-muted badge badge-primary text-capitalize py-1 px-2">
-                                            <span class="jenis-cp">Transfer
-                                                Bank</span> - <span class="nama-cp">BRI</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex flex-column">
-                                    <div class="text-muted font-weight-bold">100.000</div>
-                                    <a href="#" class="font-weight-bolder">Nama bantuan
-                                        2</a>
-                                </div>
-                            </td>
-                            <td class="fit text-right">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <b class="text-muted">9 Juni 2022 17:10:23</b>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="text-muted badge badge-primary text-capitalize py-1 px-2">
-                                            <span class="jenis-cp">Transfer
-                                                Bank</span> - <span class="nama-cp">BRI</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </td>
-                        </tr>
+                        <?php 
+                            }
+                        } 
+                        ?>
                     </tbody>
                 </table>
             </div>
