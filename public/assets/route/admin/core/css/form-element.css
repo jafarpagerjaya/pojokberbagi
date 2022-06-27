@@ -203,6 +203,10 @@ span.selection {
     color: #fff !important;
 }
 
+.select2-results .select2-results__option--highlighted * {
+    color: #fff;
+}
+
 .select2-results ul {
     background-color: var(--primary);
 }

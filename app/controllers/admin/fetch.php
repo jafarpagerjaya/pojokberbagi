@@ -133,51 +133,6 @@ class FetchController extends Controller {
         return false;
     }
 
-    public function ajax($params = array()) {
-        if (count(is_countable($params) ? $params : []) == 0) {
-            $this->_result['feedback'] = array(
-                'message' => 'Number of params not found'
-            );
-            $this->result();
-            return false;
-        }
-
-        switch ($params[0]) {
-            case 'channel_payment':
-                // channel_payment Params
-            break;
-            
-            default:
-                $this->_result['feedback'] = array(
-                    'message' => 'Unrecognize params '. $params[0]
-                );
-                $this->result();
-                return false;
-            break;
-        }
-
-        $this->model('Donasi');
-        $cp = $this->model->query("SELECT cp.id_cp, cp.nama, cp.jenis, g.path_gambar FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
-        if (!$cp) {
-            $this->_result['feedback'] = array(
-                'message' => 'There is something wrong on the server side'
-            );
-            $this->result();
-            return false;
-        }
-
-        $dataCp = $this->model->readAllData();
-
-        $this->_result['error'] = false;        
-        $this->_result['feedback'] = array(
-            'data' => $dataCp,
-            'message' => 'ok'
-        );
-
-        $this->result();
-        return false;
-    }
-
     public function read($params = array()) {
         if (count(is_countable($params) ? $params : []) == 0) {
             $this->_result['feedback'] = array(
@@ -191,11 +146,16 @@ class FetchController extends Controller {
         $decoded = $this->contentTypeJsonDecoded($_SERVER["CONTENT_TYPE"]);
 
         // Check Token
-        $this->checkToken($decoded['token']);
+        // $this->checkToken($decoded['token']);
 
         switch ($params[0]) {
             case 'donasi':
                 // donasi Params
+            break;
+
+            case 'channel-payment':
+                // donasi Params
+                $params[0] = 'channelPayment';
             break;
             
             default:
@@ -760,6 +720,128 @@ class FetchController extends Controller {
         if ($this->_result['error'] == false) {
             Session::delete('toast');
         }
+        return false;
+    }
+
+    // Daftar Channel Payment
+    private function channelPaymentRead($params = array()) {
+        $this->model('Donasi');
+        $cp = $this->model->query("SELECT cp.id_cp, cp.nama, cp.jenis, g.path_gambar FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
+        if (!$cp) {
+            $this->_result['feedback'] = array(
+                'message' => 'There is something wrong on the server side'
+            );
+            $this->result();
+            return false;
+        }
+
+        $dataCp = $this->model->readAllData();
+
+        $this->_result['error'] = false;        
+        $this->_result['feedback'] = array(
+            'data' => $dataCp,
+            'message' => 'ok'
+        );
+
+        $this->result();
+        return false;
+    }
+
+    public function ajax($params = array()) {
+        if (count(is_countable($params) ? $params : []) == 0) {
+            $this->_result['feedback'] = array(
+                'message' => 'Number of params not found'
+            );
+            $this->result();
+            return false;
+        }
+
+        // Check Content Type and decode JSON to array
+        $decoded = $this->contentTypeJsonDecoded($_SERVER["CONTENT_TYPE"]);
+
+        // Check Token
+        // $this->checkToken($decoded['token']);
+
+        switch ($params[0]) {
+            case 'bantuan':
+                // bantuan Params
+            break;
+
+            case 'donatur':
+                // donatur Params
+            break;
+            
+            default:
+                $this->_result['feedback'] = array(
+                    'message' => 'Unrecognize params '. $params[0]
+                );
+                $this->result();
+                return false;
+            break;
+        }
+
+        // prepare method create name
+        $action = $params[0] . 'Read';
+        // call method create
+        $this->$action($decoded);
+
+        return false;
+    }
+
+    private function bantuanRead($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        $search = null;
+        $search_columnQ = '';
+        $params = array();
+        if (!empty($decoded['search'])) {
+            $search_value = $decoded['search'];
+            $search_column = "LOWER(CONCAT(IFNULL(b.nama, ''))) LIKE LOWER(CONCAT('%',?,'%'))";
+            $search_columnQ = "AND {$search_column}";
+            array_push($params, $search_value);
+            $search = array(
+                $search_column,
+                $search_value
+            );
+        }
+
+        if (isset($decoded['offset'])) {
+            $offset = $decoded['offset'];
+        } else {
+            $offset = 0;
+        }
+
+        if (isset($decoded['limmit'])) {
+            $limmit = $decoded['limmit'];
+        } else {
+            $limit = 25;
+        }
+
+        $this->model('Bantuan');
+        $this->model->query("SELECT b.id_bantuan, b.nama nama_bantuan, b.status FROM bantuan b WHERE b.blokir IS NULL {$search_columnQ} ORDER BY b.prioritas DESC, b.create_at DESC, b.id_bantuan ASC LIMIT {$offset}, {$limit}", $params);
+
+        $dataBantuan = $this->model->readAllData();
+
+        $count = $this->model->countData('bantuan b','b.blokir IS NULL', $search);
+        
+        $this->_result['error'] = false;        
+        $this->_result['feedback'] = array(
+            'data' => $dataBantuan,
+            'message' => 'ok'
+        );
+
+        if (isset($count)) {
+            $this->_result['feedback']['record'] = $count->jumlah_record;
+            $this->_result['feedback']['offset'] = $offset;
+            $this->_result['feedback']['limit'] = $limit;
+            $this->_result['feedback']['load_more'] = ($count->jumlah_record > $offset + $limit);
+        }
+
+        if (!is_null($search)) {
+            $this->_result['feedback']['search'] = $search_value;
+        }
+
+        $this->result();
         return false;
     }
 }

@@ -180,3 +180,27 @@ function iconSektor(id_sektor) {
     }
     return icon;
 }
+
+function statusBantuan(status) {
+    let badge = {};
+    if (status != null) {
+        status = status.toLowerCase();
+    }
+    if (status == 'd') {
+        badge.class = 'badge-primary';
+        badge.text = 'Berjalan';
+    } else if (status == 's') {
+        badge.class = 'badge-danger';
+        badge.text = "Selesai";
+    } else if (status == 'b') {
+        badge.class = 'badge-warning'; 
+        badge.text = "Menunggu Penilaian";
+    } else if (status == 'c') {
+        badge.class = 'badge-info'; 
+        badge.text = "Penilaian";
+    } else {
+        badge.class = 'badge-secondary'; 
+        badge.text = "Ditolak";
+    }
+    return badge;
+}

@@ -14,7 +14,7 @@
                                 data-required="true">
                                 <option></option>
                                 <!-- Butuh Perbaikan => Load 20 Terakhir, Load on scroll sebanyak 20, load on type 20 -->
-                                <?php
+                                <!-- <?php
                                     if (isset($data['data_bantuan'])) {
                                         echo '<option></option>';
                                         foreach($data['data_bantuan'] as $dataBantuan) {
@@ -28,7 +28,7 @@
                                             echo '<option value="'. $dataBantuan->id_bantuan .'">' . $dataBantuan->nama_bantuan . '' . (count(is_countable($kategori_sektor) ? $kategori_sektor : []) > 0 ? " (" . $kategori_sektor = implode(' - ', $kategori_sektor) . ")" : "") . '</option>';
                                         }
                                     }
-                                ?>
+                                ?> -->
                             </select>
                         </div>
                         <div class="form-group" id="waktu-bayar">

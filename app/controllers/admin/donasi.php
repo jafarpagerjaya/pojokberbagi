@@ -102,6 +102,9 @@ class DonasiController extends Controller {
         );
         $this->script_action = array(
             array(
+                'src' => '/assets/main/js/token.js'
+            ),
+            array(
                 'src' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
                 'source' => 'trushworty'
             ),
@@ -131,11 +134,6 @@ class DonasiController extends Controller {
         $lastDonasi = $this->model->getLastDonasi(5);
         if ($lastDonasi) {
             $this->data['donasi_terverivikasi_terakhir'] = $lastDonasi;
-        }
-
-        $cp = $this->model->query("SELECT cp.id_cp, cp.nama, cp.jenis, g.path_gambar FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
-        if ($cp) {
-            $this->data['data_cp'] = $this->model->readAllData();
         }
 
         $bantuan = $this->model->query("SELECT b.id_bantuan, b.nama nama_bantuan, IFNULL(k.nama, '') nama_kategori, IFNULL(s.nama,'') nama_sektor FROM bantuan b LEFT JOIN kategori k USING(id_kategori) LEFT JOIN sektor s USING(id_sektor) WHERE blokir IS NULL ORDER BY b.prioritas DESC, b.create_at DESC, b.id_bantuan ASC LIMIT 15");

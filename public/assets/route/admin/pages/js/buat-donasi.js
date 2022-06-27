@@ -145,7 +145,12 @@ function modelMatcher(params, data) {
     return null;
 }
 
-fetch('/admin/fetch/ajax/channel_payment', {
+// butuh perbaikan nama url ganti dengan yang cocok
+let data = {
+    token: document.querySelector('body').getAttribute('data-token')
+}
+
+fetch('/admin/fetch/read/channel-payment', {
     method: "POST",
     cache: "no-cache",
     mode: "same-origin",
@@ -153,7 +158,8 @@ fetch('/admin/fetch/ajax/channel_payment', {
     headers: {
         "Content-Type": "application/json",
     },
-    referrer: "no-referrer"
+    referrer: "no-referrer",
+    body:JSON.stringify(data)
 })
 .then(response => response.json())
 .then(function(result) {
@@ -161,7 +167,6 @@ fetch('/admin/fetch/ajax/channel_payment', {
         // Success
         let data = result.feedback.data;
         if (data.length > 0) {
-            // console.log(selectLabel(data))
             $('#input-cp-donasi').select2({
                 placeholder: "Pilih salah satu",
                 data: selectLabel(data),
@@ -173,7 +178,7 @@ fetch('/admin/fetch/ajax/channel_payment', {
     } else {
         // Failed
         $('.toast[data-toast="feedback"] .time-passed').text('Baru Saja');
-        $('.toast[data-toast="feedback"] .toast-body').html(data.feedback.message);
+        $('.toast[data-toast="feedback"] .toast-body').html(result.feedback.message);
         $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
         $('.toast[data-toast="feedback"] .toast-header strong').text('Peringatan!');
         console.log('there is some error in server side');
@@ -186,7 +191,7 @@ fetch('/admin/fetch/ajax/channel_payment', {
     // });
 });
 
-function formatChannelPayment (cp) {
+function formatChannelPayment(cp) {
     if (cp.loading) {
         return cp.text;
     }
@@ -199,40 +204,81 @@ function formatChannelPayment (cp) {
     return $cp;
 };
 
+function formatDataBantuan(bantuan) {
+    if (bantuan.loading) {
+        return bantuan.text;
+    }
+    let $bantuan;
+    $bantuan = '<div class="d-flex justify-content-between"><div class="font-weight-bold w-80 overflow-hidden">'+ bantuan.text +'</div><div class="text-muted"><span class="badge p-2">'+ statusBantuan(bantuan.status).text +'</span></div></div>';
+    return $bantuan;
+}
 
-// $('#input-cp-donasi').select2({
-//     placeholder: "Pilih salah satu",
-//     ajax: {
-//         url: '/admin/fetch/ajax/channel_payment',
-//         type: 'post',
-//         dataType: 'json',
-//         // data: function (params) {
-//         //     return {
-//         //         q: params.term, // search term
-//         //         page: params.page
-//         //     };
-//         // },
-//         processResults: function (response) {
-//             if (response.error) {
-//                 console.log(response.feedback.message);
-//                 return false;
-//             }
-//             let data = response.feedback.data;
-//             console.log(data);
-//             // data = data.map(function (elments) {
-//             //     return {
-//             //         id: elments.id_cp,
-//             //         text: elments.nama,
-//             //         jenis: elments.jenis,
-//             //         path_gambar: elments.path_gambar
-//             //     };
-//             // });
-//             return { results: selectLabel(data) };
-//         }
-//     },
-//     escapeMarkup: function (markup) { return markup; },
-//     templateResult: formatChannelPayment
-// });
+let dataBantuan = {};
+$('#input-bantuan-donasi').select2({
+    placeholder: "Pilih salah satu",
+    ajax: {
+        url: '/admin/fetch/ajax/bantuan',
+        type: 'post',
+        dataType: 'json',
+        contentType: "application/json",
+        data: function (params) {
+            if ($('input.select2-search__field').val().length) {
+                params.search = $('input.select2-search__field').val();
+            }
+            delete params.term;
+            if (dataBantuan.load_more && ((params.search == undefined) || (params.search != undefined && params.search == dataBantuan.search))) {
+                params.offset = parseInt(dataBantuan.offset) + parseInt(dataBantuan.limit);
+            }
+            params.offset = params.offset || 0;
+            console.log(params);
+            return JSON.stringify(params);
+        },
+        processResults: function (response) {
+            console.log(response);
+            if (response.error) {
+                console.log(response.feedback.message);
+                return false;
+            }
+            let data = response.feedback.data;
+            data = data.map(function (elments) {
+                return {
+                    id: elments.id_bantuan,
+                    text: elments.nama_bantuan,
+                    status: elments.status
+                };
+            });
+            if (response.feedback.search != undefined) {
+                dataBantuan.search = response.feedback.search;
+            } else {
+                delete dataBantuan.search;
+            }
+            dataBantuan.offset = response.feedback.offset;
+            dataBantuan.record = response.feedback.record;
+            dataBantuan.limit = response.feedback.limit;
+            dataBantuan.load_more = response.feedback.load_more;
+            let pagination = {
+                more: dataBantuan.load_more
+            };
+            return {results: data, pagination};
+            // return {results: data};
+        }
+    },
+    escapeMarkup: function (markup) { return markup; },
+    templateResult: formatDataBantuan
+}).on('select2:open', function() {
+    if (dataBantuan.search != undefined) {
+        $('input.select2-search__field').val(dataBantuan.search);
+    }
+    // console.log(dataBantuan);
+    if (!dataBantuan.load_more) {
+        dataBantuan.offset = 0;
+        if ($(this).hasClass("select2-hidden-accessible")) {
+            $('#select2-'+ $(this).attr('id') +'-results').scrollTop(0);
+        }
+    }
+}).on('select2:close', function(e) {
+    dataBantuan.load_more = false;
+});
 
 const waktu_bayar = document.getElementById('waktu-bayar');
 waktu_bayar.querySelector('.input-group-append').addEventListener('click', function() {
@@ -312,22 +358,9 @@ inputJumlahDonasi.addEventListener('keyup', function () {
     this.value = numberToPrice(this.value, 'Rp. ');
 });
 
-let x = [
-    {id_cp: 1, nama: 'Bank BJB', jenis: 'TB', path_gambar: '/assets/images/partners/bjb.png'},
-    {id_cp: 2, nama: 'Bank BJB Giro Payment', jenis: 'GI', path_gambar: '/assets/images/partners/bjb.png'},
-    {id_cp: 3, nama: 'CR Kantor Pusat', jenis: 'TN', path_gambar: '/assets/images/partners/tunai.png'},
-    {id_cp: 4, nama: 'Bank BSI', jenis: 'TB', path_gambar: '/assets/images/partners/bsi.png'},
-    {id_cp: 5, nama: 'Bank BRI', jenis: 'TB', path_gambar: '/assets/images/partners/bri.png'},
-    {id_cp: 6, nama: 'Dana', jenis: 'EW', path_gambar: '/assets/images/partners/dana.png'},
-    {id_cp: 7, nama: 'GoPay', jenis: 'EW', path_gambar: '/assets/images/partners/gopay.png'},
-    {id_cp: 8, nama: 'Bank BRI', jenis: 'QR', path_gambar: '/assets/images/partners/qris.png'}
-];
-
 function selectLabel(array) {
     return Object.values(array.reduce((accu, { id_cp: id, jenis: text, nama, path_gambar }) => {
         (accu[text] ??= { text: keteranganJenisChannelPayment(text), children: [] }).children.push({ id, text: nama, path_gambar });
         return accu;
     }, {}));
 }
-
-console.log(selectLabel(x));

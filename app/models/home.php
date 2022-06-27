@@ -92,7 +92,7 @@ class HomeModel {
         $filter = null;
         if (!is_null($where)) {
             if (is_array($where)) {
-                $values = $where[1];
+                array_push($values, $where[1]);
                 $where = $where[0];
             }
             $filter = "WHERE {$where}";
@@ -100,7 +100,7 @@ class HomeModel {
         }
         if (!is_null($search)) {
             if (is_array($search)) {
-                $values = $search[1];
+                array_push($values, $search[1]);
                 $search = $search[0];
             }
             if (!is_null($filter)) {
