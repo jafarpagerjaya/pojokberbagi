@@ -106,10 +106,7 @@ class ProfileController extends Controller {
                         'max' => 255
                     )
                 ), array('id_pegawai','!=', $this->data['pegawai']->id_pegawai));
-                // if (!$validate1->passed()) {
-                //     Session::put('error_feedback', $validate1->getValueFeedback());
-                //     Redirect::to('admin/profile/unlock/'. Token::generate());
-                // }
+
                 $vali2 = new Validate();
                 $validate2 = $vali2->check($_POST, array(
                     'username' => array(
@@ -125,10 +122,7 @@ class ProfileController extends Controller {
                         'regex' => '/^([^\.\_\-\@])+([^\.\@\_\-])*((([^\d\@]){0,1})[a-z0-9]{2,}){0,1}((@([a-zA-Z]{2,})+(\.([a-z]{2,})){1,2}|@(\d{3}.){1,3})|(@([0-9]{1,3})+(\.([0-9]{1,3})){3}))$/'
                     ),
                 ), array('id_akun','!=', $this->data['akun']->id_akun));
-                // if (!$validate2->passed()) {
-                //     Session::put('error_feedback', $validate2->getValueFeedback());
-                //     Redirect::to('admin/profile/unlock/'. Token::generate());
-                // }
+
                 $vali3 = new Validate();
                 $validate3 = $vali3->check($_POST, array(
                     'email' => array(
@@ -145,10 +139,7 @@ class ProfileController extends Controller {
                         'unique' => 'donatur'
                     )
                 ), array('id_akun','!=', $this->data['akun']->id_akun));
-                // if (!$validate3->passed()) {
-                //     Session::put('error_feedback', $validate3->getValueFeedback());
-                //     Redirect::to('admin/profile/unlock/'. Token::generate());
-                // }
+
                 if (!$validate2->passed() || !$validate1->passed() || !$validate3->passed()) {
                     $validateList = array($validate1->getValueFeedback(), $validate2->getValueFeedback(), $validate3->getValueFeedback());
                     Session::put('error_feedback', Validate::errorArrayRuleList($validateList));
@@ -188,6 +179,7 @@ class ProfileController extends Controller {
                 } else {
                     Session::flash('error', 'Data Profil Gagal Diupdate');
                 }
+                
                 Redirect::to('admin/profile');
             }
             Redirect::to('admin/profile/unblock/' . Token::generate());

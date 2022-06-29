@@ -45,16 +45,9 @@ textarea {
 }
 
 /* Select2 for Channel Payment */
-.select2-container.select2-container--default.select2-container--open .select2-results img[alt^="Bank BJB"] {
-    margin-top: -.25rem;
-}
-
-.select2-container.select2-container--default.select2-container--open .select2-results img[alt^="Bank BSI"] {
-    margin-top: -.35rem;
-}
-
-.select2-container.select2-container--default.select2-container--open .select2-results img[alt^="Bank BRI"] {
-    margin-top: .025rem;
+.select2-container.select2-container--default.select2-container--open .select2-results [aria-label="Transfer Bank"] img[alt^="Bank"],
+.select2-container.select2-container--default.select2-container--open .select2-results [aria-label="Giro"] img[alt^="Bank"] {
+    margin-bottom: .25rem;
 }
 
 .card-body.form .row .col {
@@ -104,15 +97,8 @@ textarea {
 
 @media (min-width: 1200px) {
     /* Select2 for Channel Payment */
-    .select2-container.select2-container--default.select2-container--open .select2-results img[alt^="Bank BJB"] {
-        margin-top: -.25rem;
-    }
-
-    .select2-container.select2-container--default.select2-container--open .select2-results img[alt^="Bank BSI"] {
-        margin-top: -.35rem;
-    }
-
-    .select2-container.select2-container--default.select2-container--open .select2-results img[alt^="Bank BRI"] {
-        margin-top: -.325rem;
-    }
+    /* .select2-container.select2-container--default.select2-container--open .select2-results [aria-label="Transfer Bank"] img[alt^="Bank"],
+    .select2-container.select2-container--default.select2-container--open .select2-results [aria-label="Giro"] img[alt^="Bank"] {
+        margin-bottom: 0px;
+    } */
 }

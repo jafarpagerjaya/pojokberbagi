@@ -6,7 +6,8 @@
                 <div class="col-lg-3 order-lg-2">
                     <div class="card-profile-image">
                         <a href="#">
-                            <img src="<?= $data['gambar']->path_gambar; ?>" class="rounded-circle bg-gradient-white border-0">
+                            <img src="<?= $data['gambar']->path_gambar; ?>"
+                                class="rounded-circle bg-gradient-white border-0">
                         </a>
                     </div>
                 </div>
@@ -14,9 +15,11 @@
             <div class="card-body pt-5">
                 <div class="text-center">
                     <h5 class="h3 pt-5">
-                        <?= ucwords(strtolower($data['donatur']->nama)) ?>
+                        <?= ucwords(strtolower($data['donatur']->nama ?? '')) ?>
                         <small class="mt-2 mb-0 d-block">bergabung sejak</small>
-                        <small class="font-weight-light"><?= Output::strToFullLocalDate($data['donatur']->create_at) ?></small>
+                        <small class="font-weight-light">
+                            <?= Output::strToLocalDate($data['donatur']->create_at) ?>
+                        </small>
                     </h5>
                     <!-- <div class="h5 font-weight-300">
                         <i class="ni location_pin mr-2"></i>Bandung
@@ -45,7 +48,8 @@
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a class="dropdown-item"
                                     href="<?= '/donatur/profile/unlock/'. Token::generate() ?>">Perbaharui Data</a>
-                                <a class="dropdown-item" data-target="#kelola-password" data-toggle="collapse" href="#kelola-password">Ganti
+                                <a class="dropdown-item" data-target="#kelola-password" data-toggle="collapse"
+                                    href="#kelola-password">Ganti
                                     Password</a>
                                 <div class="dropdown-divider"></div>
                                 <!-- <a class="dropdown-item" href="#">Ganti Foto</a> -->
@@ -63,23 +67,32 @@
                     <form action="/donatur/profile/password/update" method="post">
                         <div class="form-group">
                             <label class="form-control-label" for="input-password-baru">Password Baru</label>
-                            <input name="password_baru" type="password" id="input-password-baru" class="form-control no-space" placeholder="Tidak boleh sama dengan yang lama" value="<?= isset($data_error_feedback['password_baru']['value']) ? $data_error_feedback['password_baru']['value'] :  '' ?>">
-                            <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['password_baru']) ? ' d-block' : '') ?>">
+                            <input name="password_baru" type="password" id="input-password-baru"
+                                class="form-control no-space" placeholder="Tidak boleh sama dengan yang lama"
+                                value="<?= isset($data_error_feedback['password_baru']['value']) ? $data_error_feedback['password_baru']['value'] :  '' ?>">
+                            <div
+                                class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['password_baru']) ? ' d-block' : '') ?>">
                                 <?= ($data_error_feedback['password_baru']['feedback']) ?>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="form-control-label" for="input-password-baru-ulang">Konfirmasi
                                 Ulang</label>
-                            <input name="konfirmasi_ulang" type="password" id="input-password-baru-ulang" class="form-control no-space" placeholder="Password baru" value="<?= isset($data_error_feedback['konfirmasi_ulang']['value']) ? $data_error_feedback['konfirmasi_ulang']['value'] :  '' ?>">
-                            <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['konfirmasi_ulang']) ? ' d-block' : '') ?>">
+                            <input name="konfirmasi_ulang" type="password" id="input-password-baru-ulang"
+                                class="form-control no-space" placeholder="Password baru"
+                                value="<?= isset($data_error_feedback['konfirmasi_ulang']['value']) ? $data_error_feedback['konfirmasi_ulang']['value'] :  '' ?>">
+                            <div
+                                class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['konfirmasi_ulang']) ? ' d-block' : '') ?>">
                                 <?= ($data_error_feedback['konfirmasi_ulang']['feedback']) ?>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="form-control-label" for="input-password-lama">Password Lama</label>
-                            <input name="password_lama" type="password" id="input-password-lama" class="form-control no-space" placeholder="Password lama akun" value="<?= isset($data_error_feedback['password_lama']['value']) ? $data_error_feedback['password_lama']['value'] :  '' ?>">
-                            <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['password_lama']) ? ' d-block' : '') ?>">
+                            <input name="password_lama" type="password" id="input-password-lama"
+                                class="form-control no-space" placeholder="Password lama akun"
+                                value="<?= isset($data_error_feedback['password_lama']['value']) ? $data_error_feedback['password_lama']['value'] :  '' ?>">
+                            <div
+                                class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['password_lama']) ? ' d-block' : '') ?>">
                                 <?= ($data_error_feedback['password_lama']['feedback']) ?>
                             </div>
                         </div>
@@ -116,14 +129,16 @@
                             <div class="form-group">
                                 <label class="form-control-label" for="input-nama">Nama Lengkap</label>
                                 <input type="text" readonly id="input-nama" class="form-control"
-                                    placeholder="Nama Lengkap" value="<?= ucwords(strtolower($data['donatur']->nama)); ?>">
+                                    placeholder="Nama Lengkap"
+                                    value="<?= ucwords(strtolower($data['donatur']->nama ?? '')); ?>">
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label class="form-control-label" for="input-samaran">Nama Samaran</label>
                                 <input type="text" readonly id="input-samaran" class="form-control"
-                                    placeholder="Sahabat Berbagi" value="<?= ucwords(strtolower($data['donatur']->samaran)); ?>">
+                                    placeholder="Sahabat Berbagi"
+                                    value="<?= ucwords(strtolower($data['donatur']->samaran ?? '')); ?>">
                             </div>
                         </div>
                     </div>

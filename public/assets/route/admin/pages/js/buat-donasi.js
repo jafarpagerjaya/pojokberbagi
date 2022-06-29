@@ -68,7 +68,7 @@ textareaDoa.addEventListener("keydown", function (e) {
             ctrl = "down";
         }
         if ((e.key != "Backspace") && (e.key != "Delete") && (e.key != "F5") && (e.key != "ArrowLeft") && (e.key != "ArrowRight") && (e.key != "ArrowUp") && (e.key != "ArrowDown") && (ctrl != 'down')) {
-            e.preventDefault()
+            e.preventDefault();
         }
     }
 });
@@ -86,9 +86,9 @@ textareaDoa.addEventListener('paste', function(e) {
     }, 0);
 });
 
-// $('select').select2({
-//     placeholder: "Pilih salah satu"
-// });
+$('select').select2({
+    placeholder: "Pilih salah satu"
+});
 
 let fetchData = function(url, data = null, root = null) {
     
@@ -199,7 +199,7 @@ function formatChannelPayment(cp) {
     if (cp.path_gambar == null || cp.path_gambar == undefined) {
         $cp = '<div class="font-weight-bolder">'+ cp.text +'</div>'
     } else {
-        $cp = '<div class="row w-100 m-0"><div class="col p-0"><span class="font-weight-bold">' + cp.text + '</span></div><div class="col-1 p-0"><img src="'+ cp.path_gambar +'" alt="'+ cp.text +'" class="img-fluid"></div></div>'
+        $cp = '<div class="row w-100 m-0 align-items-center"><div class="col p-0"><span class="font-weight-bold">' + cp.text + '</span></div><div class="col-1 p-0 d-flex align-items-center"><img src="'+ cp.path_gambar +'" alt="'+ cp.text +'" class="img-fluid"></div></div>'
     }
     return $cp;
 };
@@ -213,8 +213,19 @@ function formatDataBantuan(bantuan) {
     return $bantuan;
 }
 
+function formatDataDonatur(donatur) {
+    if (donatur.loading) {
+        return donatur.text;
+    }
+    let $donatur;
+    $donatur = '<div class="d-flex justify-content-between"><div class="font-weight-bold w-80 overflow-hidden">'+ donatur.text +'<p class="m-0">'+ donatur.email +'</p></div><div class="text-muted text-right"><span class="py-2">'+ donatur.samaran +'</span><p class="m-0 text-right">'+ donatur.kontak +'</p></div></div>';
+    return $donatur;
+}
+
 let dataBantuan = {};
 $('#input-bantuan-donasi').select2({
+    // minimumInputLength: 1,
+    language: { inputTooShort: function () { return 'Ketikan minimal 1 huruf'; }, noResults: function() { return "Data yang dicari tidak ditemukan"; }, searching: function() { return "Sedang melakukan pencarian..."; }, loadingMore: function() { return "Menampilkan data yang lainnya"; }, },
     placeholder: "Pilih salah satu",
     ajax: {
         url: '/admin/fetch/ajax/bantuan',
@@ -278,6 +289,77 @@ $('#input-bantuan-donasi').select2({
     }
 }).on('select2:close', function(e) {
     dataBantuan.load_more = false;
+});
+
+let dataDonatur = {};
+$('#input-donatur-donasi').select2({
+    // minimumInputLength: 1,
+    language: { inputTooShort: function () { return 'Ketikan minimal 1 huruf'; }, noResults: function() { return "Data yang dicari tidak ditemukan"; }, searching: function() { return "Sedang melakukan pencarian..."; }, loadingMore: function() { return "Menampilkan data yang lainnya"; }, },
+    placeholder: "Pilih salah satu",
+    ajax: {
+        url: '/admin/fetch/ajax/donatur',
+        type: 'post',
+        dataType: 'json',
+        contentType: "application/json",
+        data: function (params) {
+            if ($('input.select2-search__field').val().length) {
+                params.search = $('input.select2-search__field').val();
+            }
+            delete params.term;
+            if (dataDonatur.load_more && ((params.search == undefined) || (params.search != undefined && params.search == dataDonatur.search))) {
+                params.offset = parseInt(dataDonatur.offset) + parseInt(dataDonatur.limit);
+            }
+            params.offset = params.offset || 0;
+            console.log(params);
+            return JSON.stringify(params);
+        },
+        processResults: function (response) {
+            console.log(response);
+            if (response.error) {
+                console.log(response.feedback.message);
+                return false;
+            }
+            let data = response.feedback.data;
+            data = data.map(function (elments) {
+                return {
+                    id: elments.id_donatur,
+                    text: elments.nama_donatur,
+                    email: elments.email,
+                    kontak: elments.kontak,
+                    samaran: elments.samaran
+                };
+            });
+            if (response.feedback.search != undefined) {
+                dataDonatur.search = response.feedback.search;
+            } else {
+                delete dataDonatur.search;
+            }
+            dataDonatur.offset = response.feedback.offset;
+            dataDonatur.record = response.feedback.record;
+            dataDonatur.limit = response.feedback.limit;
+            dataDonatur.load_more = response.feedback.load_more;
+            let pagination = {
+                more: dataDonatur.load_more
+            };
+            return {results: data, pagination};
+            // return {results: data};
+        }
+    },
+    escapeMarkup: function (markup) { return markup; },
+    templateResult: formatDataDonatur
+}).on('select2:open', function() {
+    if (dataDonatur.search != undefined) {
+        $('input.select2-search__field').val(dataDonatur.search);
+    }
+    // console.log(dataDonatur);
+    if (!dataDonatur.load_more) {
+        dataDonatur.offset = 0;
+        if ($(this).hasClass("select2-hidden-accessible")) {
+            $('#select2-'+ $(this).attr('id') +'-results').scrollTop(0);
+        }
+    }
+}).on('select2:close', function(e) {
+    dataDonatur.load_more = false;
 });
 
 const waktu_bayar = document.getElementById('waktu-bayar');

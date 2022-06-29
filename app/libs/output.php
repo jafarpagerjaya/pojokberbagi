@@ -17,14 +17,20 @@ class Output {
     }
 
     public static function strToLocalDate($time) {
-        return strftime("%d-%b-%Y", strtotime($time));
+        $formatter = new IntlDateFormatter(LOCALE_IDT, IntlDateFormatter::LONG, IntlDateFormatter::NONE, "Asia/Jakarta");
+        $time = new DateTime($time);
+        return $formatter->format($time);
     }
 
     public static function strToFullLocalDate($time) {
-        return strftime("%A, %d %B %Y", strtotime($time));
+        $formatter = new IntlDateFormatter(LOCALE_IDT, IntlDateFormatter::FULL, IntlDateFormatter::LONG, "Asia/Jakarta");
+        $time = new DateTime($time);
+        return $formatter->format($time);
     }
 
     public static function strToFullLocalDateTime($time) {
-        return strftime("%A, %d %B %Y %H:%M:%S", strtotime($time));
+        $formatter = new IntlDateFormatter(LOCALE_IDT, IntlDateFormatter::FULL, IntlDateFormatter::FULL, "Asia/Jakarta");
+        $time = new DateTime($time);
+        return $formatter->format($time);
     }
 }

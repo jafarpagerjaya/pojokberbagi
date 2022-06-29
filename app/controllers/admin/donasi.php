@@ -136,12 +136,7 @@ class DonasiController extends Controller {
             $this->data['donasi_terverivikasi_terakhir'] = $lastDonasi;
         }
 
-        $bantuan = $this->model->query("SELECT b.id_bantuan, b.nama nama_bantuan, IFNULL(k.nama, '') nama_kategori, IFNULL(s.nama,'') nama_sektor FROM bantuan b LEFT JOIN kategori k USING(id_kategori) LEFT JOIN sektor s USING(id_sektor) WHERE blokir IS NULL ORDER BY b.prioritas DESC, b.create_at DESC, b.id_bantuan ASC LIMIT 15");
-        if ($bantuan) {
-            $this->data['data_bantuan'] = $this->model->readAllData();
-        }
-
-        $donatur = $this->model->query("SELECT id_donatur, nama, email, kontak FROM donatur ORDER BY id_donatur DESC LIMIT 15");
+        $donatur = $this->model->query("SELECT id_donatur, nama, email, kontak FROM donatur ORDER BY id_donatur DESC LIMIT 25");
         if ($donatur) {
             $this->data['data_donatur'] = $this->model->readAllData();
         }

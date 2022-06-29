@@ -92,7 +92,11 @@ class HomeModel {
         $filter = null;
         if (!is_null($where)) {
             if (is_array($where)) {
-                array_push($values, $where[1]);
+                if (is_array($where[1])) {
+                    $values = array_merge($values, $where[1]);
+                } else {
+                    array_push($values, $where[1]);
+                }
                 $where = $where[0];
             }
             $filter = "WHERE {$where}";
@@ -100,7 +104,11 @@ class HomeModel {
         }
         if (!is_null($search)) {
             if (is_array($search)) {
-                array_push($values, $search[1]);
+                if (is_array($search[1])) {
+                    $values = array_merge($values, $search[1]);
+                } else {
+                    array_push($values, $search[1]);
+                }
                 $search = $search[0];
             }
             if (!is_null($filter)) {

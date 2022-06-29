@@ -177,8 +177,33 @@ class ProfileController extends Controller {
                     // }
                 }
 
-                if (!$validate2->passed() || !$validate1->passed() || !$validate3->passed() || !$validate3->passed()) {
-                    $validateList = array($validate1->getValueFeedback(), $validate2->getValueFeedback(), $validate3->getValueFeedback(), $validate4->getValueFeedback());
+                $validateList = array();
+
+                if (!is_null($validate1)) {
+                    if (!$validate1->passed()) {
+                        array_push($validateList, $validate1->getValueFeedback());
+                    }
+                }
+
+                if (!is_null($validate2)) {
+                    if (!$validate2->passed()) {
+                        array_push($validateList, $validate2->getValueFeedback());
+                    }
+                }
+
+                if (!is_null($validate3)) {
+                    if (!$validate3->passed()) {
+                        array_push($validateList, $validate3->getValueFeedback());
+                    }
+                }
+
+                if (!is_null($validate4)) {
+                    if (!$validate4->passed()) {
+                        array_push($validateList, $validate4->getValueFeedback());
+                    }
+                }
+
+                if (count(is_countable($validateList) ? $validateList : [])) {
                     Session::put('error_feedback', Validate::errorArrayRuleList($validateList));
                     Redirect::to('donatur/profile/unlock/'. Token::generate());
                 }

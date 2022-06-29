@@ -584,14 +584,14 @@ class BantuanModel extends HomeModel {
             );
             // $countValues = array_merge($countValues, $list_id);
             // array_push($countValues, Sanitize::escape2($this->_status));
-            $result = $this->countData("bantuan JOIN kategori USING(id_kategori)", array("(blokir IS NULL OR blokir != '1') AND status = ? AND kategori.nama = ?", $countValues));
+            $result = $this->countData("bantuan b JOIN kategori k USING(id_kategori)", array("(b.blokir IS NULL OR b.blokir != '1') AND b.status = ? AND k.nama = ?", $countValues));
         } else {
             $countValues = array(
                 Sanitize::escape2($this->_status),
             );
             // $countValues = array_merge($countValues, $list_id);
             // array_push($countValues, Sanitize::escape2($this->_status));
-            $result = $this->countData("bantuan LEFT JOIN kategori USING(id_kategori)", array("(blokir IS NULL OR blokir != '1') AND status = ?", $countValues));
+            $result = $this->countData("bantuan b LEFT JOIN kategori k USING(id_kategori)", array("(b.blokir IS NULL OR b.blokir != '1') AND b.status = ?", $countValues));
         }
 
         $return['record'] = $result->jumlah_record;
@@ -649,14 +649,18 @@ class BantuanModel extends HomeModel {
 
     public function getSaldoBantuan($id_bantuan) {
         $this->db->query("SELECT 
-        IFNULL(SUM(IF(LOWER(cp.nama) = 'bank bjb', d.jumlah_donasi, 0)), 0) saldo_bjb, 
-        IFNULL(SUM(IF(LOWER(cp.nama) = 'bank bsi', d.jumlah_donasi, 0)), 0) saldo_bsi,
-        IFNULL(SUM(IF(LOWER(cp.nama) = 'bank bri', d.jumlah_donasi, 0)), 0) saldo_bri,
+        IFNULL(SUM(IF(LOWER(cp.nama) LIKE '%bank bjb%', d.jumlah_donasi, 0)), 0) saldo_bjb, 
+        IFNULL(SUM(IF(LOWER(cp.nama) LIKE '%bank bsi%', d.jumlah_donasi, 0)), 0) saldo_bsi,
+        IFNULL(SUM(IF(LOWER(cp.nama) LIKE '%bank bri%', d.jumlah_donasi, 0)), 0) saldo_bri,
         IFNULL(SUM(IF(LOWER(cp.jenis) = 'tn', d.jumlah_donasi, 0)), 0) saldo_tunai,
-        (SELECT path_gambar FROM gambar JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bjb' AND cptb.jenis = 'TB') path_gambar_bjb,
-        (SELECT path_gambar FROM gambar JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bsi' AND cptb.jenis = 'TB') path_gambar_bsi,
-        (SELECT path_gambar FROM gambar JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bri' AND cptb.jenis = 'TB') path_gambar_bri,
-        '/assets/images/brand/pojok-berbagi-transparent.png' path_gambar_tunai
+        IFNULL(SUM(IF(LOWER(cp.jenis) = 'ew' AND LOWER(cp.nama) LIKE '%gopay%', d.jumlah_donasi, 0)), 0) saldo_gopay,
+        IFNULL(SUM(IF(LOWER(cp.jenis) = 'ew' AND LOWER(cp.nama) LIKE '%dana%', d.jumlah_donasi, 0)), 0) saldo_dana,
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bjb' AND cptb.jenis = 'TB') path_gambar_bjb,
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bsi' AND cptb.jenis = 'TB') path_gambar_bsi,
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bri' AND cptb.jenis = 'TB') path_gambar_bri,
+        '/assets/images/brand/pojok-berbagi-transparent.png' path_gambar_tunai,
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cpew USING(id_gambar) WHERE LOWER(cpew.nama) = 'gopay' AND cpew.jenis = 'EW') path_gambar_gopay,
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cpew USING(id_gambar) WHERE LOWER(cpew.nama) = 'dana' AND cpew.jenis = 'EW') path_gambar_dana
         FROM donasi d LEFT JOIN channel_payment cp ON(d.id_cp = cp.id_cp)
         WHERE d.bayar = 1 AND d.id_bantuan = ? AND d.id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi)", array('d.id_bantuan' => Sanitize::escape2($id_bantuan)));
         if (!$this->db->count()) {

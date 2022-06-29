@@ -6,7 +6,8 @@
                 <div class="col-lg-3 order-lg-2">
                     <div class="card-profile-image">
                         <a href="#">
-                            <img src="<?= $data['gambar']->path_gambar; ?>" class="rounded-circle bg-gradient-white border-0">
+                            <img src="<?= $data['gambar']->path_gambar; ?>"
+                                class="rounded-circle bg-gradient-white border-0">
                         </a>
                     </div>
                 </div>
@@ -14,9 +15,11 @@
             <div class="card-body pt-5">
                 <div class="text-center">
                     <h5 class="h3 pt-5">
-                        <?= ucwords(strtolower($data['donatur']->nama)); ?>
+                        <?= ucwords(strtolower($data['donatur']->nama ?? '')); ?>
                         <small class="mt-2 mb-0 d-block">bergabung sejak</small>
-                        <small class="font-weight-light"><?= Output::strToFullLocalDate($data['donatur']->create_at); ?></small>
+                        <small class="font-weight-light">
+                            <?= Output::strToLocalDate($data['donatur']->create_at); ?>
+                        </small>
                     </h5>
                     <!-- <div class="h5 font-weight-300">
                         <i class="ni location_pin mr-2"></i>Bandung
@@ -62,15 +65,26 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="form-control-label" for="input-username">Username</label>
-                                    <input name="username" type="text" id="input-username" class="form-control" placeholder="Username" value="<?= isset($data_error_feedback['username']['value']) ? $data_error_feedback['username']['value'] :  $data['akun']->username; ?>">
-                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['username']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['username']['feedback']) ?></div>
+                                    <input name="username" type="text" id="input-username" class="form-control"
+                                        placeholder="Username"
+                                        value="<?= isset($data_error_feedback['username']['value']) ? $data_error_feedback['username']['value'] :  $data['akun']->username; ?>">
+                                    <div
+                                        class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['username']) ? ' d-block' : '') ?>">
+                                        <?= ($data_error_feedback['username']['feedback']) ?>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="form-control-label" for="input-email">Alamat Email</label>
-                                    <input name="email" type="email" id="input-email" class="form-control no-space text-lowercase" placeholder="Contoh emailku@gmail.com" value="<?= isset($data_error_feedback['email']['value']) ? $data_error_feedback['email']['value'] :  $data['akun']->email; ?>">
-                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['email']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['email']['feedback']) ?></div>
+                                    <input name="email" type="email" id="input-email"
+                                        class="form-control no-space text-lowercase"
+                                        placeholder="Contoh emailku@gmail.com"
+                                        value="<?= isset($data_error_feedback['email']['value']) ? $data_error_feedback['email']['value'] :  $data['akun']->email; ?>">
+                                    <div
+                                        class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['email']) ? ' d-block' : '') ?>">
+                                        <?= ($data_error_feedback['email']['feedback']) ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -78,15 +92,26 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="form-control-label" for="input-nama">Nama Donatur</label>
-                                    <input name="nama" type="text" id="input-nama" class="form-control text-capitalize" placeholder="Nama Lengkap" value="<?= isset($data_error_feedback['nama']['value']) ? $data_error_feedback['nama']['value'] :  ucwords(strtolower($data['donatur']->nama)); ?>">
-                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['nama']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['nama']['feedback']) ?></div>
+                                    <input name="nama" type="text" id="input-nama" class="form-control text-capitalize"
+                                        placeholder="Nama Lengkap"
+                                        value="<?= isset($data_error_feedback['nama']['value']) ? $data_error_feedback['nama']['value'] :  ucwords(strtolower($data['donatur']->nama ?? '')); ?>">
+                                    <div
+                                        class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['nama']) ? ' d-block' : '') ?>">
+                                        <?= ($data_error_feedback['nama']['feedback']) ?>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="form-control-label" for="input-samaran">Samaran</label>
-                                    <input name="samaran" id="input-samaran" class="form-control" placeholder="Sahabat Berbagi" value="<?= isset($data_error_feedback['samaran']['value']) ? $data_error_feedback['samaran']['value'] :  $data['donatur']->samaran; ?>" type="text">
-                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['samaran']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['samaran']['feedback']) ?></div>
+                                    <input name="samaran" id="input-samaran" class="form-control"
+                                        placeholder="Sahabat Berbagi"
+                                        value="<?= isset($data_error_feedback['samaran']['value']) ? $data_error_feedback['samaran']['value'] :  $data['donatur']->samaran; ?>"
+                                        type="text">
+                                    <div
+                                        class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['samaran']) ? ' d-block' : '') ?>">
+                                        <?= ($data_error_feedback['samaran']['feedback']) ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -99,8 +124,13 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="form-control-label" for="input-kontak">No Kontak</label>
-                                    <input name="kontak" type="text" id="input-kontak" class="form-control no-space" placeholder="Kontak Yang Bisa Dihubungi" value="<?= isset($data_error_feedback['kontak']['value']) ? $data_error_feedback['kontak']['value'] :  $data['donatur']->kontak; ?>">
-                                    <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['kontak']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['kontak']['feedback']) ?></div>
+                                    <input name="kontak" type="text" id="input-kontak" class="form-control no-space"
+                                        placeholder="Kontak Yang Bisa Dihubungi"
+                                        value="<?= isset($data_error_feedback['kontak']['value']) ? $data_error_feedback['kontak']['value'] :  $data['donatur']->kontak; ?>">
+                                    <div
+                                        class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['kontak']) ? ' d-block' : '') ?>">
+                                        <?= ($data_error_feedback['kontak']['feedback']) ?>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6 d-flex align-items-center">

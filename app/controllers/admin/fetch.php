@@ -844,4 +844,61 @@ class FetchController extends Controller {
         $this->result();
         return false;
     }
+
+    private function donaturRead($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        $search = null;
+        $search_columnQ = '';
+        $params = array();
+        if (!empty($decoded['search'])) {
+            $search_value = $decoded['search'];
+            $search_column = "LOWER(CONCAT(IFNULL(d.nama, ''), IFNULL(d.email, ''), IFNULL(d.kontak, ''), IFNULL(d.samaran, ''))) LIKE LOWER(CONCAT('%',?,'%'))";
+            $search_columnQ = "WHERE {$search_column}";
+            array_push($params, $search_value);
+            $search = array(
+                $search_column,
+                $search_value
+            );
+        }
+
+        if (isset($decoded['offset'])) {
+            $offset = $decoded['offset'];
+        } else {
+            $offset = 0;
+        }
+
+        if (isset($decoded['limmit'])) {
+            $limmit = $decoded['limmit'];
+        } else {
+            $limit = 25;
+        }
+
+        $this->model('Donatur');
+        $this->model->query("SELECT d.id_donatur, d.nama nama_donatur, IFNULL(d.email,'') email, IFNULL(d.kontak,'') kontak, IFNULL(d.samaran,'Sahabat Berbagi') samaran FROM donatur d {$search_columnQ} ORDER BY d.create_at DESC, d.modified_at DESC, d.id_donatur ASC LIMIT {$offset}, {$limit}", $params);
+
+        $dataBantuan = $this->model->readAllData();
+
+        $count = $this->model->countData('donatur d', null, $search);
+        
+        $this->_result['error'] = false;        
+        $this->_result['feedback'] = array(
+            'data' => $dataBantuan,
+            'message' => 'ok'
+        );
+
+        if (isset($count)) {
+            $this->_result['feedback']['record'] = $count->jumlah_record;
+            $this->_result['feedback']['offset'] = $offset;
+            $this->_result['feedback']['limit'] = $limit;
+            $this->_result['feedback']['load_more'] = ($count->jumlah_record > $offset + $limit);
+        }
+
+        if (!is_null($search)) {
+            $this->_result['feedback']['search'] = $search_value;
+        }
+
+        $this->result();
+        return false;
+    }
 }

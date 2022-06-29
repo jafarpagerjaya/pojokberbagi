@@ -133,7 +133,7 @@ class DonaturController extends Controller {
     }
 
     public function update($params) {
-        if (count(is_countable($params[0]) ? $params[0] : [])) {
+        if (count(is_countable($params) ? $params : [])) {
             if (Input::exists()) {
                 if (Token::check(Input::get('token'))) {
                     if ($params[0] != Input::get('id_donatur')) {
@@ -162,8 +162,7 @@ class DonaturController extends Controller {
                     ), array('id_donatur','!=', Input::get('id_donatur')));
                     if (!$validate->passed()) {
                         Session::put('error_feedback', $validate->getValueFeedback());
-                        Redirect::to('admin/donatur/formulir/'.$params[0]);
-                        
+                        Redirect::to('admin/donatur/formulir/'.$params[0]);      
                     } else {
                         $result = $this->_donatur->update('donatur', array(
                             'nama' => Sanitize::escape(trim(Input::get('nama'))),
@@ -178,6 +177,8 @@ class DonaturController extends Controller {
                                 if ($this->_donatur->isEmployee($id_akun)) {
                                     $id_pegawai = $this->_donatur->data()->id_pegawai;
                                     $this->_donatur->update('pegawai', array(
+                                        'nama' => Sanitize::escape2(Input::get('nama')),
+                                        'kontak' => Sanitize::escape2(Input::get('kontak')),
                                         'email' => Sanitize::escape2(Input::get('email'))
                                     ), array(
                                         'id_pegawai','=', Sanitize::escape2($id_pegawai)
@@ -186,7 +187,6 @@ class DonaturController extends Controller {
                                 $this->_donatur->update('akun', array(
                                     'email' => Sanitize::escape2(Input::get('email'))
                                 ), array('id_akun', '=', Sanitize::escape2($id_akun)));
-                                
                             }
                             Session::flash('success', 'Data donatur dengan [ID] <b>'. Sanitize::escape2(Input::get('id_donatur')) .'</b> berhasil diupdate.');
                         } else {
@@ -280,7 +280,7 @@ class DonaturController extends Controller {
     }
 
     public function kaitkan($params) {
-        if (!count(is_countable($params) ? $params : [])>1) {
+        if (!count(is_countable($params) ? $params : []) > 1) {
             Redirect::to('admin/donatur');
         }
         if (Token::check($params[1])) {

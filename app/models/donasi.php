@@ -85,10 +85,14 @@ class DonasiModel extends HomeModel {
         SUM(IF(LOWER(cp.nama) LIKE '%bsi%', d.jumlah_donasi, 0)) saldo_bsi,
         SUM(IF(LOWER(cp.nama) LIKE '%bri%', d.jumlah_donasi, 0)) saldo_bri,
         SUM(IF(LOWER(cp.nama) LIKE '%tunai%', d.jumlah_donasi, 0)) saldo_tunai,
+        SUM(IF(LOWER(cp.nama) LIKE '%gopay%', d.jumlah_donasi, 0)) saldo_gopay,
+        SUM(IF(LOWER(cp.nama) LIKE '%dana%', d.jumlah_donasi, 0)) saldo_dana,
         (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bjb' AND cptb.jenis = 'TB') nomor_bjb,
         (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bsi' AND cptb.jenis = 'TB') nomor_bsi,
         (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bri' AND cptb.jenis = 'TB') nomor_bri,
-        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'tunai' AND cptb.jenis = 'TN') nomor_tunai
+        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'tunai' AND cptb.jenis = 'TN') nomor_tunai,
+        (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'gopay' AND cpew.jenis = 'EW') nomor_gopay,
+        (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'dana' AND cpew.jenis = 'EW') nomor_dana
         FROM channel_payment cp LEFT JOIN donasi d ON(d.id_cp = cp.id_cp)
         WHERE d.bayar = 1 AND d.id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi)");
         if ($this->db->count()) {
