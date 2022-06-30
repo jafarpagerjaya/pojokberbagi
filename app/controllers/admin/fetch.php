@@ -818,7 +818,7 @@ class FetchController extends Controller {
         }
 
         $this->model('Bantuan');
-        $this->model->query("SELECT b.id_bantuan, b.nama nama_bantuan, b.status FROM bantuan b WHERE b.blokir IS NULL {$search_columnQ} ORDER BY b.prioritas DESC, b.create_at DESC, b.id_bantuan ASC LIMIT {$offset}, {$limit}", $params);
+        $this->model->query("SELECT b.id_bantuan, b.nama nama_bantuan, b.status, IFNULL(b.min_donasi,'') min_donasi FROM bantuan b WHERE b.blokir IS NULL {$search_columnQ} ORDER BY b.prioritas DESC, b.create_at DESC, b.id_bantuan ASC LIMIT {$offset}, {$limit}", $params);
 
         $dataBantuan = $this->model->readAllData();
 

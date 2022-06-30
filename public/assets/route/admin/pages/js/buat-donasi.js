@@ -1,6 +1,7 @@
 let ctrl = undefined;
 
-const inputAlias = document.getElementById('input-alias-donasi'),
+const inputCheckAlias = document.getElementById('input-check-alias'),
+inputAlias = document.getElementById('input-alias-donasi'),
 inputAliasMaxChar = inputAlias.getAttribute('maxlength');
 inputAlias.addEventListener('keydown', function(e) {
     let bannedCharFound = /[^a-zA-Z0-9\s]/;
@@ -24,9 +25,29 @@ inputAlias.addEventListener('keyup', function (e) {
     }
 });
 
+inputCheckAlias.addEventListener('click', function () {
+    if (this.checked) {
+        this.parentElement.classList.add('checked');
+        inputAlias.classList.remove('d-none');
+        inputAlias.nextElementSibling.classList.remove('d-none');
+        inputAlias.focus();
+        textareaDoa.removeAttribute('style');
+    } else {
+        this.parentElement.classList.remove('checked');
+        inputAlias.classList.add('d-none');
+        inputAlias.nextElementSibling.classList.add('d-none');
+        textareaDoa.style = 'min-height: 89px !important; max-height: 89px !important;';
+    }
+});
+
 const inputCheckDoa = document.getElementById('input-check-doa'),
       textareaDoa = document.getElementById('textarea-doa'),
       charLeft = document.getElementById('charLeft');
+
+if (!inputCheckAlias.checked) {
+    textareaDoa.style = 'min-height: 89px !important; max-height: 89px !important;';
+}
+
 inputCheckDoa.addEventListener('click', function () {
     if (this.checked) {
         this.parentElement.classList.add('checked');
@@ -85,14 +106,6 @@ textareaDoa.addEventListener('paste', function(e) {
         this.value = escapeRegExp(this.value.trim(),'',/[^a-zA-Z0-9\s\/.-]/g);
     }, 0);
 });
-
-$('select').select2({
-    placeholder: "Pilih salah satu"
-});
-
-let fetchData = function(url, data = null, root = null) {
-    
-};
 
 // Select2 for Channel Payment
 function modelMatcher(params, data) {
@@ -169,10 +182,18 @@ fetch('/admin/fetch/read/channel-payment', {
         if (data.length > 0) {
             $('#input-cp-donasi').select2({
                 placeholder: "Pilih salah satu",
-                data: selectLabel(data),
+                data: selectOtionGroupLabel(data),
                 matcher: modelMatcher,
                 escapeMarkup: function (markup) { return markup; },
                 templateResult: formatChannelPayment
+            }).on('select2:open', function() {
+                if ($(this).hasClass("select2-hidden-accessible")) {
+                    if ($(this).hasClass('is-invalid')) {
+                        $('#select2-'+ $(this).attr('id') +'-results').parents('span.select2-dropdown').addClass('is-invalid');
+                    } else {
+                        $('#select2-'+ $(this).attr('id') +'-results').parents('span.select2-dropdown').removeClass('is-invalid');
+                    }
+                }
             });
         }
     } else {
@@ -231,6 +252,7 @@ $('#input-bantuan-donasi').select2({
         url: '/admin/fetch/ajax/bantuan',
         type: 'post',
         dataType: 'json',
+        delay: 250,
         contentType: "application/json",
         data: function (params) {
             if ($('input.select2-search__field').val().length) {
@@ -241,11 +263,11 @@ $('#input-bantuan-donasi').select2({
                 params.offset = parseInt(dataBantuan.offset) + parseInt(dataBantuan.limit);
             }
             params.offset = params.offset || 0;
-            console.log(params);
+            // console.log(params);
             return JSON.stringify(params);
         },
         processResults: function (response) {
-            console.log(response);
+            // console.log(response);
             if (response.error) {
                 console.log(response.feedback.message);
                 return false;
@@ -255,7 +277,8 @@ $('#input-bantuan-donasi').select2({
                 return {
                     id: elments.id_bantuan,
                     text: elments.nama_bantuan,
-                    status: elments.status
+                    status: elments.status,
+                    min_donasi: elments.min_donasi
                 };
             });
             if (response.feedback.search != undefined) {
@@ -287,8 +310,47 @@ $('#input-bantuan-donasi').select2({
             $('#select2-'+ $(this).attr('id') +'-results').scrollTop(0);
         }
     }
+
+    if ($(this).hasClass("select2-hidden-accessible")) {
+        if ($(this).hasClass('is-invalid')) {
+            $('#select2-'+ $(this).attr('id') +'-results').parents('span.select2-dropdown').addClass('is-invalid');
+        } else {
+            $('#select2-'+ $(this).attr('id') +'-results').parents('span.select2-dropdown').removeClass('is-invalid');
+        }
+    }
 }).on('select2:close', function(e) {
     dataBantuan.load_more = false;
+}).on("select2:select", function (e) {
+    if (e.params.data.min_donasi) {
+        dataBantuan.selected = {
+            min_donasi: e.params.data.min_donasi
+        }
+        if (priceToNumber(inputJumlahDonasi.value) > 0) {
+            if (priceToNumber(inputJumlahDonasi.value) >= parseInt(e.params.data.min_donasi)) {
+                if (inputJumlahDonasi.classList.contains('is-invalid')) {
+                    inputJumlahDonasi.closest('.form-group').classList.remove('is-invalid');
+                    inputJumlahDonasi.classList.remove('is-invalid');
+                    inputJumlahDonasi.closest('.form-group').querySelector('label').removeAttribute('data-label-after');
+                }
+            } else {
+                if (!inputJumlahDonasi.classList.contains('is-invalid')) {
+                    // iError.error = true;
+                    inputJumlahDonasi.closest('.form-group').classList.add('is-invalid');
+                    inputJumlahDonasi.classList.add('is-invalid');
+                }
+                inputJumlahDonasi.closest('.form-group').querySelector('label').setAttribute('data-label-after', 'minimal '+numberToPrice(e.params.data.min_donasi));
+            }
+        }
+    } else {
+        if (dataBantuan.selected) {
+            delete dataBantuan.selected.min_donasi;
+        }
+        if (inputJumlahDonasi.classList.contains('is-invalid') && inputJumlahDonasi.value.length) {
+            inputJumlahDonasi.closest('.form-group').classList.remove('is-invalid');
+            inputJumlahDonasi.classList.remove('is-invalid');
+            inputJumlahDonasi.closest('.form-group').querySelector('label').removeAttribute('data-label-after');
+        }
+    }
 });
 
 let dataDonatur = {};
@@ -300,6 +362,7 @@ $('#input-donatur-donasi').select2({
         url: '/admin/fetch/ajax/donatur',
         type: 'post',
         dataType: 'json',
+        delay: 250,
         contentType: "application/json",
         data: function (params) {
             if ($('input.select2-search__field').val().length) {
@@ -310,11 +373,11 @@ $('#input-donatur-donasi').select2({
                 params.offset = parseInt(dataDonatur.offset) + parseInt(dataDonatur.limit);
             }
             params.offset = params.offset || 0;
-            console.log(params);
+            // console.log(params);
             return JSON.stringify(params);
         },
         processResults: function (response) {
-            console.log(response);
+            // console.log(response);
             if (response.error) {
                 console.log(response.feedback.message);
                 return false;
@@ -358,8 +421,39 @@ $('#input-donatur-donasi').select2({
             $('#select2-'+ $(this).attr('id') +'-results').scrollTop(0);
         }
     }
+
+    if ($(this).hasClass("select2-hidden-accessible")) {
+        if ($(this).hasClass('is-invalid')) {
+            $('#select2-'+ $(this).attr('id') +'-results').parents('span.select2-dropdown').addClass('is-invalid');
+        } else {
+            $('#select2-'+ $(this).attr('id') +'-results').parents('span.select2-dropdown').removeClass('is-invalid');
+        }
+    }
 }).on('select2:close', function(e) {
     dataDonatur.load_more = false;
+}).on("select2:select", function (e) {
+    inputAlias.value = (e.params.data.samaran.toLowerCase() == 'sahabat berbagi' ? '' : e.params.data.samaran);
+    dataDonatur.selected = {
+        name: e.params.data.text
+    };
+
+    if (!inputCheckAlias.checked) {
+        iNames.alias = e.params.data.text;
+    }
+
+    if (e.params.data.email.length) {
+        dataDonatur.selected.email = e.params.data.email;
+    }
+}).on('change', function(e) {
+    setTimeout(() => {
+        if (dataDonatur.selected) {
+            if (!dataDonatur.selected.email) {
+                inputNotifikasi.parentElement.classList.add('d-none');
+            } else {
+                inputNotifikasi.parentElement.classList.remove('d-none');
+            }
+        }
+    }, 0)
 });
 
 const waktu_bayar = document.getElementById('waktu-bayar');
@@ -384,6 +478,11 @@ $('.datepicker').datepicker({
     enableOnReadonly: false // readonly input will not show datepicker . The default value true
 }).change(function(e) {
     // submitControl(e.target);
+    if (this.classList.contains('is-invalid')) {
+        this.classList.remove('is-invalid');
+        this.closest('.form-group.is-invalid').removeAttribute('data-label-after');
+        this.closest('.form-group.is-invalid').classList.remove('is-invalid');
+    }
 }).on('show', function(e) {
     let allowedPicker = [],
         untilPicker = undefined,
@@ -438,11 +537,183 @@ const inputJumlahDonasi = document.getElementById('input-jumlah-donasi');
 inputJumlahDonasi.addEventListener('keypress', preventNonNumbersInInput);
 inputJumlahDonasi.addEventListener('keyup', function () {
     this.value = numberToPrice(this.value, 'Rp. ');
+    if (dataBantuan.selected) {
+        if (this.classList.contains('is-invalid')) {
+            if (priceToNumber(this.value) >= parseInt(dataBantuan.selected.min_donasi)) {
+                this.closest('.form-group').classList.remove('is-invalid');
+                this.classList.remove('is-invalid');
+                this.closest('.form-group').querySelector('label').removeAttribute('data-label-after');
+            } else {
+                this.closest('.form-group').querySelector('label').setAttribute('data-label-after', 'minimal '+numberToPrice(dataBantuan.selected.min_donasi));
+            }
+        }
+    } else {
+        if (this.classList.contains('is-invalid')) {
+            this.closest('.form-group').classList.remove('is-invalid');
+            this.classList.remove('is-invalid');
+            this.closest('.form-group').querySelector('label').removeAttribute('data-label-after');
+        }
+    }
 });
 
-function selectLabel(array) {
+inputJumlahDonasi.addEventListener('change', function () {
+    this.value = numberToPrice(this.value, 'Rp. ');
+    if (dataBantuan.selected) {
+        if (!this.classList.contains('is-invalid')) {
+            if (priceToNumber(this.value) < parseInt(dataBantuan.selected.min_donasi)) {
+                iError.error = true;
+                this.closest('.form-group').classList.add('is-invalid');
+                this.classList.add('is-invalid');
+                this.closest('.form-group').querySelector('label').setAttribute('data-label-after', 'minimal '+numberToPrice(dataBantuan.selected.min_donasi));
+            }
+        }
+    }
+});
+
+function selectOtionGroupLabel(array) {
     return Object.values(array.reduce((accu, { id_cp: id, jenis: text, nama, path_gambar }) => {
         (accu[text] ??= { text: keteranganJenisChannelPayment(text), children: [] }).children.push({ id, text: nama, path_gambar });
         return accu;
     }, {}));
 }
+
+const inputNotifikasi = document.getElementById('notifikasi_bayar');
+if (!$('#input-donatur-donasi').val().length) {
+    inputNotifikasi.parentElement.classList.add('d-none');
+}
+
+const resetBtn = document.querySelector('button[type="clear"]'),
+      submitBtn = document.querySelector('button[type="submit"]');
+
+let names = submitBtn.closest('.card').closest('.row').querySelectorAll('[name]');
+resetBtn.addEventListener('click', function() {
+    names.forEach(element => {
+        if (element.getAttribute('name') == 'waktu_bayar') {
+            $('.datepicker').val("").datepicker("update");
+        }
+        if (element?.tagName.toLowerCase() === 'input' && element?.getAttribute('type') === 'checkbox') {
+            element.checked = false;
+            if (element.getAttribute('id') == 'input-check-alias') {
+                element.parentElement.classList.remove('checked');
+                inputAlias.classList.add('d-none');
+                inputAlias.nextElementSibling.classList.add('d-none');
+            }
+            if (element.getAttribute('id') == 'input-check-doa') {
+                element.parentElement.classList.remove('checked');
+                textareaDoa.classList.add('d-none');
+                charLeft.classList.add('d-none');
+            }
+        }
+        if (element?.tagName.toLowerCase() === 'select') {
+            $('#'+element.getAttribute('id')).val(null).trigger('change');
+        }
+        element.value = '';
+        if (element?.tagName.toLowerCase() === 'textarea') {
+            charLeft.querySelector('span').innerText = '0';
+        }
+        if (element.classList.contains('is-invalid')) {
+            element.classList.remove('is-invalid');
+            element.closest('.form-group').classList.remove('is-invalid');
+            element.closest('.form-group').querySelector('label').removeAttribute('data-label-after');
+        }
+    });
+    delete dataDonatur.selected;
+    inputNotifikasi.parentElement.classList.add('d-none');
+    iNames = {};
+    submitBtn.classList.remove('disabled');
+});
+
+let iNames = {},
+    iError = {
+        error: false
+    };
+submitBtn.addEventListener('click', function() {
+    names.forEach(name => {
+        if (name.getAttribute('data-required') == 'true') {
+            if (!name.value.length) {
+                // iError.error = true;
+                name.closest('.form-group').classList.add('is-invalid');
+                name.classList.add('is-invalid');
+                name.closest('.form-group').querySelector('label').setAttribute('data-label-after', 'wajib diisi');
+                return;
+            } else {
+                if (name.closest('.form-group').classList.contains('is-invalid')) {
+                    name.closest('.form-group').classList.remove('is-invalid');
+                    name.classList.remove('is-invalid');
+                    name.closest('.form-group').querySelector('label').removeAttribute('data-label-after');
+                }
+            }
+        }
+        if (name?.tagName.toLowerCase() === 'input' && name?.getAttribute('type') === 'checkbox') {
+            if (!name.checked) {
+                if (name.getAttribute('name') == 'check_doa') {
+                    delete iNames.doa;
+                }
+                if (name.getAttribute('name') == 'check_alias') {
+                    if (dataDonatur.selected)
+                    iNames.alias = dataDonatur.selected.name;
+                }
+                if (name.getAttribute('name') == 'notifikasi') {
+                    delete iNames.notifikasi;
+                }
+                return;
+            }
+            if (name.getAttribute('name') == 'check_doa') {
+                if (textareaDoa.value.length) {
+                    iNames.doa = textareaDoa.value;
+                } else {
+                    delete iNames.doa;
+                }
+            }
+            if (name.getAttribute('name') == 'check_alias') {
+                if (inputAlias.value.length) {
+                    iNames.alias = inputAlias.value;
+                } else {
+                    delete iNames.alias;
+                }
+            }
+            if (name.getAttribute('name') == 'notifikasi') {
+                iNames.notifikasi = true;
+            }
+        } else {
+            if (name.value.length && name.getAttribute('name') == 'jumlah_donasi') {
+                if (dataBantuan.selected) {
+                    if (priceToNumber(dataBantuan.selected.min_donasi) > priceToNumber(name.value)) {
+                        // iError.error = true;
+                        name.closest('.form-group').classList.add('is-invalid');
+                        name.classList.add('is-invalid');
+                        name.closest('.form-group').querySelector('label').setAttribute('data-label-after', 'minimal '+numberToPrice(dataBantuan.selected.min_donasi));
+                        return;
+                    } else {
+                        if (name.closest('.form-group').classList.contains('is-invalid')) {
+                            name.closest('.form-group').classList.remove('is-invalid');
+                            name.classList.remove('is-invalid');
+                            name.closest('.form-group').querySelector('label').removeAttribute('data-label-after');
+                        }
+                    }
+                }
+            }
+            if (name.value.length && name?.tagName.toLowerCase() !== 'textarea' && name.getAttribute('name') != 'alias') {
+                iNames[name.getAttribute('name')] = name.value;
+            }
+        }
+    });
+    const invalid = document.querySelectorAll('[data-required="true"].is-invalid');
+    if (invalid.length) {
+        this.classList.add('disabled')
+        return false;
+    } else {
+        this.classList.remove('disabled')
+    }
+    console.log(dataDonatur.selected)
+    console.log(iNames)
+});
+
+submitBtn.addEventListener('mouseenter', function(e) {
+    const invalid = document.querySelectorAll('[data-required="true"].is-invalid');
+    if (invalid.length) {
+        this.classList.add('disabled')
+    } else {
+        this.classList.remove('disabled')
+    }
+});

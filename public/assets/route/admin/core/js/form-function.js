@@ -73,3 +73,33 @@ function checkEmailPattern(str) {
 
     return pattern.test(str.toLowerCase());
 }
+
+const inputMaxlengthList = document.querySelectorAll('input[maxlength]');
+inputMaxlengthList.forEach(input => {
+    let maxlength = input.getAttribute('maxlength');
+    let tag = document.createElement('span');
+    tag.classList.add('input-char-left');
+    tag.innerHTML = '<span class="current-length text-orange">0</span> / <span>'+ maxlength +'</span>';
+    input.parentElement.appendChild(tag);
+
+    if (input.currentStyle ? input.currentStyle.display : getComputedStyle(input, null).display == 'none') {
+        input.parentElement.querySelector('.input-char-left').classList.add('d-none');
+    }
+
+    // Event
+    input.addEventListener('keyup', function(e) {
+        this.parentElement.querySelector('.current-length').innerText = this.value.length;
+    });
+});
+
+$('select').on('change', function() {
+    if (this.classList.contains('is-invalid')) {
+        this.classList.remove('is-invalid');
+    }
+    if (this.closest('.form-group').classList.contains('error')) {
+        this.closest('.form-group').classList.remove('error');
+    }
+    if (this.closest('.form-group').classList.contains('is-invalid')) {
+        this.closest('.form-group').classList.remove('is-invalid');
+    }
+});

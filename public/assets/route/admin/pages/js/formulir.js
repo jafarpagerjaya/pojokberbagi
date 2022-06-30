@@ -756,6 +756,9 @@ names.forEach(element => {
         if (formGroup.classList.contains('error')) {
             formGroup.classList.remove('error');
         }
+        if (formGroup.classList.contains('is-invalid')) {
+            formGroup.classList.remove('is-invalid');
+        }
 
         if (formGroup.querySelector('label[data-label-after]') != null) {
             formGroup.querySelector('label[data-label-after]').removeAttribute('data-label-after');

@@ -13,22 +13,7 @@
                             <select class="form-control" id="input-bantuan-donasi" name="id_bantuan"
                                 data-required="true">
                                 <option></option>
-                                <!-- Butuh Perbaikan => Load 20 Terakhir, Load on scroll sebanyak 20, load on type 20 -->
-                                <!-- <?php
-                                    if (isset($data['data_bantuan'])) {
-                                        echo '<option></option>';
-                                        foreach($data['data_bantuan'] as $dataBantuan) {
-                                            $kategori_sektor = array();
-                                            if (strlen($dataBantuan->nama_kategori) > 0) {
-                                                array_push($kategori_sektor, $dataBantuan->nama_kategori);
-                                            }
-                                            if (strlen($dataBantuan->nama_sektor) > 0) {
-                                                array_push($kategori_sektor, $dataBantuan->nama_sektor);
-                                            }
-                                            echo '<option value="'. $dataBantuan->id_bantuan .'">' . $dataBantuan->nama_bantuan . '' . (count(is_countable($kategori_sektor) ? $kategori_sektor : []) > 0 ? " (" . $kategori_sektor = implode(' - ', $kategori_sektor) . ")" : "") . '</option>';
-                                        }
-                                    }
-                                ?> -->
+
                             </select>
                         </div>
                         <div class="form-group" id="waktu-bayar">
@@ -36,7 +21,8 @@
                                 Bayar</label>
                             <div class="input-group">
                                 <input spellcheck="false" class="form-control datepicker" placeholder="d M yyyy"
-                                    type="text" name="waktu_bayar" id="input-waktu-bayar" data-date-end-date="0d">
+                                    type="text" name="waktu_bayar" id="input-waktu-bayar" data-date-end-date="0d"
+                                    data-required="true">
                                 <div class="input-group-append">
                                     <span class="input-group-text"><i class="ni ni-calendar-grid-58 px-1"></i></span>
                                 </div>
@@ -48,21 +34,14 @@
                             <label class="form-control-label" for="input-jumlah-donasi">Jumlah
                                 Donasi</label>
                             <input spellcheck="false" type="text" id="input-jumlah-donasi" class="form-control"
-                                placeholder="Nominal Donasi" name="jumlah_donasi">
+                                placeholder="Nominal Donasi" name="jumlah_donasi" data-required="true">
                         </div>
                         <div class="form-group" id="id_cp">
                             <label class="form-control-label" for="input-cp-donasi">Channel
                                 Payment</label>
                             <select class="form-control" id="input-cp-donasi" name="id_cp" data-required="true">
                                 <option></option>
-                                <!-- <?php
-                                    if (isset($data['data_cp'])) {
-                                        echo '<option></option>';
-                                        foreach($data['data_cp'] as $dataCp) {
-                                            echo '<option value="'. $dataCp->id_cp .'">' . $dataCp->nama . '</option>';
-                                        }
-                                    }
-                                ?> -->
+
                             </select>
                         </div>
                     </div>
@@ -74,15 +53,7 @@
                             <select class="form-control" id="input-donatur-donasi" name="id_donatur"
                                 data-required="true">
                                 <option></option>
-                                <!-- Butuh Perbaikan => Load 20 Terakhir, Load on scroll sebanyak 20, load on type 20 -->
-                                <!-- <?php
-                                    if (isset($data['data_donatur'])) {
-                                        echo '<option></option>';
-                                        foreach($data['data_donatur'] as $dataDonatur) {
-                                            echo '<option value="'. $dataDonatur->id_donatur .'">' . $dataDonatur->nama . '</option>';
-                                        }
-                                    }
-                                ?> -->
+
                             </select>
                         </div>
                         <div class="form-group" id="alias">
@@ -93,7 +64,7 @@
                                     dismarkan</label>
 
                             </div>
-                            <input spellcheck="false" type="text" id="input-alias-donasi" class="form-control"
+                            <input spellcheck="false" type="text" id="input-alias-donasi" class="form-control d-none"
                                 placeholder="Alias" name="alias" maxlength="30">
                         </div>
                     </div>
@@ -127,8 +98,8 @@
                         </div>
                     </div>
                     <div class="col">
-                        <button type="button" class="btn btn-outline-primary float-right">Simpan</button>
-                        <button type="button"
+                        <button type="submit" class="btn btn-outline-primary float-right">Simpan</button>
+                        <button type="clear"
                             class="btn btn-link float-right mr-2 text-warning font-weight-bolder">Reset</button>
                     </div>
                 </div>
