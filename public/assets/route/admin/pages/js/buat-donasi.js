@@ -207,9 +207,9 @@ fetch('/admin/fetch/read/channel-payment', {
     }
 
     document.querySelector('body').setAttribute('data-token', result.token);
-    // fetchTokenChannel.postMessage({
-    //     token: body.getAttribute('data-token')
-    // });
+    fetchTokenChannel.postMessage({
+        token: body.getAttribute('data-token')
+    });
 });
 
 function formatChannelPayment(cp) {
@@ -334,7 +334,8 @@ $('#input-bantuan-donasi').select2({
                 }
             } else {
                 if (!inputJumlahDonasi.classList.contains('is-invalid')) {
-                    // iError.error = true;
+                    iError.error = true;
+                    iError.message = 'Minimal donasi on select tidak terpenuhi';
                     inputJumlahDonasi.closest('.form-group').classList.add('is-invalid');
                     inputJumlahDonasi.classList.add('is-invalid');
                 }
@@ -562,6 +563,7 @@ inputJumlahDonasi.addEventListener('change', function () {
         if (!this.classList.contains('is-invalid')) {
             if (priceToNumber(this.value) < parseInt(dataBantuan.selected.min_donasi)) {
                 iError.error = true;
+                iError.message = 'Minimal donasi on change tidak terpenuhi';
                 this.closest('.form-group').classList.add('is-invalid');
                 this.classList.add('is-invalid');
                 this.closest('.form-group').querySelector('label').setAttribute('data-label-after', 'minimal '+numberToPrice(dataBantuan.selected.min_donasi));
@@ -631,10 +633,12 @@ submitBtn.addEventListener('click', function() {
     names.forEach(name => {
         if (name.getAttribute('data-required') == 'true') {
             if (!name.value.length) {
-                // iError.error = true;
+                let iNullWord = (name?.tagName.toLowerCase() == 'select' ? 'dipilih' : 'diisi');
+                iError.error = true;
+                iError.message = 'Data [name="'+ name.getAttribute('name') +'"] wajib '+ iNullWord;
                 name.closest('.form-group').classList.add('is-invalid');
                 name.classList.add('is-invalid');
-                name.closest('.form-group').querySelector('label').setAttribute('data-label-after', 'wajib diisi');
+                name.closest('.form-group').querySelector('label').setAttribute('data-label-after', 'wajib '+ iNullWord);
                 return;
             } else {
                 if (name.closest('.form-group').classList.contains('is-invalid')) {
@@ -679,7 +683,8 @@ submitBtn.addEventListener('click', function() {
             if (name.value.length && name.getAttribute('name') == 'jumlah_donasi') {
                 if (dataBantuan.selected) {
                     if (priceToNumber(dataBantuan.selected.min_donasi) > priceToNumber(name.value)) {
-                        // iError.error = true;
+                        iError.error = true;
+                        iError.message = 'Minimal donasi on submit tidak terpenuhi';
                         name.closest('.form-group').classList.add('is-invalid');
                         name.classList.add('is-invalid');
                         name.closest('.form-group').querySelector('label').setAttribute('data-label-after', 'minimal '+numberToPrice(dataBantuan.selected.min_donasi));
@@ -698,15 +703,57 @@ submitBtn.addEventListener('click', function() {
             }
         }
     });
-    const invalid = document.querySelectorAll('[data-required="true"].is-invalid');
-    if (invalid.length) {
-        this.classList.add('disabled')
-        return false;
-    } else {
-        this.classList.remove('disabled')
-    }
-    console.log(dataDonatur.selected)
-    console.log(iNames)
+    // const invalid = document.querySelectorAll('[data-required="true"].is-invalid');
+    // if (invalid.length) {
+    //     this.classList.add('disabled')
+    //     return false;
+    // } else {
+    //     this.classList.remove('disabled')
+    // }
+    iError.error = false;
+    delete iError.message;
+    // console.log(dataDonatur.selected)
+    // console.log(iNames)
+    // fetch create Donasi
+    let input = {
+        data: iNames,
+        token: body.getAttribute('data-token'),
+        error: iError.error
+    };
+    fetch('/admin/fetch/create/donasi', {
+        method: "POST",
+        cache: "no-cache",
+        mode: "same-origin",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        referrer: "no-referrer",
+        body:JSON.stringify(input)
+    })
+    .then(response => response.json())
+    .then(function(result) {
+        console.log(result);
+        if (result.error == false) {
+            // Success
+            $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
+            $('.toast[data-toast="feedback"] .toast-header strong').text('Informasi');
+        } else {
+            // Failed
+            $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
+            $('.toast[data-toast="feedback"] .toast-header strong').text('Peringatan!');
+            console.log('there is some error in server side');
+        }
+
+        $('.toast[data-toast="feedback"] .toast-body').html(result.feedback.message);
+        $('.toast[data-toast="feedback"] .time-passed').text('Baru Saja');
+        $('.toast').toast('show');
+    
+        document.querySelector('body').setAttribute('data-token', result.token);
+        fetchTokenChannel.postMessage({
+            token: body.getAttribute('data-token')
+        });
+    });
 });
 
 submitBtn.addEventListener('mouseenter', function(e) {

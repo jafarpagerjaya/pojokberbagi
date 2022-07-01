@@ -8,12 +8,10 @@
                 <div class="row">
                     <div class="col">
                         <div class="form-group" id="id_bantuan">
-                            <label class="form-control-label" for="input-bantuan-donasi">Bantuan
-                                Program</label>
+                            <label class="form-control-label" for="input-bantuan-donasi">Program Bantuan</label>
                             <select class="form-control" id="input-bantuan-donasi" name="id_bantuan"
                                 data-required="true">
                                 <option></option>
-
                             </select>
                         </div>
                         <div class="form-group" id="waktu-bayar">
@@ -162,6 +160,23 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+</div>
+<div aria-live="polite" aria-atomic="true" style="bottom: 1em; right: 1em;"
+    class="position-fixed d-flex justify-content-end flex-column align-items-end">
+    <div class="toast w-100 fade hide bg-white" role="alert" aria-live="assertive" aria-atomic="true"
+        data-toast="feedback" data-delay="5000">
+        <div class="toast-header d-flex gap-x-2 justify-content-center align-items-center">
+            <div class="small-box rounded p-2 ailgn-items-center"></div>
+            <strong class="mr-auto">Pemberitahuan</strong>
+            <small class="text-muted time-passed">Beberapa saat yang lalu</small>
+            <button type="button" class="close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            data.feedback.message
         </div>
     </div>
 </div>

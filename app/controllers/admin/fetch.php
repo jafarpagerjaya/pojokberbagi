@@ -72,11 +72,15 @@ class FetchController extends Controller {
         $decoded = $this->contentTypeJsonDecoded($_SERVER["CONTENT_TYPE"]);
 
         // Check Token
-        $this->checkToken($decoded['token']);
+        // $this->checkToken($decoded['token']);
 
         switch ($params[0]) {
             case 'bantuan':
                 // bantuanCreate
+            break;
+
+            case 'donasi':
+                // donasiCreate
             break;
             
             default:
@@ -440,6 +444,115 @@ class FetchController extends Controller {
 
         $this->_result['error'] = false;
         $this->_result['feedback']['id_bantuan'] = $id_bantuan;
+        $this->result();
+        return false;
+    }
+
+    private function donasiCreate($decoded) {
+        $decoded = Sanitize::thisArray($decoded['data']);
+
+        if (!isset($decoded['id_bantuan'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Program bantuan wajib dipilih'
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!isset($decoded['jumlah_donasi'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Jumlah donasi wajib diisi'
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!isset($decoded['waktu_bayar'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Waktu bayar wajib diisi'
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!isset($decoded['id_cp'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Channel Payment wajib dipilih'
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!isset($decoded['id_donatur'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Donatur wajib dipilih'
+            );
+            $this->result();
+            return false;
+        }
+
+        $waktu_bayar = new DateTime(date('Y-m-d', strtotime($decoded['waktu_bayar'])));
+        $decoded['waktu_bayar'] = $waktu_bayar->format('Y-m-d H:i:s');
+        $decoded['jumlah_donasi'] = Sanitize::toInt2($decoded['jumlah_donasi']);
+        $this->model('Donasi');
+
+        $dataFindId = $this->model->query("SELECT (SELECT count(id_bantuan) FROM bantuan WHERE id_bantuan = ?) bantuan_count, (SELECT count(id_cp) FROM channel_payment WHERE id_cp = ?) cp_count, (SELECT count(id_donatur) FROM donatur WHERE id_donatur = ?) donatur_count", array('id_bantuan' => $decoded['id_bantuan'], 'id_cp' => $decoded['id_cp'], 'id_donatur' => $decoded['id_donatur']));
+
+        if (!$dataFindId->bantuan_count) {
+            $this->_result['feedback'] = array(
+                'message' => 'Data bantuan terpilih tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!$dataFindId->cp_count) {
+            $this->_result['feedback'] = array(
+                'message' => 'Data channel payment terpilih tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!$dataFindId->donatur_count) {
+            $this->_result['feedback'] = array(
+                'message' => 'Data donatur terpilih tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->model->getData('nama nama_bantuan, min_donasi','bantuan',array('id_bantuan','=',$decoded['id_bantuan']));
+        $dataBantuan = $this->model->data();
+        if ($dataBantuan->min_donasi > $decoded['jumlah_donasi']) {
+            $this->_result['feedback'] = array(
+                'message' => 'Jumlah donasi <span class="font-weight-bold">'. ucwords(strtolower($dataBantuan->nama_bantuan ?? '')) .'</span> minimal '. Output::tSparator($dataBantuan->min_donasi)
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->model->getData('nama nama_donatur','donatur',array('id_donatur','=',$decoded['id_donatur']));
+        $dataDonatur = $this->model->data();
+
+        $this->model->getData('nama nama_cp, jenis jenis_cp','channel_payment',array('id_cp','=',$decoded['id_cp']));
+        $dataCP = $this->model->data();
+
+        // create donasi
+        $decoded['bayar'] = 1;
+        $create = $this->model->create('donasi', $decoded);
+        if (!$create) {
+            $this->_result['feedback'] = array(
+                'message' => 'Failed to create new donation'
+            );
+        } else {
+            $id_donasi = 'Baru';
+            $this->_result['error'] = false;
+            $this->_result['feedback'] = array(
+                'message' => 'Donasi <span class="font-weight-bold text-orange">' . (isset($decoded['alias']) ? $decoded['alias'] : $dataDonatur->nama_donatur) . '</span> untuk <span class="font-weight-bold" data-id-donasi="'. $id_donasi .'">' . $dataBantuan->nama_bantuan . '</span> sejumlah <span class="font-weight-bold" style="display: inline-block;">Rp. '. Output::tSparator($decoded['jumlah_donasi']) .'</span> ('. Utility::keteranganJenisChannelPayment($dataCP->jenis_cp) .' - '. $dataCP->nama_cp .') telah ditambahkan'
+            );
+        }
+        
         $this->result();
         return false;
     }
