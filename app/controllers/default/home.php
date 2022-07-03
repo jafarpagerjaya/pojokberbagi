@@ -52,7 +52,11 @@ class HomeController extends Controller {
 		// Track real path based on return php request for js dom
 		$this->data['uri'] = base64_encode($this->getRealUri());
 		// Token for fetch
-        $this->data[Config::get('session/token_name')] = Token::generate();
+		if (!Session::exists(Config::get('session/token_name'))) {
+			$this->data[Config::get('session/token_name')] = Token::generate();
+		} else {
+			$this->data[Config::get('session/token_name')] = Session::get(Config::get('session/token_name'));
+		}
 	}
 
 	public function kunjungan() {

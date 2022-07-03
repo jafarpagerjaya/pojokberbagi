@@ -180,7 +180,8 @@
                     <div class="col">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Cari.." name="search"
-                                autocomplete="off">
+                                autocomplete="off" <?=(isset($data['search']) ? 'value="' . $data['search'] . '"' : '' )
+                                ?>>
                         </div>
                     </div>
                     <div class="col">

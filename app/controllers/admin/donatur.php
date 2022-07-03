@@ -67,11 +67,12 @@ class DonaturController extends Controller {
             'jumlah_akun' => $this->model->jumlahAkun(),
         );
 
-        $this->_donatur->dataDonatur();
+        $this->data['halaman'] = 1;
+        $this->_donatur->dataDonatur(1);
         $this->data['donatur'] = $this->_donatur->data();
         $this->_donatur->countData('donatur');
         $this->data['record'] = $this->_donatur->data()->jumlah_record;
-        $this->data['halaman'] = 1;
+        $this->data['token'] = Token::generate();
     }
 
     public function sys() {
@@ -83,11 +84,12 @@ class DonaturController extends Controller {
             'jumlah_akun' => $this->model->jumlahAkun(),
         );
 
-        $this->_donatur->dataDonatur();
+        $this->data['halaman'] = 1;
+        $this->_donatur->dataDonatur(1);
         $this->data['donatur'] = $this->_donatur->data();
         $this->_donatur->countData('donatur');
         $this->data['record'] = $this->_donatur->data()->jumlah_record;
-        $this->data['halaman'] = 1;
+        $this->data['token'] = Token::generate();
         // $this->_donatur->setPageLink();
         // $this->data['pageLink'] = json_decode(json_encode($this->_donatur->data()), true);
     }
@@ -283,19 +285,32 @@ class DonaturController extends Controller {
         if (!count(is_countable($params) ? $params : []) > 1) {
             Redirect::to('admin/donatur');
         }
-        if (Token::check($params[1])) {
-            $this->_donatur->getData('email','donatur',array('id_donatur','=', intval($params[0])),'AND',array('id_akun','IS',NULL));
+        if (Token::check2($params[1])) {
+            $this->_donatur->getData('nama, email','donatur',array('id_donatur','=', intval($params[0])),'AND',array('id_akun','IS',NULL));
             if ($this->_donatur->affected()) {
-                // Send Mail here
-                $pengirim = "pojokberbagi.id";    
-                $penerima = $this->_donatur->data()->email;    
-                $subjek = "Mengkaitkan Akun Pojok Berbagi";    
-                $pesan = "Klik <a href='www.pojokberbagi.id/auth/signup/hook/". $params[0]. "'>disini</a> untuk mengkaitkan akunmu.";   
-                $headers = "Dari :" . $pengirim;    
-                mail($penerima,$subjek,$pesan, $headers);
-                Session::flash('success','Cek email ' . $this->_donatur->data()->email . 'untuk mengkaitkan akun baru');  
+                if (!is_null($this->_donatur->data()->email)) {
+                    // Send Mail here
+                    $pengirim = "pojokberbagi.id";    
+                    $penerima = $this->_donatur->data()->email;    
+                    $subjek = "Mengkaitkan Akun Pojok Berbagi";    
+                    $pesan = "Klik <a href='www.pojokberbagi.id/auth/signup/hook/". $params[0]. "'>disini</a> untuk mengkaitkan akunmu.";   
+                    $headers = "Dari :" . $pengirim;    
+                    mail($penerima,$subjek,$pesan, $headers);
+                    Session::put('notifikasi', array(
+                        'pesan' => 'Cek email <b>' . $this->_donatur->data()->email . '</b> untuk mengkaitkan akun baru',
+                        'state' => 'success'
+                    ));
+                } else {
+                    Session::put('notifikasi', array(
+                        'pesan' => 'Donatur <b>' . $this->_donatur->data()->nama . '</b> belum terdata alamat emailnya sehingga gagal dikaitkan',
+                        'state' => 'warning'
+                    ));
+                }
             } else {
-                Session::flash('error','Akun donatur ' . $this->_donatur->data()->email . 'gagal dikaitkan');
+                Session::put('notifikasi', array(
+                    'pesan' => 'Akun donatur <b>' . $this->_donatur->data()->nama . '</b> tidak ditemukan sehingga gagal dikaitkan',
+                    'state' => 'danger'
+                ));
             }
         }
         Redirect::to('admin/donatur');

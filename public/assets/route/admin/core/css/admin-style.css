@@ -183,6 +183,28 @@ a.disabled {
     background-color: rgb(0 16 32 / 50%)
 }
 
+/* Modal */
+.modal.show .modal-dialog .modal-content.bg-gradient-info .modal-footer button[data-dismiss="modal"] {
+    color: aqua;
+}
+
+.modal.show .modal-dialog .modal-content.bg-gradient-success .modal-footer button[data-dismiss="modal"] {
+    color: aliceblue;
+}
+
+.modal.show .modal-dialog .modal-content.bg-gradient-danger .modal-footer button[data-dismiss="modal"] {
+    color: cornsilk;
+}
+
+.modal.show .modal-dialog .modal-content[class*="bg-gradient-"] .modal-footer button[data-dismiss="modal"] {
+    transition: all .3s ease;
+}
+
+.modal.show .modal-dialog:not(.modal-error) .modal-content[class*="bg-gradient-"]:not(.bg-gradient-) .modal-footer button[data-dismiss="modal"]:hover {
+    color: #e9ecef;
+    opacity: 1;
+}
+
 @media (min-width: 360px) {
     .form-group label {
         font-size: .75rem;

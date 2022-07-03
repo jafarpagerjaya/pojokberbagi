@@ -819,3 +819,6 @@ DELIMITER ;
 ALTER TABLE donasi MODIFY notifikasi CHAR(1) DEFAULT '1';
 -- KHUSUS SERVER WAJIB
 ALTER TABLE donasi MODIFY notifikasi CHAR(1) DEFAULT NULL;
+
+-- JIKA DONATUR SYSROOT BELUM ADA FK KE AKUN
+UPDATE donatur SET id_akun = (SELECT id_akun FROM akun WHERE email = 'pojokberbagi.id@gmail.com') WHERE email = 'pojokberbagi.id@gmail.com';

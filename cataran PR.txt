@@ -1,9 +1,6 @@
 URGEN MINGGU INI
-6. Cari tau penyebab token fetch gagal jika tab inspect elemet dibuka kecuali di home Controller route default (Penyebab sementara Sementara Karena Gambar Tidak Tampil) <== butuh pengecekan apakah benar ini penyebabnya (di PC kantor bukan ini penyebabnya namun di cintara ini penyebabnya)
 10. Jika Waktu akhir bantuan ada dan sudah lewat dan status bantuan sudah selesai DAN ingin reenable (buka ulang) maka arahkan ke halaman update ulang bantuan dengan update status bantuan menjadi D
 11. Cek dan atur min ukuran dimensi upload medium img ke width 726px
-13. Buat fitur tambah donasi via CR
-14. Cek penyebab login gagal jika inspect elment di buka
 16. 
 BONUS KALO CUKUP Bulan Ini
 1. Kelola Banner MAIN bantuan
@@ -14,5 +11,3 @@ PR
 
 CATATAN FEATURES
 1. Jika jenis payment mau ditambahkan untuk donasi lewat Route Donasi => /donasi/buat/baru/x maka sesuaikan query pada [Controller Pembayaran yang ada pada route donasi pada comment // Sementara, Controller Buat pada comment // Masih dibatasi TB dulu]
-
-Local sudah siap migrasi ke php 8

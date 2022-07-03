@@ -20,6 +20,8 @@ let fetchData = function(url, data, root) {
     .then(response => response.json())
     .then(function(result) {
         let sentData = data;
+        console.log(data);
+        console.log(result.feedback);
         if (result.error == false) {
             // Success
             // $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');

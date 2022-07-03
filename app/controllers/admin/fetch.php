@@ -72,7 +72,7 @@ class FetchController extends Controller {
         $decoded = $this->contentTypeJsonDecoded($_SERVER["CONTENT_TYPE"]);
 
         // Check Token
-        // $this->checkToken($decoded['token']);
+        $this->checkToken($decoded['token']);
 
         switch ($params[0]) {
             case 'bantuan':
@@ -150,7 +150,7 @@ class FetchController extends Controller {
         $decoded = $this->contentTypeJsonDecoded($_SERVER["CONTENT_TYPE"]);
 
         // Check Token
-        // $this->checkToken($decoded['token']);
+        $this->checkToken($decoded['token']);
 
         switch ($params[0]) {
             case 'donasi':
@@ -741,9 +741,9 @@ class FetchController extends Controller {
         $data = array();
 
         $this->model->setLimit($decoded['limit']);
-        $this->model->setAscDsc('Desc');
+        $this->model->setDirection('Desc');
         $this->model->setHalaman($decoded['halaman'], 'donasi');
-        $this->model->setOrderBy('d.create_at');
+        $this->model->setOrder('d.create_at');
         $this->model->getListDonasi();
 
         if ($this->model->affected()) {
@@ -873,7 +873,7 @@ class FetchController extends Controller {
         $decoded = $this->contentTypeJsonDecoded($_SERVER["CONTENT_TYPE"]);
 
         // Check Token
-        // $this->checkToken($decoded['token']);
+        $this->checkToken($decoded['token']);
 
         switch ($params[0]) {
             case 'bantuan':
@@ -909,7 +909,7 @@ class FetchController extends Controller {
         $params = array();
         if (!empty($decoded['search'])) {
             $search_value = $decoded['search'];
-            $search_column = "LOWER(CONCAT(IFNULL(b.nama, ''))) LIKE LOWER(CONCAT('%',?,'%'))";
+            $search_column = "LOWER(CONCAT(IFNULL(b.nama, ''),CASE WHEN UPPER(b.status) = 'D' THEN 'berjalan' WHEN UPPER(b.status) = 'S' THEN 'selesai' ELSE '' END)) LIKE LOWER(CONCAT('%',?,'%'))";
             $search_columnQ = "AND {$search_column}";
             array_push($params, $search_value);
             $search = array(
@@ -931,7 +931,7 @@ class FetchController extends Controller {
         }
 
         $this->model('Bantuan');
-        $this->model->query("SELECT b.id_bantuan, b.nama nama_bantuan, b.status, IFNULL(b.min_donasi,'') min_donasi FROM bantuan b WHERE b.blokir IS NULL {$search_columnQ} ORDER BY b.prioritas DESC, b.create_at DESC, b.id_bantuan ASC LIMIT {$offset}, {$limit}", $params);
+        $this->model->query("SELECT b.id_bantuan, b.nama nama_bantuan, b.status, IFNULL(b.min_donasi,'') min_donasi FROM bantuan b WHERE b.blokir IS NULL AND UPPER(b.status) IN ('D','S') {$search_columnQ} ORDER BY b.prioritas DESC, b.create_at DESC, b.id_bantuan ASC LIMIT {$offset}, {$limit}", $params);
 
         $dataBantuan = $this->model->readAllData();
 

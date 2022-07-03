@@ -152,12 +152,29 @@
         </div>
     </div>
     <!-- Modal -->
-    <?php if (Session::exists('success') || Session::exists('error')) { ?>
+    <?php if (Session::exists('success') || Session::exists('error') || Session::exists('warning')) { 
+        $modal_type = '';
+        $modal_bg_color = '';
+        if (Session::exists('danger')) {
+            $modal_type = ' modal-danger';
+            $modal_bg_color = ' bg-gradient-danger';
+            $pesan = Session::flash('error');
+        } elseif (Session::exists('warning')) {
+            $modal_type = ' modal-warning';
+            $modal_bg_color = ' bg-gradient-warning';
+            $pesan = Session::flash('warning');
+        } elseif (Session::exists('success')) {
+            $modal_type = ' modal-success';
+            $modal_bg_color = ' bg-gradient-success';
+            $pesan = Session::flash('success');
+        } else {
+            $pesan = Session::flash('error');
+        }
+    ?>
     <div class="modal fade" id="notif-modal" tabindex="-1" role="dialog" aria-labelledby="notif-modal-label"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered <?= ((Session::exists('error')) ? 'modal-danger' : '') ?>"
-            role="document">
-            <div class="modal-content <?= ((Session::exists('error')) ? 'bg-gradient-danger' : '') ?>">
+        <div class="modal-dialog modal-dialog-centered<?= $modal_type; ?>>" role="document">
+            <div class="modal-content<?= $modal_bg_color; ?>">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Pesan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -165,11 +182,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <?php if (Session::exists('success')) { 
-                            echo Session::flash('success');
-                        } else { 
-                            echo Session::flash('error');
-                        } ?>
+                    <?= $pesan; ?>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link ml-auto" data-dismiss="modal">Tutup</button>
@@ -186,7 +199,7 @@
         <div class="modal-dialog modal-dialog-centered <?= 'modal-' . $notifikasi['state'] ?>" role="document">
             <div class="modal-content <?= 'bg-gradient-' . $notifikasi['state'] ?>">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Pesan</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Notifikasi</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -201,8 +214,6 @@
         </div>
     </div>
     <?php } ?>
-    <!-- Broken Img Handler -->
-
     <!-- Vendor Script -->
     <script src="/vendors/jquery/dist/jquery.min.js"></script>
     <script src="/vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

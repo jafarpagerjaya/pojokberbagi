@@ -9,8 +9,8 @@ class DonaturModel extends HomeModel {
         if (!is_null($halaman)) {
             $this->setHalaman($halaman, 'donatur');
         }
-        $this->db->query('SELECT id_donatur, nama, email, IFNULL(kontak,"Belum Ada") kontak, create_at terdaftar_sejak, id_akun FROM donatur WHERE id_donatur BETWEEN ? AND ? ORDER BY ? ? LIMIT 10',
-                            array($this->getHalaman()[0], $this->getHalaman()[1], $this->getOrderBy(), $this->getAscDsc())
+        $this->db->query("SELECT id_donatur, nama, email, IFNULL(kontak,'Belum Ada') kontak, create_at terdaftar_sejak, id_akun FROM donatur WHERE id_donatur BETWEEN ? AND ? ORDER BY {$this->getOrder()} {$this->getDirection()} LIMIT {$this->getLimit()}",
+                            array($this->getHalaman()[0], $this->getHalaman()[1])
                         );
         if ($this->db->count()) {
             $this->data = $this->db->results();
@@ -39,7 +39,7 @@ class DonaturModel extends HomeModel {
     // public function dataDonatur($id_donatur = 1) {
     //     $id_donatur = Sanitize::escape($id_donatur);
     //     $this->db->query('SELECT id_donatur, nama, email, IFNULL(kontak,"Belum Ada") kontak, create_at terdaftar_sejak, id_akun FROM donatur WHERE id_donatur >= ? ORDER BY ? ? LIMIT 10',
-    //                         array($id_donatur, $this->getOrderBy(), $this->getAscDsc())
+    //                         array($id_donatur, $this->getOrder(), $this->getDirection())
     //                     );
     //     if ($this->db->count()) {
     //         $this->data = $this->db->results();

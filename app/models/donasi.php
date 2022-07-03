@@ -115,14 +115,14 @@ class DonasiModel extends HomeModel {
         $data['data'] = array();
         if ($this->getSearch() != null) {
             // OFSET
-            $search = "CONCAT(IFNULL(b.nama,''), IFNULL(k.nama,''), IFNULL(s.nama,''), IFNULL(formatTanggalFull(d.create_at),''), IFNULL(IF(d.bayar = 1, 'sudah terverivikasi','belum terverivikasi'),''), IFNULL(formatTanggalFull(d.waktu_bayar),''), IFNULL(FORMAT(d.jumlah_donasi,0,'id_ID'),''), IFNULL(cp.nama,''), IFNULL(CASE WHEN UPPER(cp.jenis) = 'TB' THEN 'Transfer Bank' WHEN UPPER(cp.jenis) = 'QR' THEN 'Qris' WHEN UPPER(cp.jenis) = 'VA' THEN 'Virtual Account' WHEN UPPER(cp.jenis) = 'GM' THEN 'Gerai Mart' WHEN UPPER(cp.jenis) = 'EW' THEN 'E-Wallet' WHEN UPPER(cp.jenis) = 'GI' THEN 'Giro' WHEN UPPER(cp.jenis) = 'TN' THEN 'Tunai' ELSE '' END,'')) LIKE '%{$this->getSearch()}%'";
+            $search = "CONCAT(IFNULL(b.nama,''), IFNULL(k.nama,''), IFNULL(s.nama,''), IFNULL(formatTanggalFull(d.create_at),''), IFNULL(IF(d.bayar = 1, 'sudah diverivikasi','belum diverivikasi'),''), IFNULL(formatTanggalFull(d.waktu_bayar),''), IFNULL(FORMAT(d.jumlah_donasi,0,'id_ID'),''), IFNULL(cp.nama,''), IFNULL(CASE WHEN UPPER(cp.jenis) = 'TB' THEN 'Transfer Bank' WHEN UPPER(cp.jenis) = 'QR' THEN 'Qris' WHEN UPPER(cp.jenis) = 'VA' THEN 'Virtual Account' WHEN UPPER(cp.jenis) = 'GM' THEN 'Gerai Mart' WHEN UPPER(cp.jenis) = 'EW' THEN 'E-Wallet' WHEN UPPER(cp.jenis) = 'GI' THEN 'Giro' WHEN UPPER(cp.jenis) = 'TN' THEN 'Tunai' ELSE '' END,'')) LIKE '%{$this->getSearch()}%'";
             $result = $this->countData($tables, $where, $search);
-            $sql = "SELECT {$fields} FROM {$tables} WHERE {$search} ORDER BY {$this->getOrderBy()} {$this->getAscDsc()}, d.id_donasi {$this->getAscDsc()} LIMIT {$this->getHalaman()[0]},{$this->getOffset()}";
+            $sql = "SELECT {$fields} FROM {$tables} WHERE {$search} ORDER BY {$this->getOrder()} {$this->getDirection()}, d.id_donasi {$this->getDirection()} LIMIT {$this->getHalaman()[0]},{$this->getLimit()}";
             $params = array();
         } else {
             // SEEK
             $result = $this->countData($tables, $where);
-            $sql = "SELECT {$fields} FROM {$tables} WHERE d.id_donasi BETWEEN ? AND ? ORDER BY {$this->getOrderBy()} {$this->getAscDsc()}";
+            $sql = "SELECT {$fields} FROM {$tables} WHERE d.id_donasi BETWEEN ? AND ? ORDER BY {$this->getOrder()} {$this->getDirection()}";
             $params = array(
                 'between_start' => $this->getHalaman()[0],
                 'between_end' => $this->getHalaman()[1]

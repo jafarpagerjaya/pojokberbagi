@@ -230,7 +230,7 @@ function formatDataBantuan(bantuan) {
         return bantuan.text;
     }
     let $bantuan;
-    $bantuan = '<div class="d-flex justify-content-between"><div class="font-weight-bold w-80 overflow-hidden">'+ bantuan.text +'</div><div class="text-muted"><span class="badge p-2">'+ statusBantuan(bantuan.status).text +'</span></div></div>';
+    $bantuan = '<div class="d-flex justify-content-between"><div class="font-weight-bold w-80 overflow-hidden">'+ bantuan.text +'</div><div class="text-muted"><span class="'+ (bantuan.status == 'S' ? statusBantuan(bantuan.status).class+' ' : '') +'badge p-2">'+ statusBantuan(bantuan.status).text +'</span></div></div>';
     return $bantuan;
 }
 
@@ -243,6 +243,7 @@ function formatDataDonatur(donatur) {
     return $donatur;
 }
 
+// CATATAN JIKA SUATU delay 750 masih ada LOST AKIBAT CEK TOKEN di METHOD AJAX, FETCH ADMIN CHECK TOKEN LEBIH BAIK DI NON AKTIFKAN DAN LIHAT COMMENT MENGENAI DELAY DI BAWAH 750
 let dataBantuan = {};
 $('#input-bantuan-donasi').select2({
     // minimumInputLength: 1,
@@ -252,22 +253,39 @@ $('#input-bantuan-donasi').select2({
         url: '/admin/fetch/ajax/bantuan',
         type: 'post',
         dataType: 'json',
-        delay: 250,
+        delay: 750,
         contentType: "application/json",
         data: function (params) {
-            if ($('input.select2-search__field').val().length) {
-                params.search = $('input.select2-search__field').val();
+            let input = $('#select2-'+ $(this).attr('id') +'-results').parents('span.select2-dropdown').find('input.select2-search__field');
+            // JIKA delay 750 masih error cek token maka cek token di matikan pakai uncomment code ini
+            // if (input.val().length) {
+            //     params.search = input.val();
+            // }
+            // delete params.term;
+            // akhir uncomment
+
+            // JIKA delay 750 masih error saat cek token maka comment code ini
+            if (input.val().length) {
+                params.term = input.val();
+                params.search = params.term;
             }
-            delete params.term;
+            // akhir comment
+            
             if (dataBantuan.load_more && ((params.search == undefined) || (params.search != undefined && params.search == dataBantuan.search))) {
                 params.offset = parseInt(dataBantuan.offset) + parseInt(dataBantuan.limit);
             }
             params.offset = params.offset || 0;
+            params.token = body.getAttribute('data-token');
             // console.log(params);
             return JSON.stringify(params);
         },
         processResults: function (response) {
             // console.log(response);
+            document.querySelector('body').setAttribute('data-token', response.token);
+            fetchTokenChannel.postMessage({
+                token: body.getAttribute('data-token')
+            });
+            
             if (response.error) {
                 console.log(response.feedback.message);
                 return false;
@@ -294,14 +312,14 @@ $('#input-bantuan-donasi').select2({
                 more: dataBantuan.load_more
             };
             return {results: data, pagination};
-            // return {results: data};
         }
     },
     escapeMarkup: function (markup) { return markup; },
     templateResult: formatDataBantuan
 }).on('select2:open', function() {
     if (dataBantuan.search != undefined) {
-        $('input.select2-search__field').val(dataBantuan.search);
+        let input = $('#select2-'+ $(this).attr('id') +'-results').parents('span.select2-dropdown').find('input.select2-search__field');
+        input.val(dataBantuan.search);
     }
     // console.log(dataBantuan);
     if (!dataBantuan.load_more) {
@@ -321,6 +339,12 @@ $('#input-bantuan-donasi').select2({
 }).on('select2:close', function(e) {
     dataBantuan.load_more = false;
 }).on("select2:select", function (e) {
+    if (e.params.data.status == 'S') {
+        $('#modalNotifikasiTambahDonasiBantuanSelesai').find('#nama-bantuan').attr('href','/admin/bantuan/data/'+e.params.data.id);
+        $('#modalNotifikasiTambahDonasiBantuanSelesai').find('#nama-bantuan').attr('data-id',e.params.data.id);
+        $('#modalNotifikasiTambahDonasiBantuanSelesai').find('#nama-bantuan').text(e.params.data.text);
+        $('#modalNotifikasiTambahDonasiBantuanSelesai').modal('show'); 
+    }
     if (e.params.data.min_donasi) {
         dataBantuan.selected = {
             min_donasi: e.params.data.min_donasi
@@ -354,6 +378,7 @@ $('#input-bantuan-donasi').select2({
     }
 });
 
+// CATATAN JIKA SUATU delay 750 masih ada LOST AKIBAT CEK TOKEN di METHOD AJAX, FETCH ADMIN CHECK TOKEN LEBIH BAIK DI NON AKTIFKAN DAN LIHAT COMMENT MENGENAI DELAY DI BAWAH 750
 let dataDonatur = {};
 $('#input-donatur-donasi').select2({
     // minimumInputLength: 1,
@@ -363,22 +388,39 @@ $('#input-donatur-donasi').select2({
         url: '/admin/fetch/ajax/donatur',
         type: 'post',
         dataType: 'json',
-        delay: 250,
+        delay: 750,
         contentType: "application/json",
         data: function (params) {
-            if ($('input.select2-search__field').val().length) {
-                params.search = $('input.select2-search__field').val();
+            let input = $('#select2-'+ $(this).attr('id') +'-results').parents('span.select2-dropdown').find('input.select2-search__field');
+            // JIKA delay 750 masih error cek token maka cek token di matikan pakai uncomment code ini
+            // if (input.val().length) {
+            //     params.search = input.val();
+            // }
+            // delete params.term;
+            // akhir uncomment
+
+            // JIKA delay 750 masih error saat cek token maka comment code ini
+            if (input.val().length) {
+                params.term = input.val();
+                params.search = params.term;
             }
-            delete params.term;
+            // akhir comment
+            
             if (dataDonatur.load_more && ((params.search == undefined) || (params.search != undefined && params.search == dataDonatur.search))) {
                 params.offset = parseInt(dataDonatur.offset) + parseInt(dataDonatur.limit);
             }
             params.offset = params.offset || 0;
+            params.token = body.getAttribute('data-token');
             // console.log(params);
             return JSON.stringify(params);
         },
         processResults: function (response) {
             // console.log(response);
+            document.querySelector('body').setAttribute('data-token', response.token);
+            fetchTokenChannel.postMessage({
+                token: body.getAttribute('data-token')
+            });
+            
             if (response.error) {
                 console.log(response.feedback.message);
                 return false;
@@ -413,7 +455,8 @@ $('#input-donatur-donasi').select2({
     templateResult: formatDataDonatur
 }).on('select2:open', function() {
     if (dataDonatur.search != undefined) {
-        $('input.select2-search__field').val(dataDonatur.search);
+        let input = $('#select2-'+ $(this).attr('id') +'-results').parents('span.select2-dropdown').find('input.select2-search__field');
+        input.val(dataBantuan.search);
     }
     // console.log(dataDonatur);
     if (!dataDonatur.load_more) {
@@ -703,13 +746,13 @@ submitBtn.addEventListener('click', function() {
             }
         }
     });
-    // const invalid = document.querySelectorAll('[data-required="true"].is-invalid');
-    // if (invalid.length) {
-    //     this.classList.add('disabled')
-    //     return false;
-    // } else {
-    //     this.classList.remove('disabled')
-    // }
+    const invalid = document.querySelectorAll('[data-required="true"].is-invalid');
+    if (invalid.length) {
+        this.classList.add('disabled')
+        return false;
+    } else {
+        this.classList.remove('disabled')
+    }
     iError.error = false;
     delete iError.message;
     // console.log(dataDonatur.selected)

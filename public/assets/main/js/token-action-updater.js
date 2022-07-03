@@ -1,5 +1,5 @@
 // Place this file after token.js
-// Dont'forget to set Session Token in controler method
+// Don't forget to set Session Token in controler method
 let fetchTokenChannelHref;
 if (body.getAttribute('data-token') != null) {
     fetchTokenChannelHref = new BroadcastChannel('fetch-token');

@@ -108,7 +108,7 @@
         <div class="card">
             <div class="card-header d-flex align-items-center justify-content-between">
                 <h3 class="text-capitalize mb-0">Donasi Terverivikasi <i class="fa fa-check-circle text-green"></i></h3>
-                <a href="/admin/donasi" class="btn btn-sm btn-outline-primary">See All</a>
+                <a href="/admin/donasi/index/terverivikasi" class="btn btn-sm btn-outline-primary">See All</a>
             </div>
             <div class="">
                 <table class="table align-items-center table-flush table-hover">
@@ -177,6 +177,42 @@
         </div>
         <div class="toast-body">
             data.feedback.message
+        </div>
+    </div>
+</div>
+<div class="modal fade in" tabindex="-2" id="modalNotifikasiTambahDonasiBantuanSelesai" role="dialog"
+    aria-labelledby="modalNotifikasiTambahDonasiBantuanSelesaiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-danger modal-dialog-centered fullscreen">
+        <div class="modal-content bg-gradient-danger d-flex justify-content-center">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalNotifikasiTambahDonasiBantuanSelesaiLabel">Peringatan</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="py-3 text-center">
+                                <i class="ni ni-bell-55 ni-3x"></i>
+                                <h2 class="heading mt-4">Anda harus baca ini!</h2>
+                                <p class="font-weight-light">Anda akan menambah data donasi untuk bantuan yang sudah
+                                    <span class="font-weight-bolder">di Take Down !!</span>
+                                </p>
+                                <a data-id="" target="_blank"
+                                    class="font-weight-bolder text-underline badge badge-primary p-2 bg-primary text-white"
+                                    id="nama-bantuan">nama_bantuan</a>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary text-danger font-weight-bolder mx-auto"
+                                data-dismiss="modal">Oke,
+                                saya paham.</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

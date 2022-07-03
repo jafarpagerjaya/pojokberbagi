@@ -181,7 +181,7 @@ class HomeModel {
     }
 
     public function setDirection($direction) {
-        $this->_order_direction = Sanitize::escape2($direction);
+        $this->_order_direction = strtoupper(Sanitize::escape2($direction));
     }
 
     public function getDirection() {
@@ -196,14 +196,6 @@ class HomeModel {
         return $this->_order;
     }
 
-    public function setAscDsc($asc_dsc) {
-        $this->_ascDsc = strtoupper($asc_dsc);
-    }
-
-    public function getAscDsc() {
-        return $this->_ascDsc;
-    }
-
     public function setHalaman($params, $table) {   
         $param1 = (($params-1) * $this->getLimit()) + 1;
         if ($param1 < 0) {
@@ -214,7 +206,7 @@ class HomeModel {
         if ($this->_search == null) {
             // SEEK
             // Cek Direction
-            if ($this->_ascDsc == 'DESC') {
+            if ($this->_order_direction == 'DESC') {
                 // Dibalik
                 $result = $this->countData($table);
                 $bStart = $result->jumlah_record - $param2 + 1;
@@ -234,13 +226,5 @@ class HomeModel {
 
     public function getHalaman() {
         return $this->_halaman;
-    }
-
-    public function setOrderBy($order_by) {
-        $this->_orderBy = $order_by;
-    }
-
-    public function getOrderBy() {
-        return $this->_orderBy;
     }
 }

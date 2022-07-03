@@ -28,7 +28,7 @@ class DonasiController extends Controller {
         $this->data['admin_alias'] = $this->model->data()->alias;
     }
 
-    public function index() {
+    public function index($params) {
         $this->title = 'Kelola Donasi';
         $this->rel_action = array(
             array(
@@ -66,16 +66,30 @@ class DonasiController extends Controller {
         $this->model->getSaldoDonasi();
         $this->data['saldo_donasi'] = $this->model->data();
 
+        if (isset($params[0])) {
+            switch ($params[0]) {
+                case 'terverivikasi':
+                    $search_value = 'sudah diverivikasi';
+                    break;
+                case 'belum-verivikasi':
+                    $search_value = 'belum diverivikasi';
+                    break;
+                default:
+                    break;
+            }
+            if (!empty($search_value)) {
+                $this->model->setSearch($search_value);
+                $this->data['search'] = $search_value;
+            }
+        }
         // $search_value = 'tr';
         // $this->model->setSearch($search_value);
         $this->model->setLimit(5);
-        $this->model->setAscDsc('Desc');
+        $this->model->setDirection('Desc');
         $table = 'donasi';
         $this->model->setHalaman(1, $table);
-        $this->model->setOrderBy('d.create_at');
+        $this->model->setOrder('d.create_at');
         $this->model->getListDonasi();
-
-        // Debug::pr($this->model);die();
 
         $this->data['list_donasi'] = $this->model->data();
         $this->data['limit'] = $this->model->getLimit();
@@ -93,6 +107,9 @@ class DonasiController extends Controller {
             array(
                 'href' => '/vendors/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css'
             ),
+            array(
+                'href' => '/assets/main/css/utility.css'
+			),
             array(
                 'href' => '/assets/route/admin/core/css/form-element.css'
             ),

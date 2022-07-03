@@ -50,6 +50,11 @@ textarea {
     margin-bottom: .25rem;
 }
 
+/* Select2 for Bantuan */ 
+.select2-container.select2-container--default.select2-container--open .select2-results .select2-results__option--highlighted span.badge.badge-danger {
+    background-color: var(--danger) !important;
+}
+
 .card-body.form .row .col {
     flex-basis: 100%;
 }
