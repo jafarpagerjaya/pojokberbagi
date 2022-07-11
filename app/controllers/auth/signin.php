@@ -10,7 +10,7 @@ class SigninController extends Controller {
 			if ($this->_auth->hasPermission('admin')) {
                 Redirect::to('admin');
             } else {
-                Redirect::to('home');
+                Redirect::to('donatur');
             }
         }
 	}
@@ -18,7 +18,7 @@ class SigninController extends Controller {
     public function index() {
 		$this->title = "Sign In";
         if (Input::exists()) {
-			if (Token::check(Input::get('token'))) {
+			if (Token::check2(Input::get('token'))) {
 				$vali = new Validate();
 				$validate = $vali->check($_POST, array(
 					'email_username' => array(

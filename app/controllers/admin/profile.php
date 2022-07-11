@@ -5,7 +5,7 @@ class ProfileController extends Controller {
 
         $this->_auth = $this->model("Auth");
         if (!$this->_auth->hasPermission('admin')) {
-            Redirect::to('home');
+            Redirect::to('donatur');
         }
 
         $this->data['akun'] = $this->_auth->data();

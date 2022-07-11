@@ -6,9 +6,31 @@ class SignupController extends Controller {
 
 		if ($this->_auth->isSignIn()) {
 			if ($this->_auth->hasPermission('admin')) {
+				if (Session::exists('error')) {
+					$pesan = Session::flash('error');
+					$state = 'error';
+				}
+		
+				if (Session::exists('danger')) {
+					$pesan = Session::flash('danger');
+					$state = 'danger';
+				}
+		
+				if (Session::exists('warning')) {
+					$pesan = Session::flash('warning');
+					$state = 'warning';
+				}
+
+				if (!empty($pesan)) {
+					Session::put('notifikasi', array(
+						'pesan' => $pesan,
+						'state' => $state
+					));
+				}
+
                 Redirect::to('admin');
             } else {
-                Redirect::to('home');
+                Redirect::to('donatur');
             }
         }
 
@@ -141,7 +163,7 @@ class SignupController extends Controller {
 									$headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: No Replay <no-replay@pojokberbagi.id>' . "\r\n";
 									$headers .= "MIME-Version: 1.0\r\n";
 									$headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-									$message = Ui::emailAktivasiAkun($dataHook);
+									$message = Ui::emailAktivasiAkun($dataActivate);
 									if(mail(strtolower(Sanitize::noSpace2(Input::get('email'))), $subject, $message, $headers)) {
 										$pesan = Session::flash('success');
 									}
@@ -285,7 +307,7 @@ class SignupController extends Controller {
 			Session::flash('error','Gagal aktivasi akun [admin]');
 			Redirect::to('auth/signup');
 		} else {
-			Session::flash('success','Akun ' . Sanitize::escape2($params[2]) . '</span> berhasil diaktifkan');
+			Session::flash('success','Akun <span class="font-weight-bold>"' . Sanitize::escape2($params[2]) . '</span> berhasil diaktifkan');
 		}
 
 		if (Session::exists('success')) {

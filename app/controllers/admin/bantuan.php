@@ -17,7 +17,7 @@ class BantuanController extends Controller {
         $this->title = 'Bantuan';
         $auth = $this->model('Auth');
         if (!$auth->hasPermission('admin')) {
-            Redirect::to('home');
+            Redirect::to('donatur');
         }
 
         $this->data['akun'] = $auth->data();

@@ -37,7 +37,7 @@ class ResetController extends Controller {
                     $expiry = new DateTime($data->hash_expiry);
                     $msInterval = $expiry->diff($now);
                     $inInterval = strtotime($data->hash_expiry) - strtotime(date('Y-m-d H:i:s', time()));
-                    Session::put('error', '<p class="m-0">Tiket reset password masih berlaku cek <b class="text-info fw-bolder">email <span>'. $data->email .'</span></b>. <div class="fs-1">Tiket berlaku hingga Pukul <b>' .date('H:i:s', strtotime($data->hash_expiry)) . '</b>, dalam kurun <span data-interval="'. $inInterval .'" id="msInterval">('. $msInterval->format("%I") .':'.$msInterval->format("%S") .')</span></div></p>');
+                    Session::put('error', '<p class="m-0">Tiket reset password masih berlaku cek email <b class="text-info fw-bolder"><span>'. $data->email .'</span></b>. <div class="fs-1">Tiket berlaku hingga Pukul <b>' .date('H:i:s', strtotime($data->hash_expiry)) . '</b>, dalam kurun <span data-interval="'. $inInterval .'" id="msInterval">('. $msInterval->format("%I") .':'.$msInterval->format("%S") .')</span></div></p>');
                     Redirect::to('auth/reset');
                 }
 

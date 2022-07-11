@@ -14,7 +14,7 @@ class AkunController extends Controller {
         $this->_auth = $this->model("Auth");
         
         if (!$this->_auth->hasPermission('admin')) {
-            Redirect::to('home');
+            Redirect::to('donatur');
         }
 
         $this->data['akun'] = $this->_auth->data();
@@ -47,7 +47,7 @@ class AkunController extends Controller {
         $this->model('Sys');
         $this->data['info-card'] = array(
             'jumlah_akun' => $this->model->jumlahAkun(),
-            'jumlah_akun_terblocok' => $this->model->jumlahAkunTerblock(),
+            'jumlah_akun_terblock' => $this->model->jumlahAkunTerblock(),
             'jumlah_akun_admin' => $this->model->jumlahAkunAdmin()
         );
 
@@ -92,11 +92,28 @@ class AkunController extends Controller {
                 $param2 = $param1 + $this->getPageRecordLimit();
             }
 
+            $this->model('Sys');
+            $this->data['info-card'] = array(
+                'jumlah_akun' => $this->model->jumlahAkun(),
+                'jumlah_akun_terblock' => $this->model->jumlahAkunTerblock(),
+                'jumlah_akun_admin' => $this->model->jumlahAkunAdmin()
+            );
+            
             $dataAkun = $this->_auth->getDataAkun($param1, $param2);
             if ($dataAkun) {
                 $this->data['record'] = $this->_auth->countData();
                 $this->data['halaman'] = $params[0];
                 $this->data['list_akun'] = $dataAkun;
+
+                $this->script_action = array(
+                    array(
+                        'type' => 'text/javascript',
+                        'src' => '/assets/pojok-berbagi-script.js'
+                    ),
+                    array(
+                        'src' => '/assets/route/admin/core/js/admin-script.js'
+                    )
+                );
 
                 return VIEW_PATH.'admin'.DS.'akun'.DS.'index.html';
             }

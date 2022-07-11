@@ -1,4 +1,3 @@
-
 <div class="row">
     <div class="col">
         <div class="card card-stats">
@@ -7,11 +6,11 @@
                 <div class="row">
                     <div class="col">
                         <h5 class="card-title text-uppercase text-muted mb-0">Jumlah Akun</h5>
-                        <span class="h2 font-weight-bold mb-0 counter-card" data-count-up-value="<?= ($this->data['info-card']['jumlah_akun']) ?>">0</span>
+                        <span class="h2 font-weight-bold mb-0 counter-card"
+                            data-count-up-value="<?= ($this->data['info-card']['jumlah_akun']) ?>">0</span>
                     </div>
                     <div class="col-auto">
-                        <div
-                            class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
+                        <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
                             <i class="ni ni-badge"></i>
                         </div>
                     </div>
@@ -30,11 +29,11 @@
                 <div class="row">
                     <div class="col">
                         <h5 class="card-title text-uppercase text-muted mb-0">Jumlah Akun Terblock</h5>
-                        <span class="h2 font-weight-bold mb-0 counter-card" data-count-up-value="<?= ($this->data['info-card']['jumlah_akun_terblock']) ?>">0</span>
+                        <span class="h2 font-weight-bold mb-0 counter-card"
+                            data-count-up-value="<?= ($this->data['info-card']['jumlah_akun_terblock']) ?>">0</span>
                     </div>
                     <div class="col-auto">
-                        <div
-                            class="icon icon-shape bg-gradient-orange text-white rounded-circle shadow">
+                        <div class="icon icon-shape bg-gradient-orange text-white rounded-circle shadow">
                             <i class="ni ni-lock-circle-open"></i>
                         </div>
                     </div>
@@ -53,11 +52,11 @@
                 <div class="row">
                     <div class="col">
                         <h5 class="card-title text-uppercase text-muted mb-0">Jumlah Akun Admin</h5>
-                        <span class="h2 font-weight-bold mb-0 counter-card" data-count-up-value="<?= ($this->data['info-card']['jumlah_akun_admin']) ?>">0</span>
+                        <span class="h2 font-weight-bold mb-0 counter-card"
+                            data-count-up-value="<?= ($this->data['info-card']['jumlah_akun_admin']) ?>">0</span>
                     </div>
                     <div class="col-auto">
-                        <div
-                            class="icon icon-shape bg-gradient-green text-white rounded-circle shadow">
+                        <div class="icon icon-shape bg-gradient-green text-white rounded-circle shadow">
                             <i class="ni ni-circle-08"></i>
                         </div>
                     </div>
@@ -78,7 +77,7 @@
             </div>
             <div class="table-responsive">
                 <table class="table selectable sortable priority column-hover" id="t1">
-                    <thead class="thead-light">             
+                    <thead class="thead-light">
                         <tr>
                             <th scope="col" class="sort" data-sort="name">Username</th>
                             <th scope="col" class="sort" data-sort="budget">Email</th>
@@ -95,7 +94,9 @@
                             <th scope="row">
                                 <div class="media align-items-center">
                                     <a href="#">
-                                        <span class="name mb-0 text-sm"><?= $data_akun->username; ?></span>
+                                        <span class="name mb-0 text-sm">
+                                            <?= $data_akun->username; ?>
+                                        </span>
                                     </a>
                                 </div>
                             </th>
@@ -110,7 +111,9 @@
                                         $class = 'bg-warning'; $status = 'Diblok';
                                     } ?>
                                     <i class="<?= $class; ?>"></i>
-                                    <span class="status"><?= $status; ?></span>
+                                    <span class="status">
+                                        <?= $status; ?>
+                                    </span>
                                 </span>
                             </td>
                             <td>
@@ -128,7 +131,9 @@
                                     $class = 'badge-primary'; 
                                 } ?>
                                 <span class="badge badge-pill <?= $class; ?>">
-                                    <span class="status"><?= $data_akun->akses_utama; ?></span>
+                                    <span class="status">
+                                        <?= $data_akun->akses_utama; ?>
+                                    </span>
                                 </span>
                             </td>
                             <td class="text-right">
@@ -138,7 +143,10 @@
                                         <i class="fas fa-ellipsis-v"></i>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                        <a class="dropdown-item <?= (($data['akun']->id_akun == $data_akun->id_akun) ? 'disabled' : '' ) ?>" href="/admin/akun/blok/<?= $data_akun->id_akun; ?>"><?= ($data_akun->status == 1) ? 'Blokir' : 'Unblokir' ?></a>
+                                        <a class="dropdown-item <?= (($data['akun']->id_akun == $data_akun->id_akun) ? 'disabled' : '' ) ?>"
+                                            href="/admin/akun/blok/<?= $data_akun->id_akun; ?>">
+                                            <?= ($data_akun->status == 1) ? 'Blokir' : 'Unblokir' ?>
+                                        </a>
                                         <!-- <a class="dropdown-item disabled" href="/admin/akun/delete/<?= $data_akun->id_akun; ?>">Hapus</a> -->
                                     </div>
                                 </div>

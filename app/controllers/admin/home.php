@@ -19,7 +19,11 @@ class HomeController extends Controller {
         $this->model("Auth");
         
         if (!$this->model->hasPermission('admin')) {
-            Redirect::to('home');
+            if ($this->model->isSignIn()) {
+                $this->model->getData('nama, id_pegawai', 'pegawai', array('email','=',$this->model->data()->email));
+                Session::flash('error','Assalamualaikum, '. ucwords(strtolower($this->model->data()->nama)) .' [PBI-'. $this->model->data()->id_pegawai .']');
+            }
+            Redirect::to('donatur');
         }
 
         $this->data['akun'] = $this->model->data();

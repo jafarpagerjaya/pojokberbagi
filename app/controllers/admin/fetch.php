@@ -439,7 +439,7 @@ class FetchController extends Controller {
 
         $id_bantuan = $this->model->lastIID();
         $this->_result['feedback'] = array(
-            'message' => 'Berhasil menambahkan data bantuan (<span class="font-weight-bold" data-id-bantuan="'. $id_bantuan .'">' . $decoded['nama'] . '</span>)'
+            'message' => 'Berhasil menambahkan data bantuan (<span class="font-weight-bold" data-id-target="'. $id_bantuan .'">' . $decoded['nama'] . '</span>)'
         );
 
         $this->_result['error'] = false;
@@ -549,7 +549,7 @@ class FetchController extends Controller {
             $id_donasi = $this->model->lastIID();
             $this->_result['error'] = false;
             $this->_result['feedback'] = array(
-                'message' => 'Donasi <span class="font-weight-bold text-orange">' . (isset($decoded['alias']) ? $decoded['alias'] : $dataDonatur->nama_donatur) . '</span> untuk <span class="font-weight-bold" data-id-donasi="'. $id_donasi .'">' . $dataBantuan->nama_bantuan . '</span> sejumlah <span class="font-weight-bold" style="display: inline-block;">Rp. '. Output::tSparator($decoded['jumlah_donasi']) .'</span> ('. Utility::keteranganJenisChannelPayment($dataCP->jenis_cp) .' - '. $dataCP->nama_cp .') telah ditambahkan'
+                'message' => 'Donasi <span class="font-weight-bold text-orange">' . (isset($decoded['alias']) ? $decoded['alias'] : $dataDonatur->nama_donatur) . '</span> untuk <span class="font-weight-bold" data-id-target="'. $id_donasi .'">' . $dataBantuan->nama_bantuan . '</span> sejumlah <span class="font-weight-bold" style="display: inline-block;">Rp. '. Output::tSparator($decoded['jumlah_donasi']) .'</span> ('. Utility::keteranganJenisChannelPayment($dataCP->jenis_cp) .' - '. $dataCP->nama_cp .') telah ditambahkan'
             );
             $this->_result['feedback']['id_bantuan'] = $id_donasi;
         }
@@ -715,9 +715,14 @@ class FetchController extends Controller {
 
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(
-            'message' => 'Bantuan <span class="font-weight-bold" data-id-bantuan="'. $id_bantuan .'">' . $decoded['nama'] . '</span> berhasil di perbaharui.'
+            'message' => 'Bantuan <span class="font-weight-bold" data-id-target="'. $id_bantuan .'">' . $decoded['nama'] . '</span> berhasil di perbaharui.'
         );
         $this->_result['feedback']['id_bantuan'] = $id_bantuan;
+
+        $count = $this->model->query("SELECT count(*) records FROM bantuan WHERE id_bantuan > ?", array($id_bantuan));
+        $halaman = ceil(($count->records + 1) / $this->model->getLimit());
+        $this->_result['feedback']['halaman'] = ceil(($count->records + 1) / $this->model->getLimit());
+
         $this->result();
         return false;
     }

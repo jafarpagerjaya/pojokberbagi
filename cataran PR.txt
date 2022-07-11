@@ -1,13 +1,17 @@
 URGEN MINGGU INI
 10. Jika Waktu akhir bantuan ada dan sudah lewat dan status bantuan sudah selesai DAN ingin reenable (buka ulang) maka arahkan ke halaman update ulang bantuan dengan update status bantuan menjadi D
 11. Cek dan atur min ukuran dimensi upload medium img ke width 726px
-16. 
+16. Tambah verivikasi donasi manual selesaikan phpnya
+17. Tambah print kwitansi via CR dan donatur
+18. Tambah kelola hak akses pegawai
+19. 
 BONUS KALO CUKUP Bulan Ini
 1. Kelola Banner MAIN bantuan
 2. Lvl Akses => pelajari ALC Lvl Akses
 PR 
 1. Route admin/bantuan/kategori => buat halaman kategori jika nama kategori tidak diisi
 2. Route admin/bantuan/data/ => pastikan pula jika load data via fetch pada tabel mengupdate pula data card (saldo dll) yang terbaru
+3. Setelah atau saat menyelesaikan ALC pastikan jika donatur menjadi pegawai dapat diberikan hak akses jika jabatannya sesuai dengan jabatan yang ada di ALC
 
 CATATAN FEATURES
 1. Jika jenis payment mau ditambahkan untuk donasi lewat Route Donasi => /donasi/buat/baru/x maka sesuaikan query pada [Controller Pembayaran yang ada pada route donasi pada comment // Sementara, Controller Buat pada comment // Masih dibatasi TB dulu]

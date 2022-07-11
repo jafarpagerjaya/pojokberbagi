@@ -15,7 +15,7 @@ class DonasiController extends Controller {
         $this->model("Auth");
         
         if (!$this->model->hasPermission('admin')) {
-            Redirect::to('home');
+            Redirect::to('donatur');
         }
 
         $this->data['akun'] = $this->model->data();

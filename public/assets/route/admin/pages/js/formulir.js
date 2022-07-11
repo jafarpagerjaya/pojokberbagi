@@ -582,7 +582,7 @@ lamaDonasi.addEventListener('keydown', function (e) {
     let selfValue = parseInt(this.value),
         ceret = e.target.selectionStart;
 
-    console.log(ceret, selfValue, e.key);
+    // console.log(ceret, selfValue, e.key);
 
     if (ceret == 1 && isNaN(parseInt(e.key)) && selfValue < 10 && (e.key != 'ArrowUp' && e.key !=
             'Backspace' && e.key != 'ArrowLeft')) {
@@ -814,7 +814,7 @@ submit.addEventListener('click', function (e) {
     })
     .then(response => response.json())
     .then(function(data) {
-        console.log(data);
+        // console.log(data);
         if (data.error == false) {
             // Success
             $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
@@ -839,7 +839,7 @@ submit.addEventListener('click', function (e) {
             deleteProperties(nameNew);
             let redirectTo = '/admin/bantuan'
             if (action.split('/').at(-1) != 'formulir') {
-                redirectTo = redirectTo+'#'+data.feedback.id_bantuan;
+                redirectTo = redirectTo+'/halaman/'+data.feedback.halaman+'#'+data.feedback.id_bantuan;
             }
             window.location.href = redirectTo;
         }
@@ -850,7 +850,7 @@ submit.addEventListener('click', function (e) {
 });
 
 submit.addEventListener('mouseenter', function () {
-    console.log(nameNew);
+    // console.log(nameNew);
 
     const form = this.closest('form');
     let tabRequiredError = 0;

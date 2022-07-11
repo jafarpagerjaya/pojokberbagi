@@ -204,3 +204,7 @@ function statusBantuan(status) {
     }
     return badge;
 }
+
+function deleteProperties(objectToClean) {
+    for (var x in objectToClean) if (objectToClean.hasOwnProperty(x)) delete objectToClean[x];
+}

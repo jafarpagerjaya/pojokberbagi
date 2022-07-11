@@ -671,7 +671,8 @@ resetBtn.addEventListener('click', function() {
 let iNames = {},
     iError = {
         error: false
-    };
+    },
+    action = window.location.pathname;
 submitBtn.addEventListener('click', function() {
     names.forEach(name => {
         if (name.getAttribute('data-required') == 'true') {
@@ -779,8 +780,8 @@ submitBtn.addEventListener('click', function() {
         console.log(result);
         if (result.error == false) {
             // Success
-            $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
-            $('.toast[data-toast="feedback"] .toast-header strong').text('Informasi');
+            // $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
+            // $('.toast[data-toast="feedback"] .toast-header strong').text('Informasi');
         } else {
             // Failed
             $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
@@ -799,10 +800,7 @@ submitBtn.addEventListener('click', function() {
 
         if (result.error == false) {
             deleteProperties(input);
-            let redirectTo = '/admin/donasi'
-            if (action.split('/').at(-1) != 'buat') {
-                redirectTo = redirectTo+'#'+result.feedback.id_donasi;
-            }
+            let redirectTo = '/admin/donasi';
             window.location.href = redirectTo;
         }
     });

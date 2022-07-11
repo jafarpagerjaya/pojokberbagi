@@ -13,10 +13,12 @@ counterUpSup(counterTarget, counterSpeed);
 let toastRun = document.querySelector('.toast[data-toast="feedback"][data-toast-run="true"]');
 if (toastRun != null) {
     $('.toast[data-toast="feedback"]').toast('show');
-    let elTarget = $('.toast[data-toast="feedback"] .toast-body .font-weight-bold'),
-        id_bantuan = elTarget.data('id-bantuan');
+    let elTarget = $('.toast[data-toast="feedback"] .toast-body [data-id-target]'),
+        target = elTarget.data('id-target');
+
+        console.log(elTarget, target)
     
-    $('table tbody>tr>th a[data-id="'+id_bantuan+'"').parents('tr').addClass('highlight');
+    $('table tbody>tr>th a[data-id="'+target+'"], table tbody>tr>td a[data-id="'+target+'"]').parents('tr').addClass('highlight');
 
     setTimeout(() => {
         $('table tbody>tr.highlight').removeClass('highlight');
