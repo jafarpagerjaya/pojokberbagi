@@ -8,10 +8,11 @@
 :root {
     --orange: #FE5000;
     --green: #97D700;
+    --green-box : #21ba45;
 }
 
 body {
-    font-family: "Nunito", Roboto, sans-serif;
+    font-family: "Nunito", Roboto, sans-serif !important;
 }
 
 h1,
@@ -55,12 +56,24 @@ h6 {
     transition: all .3s ease-in-out !important;
 }
 
+.button.button-outline-green-box,
+.btn.btn-outline-green-box {
+    background-color: white;
+    color: var(--green-box);
+    border: 1px solid var(--green-box);
+    transition: all .3s ease-in-out !important;
+}
+
 .bg-orange {
     background-color: var(--orange) !important;
 }
 
 .bg-green {
     background-color: var(--green) !important;
+}
+
+.bg-green-box {
+    background-color: var(--green-box) !important;
 }
 
 .bg-light-opacity {
@@ -100,6 +113,10 @@ h6 {
     color: var(--green);
 }
 
+.text-green-box {
+    color: var(--green-box);
+}
+
 .text-orange {
     color: var(--orange);
 }
@@ -110,6 +127,10 @@ h6 {
 
 .border-green {
     border-color: var(--green);
+}
+
+.border-green-box {
+    border-color: var(--green-box);
 }
 
 .border-solid {

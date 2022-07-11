@@ -3,6 +3,11 @@
     gap: var(--gap-x);
 }
 
+.gap-4 {
+    --gap-x: 2em;
+    gap: var(--gap-x);
+}
+
 .border-2 {
     border-width: 2px !important;
 }

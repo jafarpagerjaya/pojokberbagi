@@ -36,6 +36,21 @@ class DonasiController extends Controller {
             ),
             array(
                 'href' => '/assets/route/admin/pages/css/donasi.css'
+            ),
+            array(
+                'href' => '/vendors/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css'
+            ),
+            array(
+                'href' => 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css'
+            ),
+            array(
+                'href' => '/assets/main/css/utility.css'
+            ),
+            array(
+                'href' => '/assets/main/css/inputGroup.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/pages/css/verivikasi-donasi.css'
             )
         );
         $this->script_action = array(
@@ -56,6 +71,23 @@ class DonasiController extends Controller {
             ),
             array(
                 'src' => '/assets/route/admin/pages/js/donasi.js'
+            ),
+            array(
+                'src' => '/vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js'
+            ),
+            array(
+                'src' => '/vendors/bootstrap-datepicker/dist/locales/bootstrap-datepicker.id.min.js'
+            ),
+            array(
+                'src' => 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.0/moment-with-locales.js',
+                'source' => 'trushworty'
+            ),
+            array(
+                'src' => 'https://cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/5a991bff/src/js/bootstrap-datetimepicker.js',
+                'source' => 'trushworty'
+            ),
+            array(
+                'src' => '/assets/route/admin/pages/js/verivikasi-donasi.js'
             )
         );
         $this->model('Donasi');

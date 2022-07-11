@@ -1,0 +1,114 @@
+.modal img.channel-payment {
+    width: 42.5px;
+    margin-top: -.25rem;
+}
+
+/* Datepicker */
+.modal .datepicker {
+    width: 100%;
+}
+
+.modal .datepicker table {
+    margin: auto;
+}
+
+.modal .datepicker table tr td,
+.modal .datepicker table tr th {
+    width: 40px;
+    height: 40px;
+}
+
+.modal .datepicker {
+    z-index: 2000 !important;
+}
+
+/* Timepicker */
+.modal .timepicker *,
+.modal .timepicker .separator {
+    color: var(--dark);
+}
+
+.modal .timepicker .timepicker-hours,
+.modal .timepicker .timepicker-minutes,
+.modal .timepicker .timepicker-seconds {
+    --timepicker-td-size: 40px;
+    margin: auto;
+}
+
+.modal .timepicker td {
+    height: var(--timepicker-td-size) !important;
+    width: var(--timepicker-td-size) !important;
+    cursor: pointer;
+}
+
+.modal .timepicker .timepicker-picker tr:nth-child(2) td span {
+    font-weight: 300;
+    transition: all .3s ease !important;
+}
+
+.modal .timepicker .timepicker-picker tr:nth-child(2) td.active span {
+    color: var(--orange);
+    font-weight: 800;
+}
+
+.modal .timepicker .timepicker-hours td:hover,
+.modal .timepicker .timepicker-minutes td:hover,
+.modal .timepicker .timepicker-seconds td:hover {
+    color: var(--orange);
+    font-weight: bolder;
+}
+
+.modal .timepicker .waktu-sekarang,
+.modal .timepicker .clear-waktu {
+    font-size: .875rem;
+}
+
+.modal .timepicker .waktu-sekarang:hover span,
+.modal .timepicker .clear-waktu:hover span {
+    color: var(--orange);
+}
+
+.modal .timepicker .picker-switch.accordion-toggle {
+    margin-bottom: 0.5em;
+}
+
+/* Input group */
+.modal .inputGroup input[type="radio"]+label:after,
+.modal .inputGroup input[type="checkbox"]+label:after,
+.modal .inputGroup input[type="radio"],
+.modal .inputGroup input[type="checkbox"] {
+    --inputGroup-size: 1.5rem;
+}
+
+.modal .inputGroup input[type="checkbox"]+label:after {
+    background-position-x: 0.05rem;
+}
+
+@media (min-width: 360px) {
+
+    /* Datepicker */
+    .modal .datepicker table tr td,
+    .modal .datepicker table tr th {
+        width: 47.84px;
+        height: 47.84px;
+    }
+}
+
+@media (min-width: 768px) {
+
+    /* Datepicker */
+    .modal .datepicker table tr td,
+    .modal .datepicker table tr th {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (min-width: 1200px) {
+
+    /* Timepicker */
+    .modal .timepicker {
+        width: 80%;
+        margin: auto;
+    }
+}

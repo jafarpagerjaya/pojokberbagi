@@ -153,7 +153,10 @@
                                             href="/admin/bantuan/data/<?= $listDonasi->id_bantuan; ?>">Lihat Program
                                             Donasi</a>
                                         <!-- <a class="dropdown-item" href="#">Lihat Data Donatur</a> -->
-                                        <!-- <a class="dropdown-item<?= ($listDonasi->bayar == '1' ? ' disabled">Sudah Terverivikasi' : ' text-warning font-weight-bold" href="#">Verivikasi'); ?></a> -->
+                                        <a class="dropdown-item<?= ($listDonasi->bayar == '1' ? ' disabled">Sudah
+                                            Terverivikasi' : ' text-warning font-weight-bold" href="#"
+                                            data-toggle="modal" data-target="#modalValidasiDonasi">Verivikasi');
+                                            ?></a>
                                     </div>
                                 </div>
                             </td>
@@ -364,6 +367,118 @@
                         </div>
                         <div class="col-3">
                             <img src="/assets/images/partners/gpn.png" alt="GPN" class="img-fluid img-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal in" id="modalValidasiDonasi" tabindex="-1" role="dialog" aria-labelledby="modalValidasiDonasi-label"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container p-0 py-md-3 py-lg-5 px-lg-3">
+                <div class="row gap-y-4">
+                    <div class="col-12 col-lg-6">
+                        <div class="box rounded-box bg-orange">
+                            <div class="row align-items-center px-2">
+                                <div class="col-auto">
+                                    <img src="/female-avatar.jpg" alt="Female" class="avatar avatar-lg rounded-circle">
+                                </div>
+                                <div class="col">
+                                    <h2 class="mb-0"><span class="font-weight-bolder text-white">Nama Donatur</span>
+                                    </h2>
+                                    <p class="mb-0 text-white">email@donatur.id</p>
+                                </div>
+                                <div class="col-auto align-self-end mb-1"><a href=""
+                                        class="font-weight-bolder text-white">Detil</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="box rounded-box bg-secondary">
+                            <div class="row px-2">
+                                <div class="col-12">
+                                    <h3><b id="nama-bantuan">Bantuan Ku dan Kamu Sangat Keren</b></h3>
+                                </div>
+                                <div class="col font-weight-bolder">
+                                    Rp. <span id="jumlah-donasi">100.000</span>
+                                </div>
+                                <div class="col text-right">
+                                    <div class="px-1 row">
+                                        <div class="px-1 col">
+                                            <span id="jenis-cp" class="text-muted font-weight-bold">Transfer
+                                                Bank</span>
+                                        </div>
+                                        <div class="px-1 col-auto">
+                                            <img src="/img/payment/bsi.png" alt="qris" class="img-fluid">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="box rounded-box bg-secondary">
+                            <div class="row px-2">
+                                <div class="col">
+                                    <h2 class="mb-0 font-weight-bolder">Verivikasi Donasi Manual</h2>
+                                </div>
+                                <div class="col text-right">
+                                    Donasi ini dibuat pada <span class="create-at font-weight-bolder">Kamis, 20 Juni
+                                        2022 23:55:01</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="box rounded-box bg-secondary">
+                            <h3 class="px-md-2 text-center">Pilih <span id="date-type-text"
+                                    class="font-weight-bolder">Tanggal</span>
+                                Pembayaran Donasi</h3>
+                            <input type="hidden" id="waktu_bayar">
+                            <div class="datepicker"></div>
+                            <div class="timepicker"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex justify-content-between flex-column">
+                        <div class="row">
+                            <!-- <div class="col-12 mb-4">
+                                <div
+                                    class="app-image img-wrapper d-flex align-items-center justify-content-center overflow-hidden rounded-box">
+                                    <img src="/img/bantuan/1651723589-wide.jpeg" alt="Toko" class="img-fluid">
+                                </div>
+                            </div> -->
+                            <div class="col-12">
+                                <div class="box bg-lighter rounded-box">
+                                    <div class="px-2">
+                                        <h3>Doa dan Pesan Donatur</h3>
+                                        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Explicabo
+                                            molestias
+                                            ipsum minus animi est nam incidunt et, cupiditate libero iste aperiam
+                                            sit
+                                            vitae
+                                            corrupti quo quia, porro, praesentium voluptatum. Fuga?</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-3 mt-md-0">
+                                <div class="box">
+                                    <div class="px-2">
+                                        <div class="inputGroup">
+                                            <input type="checkbox" name="doa_check" id="doa_check">
+                                            <label for="doa_check">Tampilkan doa dan pesan donatur</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end d-flex p-3 p-md-0 mx-1 mx-md-0" id="modal-button">
+                            <button class="btn btn-link text-orange font-weight-bolder"
+                                data-dismiss="modal">Batal</button>
+                            <button class="btn btn-outline-green-box" type="submit">Verivikasi Sekarang</button>
                         </div>
                     </div>
                 </div>

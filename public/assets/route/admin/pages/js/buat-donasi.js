@@ -796,6 +796,15 @@ submitBtn.addEventListener('click', function() {
         fetchTokenChannel.postMessage({
             token: body.getAttribute('data-token')
         });
+
+        if (result.error == false) {
+            deleteProperties(input);
+            let redirectTo = '/admin/donasi'
+            if (action.split('/').at(-1) != 'buat') {
+                redirectTo = redirectTo+'#'+result.feedback.id_donasi;
+            }
+            window.location.href = redirectTo;
+        }
     });
 });
 

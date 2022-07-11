@@ -68,8 +68,7 @@
     color: #fff;
 }
 
-.inputGroup:not([data-file-passed]):hover,
-.inputGroup[data-file-passed="true"]:hover {
+.inputGroup.input-file:hover {
     background-color: var(--light) !important;
     border-color: var(--light) !important;
 }
