@@ -32,7 +32,7 @@ let fetchData = function(url, data, root) {
             // console.log(jumlah_halaman, result.feedback.pages);
 
             if (jumlah_halaman != result.feedback.pages) {
-                console.log(jumlah_halaman, result.feedback.pages);
+                // console.log(jumlah_halaman, result.feedback.pages);
                 jumlah_halaman = result.feedback.pages;
                 root.find('.pagination').attr('data-pages', result.feedback.pages);
                 controlPaginationButton(0, root.find('.pagination'), result.feedback.pages);

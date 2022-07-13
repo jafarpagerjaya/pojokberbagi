@@ -19,9 +19,9 @@ table tbody>tr>th {
     vertical-align: middle !important;
 }
 
-table tbody>tr {
+table tbody>tr.highlight {
     --highlight: rgba(50,50,93,0.11);
-    animation: pulse 1s linear infinite;
+    animation: pulse 1s linear 3;
 }
 
 table td .progress-info > div > span {

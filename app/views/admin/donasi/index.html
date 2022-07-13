@@ -155,9 +155,11 @@
                                             Donasi</a>
                                         <!-- <a class="dropdown-item" href="#">Lihat Data Donatur</a> -->
                                         <a class="dropdown-item<?= ($listDonasi->bayar == '1' ? ' disabled">Sudah
-                                            Terverivikasi' : ' text-warning font-weight-bold" href="#"
+                                            Terverivikasi' : ' text-warning font-weight-bold"
+                                            data-id="'.$listDonasi->id_donasi.'" href="javascript():;"
                                             data-toggle="modal" data-target="#modalValidasiDonasi">Verivikasi');
-                                            ?></a>
+                                            ?>
+                                        </a>
                                     </div>
                                 </div>
                             </td>
@@ -440,7 +442,7 @@
                                     class="font-weight-bolder">Tanggal</span>
                                 Pembayaran Donasi</h3>
                             <input type="hidden" id="waktu_bayar">
-                            <div class="datepicker"></div>
+                            <div id="datepicker"></div>
                             <div class="timepicker"></div>
                         </div>
                     </div>

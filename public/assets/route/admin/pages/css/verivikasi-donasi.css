@@ -12,14 +12,19 @@
     margin: auto;
 }
 
-.modal .datepicker table tr td,
-.modal .datepicker table tr th {
+.modal .datepicker .datepicker-days>table tr td,
+.modal .datepicker .datepicker-days>table tr th {
     width: 40px;
     height: 40px;
 }
 
 .modal .datepicker {
     z-index: 2000 !important;
+}
+
+.datepicker table tr td span.old.disabled,
+.datepicker table tr td span.new.disabled {
+    color: #dee2e6;
 }
 
 /* Timepicker */
@@ -84,11 +89,15 @@
     background-position-x: 0.05rem;
 }
 
+.modal .box.bg-orange img::before {
+    background-color: var(--orange);
+}
+
 @media (min-width: 360px) {
 
     /* Datepicker */
-    .modal .datepicker table tr td,
-    .modal .datepicker table tr th {
+    .modal .datepicker .datepicker-days>table tr td,
+    .modal .datepicker .datepicker-days>table tr th {
         width: 47.84px;
         height: 47.84px;
     }
@@ -97,8 +106,8 @@
 @media (min-width: 768px) {
 
     /* Datepicker */
-    .modal .datepicker table tr td,
-    .modal .datepicker table tr th {
+    .modal .datepicker .datepicker-days>table tr td,
+    .modal .datepicker .datepicker-days>table tr th {
         width: 40px;
         height: 40px;
     }

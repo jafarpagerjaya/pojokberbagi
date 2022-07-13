@@ -429,7 +429,7 @@ function toastPassed(element) {
     
     let timeInterval = setInterval(() => {
         element.innerHTML = timePassed(startTime);
-        console.log(timePassed(startTime));
+        // console.log(timePassed(startTime));
     }, 60000);
 
     timeIntervalList[dataToast] = timeInterval;

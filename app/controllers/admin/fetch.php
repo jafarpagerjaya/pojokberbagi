@@ -201,6 +201,43 @@ class FetchController extends Controller {
         return false;
     }
 
+    public function get($params = array()) {
+        if (count(is_countable($params) ? $params : []) == 0) {
+            $this->_result['feedback'] = array(
+                'message' => 'Number of params not found'
+            );
+            $this->result();
+            return false;
+        }
+
+        // Check Content Type and decode JSON to array
+        $decoded = $this->contentTypeJsonDecoded($_SERVER["CONTENT_TYPE"]);
+
+        // Check Token
+        $this->checkToken($decoded['token']);
+
+        switch ($params[0]) {
+            case 'donasi':
+                // donasi Params
+            break;
+            
+            default:
+                $this->_result['feedback'] = array(
+                    'message' => 'Unrecognize params '. $params[0]
+                );
+                $this->result();
+                return false;
+            break;
+        }
+
+        // prepare method create name
+        $action = $params[0] . 'Get';
+        // call method create
+        $this->$action($decoded);
+
+        return false;
+    }
+
     private function removeFile($path_gambar = null) {
         if (is_null($path_gambar)) {
             return false;
@@ -273,7 +310,9 @@ class FetchController extends Controller {
             'error' => $this->_result['error'],
             'feedback' => $this->_result['feedback']
         );
-        Session::put('toast',  $toast);
+        if (array_key_exists('message', $toast['feedback'])) {
+            Session::put('toast', $toast);
+        }
         echo json_encode($this->_result);
     }
 
@@ -770,7 +809,7 @@ class FetchController extends Controller {
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(
             'data' => $data['data'],
-            'message' => 'ok',
+            // 'message' => 'ok',
             'pages' => $pages,
             'total_record' => $data['total_record']
         );
@@ -831,7 +870,7 @@ class FetchController extends Controller {
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(
             'data' => $data,
-            'message' => 'ok',
+            // 'message' => 'ok',
             'pages' => $pages
         );
 
@@ -859,8 +898,7 @@ class FetchController extends Controller {
 
         $this->_result['error'] = false;        
         $this->_result['feedback'] = array(
-            'data' => $dataCp,
-            'message' => 'ok'
+            'data' => $dataCp
         );
 
         $this->result();
@@ -946,8 +984,7 @@ class FetchController extends Controller {
         
         $this->_result['error'] = false;        
         $this->_result['feedback'] = array(
-            'data' => $dataBantuan,
-            'message' => 'ok'
+            'data' => $dataBantuan
         );
 
         if (isset($count)) {
@@ -1003,8 +1040,7 @@ class FetchController extends Controller {
         
         $this->_result['error'] = false;        
         $this->_result['feedback'] = array(
-            'data' => $dataBantuan,
-            'message' => 'ok'
+            'data' => $dataBantuan
         );
 
         if (isset($count)) {
@@ -1019,6 +1055,30 @@ class FetchController extends Controller {
         }
 
         $this->result();
+        return false;
+    }
+
+    private function donasiGet($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        $this->model('Donasi');
+        $this->model->getDataTagihanDonasi($decoded['id_donasi']);
+        if ($this->model->affected()) {
+            $data = $this->model->data();
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => $data
+        );
+
+        // Debug::pr($data);
+
+        $this->result();
+
+        if ($this->_result['error'] == false) {
+            Session::delete('toast');
+        }
         return false;
     }
 }
