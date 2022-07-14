@@ -1,46 +1,10 @@
-let dataVerivikasi = {};
+let dataVerivikasi = {}, modal;
 $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
     dataVerivikasi = {};
-}).on('shown.bs.modal', function (e) {
-    const checkDoa = $(this).find('#doa_check');
-    if (checkDoa.length) {
-        checkDoa.on('click', function () {
-            dataVerivikasi.check = true
-        });
-    }
+}).on('show.bs.modal', function () {
+    if ($(this).find('.datepicker').length == 0) {
+        modal = $(this);
 
-    const id_donasi = e.relatedTarget.dataset.id;
-
-    let dataDonasi = {
-        id_donasi: id_donasi,
-        token: body.getAttribute('data-token')
-    };
-
-    const modal = $(this);
-
-    fetch('/admin/fetch/get/donasi', {
-        method: "POST",
-        cache: "no-cache",
-        mode: "same-origin",
-        credentials: "same-origin",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        referrer: "no-referrer",
-        body: JSON.stringify(dataDonasi)
-    })
-    .then(response => response.json())
-    .then(function(result) {
-        let d = new Date(result.feedback.data.create_at);
-        modal.find('#datepicker').datepicker('setStartDate', d);
-
-        body.setAttribute('data-token', result.token);
-        fetchTokenChannel.postMessage({
-            token: body.getAttribute('data-token')
-        });
-    });
-
-    if (modal.find('.datepicker').length == 0) {
         let d = new Date('08/11/2021');
         modal.find('#datepicker').datepicker({
             todayBtn: "linked",
@@ -53,7 +17,7 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
         }).on('changeDate', function (e) {
             const eDate = e.date,
                   year = eDate.getFullYear(),
-                  month = eDate.getMonth(),
+                  month = eDate.getMonth() + 1,
                   date = eDate.getDate();
 
             dataVerivikasi.payment_date = year +'-'+ month +'-'+ date;
@@ -65,8 +29,8 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
 
             $(this).closest('.box').find('#date-type-text').text('Waktu');
             $(this).closest('.box').find('.timepicker').show();
-            if (!$('#modalValidasiDonasi').find('.timepicker > .bootstrap-datetimepicker-widget').length) {
-                $('#modalValidasiDonasi').find('.timepicker').datetimepicker({
+            if (!modal.find('.timepicker > .bootstrap-datetimepicker-widget').length) {
+                modal.find('.timepicker').datetimepicker({
                     format: 'HH:mm:ss',
                     inline: true,
                     icons: {
@@ -99,10 +63,10 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
                         return;
                     }
                 }).data("DateTimePicker").date('00:00:00');
-                $('#modalValidasiDonasi').find('.timepicker .waktu-sekarang').html('<span class="font-weight-bold">Waktu Sekarang</span>');
-                $('#modalValidasiDonasi').find('.timepicker .clear-waktu').html('<span class="font-weight-bold">Clear Waktu</span>');
+                modal.find('.timepicker .waktu-sekarang').html('<span class="font-weight-bold">Waktu Sekarang</span>');
+                modal.find('.timepicker .clear-waktu').html('<span class="font-weight-bold">Clear Waktu</span>');
 
-                $('#modalValidasiDonasi').find('.timepicker').on('click', 'tr:nth-child(2) > td', function () {
+                modal.find('.timepicker').on('click', 'tr:nth-child(2) > td', function () {
                     $(this).siblings('td').removeClass('active');
                     $(this).addClass('active');
                 }).on('click', 'tr:not(:nth-child(2)) > td', function () {
@@ -110,13 +74,71 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
                     $(this).closest('table').find('tr:nth-child(2)').children('td').eq($(this).index()).addClass('active');
                 });
 
-                $('#modalValidasiDonasi').find('.timepicker .clear-waktu').click(function () {
+                modal.find('.timepicker .clear-waktu').click(function () {
                     $(this).parents('.timepicker').data("DateTimePicker").date(null);
                     $(this).parents('.timepicker').data("DateTimePicker").date('00:00:00');
                 });
             }
         }).datepicker('setStartDate', d);
     }
+}).on('shown.bs.modal', function (e) {
+    const checkDoa = $(this).find('#doa_check');
+    if (checkDoa.length) {
+        checkDoa.on('click', function () {
+            dataVerivikasi.check = true
+        });
+    }
+
+    const id_donasi = e.relatedTarget.dataset.id;
+
+    let dataDonasi = {
+        id_donasi: id_donasi,
+        token: body.getAttribute('data-token')
+    };
+
+    modal = $(this);
+
+    fetch('/admin/fetch/get/donasi', {
+        method: "POST",
+        cache: "no-cache",
+        mode: "same-origin",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        referrer: "no-referrer",
+        body: JSON.stringify(dataDonasi)
+    })
+    .then(response => response.json())
+    .then(function(result) {
+        modal.find('img#donatur-avatar').attr('src', result.feedback.data.path_gambar_avatar);
+        modal.find('img#donatur-avatar').attr('alt', result.feedback.data.nama_avatar);
+        modal.find('#donatur-name').text(result.feedback.data.nama_donatur);
+        modal.find('#donatur-email').text(result.feedback.data.email);
+        modal.find('#nama-bantuan').text(result.feedback.data.nama_bantuan);
+        modal.find('span#jumlah-donasi').text(result.feedback.data.jumlah_donasi);
+        modal.find('span#jenis-cp').text(keteranganJenisChannelPayment(result.feedback.data.jenis));
+        modal.find('img#donasi-cp').attr('src', result.feedback.data.path_gambar_cp);
+        modal.find('img#donasi-cp').attr('alt', result.feedback.data.nama_cp);
+        modal.find('span.create-at').text(dateToID(result.feedback.data.create_at));
+
+        if (result.feedback.data.doa != null) {
+            modal.find('#doa-dan-tanpa-doa .doa p').text(result.feedback.data.doa);
+            modal.find('#doa-dan-tanpa-doa .doa').show();
+            modal.find('#doa-dan-tanpa-doa #tanpa-doa').hide();
+        } else {
+            modal.find('#doa-dan-tanpa-doa .doa').hide();
+            modal.find('#doa-dan-tanpa-doa #tanpa-doa').show();
+        }
+
+        let d = new Date(result.feedback.data.create_at);
+        modal.find('#datepicker').datepicker('setStartDate', d);
+
+        body.setAttribute('data-token', result.token);
+        fetchTokenChannel.postMessage({
+            token: body.getAttribute('data-token')
+        });
+    });
 
     $(this).on('click', '#ganti-tanggal', function (e) {
         $(this).closest('.box').find('.timepicker').hide();

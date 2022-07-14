@@ -387,15 +387,17 @@
                         <div class="box rounded-box bg-orange">
                             <div class="row align-items-center px-2">
                                 <div class="col-auto">
-                                    <img src="/female-avatar.jpg" alt="Female" class="avatar avatar-lg rounded-circle">
+                                    <img src="/female-avatar.jpg" alt="Female" class="avatar avatar-lg rounded-circle"
+                                        id="donatur-avatar">
                                 </div>
                                 <div class="col">
-                                    <h2 class="mb-0"><span class="font-weight-bolder text-white">Nama Donatur</span>
+                                    <h2 class="mb-0"><span class="font-weight-bolder text-white" id="donatur-name">Nama
+                                            Donatur</span>
                                     </h2>
-                                    <p class="mb-0 text-white">email@donatur.id</p>
+                                    <p class="mb-0 text-white" id="donatur-email">email@donatur.id</p>
                                 </div>
-                                <div class="col-auto align-self-end mb-1"><a href=""
-                                        class="font-weight-bolder text-white">Detil</a>
+                                <div class="col-auto align-self-end mb-1">
+                                    <!-- <a href="" class="font-weight-bolder text-white">Detil</a> -->
                                 </div>
                             </div>
                         </div>
@@ -416,7 +418,7 @@
                                                 Bank</span>
                                         </div>
                                         <div class="px-1 col-auto">
-                                            <img src="/img/payment/bsi.png" alt="qris" class="img-fluid">
+                                            <img src="/img/payment/bsi.png" alt="qris" class="img-fluid" id="donasi-cp">
                                         </div>
                                     </div>
                                 </div>
@@ -430,8 +432,8 @@
                                     <h2 class="mb-0 font-weight-bolder">Verivikasi Donasi Manual</h2>
                                 </div>
                                 <div class="col text-right">
-                                    Donasi ini dibuat pada <span class="create-at font-weight-bolder">Kamis, 20 Juni
-                                        2022 23:55:01</span>
+                                    Donasi ini dibuat pada <span class="create-at font-weight-bolder">Hari, Tnggal Bulan
+                                        Tahun Jam:Menit:Detik</span>
                                 </div>
                             </div>
                         </div>
@@ -447,14 +449,15 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6 d-flex justify-content-between flex-column">
-                        <div class="row">
-                            <!-- <div class="col-12 mb-4">
-                                <div
-                                    class="app-image img-wrapper d-flex align-items-center justify-content-center overflow-hidden rounded-box">
-                                    <img src="/img/bantuan/1651723589-wide.jpeg" alt="Toko" class="img-fluid">
+                        <div class="row" id="doa-dan-tanpa-doa">
+                            <div class="col-12 mb-4" id="tanpa-doa">
+                                <div class="box bg-lighter rounded-box">
+                                    <div class="px-2">
+                                        Donasi ini tidak dititipkan doa
+                                    </div>
                                 </div>
-                            </div> -->
-                            <div class="col-12">
+                            </div>
+                            <div class="col-12 doa">
                                 <div class="box bg-lighter rounded-box">
                                     <div class="px-2">
                                         <h3>Doa dan Pesan Donatur</h3>
@@ -467,7 +470,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 mt-3 mt-md-0">
+                            <div class="col-12 mt-3 mt-md-0 doa">
                                 <div class="box">
                                     <div class="px-2">
                                         <div class="inputGroup">

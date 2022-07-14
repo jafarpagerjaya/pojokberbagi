@@ -208,3 +208,8 @@ function statusBantuan(status) {
 function deleteProperties(objectToClean) {
     for (var x in objectToClean) if (objectToClean.hasOwnProperty(x)) delete objectToClean[x];
 }
+
+function dateToID(date) {
+    const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+    return new Date(date).toLocaleDateString("id-ID", optionsDate).replace(/\./g,':');
+}

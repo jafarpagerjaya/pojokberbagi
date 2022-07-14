@@ -1062,7 +1062,7 @@ class FetchController extends Controller {
         $decoded = Sanitize::thisArray($decoded);
 
         $this->model('Donasi');
-        $this->model->getDataTagihanDonasi($decoded['id_donasi']);
+        $this->model->getTagihan($decoded['id_donasi']);
         if ($this->model->affected()) {
             $data = $this->model->data();
         }
@@ -1071,8 +1071,6 @@ class FetchController extends Controller {
         $this->_result['feedback'] = array(
             'data' => $data
         );
-
-        // Debug::pr($data);
 
         $this->result();
 
