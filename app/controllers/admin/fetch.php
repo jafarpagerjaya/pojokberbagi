@@ -787,9 +787,9 @@ class FetchController extends Controller {
         $data = array();
 
         $this->model->setLimit($decoded['limit']);
-        $this->model->setDirection('Desc');
+        $this->model->setDirection('DESC');
         $this->model->setHalaman($decoded['halaman'], 'donasi');
-        $this->model->setOrder('d.create_at');
+        $this->model->setOrder('d.waktu_bayar');
         $this->model->getListDonasi();
 
         if ($this->model->affected()) {

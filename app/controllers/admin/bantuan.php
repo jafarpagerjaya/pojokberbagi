@@ -412,7 +412,7 @@ class BantuanController extends Controller {
 
         $this->_bantuan->setDataLimit(3);
         $this->_bantuan->setStatus(1);
-        // $this->_bantuan->setDirection('DESC');
+        $this->_bantuan->setDirection('DESC');
         // $this->_bantuan->setDataOffsetHalaman(1);
 
         $dataDonatur = $this->_bantuan->dataDonasiDonaturBantuan($params[0]);

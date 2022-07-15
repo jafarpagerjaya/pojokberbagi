@@ -334,7 +334,7 @@ class BantuanModel extends HomeModel {
     }
 
     public function dataDonasiDonaturBantuan($id_bantuan) {
-        $sql_index = "SELECT id_donasi FROM donasi WHERE bayar = ? AND id_bantuan = ? ORDER BY waktu_bayar {$this->_order_direction} LIMIT {$this->_offset}, {$this->_limit}";
+        $sql_index = "SELECT id_donasi FROM donasi WHERE bayar = ? AND id_bantuan = ? ORDER BY waktu_bayar {$this->_order_direction}, id_donasi {$this->_order_direction} LIMIT {$this->_offset}, {$this->_limit}";
 
         if (isset($this->_search)) {
             $column_filter = "d.id_donasi, IFNULL(d.id_donatur,''), FORMAT(d.jumlah_donasi,0,'id_ID'), IFNULL(formatTanggalFull(d.waktu_bayar),''), IFNULL(d2.nama, ''), IFNULL(d2.email, ''), IFNULL(d2.kontak,''), IFNULL(CASE WHEN UPPER(cp.jenis) = 'TB' THEN 'Transfer Bank' WHEN UPPER(cp.jenis) = 'QR' THEN 'Qris' WHEN UPPER(cp.jenis) = 'VA' THEN 'Virtual Account' WHEN UPPER(cp.jenis) = 'GM' THEN 'Gerai Mart' WHEN UPPER(cp.jenis) = 'EW' THEN 'E-Wallet' WHEN UPPER(cp.jenis) = 'GI' THEN 'Giro' WHEN UPPER(cp.jenis) = 'TN' THEN 'Tunai' ELSE '' END,''), IFNULL(gcp.nama,''), IFNULL(cp.nama,'')";
@@ -349,7 +349,7 @@ class BantuanModel extends HomeModel {
         LEFT JOIN gambar gcp ON(gcp.id_gambar = cp.id_gambar)
         LEFT JOIN akun a USING(id_akun)
         LEFT JOIN gambar ga ON(ga.id_gambar = a.id_gambar)
-        ORDER BY d.waktu_bayar {$this->_order_direction} LIMIT {$this->_limit}";
+        ORDER BY d.waktu_bayar {$this->_order_direction}, d.id_donasi {$this->_order_direction} LIMIT {$this->_limit}";
         
 		if (!$this->db->query($sql, array(
             'bayar' => $this->getStatus(),
