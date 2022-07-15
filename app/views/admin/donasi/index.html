@@ -450,36 +450,6 @@
                     </div>
                     <div class="col-12 col-md-6 d-flex justify-content-between flex-column">
                         <div class="row" id="doa-dan-tanpa-doa">
-                            <div class="col-12 mb-4" id="tanpa-doa">
-                                <div class="box bg-lighter rounded-box">
-                                    <div class="px-2">
-                                        Donasi ini tidak dititipkan doa
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 doa">
-                                <div class="box bg-lighter rounded-box">
-                                    <div class="px-2">
-                                        <h3>Doa dan Pesan Donatur</h3>
-                                        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Explicabo
-                                            molestias
-                                            ipsum minus animi est nam incidunt et, cupiditate libero iste aperiam
-                                            sit
-                                            vitae
-                                            corrupti quo quia, porro, praesentium voluptatum. Fuga?</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 mt-3 mt-md-0 doa">
-                                <div class="box">
-                                    <div class="px-2">
-                                        <div class="inputGroup">
-                                            <input type="checkbox" name="doa_check" id="doa_check">
-                                            <label for="doa_check">Tampilkan doa dan pesan donatur</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <div class="d-flex justify-content-end d-flex p-3 p-md-0 mx-1 mx-md-0" id="modal-button">
                             <button class="btn btn-link text-orange font-weight-bolder"
@@ -493,11 +463,24 @@
     </div>
 </div>
 <!-- Toast -->
-<?php if (Session::exists('toast')) {
-    $toast = Session::flash('toast');
-    ?>
-<div aria-live="polite" aria-atomic="true" style="bottom: 1em; right: 1em; z-index: 10;"
+
+<div aria-live="polite" aria-atomic="true" style="bottom: 1em; right: 1em; z-index: 1050;"
     class="position-fixed d-flex justify-content-end flex-column align-items-end">
+    <div class="toast w-100 fade hide bg-white" role="alert" aria-live="assertive" aria-atomic="true"
+        data-toast="validasi-donasi" data-toast-run="true" data-delay="3000">
+        <div class="toast-header d-flex gap-x-2 justify-content-center align-items-center">
+            <div class="small-box rounded p-2 ailgn-items-center bg-danger"></div>
+            <strong class="mr-auto">Toast</strong>
+            <small class="text-muted time-passed">Time</small>
+            <button type="button" class="close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+
+        </div>
+    </div>
+    <?php if (Session::exists('toast')) { $toast = Session::flash('toast'); ?>
     <div class="toast w-100 fade hide bg-white" role="alert" aria-live="assertive" aria-atomic="true"
         data-toast="feedback" data-delay="5000" data-toast-run="true">
         <div class="toast-header d-flex gap-x-2 justify-content-center align-items-center">
@@ -505,7 +488,7 @@
                 class="small-box rounded p-2 ailgn-items-center <?= ($toast['error'] == true ? 'bg-danger' : 'bg-success') ?>">
             </div>
             <strong class="mr-auto">Pemberitahuan</strong>
-            <small class="text-muted time-passed">Beberapa saat yang lalu</small>
+            <small class="text-muted time-passed">Baru saja</small>
             <button type="button" class="close" data-dismiss="toast" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -514,7 +497,5 @@
             <?= $toast['feedback']['message']; ?>
         </div>
     </div>
+    <?php } ?>
 </div>
-<?php
-}
-?>

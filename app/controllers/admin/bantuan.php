@@ -59,8 +59,6 @@ class BantuanController extends Controller {
         );
 
         $this->data['halaman'] = 1;
-        // Old
-        // $this->data['bantuan'] = $this->_bantuan->dataBantuan();
         
         // New Via Offset
         // $this->_bantuan->setDataOffset(0);
@@ -112,8 +110,6 @@ class BantuanController extends Controller {
                     'src' => '/assets/route/admin/core/js/admin-script.js'
                 )
             );
-            // Old
-            // $dataBantuan = $this->_bantuan->dataHalaman($params[0]);
 
             // New Via Offset Set Limit dulu Khawatir Offset ambil default = 10
             // $this->_bantuan->setDataLimit(1);

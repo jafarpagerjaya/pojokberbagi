@@ -79,7 +79,7 @@ inputMaxlengthList.forEach(input => {
     let maxlength = input.getAttribute('maxlength');
     let tag = document.createElement('span');
     tag.classList.add('input-char-left');
-    tag.innerHTML = '<span class="current-length text-orange">0</span> / <span>'+ maxlength +'</span>';
+    tag.innerHTML = '<span class="current-length text-orange">'+ input.value.length +'</span> / <span>'+ maxlength +'</span>';
     input.parentElement.appendChild(tag);
 
     if (input.currentStyle ? input.currentStyle.display : getComputedStyle(input, null).display == 'none') {

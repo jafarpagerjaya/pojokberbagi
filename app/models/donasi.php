@@ -37,7 +37,7 @@ class DonasiModel extends HomeModel {
     }
 
     public function getTagihan($id_donasi) {
-        $this->db->query('SELECT IFNULL(ga.path_gambar,"") path_gambar_avatar, IFNULL(ga.nama,"Donatur") nama_avatar, bantuan.nama nama_bantuan, donasi.id_donasi, donasi.create_at, FORMAT(donasi.jumlah_donasi,0,"id_ID") jumlah_donasi, donasi.doa, donasi.alias, donatur.nama nama_donatur, donatur.email, channel_payment.jenis, 
+        $this->db->query('SELECT IFNULL(ga.path_gambar,"") path_gambar_avatar, IFNULL(ga.nama,"Donatur") nama_avatar, bantuan.nama nama_bantuan, bantuan.status, donasi.id_donasi, donasi.create_at, FORMAT(donasi.jumlah_donasi,0,"id_ID") jumlah_donasi, donasi.doa, donasi.alias, donatur.nama nama_donatur, donatur.email, channel_payment.jenis, 
         channel_payment.nama nama_cp, gcp.path_gambar path_gambar_cp
         FROM bantuan JOIN donasi USING(id_bantuan) JOIN donatur USING(id_donatur) JOIN channel_payment USING(id_cp) LEFT JOIN gambar gcp ON(gcp.id_gambar = channel_payment.id_gambar) LEFT JOIN akun USING(id_akun) LEFT JOIN gambar ga ON(akun.id_gambar = ga.id_gambar)
         WHERE donasi.id_donasi = ?', array('donasi.id_donasi' => Sanitize::escape2($id_donasi)));

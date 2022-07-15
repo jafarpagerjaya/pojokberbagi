@@ -296,7 +296,7 @@ CREATE TABLE kebutuhan (
 --     satuan_target VARCHAR(15),
 --     jumlah_target INT UNSIGNED,
 --     min_donasi INT UNSIGNED,
---     total_rab INT UNSIGNED DEFAULT NULL,
+--     total_rab BIGINT UNSIGNED DEFAULT NULL,
 --     lama_penayangan SMALLINT UNSIGNED,
 --     tanggal_awal DATE,
 --     tanggal_akhir DATE,
@@ -328,7 +328,7 @@ CREATE TABLE bantuan (
     satuan_target VARCHAR(15),
     jumlah_target INT UNSIGNED,
     min_donasi INT UNSIGNED,
-    total_rab INT UNSIGNED DEFAULT NULL,
+    total_rab BIGINT UNSIGNED DEFAULT NULL,
     lama_penayangan SMALLINT UNSIGNED,
     tanggal_awal DATE,
     tanggal_akhir DATE,
@@ -469,6 +469,16 @@ CREATE TABLE donasi (
     CONSTRAINT F_ID_CP_DONASI_ODN FOREIGN KEY(id_cp) REFERENCES channel_payment(id_cp) ON DELETE SET NULL ON UPDATE CASCADE
 )ENGINE=INNODB;
 
+DELIMITER $$
+CREATE TRIGGER DONASI_CHECK_UPDATE
+BEFORE UPDATE ON donasi FOR EACH ROW
+    BEGIN
+        IF OLD.bayar = 1 AND NEW.bayar = 0 THEN
+        SET NEW.waktu_bayar = NULL;
+        END IF;
+    END$$
+DELIMITER ;
+
 -- status donasi 0 = pembayaran belum dilakukan, 1 = pembayaran berhasil;
 
 INSERT INTO donasi(id_bantuan,id_donatur,alias,jumlah_donasi, bayar, id_cp, create_at, waktu_bayar) VALUES(1,1,'CSR BJB',2312500000,'1',2,'2021-08-11','2021-08-11'),(1,1,'CSR BJB',3125000000,'1',2,'2021-10-10','2021-10-10'),(2,2,"PROGRAM",750000,'1',3,'2021-10-16','2021-10-16');
@@ -600,6 +610,15 @@ CREATE TABLE pengunjung (
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT UN_IP_ADDRESS_CLIENT_KEY_PENGUNJUNG UNIQUE(ip_address, client_key)
+)ENGINE=INNODB;
+
+CREATE TABLE amin (
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id_pengunjung INT UNSIGNED,
+    id_donasi BIGINT UNSIGNED,
+    CONSTRAINT F_ID_PENGUNJUNG_AMIN_ODN FOREIGN KEY(id_pengunjung) REFERENCES pengunjung(id_pengunjung) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_ID_DONASI_AMIN_ODC FOREIGN KEY(id_donasi) REFERENCES donasi(id_donasi) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=INNODB;
 
 CREATE TABLE akun_pengunjung (
@@ -827,3 +846,24 @@ ALTER TABLE donasi MODIFY notifikasi CHAR(1) DEFAULT NULL;
 UPDATE donatur SET id_akun = (SELECT id_akun FROM akun WHERE email = 'pojokberbagi.id@gmail.com') WHERE email = 'pojokberbagi.id@gmail.com';
 
 ALTER TABLE pegawai DROP INDEX NU_JENIS_KELAMIN;
+
+DELIMITER $$
+CREATE TRIGGER DONASI_CHECK_UPDATE
+BEFORE UPDATE ON donasi FOR EACH ROW
+    BEGIN
+        IF OLD.bayar = 1 AND NEW.bayar = 0 THEN
+        SET NEW.waktu_bayar = NULL;
+        END IF;
+    END$$
+DELIMITER ;
+
+ALTER TABLE bantuan MODIFY total_rab BIGINT UNSIGNED DEFAULT NULL;
+
+CREATE TABLE amin (
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id_pengunjung INT UNSIGNED,
+    id_donasi BIGINT UNSIGNED,
+    CONSTRAINT F_ID_PENGUNJUNG_AMIN_ODN FOREIGN KEY(id_pengunjung) REFERENCES pengunjung(id_pengunjung) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_ID_DONASI_AMIN_ODC FOREIGN KEY(id_donasi) REFERENCES donasi(id_donasi) ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=INNODB;

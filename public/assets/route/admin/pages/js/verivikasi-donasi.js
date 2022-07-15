@@ -96,6 +96,8 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
         token: body.getAttribute('data-token')
     };
 
+    dataVerivikasi.id_donasi = id_donasi;
+
     modal = $(this);
 
     fetch('/admin/fetch/get/donasi', {
@@ -111,6 +113,27 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
     })
     .then(response => response.json())
     .then(function(result) {
+        if (result.error) {
+            $('.toast[data-toast="feedback"] .time-passed').text('Baru Saja');
+            $('.toast[data-toast="feedback"] .toast-body').html(data.feedback.message);
+            $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
+            $('.toast[data-toast="feedback"] .toast-header strong').text('Peringatan!');
+            console.log('there is some error in server side');
+            $('.toast').toast('show');
+            return false;
+        }
+
+        if (result.feedback.data.status == 'S') {
+            if (!modal.find('.container>.row>[data-status-bantuan="S"]').length) {
+                let boxWarning = '<div class="col-12" data-status-bantuan="S"><div class="box rounded-box bg-gradient-danger text-white"><div class="px-2"><h3 class="mb-0 text-white">Bantuan ini sudah di <b>Take Down !!</b></h3><span>Anda diwajiban sesegera mungkin untuk menginput data pengeluaran donasi ini jika <b>memverivikasinya</b></span></div></div></div>';
+                modal.find('.container>.row').append(boxWarning);
+            }
+        } else {
+            if (modal.find('.container>.row>[data-status-bantuan="S"]').length) {
+                modal.find('.container>.row>[data-status-bantuan="S"]').remove();
+            }
+        }
+
         modal.find('img#donatur-avatar').attr('src', result.feedback.data.path_gambar_avatar);
         modal.find('img#donatur-avatar').attr('alt', result.feedback.data.nama_avatar);
         modal.find('#donatur-name').text(result.feedback.data.nama_donatur);
@@ -123,12 +146,22 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
         modal.find('span.create-at').text(dateToID(result.feedback.data.create_at));
 
         if (result.feedback.data.doa != null) {
-            modal.find('#doa-dan-tanpa-doa .doa p').text(result.feedback.data.doa);
-            modal.find('#doa-dan-tanpa-doa .doa').show();
-            modal.find('#doa-dan-tanpa-doa #tanpa-doa').hide();
+            if (modal.find('#pesan-doa-is-null').length) {
+                modal.find('#pesan-doa-is-null').remove();
+            }
+            if (modal.find('#pesan-doa').length == 0) {
+                let div = '<div class="col-12" id="pesan-doa"><div class="row"><div class="col-12"><div class="box bg-lighter rounded-box"><div class="px-2"><h3>Doa dan Pesan Donatur</h3><p></p></div></div></div><div class="col-12 mt-3 mt-md-0"><div class="box"><div class="px-2"><div class="inputGroup"><input type="checkbox" name="doa_check" id="doa_check"><label for="doa_check">Tampilkan doa dan pesan donatur</label></div></div></div></div></div></div>';
+                modal.find('#doa-dan-tanpa-doa').append(div);
+            }
+            modal.find('#pesan-doa .box>.px-2>p').text(result.feedback.data.doa);
         } else {
-            modal.find('#doa-dan-tanpa-doa .doa').hide();
-            modal.find('#doa-dan-tanpa-doa #tanpa-doa').show();
+            if (modal.find('#pesan-doa').length) {
+                modal.find('#pesan-doa').remove();
+            }
+            if (modal.find('#pesan-doa-is-null').length == 0) {
+                let div = '<div class="col-12" id="pesan-doa-is-null"><div class="box bg-lighter rounded-box"><div class="px-2"><p class="m-0">Tidak ada doa yang ditulis oleh donatur</p></div></div></div>';
+                modal.find('#doa-dan-tanpa-doa').append(div);
+            }
         }
 
         let d = new Date(result.feedback.data.create_at);
@@ -164,18 +197,109 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
     if (checkDoa.length) {
         checkDoa.prop('checked', false)
     }
+
+    stopPassed($('.toast[data-toast="validasi-donasi"]').data('toast'));
+    $('.toast').toast("dispose");
+}).on('hidden.bs.modal', function() {
+    if ($(this).find('#pesan-doa').length) {
+        modal.find('#pesan-doa .box>.px-2>p').text('');
+    }
 });
 
 const verivikasiBtn = $('#modalValidasiDonasi').find('button[type="submit"]');
+
 verivikasiBtn.on('click', function (e) {
     dataVerivikasi.waktu_bayar = new Date(dataVerivikasi.payment_date + ' ' + dataVerivikasi.payment_time);
 
     if (dataVerivikasi.waktu_bayar == 'Invalid Date') {
         // tampilkan pesan waktu bayar wajib diisi
-
+        $('.toast[data-toast="validasi-donasi"] .time-passed').text('Baru Saja');
+        $('.toast[data-toast="validasi-donasi"] .toast-body').html('<b>Waktu bayar</b> donasi wajib diisi');
+        $('.toast[data-toast="validasi-donasi"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
+        $('.toast[data-toast="validasi-donasi"] .toast-header strong').text('Peringatan!');
+        $('.toast[data-toast="validasi-donasi"]').toast({autohide: false}).toast('show');
+        toastPassed(document.querySelector('.toast[data-toast="validasi-donasi"] .time-passed'));
         e.preventDefault();
         return false;
     }
 
     console.log(dataVerivikasi);
+
+    dataVerivikasi.token = body.getAttribute('data-token');
+
+    fetch('/admin/fetch/verivikasi/donasi', {
+        method: "POST",
+        cache: "no-cache",
+        mode: "same-origin",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        referrer: "no-referrer",
+        body: JSON.stringify(dataVerivikasi)
+    })
+    .then(response => response.json())
+    .then(function(result) {
+        if (result.error) {
+            $('.toast[data-toast="validasi-donasi"] .time-passed').text('Baru Saja');
+            $('.toast[data-toast="validasi-donasi"] .toast-body').html(data.feedback.message);
+            $('.toast[data-toast="validasi-donasi"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
+            $('.toast[data-toast="validasi-donasi"] .toast-header strong').text('Peringatan!');
+            console.log('there is some error in server side');
+            $('.toast[data-toast="validasi-donasi"]').toast({autohide: false}).toast('show');
+            toastPassed(document.querySelector('.toast[data-toast="validasi-donasi"] .time-passed'));
+            return false;
+        }
+
+        body.setAttribute('data-token', result.token);
+        fetchTokenChannel.postMessage({
+            token: body.getAttribute('data-token')
+        });
+
+        let elIdDonasi = $('table tbody>tr a[data-id="' + parseInt(result.feedback.data.id_donasi) + '"]').eq(-1);
+        if (elIdDonasi.length) {
+            elIdDonasi.parents('tr').addClass('highlight');
+            elIdDonasi.parents('tr').find('span.badge-warning').text('sudah diverivikasi');
+            elIdDonasi.parents('tr').find('span.badge-warning').addClass('badge-success');
+            elIdDonasi.parents('tr').find('span.badge-success').removeClass('badge-warning');
+            elIdDonasi.text('Sudah Terverivikasi');
+            elIdDonasi.removeAttr('data-id');
+            elIdDonasi.removeAttr('data-toggle');
+            elIdDonasi.removeAttr('data-target');
+            elIdDonasi.attr('class', 'dropdown-item disabled');
+
+            setTimeout(() => {
+                elIdDonasi.parents('tr').removeClass('highlight');
+            }, 3100);
+        }
+
+        modal.modal('hide');
+
+        $('.toast[data-toast="validasi-donasi"] .time-passed').text('Baru Saja');
+        $('.toast[data-toast="validasi-donasi"] .toast-body').html(result.feedback.message);
+        $('.toast[data-toast="validasi-donasi"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
+        $('.toast[data-toast="validasi-donasi"] .toast-header strong').text('Informasi');
+        $('.toast[data-toast="validasi-donasi"]').toast('show');
+    });
 });
+
+let timeIntervalList = {};
+function toastPassed(element) {
+    const startTime = new Date();
+    let dataToast;
+
+    element.innerHTML = 'Beberapa saat yang lalu';
+
+    dataToast = element.closest('.toast[data-toast]').getAttribute('data-toast');
+    
+    let timeInterval = setInterval(() => {
+        element.innerHTML = timePassed(startTime);
+    }, 60000);
+
+    timeIntervalList[dataToast] = timeInterval;
+};
+
+function stopPassed(dataToast) {
+    clearInterval(timeIntervalList[dataToast]);
+    delete timeIntervalList[dataToast];
+}

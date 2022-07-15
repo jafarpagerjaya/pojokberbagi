@@ -91,9 +91,9 @@ class BantuanModel extends HomeModel {
         COUNT(p.id_pelaksanaan) sekian_kali_pencairan,
         IF(SUM(p.jumlah_pelaksanaan) IS NULL, 0, SUM(p.jumlah_pelaksanaan)) jumlah_pelaksanaan,
         FORMAT(SUM(CASE WHEN d.bayar = 1 THEN d.jumlah_donasi ELSE 0 END),0,'id_ID') total_donasi, 
-        FORMAT(COUNT(DISTINCT(d.id_donatur)),0,'id_ID') total_donatur,
-        FORMAT(SUM(CASE WHEN apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END),0,'id_ID') donasi_terlaksana,
-        IFNULL(FORMAT(SUM(CASE WHEN apd.id_pelaksanaan IS NULL THEN d.jumlah_donasi END),0,'id_ID'),0) saldo_donasi,
+        FORMAT(COUNT(DISTINCT(CASE WHEN d.bayar = 1 THEN d.id_donatur ELSE NULL END)),0,'id_ID') total_donatur,
+        FORMAT(SUM(CASE WHEN d.bayar = 1 AND apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END),0,'id_ID') donasi_terlaksana,
+        IFNULL(FORMAT(SUM(CASE WHEN d.bayar = 1 AND apd.id_pelaksanaan IS NULL THEN d.jumlah_donasi END),0,'id_ID'),0) saldo_donasi,
 		TRUNCATE(COALESCE(IF(b.jumlah_target IS NULL, TRUNCATE(SUM(CASE WHEN apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END)/SUM(d.jumlah_donasi)*100,1), IF(TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1))),0),0) persentase_pelaksanaan
 		FROM bantuan b 
         LEFT JOIN donasi d 
@@ -115,61 +115,6 @@ class BantuanModel extends HomeModel {
         return false;
     }
 
-    public function dataBantuan() {
-        $data = $this->db->query("SELECT b.id_bantuan, b.nama, b.jumlah_target, b.status, b.blokir, b.create_at,
-        b.jumlah_target,
-        b.satuan_target,
-        IF(SUM(p.jumlah_pelaksanaan) IS NULL, 0, SUM(p.jumlah_pelaksanaan)) jumlah_pelaksanaan,
-        SUM(d.jumlah_donasi) total_donasi, 
-        SUM(CASE WHEN apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END) donasi_terlaksana,
-        SUM(CASE WHEN apd.id_pelaksanaan IS NULL THEN d.jumlah_donasi END) saldo_donasi,
-		TRUNCATE(COALESCE(IF(b.jumlah_target IS NULL, TRUNCATE(SUM(CASE WHEN apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END)/SUM(d.jumlah_donasi)*100,1), IF(TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1))),0),0) persentase_pelaksanaan
-		FROM bantuan b 
-        LEFT JOIN donasi d 
-        ON(b.id_bantuan = d.id_bantuan)
-        LEFT JOIN anggaran_pelaksanaan_donasi apd ON (apd.id_donasi = d.id_donasi)
-        LEFT JOIN pelaksanaan p
-        ON(apd.id_pelaksanaan = p.id_pelaksanaan)
-        WHERE b.id_bantuan BETWEEN 1 AND ?
-        GROUP BY b.id_bantuan ORDER BY b.id_bantuan DESC", array($this->getOffset()));
-        if ($data->count()) {
-            $this->data = $data->results();
-            return $this->data;
-        }
-        return false;
-    }
-
-    // Old
-    public function dataHalaman($halaman = null) {
-        if (count(is_countable($halaman) ? $halaman : [])) {
-            $this->setHalaman($halaman, 'bantuan');
-        }
-		$this->db->query("SELECT b.id_bantuan, b.nama, b.jumlah_target, b.status, b.blokir, 
-        b.jumlah_target,
-        b.satuan_target,
-        IF(SUM(p.jumlah_pelaksanaan) IS NULL, 0, SUM(p.jumlah_pelaksanaan)) jumlah_pelaksanaan,
-        SUM(d.jumlah_donasi) total_donasi, 
-        SUM(CASE WHEN apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END) donasi_terlaksana,
-        SUM(CASE WHEN apd.id_pelaksanaan IS NULL THEN d.jumlah_donasi END) saldo_donasi,
-        IF(b.jumlah_target IS NULL, TRUNCATE(SUM(CASE WHEN apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi END)/SUM(d.jumlah_donasi)*100,1), IF(TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p.jumlah_pelaksanaan)/b.jumlah_target)*100,1))) persentase_pelaksanaan
-		FROM bantuan b 
-        LEFT JOIN donasi d 
-        ON(b.id_bantuan = d.id_bantuan)
-        LEFT JOIN pelaksanaan p
-        ON(apd.id_pelaksanaan = p.id_pelaksanaan)
-        WHERE b.id_bantuan BETWEEN ? AND ?
-        GROUP BY b.id_bantuan ORDER BY b.id_bantuan ASC LIMIT {$this->getOffset()}", array($this->getHalaman()[0], $this->getHalaman()[1]));
-		if ($this->db->count()) {
-			$this->data = $this->db->results();
-			return $this->data;
-		}
-		return false;
-        // Debug::pr($this->db);
-        // die();
-	}
-
-    // Old ENd
-
     public function dataSektor() {
         $this->db->query("SELECT id_sektor, nama FROM sektor");
         $this->data = $this->db->results();
@@ -180,16 +125,6 @@ class BantuanModel extends HomeModel {
         $this->db->query("SELECT id_kategori, nama FROM kategori");
         $this->data = $this->db->results();
         return $this->data;
-    }
-
-    // Sementara
-    public function dataJenis() {
-        $data = $this->db->query("SELECT id_jenis, nama, layanan FROM jenis");
-        if ($this->db->count()) {
-            $this->data = $this->db->results();
-            return $this->data;
-        }
-        return false;
     }
 
     public function getJumlahDataBantuan($status = null) {

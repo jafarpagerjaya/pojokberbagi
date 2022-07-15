@@ -137,6 +137,43 @@ class FetchController extends Controller {
         return false;
     }
 
+    public function verivikasi($params = array()) {
+        if (count(is_countable($params) ? $params : []) == 0) {
+            $this->_result['feedback'] = array(
+                'message' => 'Number of params not found'
+            );
+            $this->result();
+            return false;
+        }
+
+        // Check Content Type and decode JSON to array
+        $decoded = $this->contentTypeJsonDecoded($_SERVER["CONTENT_TYPE"]);
+
+        // Check Token
+        $this->checkToken($decoded['token']);
+
+        switch ($params[0]) {
+            case 'donasi':
+                // donasiVerivikasi
+            break;
+            
+            default:
+                $this->_result['feedback'] = array(
+                    'message' => 'Unrecognize params '. $params[0]
+                );
+                $this->result();
+                return false;
+            break;
+        }
+
+        // prepare method verivikasi name
+        $action = $params[0] . 'Verivikasi';
+        // call method verivikasi
+        $this->$action($decoded);
+
+        return false;
+    }
+
     public function read($params = array()) {
         if (count(is_countable($params) ? $params : []) == 0) {
             $this->_result['feedback'] = array(
@@ -763,6 +800,39 @@ class FetchController extends Controller {
         $this->_result['feedback']['halaman'] = ceil(($count->records + 1) / $this->model->getLimit());
 
         $this->result();
+        return false;
+    }
+
+    private function donasiVerivikasi($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        unset($decoded['payment_date']);
+        unset($decoded['payment_time']);
+
+        $waktu_bayar = new DateTime(date('Y-m-d', strtotime($decoded['waktu_bayar'])));
+        $decoded['waktu_bayar'] = $waktu_bayar->format('Y-m-d H:i:s');
+
+        $this->model('Donasi');
+        $this->model->update('donasi', array(
+            'bayar' => '1',
+            'waktu_bayar' => $decoded['waktu_bayar']
+        ), array('id_donasi','=',$decoded['id_donasi']));
+
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Gagal melakukan verivikasi donasi'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'message' => 'Donasi berhasil diverivikasi secara manual',
+            'data' => array('id_donasi' => $decoded['id_donasi'])
+        );
+        $this->result();
+        Session::delete('toast');
         return false;
     }
 

@@ -23,24 +23,24 @@ if (toastRun != null) {
     }, 3100);
 }
 
-let tableWidthSetter = function() {
-    if ($('table thead').width() > $('table').parent().width()) {
-        $('table').addClass('table-responsive');
+let tableWidthSetter = function(table) {
+    if (table.find('thead').width() > table.parent().width()) {
+        table.addClass('table-responsive');
     } else {
-        if ($('table').hasClass('table-responsive')) {
-            $('table').removeClass('table-responsive');
+        if (table.hasClass('table-responsive')) {
+            table.removeClass('table-responsive');
         }
     }
 }
 
-tableWidthSetter();
+tableWidthSetter($('table.table'));
 
 let resizeTimeoutTable;
 $(window).resize(function () {
     clearTimeout(resizeTimeoutTable)
     resizeTimeoutTable = setTimeout(function () {
-        if ($('table').length) {
-            tableWidthSetter();
+        if ($('table.table').length) {
+            tableWidthSetter($('table.table'));
         }
     }, 50);
 });
