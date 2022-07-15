@@ -471,7 +471,7 @@ CREATE TABLE donasi (
 
 -- status donasi 0 = pembayaran belum dilakukan, 1 = pembayaran berhasil;
 
-INSERT INTO donasi(id_bantuan,id_donatur,alias,jumlah_donasi, bayar, id_cp, waktu_bayar) VALUES(1,1,'CSR BJB',2312500000,'1',2,'2021-08-11'),(1,1,'CSR BJB',3125000000,'1',2, '2021-10-10'),(2,2,"PROGRAM",750000,'1',3,'2021-10-16');
+INSERT INTO donasi(id_bantuan,id_donatur,alias,jumlah_donasi, bayar, id_cp, create_at, waktu_bayar) VALUES(1,1,'CSR BJB',2312500000,'1',2,'2021-08-11','2021-08-11'),(1,1,'CSR BJB',3125000000,'1',2,'2021-10-10','2021-10-10'),(2,2,"PROGRAM",750000,'1',3,'2021-10-16','2021-10-16');
 -- INSERT DONASI LAMA (Nama Program dan Nama Sementara Sebelum Ada yang Sama Atau Terganti)
 INSERT INTO donasi(id_bantuan,id_donatur,id_cp,create_at,jumlah_donasi,bayar) VALUES
 ((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'arifriandi834@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2021-11-01',50000,1),
@@ -549,7 +549,11 @@ INSERT INTO donasi(id_bantuan,id_donatur,id_cp,create_at,jumlah_donasi,bayar) VA
 ((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'BERBAGI 1.000 PAKET BERBUKA' AND blokir IS NULL),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'KAMMI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BSI%"),'2022-04-25',250000,1),
 ((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'maulinda.dinda98@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'EW' AND UPPER(nama) LIKE "%GOPAY%"),'2022-04-28',39750,1),
 ((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) LIKE "%lebaran untuk yatim & dhuafa%" AND blokir IS NULL),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'YBM BRI KC. ASIA AFRIKA'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BRI%"),'2022-04-28',6000000,1),
-((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'jafarpager@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-05-12',100000,1);
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'jafarpager@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-05-12',100000,1),
+((SELECT id_bantuan FROM bantuan WHERE UPPER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'DINNY RESTY'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BRI%"),'2022-07-08',100000,1),
+((SELECT id_bantuan FROM bantuan WHERE UPPER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'ETI SUMIATI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BRI%"),'2022-07-08',300000,1),
+((SELECT id_bantuan FROM bantuan WHERE LOWER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE LOWER(email) = 'arifriandi834@gmail.com'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TN'),'2022-07-14',150000,1),
+((SELECT id_bantuan FROM bantuan WHERE UPPER(nama) = 'infaq'),(SELECT id_donatur FROM donatur WHERE UPPER(nama) = 'ETI SUMIATI'),(SELECT id_cp FROM channel_payment WHERE jenis = 'TB' AND UPPER(nama) LIKE "%BRI%"),'2022-07-14',300000,1);
 
 UPDATE donasi SET waktu_bayar = create_at WHERE bayar = '1' AND waktu_bayar IS NULL;
 

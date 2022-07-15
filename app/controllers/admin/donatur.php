@@ -185,6 +185,7 @@ class DonaturController extends Controller {
                                         'id_pegawai','=', Sanitize::escape2($id_pegawai)
                                     ));
                                 }
+                                Debug::vd($this->_donatur->data()->account_found);
                                 $this->_donatur->update('akun', array(
                                     'email' => Sanitize::escape2(Input::get('email'))
                                 ), array('id_akun', '=', Sanitize::escape2($id_akun)));

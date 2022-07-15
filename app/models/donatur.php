@@ -129,7 +129,7 @@ class DonaturModel extends HomeModel {
     }
 
     public function hasAccount($id_donatur) {
-        $this->db->query("SELECT COUNT(id_donatur) account_found, id_akun FROM donatur WHERE id_donatur = ?", array($id_donatur));
+        $this->db->query("SELECT COUNT(id_akun) account_found, id_akun FROM donatur JOIN akun USING(id_akun) WHERE id_donatur = ?", array($id_donatur));
         $this->data = $this->db->result();
         if ($this->data->account_found != 0) {
             return true;

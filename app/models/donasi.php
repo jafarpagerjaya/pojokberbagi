@@ -134,7 +134,7 @@ class DonasiModel extends HomeModel {
         } else {
             // SEEK
             $result = $this->countData($tables, $where);
-            $sql = "SELECT {$fields} FROM {$tables} WHERE d.id_donasi BETWEEN ? AND ? ORDER BY {$this->getOrder()} {$this->getDirection()}, d.id_donasi {$this->getDirection()}";
+            $sql = "SELECT {$fields} FROM {$tables} WHERE d.id_donasi BETWEEN ? AND ? ORDER BY {$this->getOrder()} {$this->getDirection()}";
             $params = array(
                 'between_start' => $this->getHalaman()[0],
                 'between_end' => $this->getHalaman()[1]
