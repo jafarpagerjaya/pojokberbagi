@@ -51,6 +51,9 @@ class DonasiController extends Controller {
             ),
             array(
                 'href' => '/assets/route/admin/pages/css/verivikasi-donasi.css'
+            ),
+            array(
+                'href' => '/assets/main/css/kwitansi.css'
             )
         );
         $this->script_action = array(
@@ -88,6 +91,13 @@ class DonasiController extends Controller {
             ),
             array(
                 'src' => '/assets/route/admin/pages/js/verivikasi-donasi.js'
+            ),
+            array(
+                'src' => 'https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js',
+                'source' => 'trushworty'
+            ),
+            array(
+                'src' => '/assets/route/admin/pages/js/kwitansi-donasi.js'
             )
         );
         $this->model('Donasi');

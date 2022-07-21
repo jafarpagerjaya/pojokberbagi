@@ -104,6 +104,14 @@ a.disabled {
     column-gap: .5em;
 }
 
+.gap-x-3 {
+    column-gap: 1em;
+}
+
+.gap-x-4 {
+    column-gap: 1.5em;
+}
+
 .gap-y-3 {
     row-gap: 1em;
 }

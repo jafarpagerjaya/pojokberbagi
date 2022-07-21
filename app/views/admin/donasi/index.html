@@ -153,6 +153,8 @@
                                         <a class="dropdown-item"
                                             href="/admin/bantuan/data/<?= $listDonasi->id_bantuan; ?>">Lihat Program
                                             Donasi</a>
+                                        <?= ($listDonasi->bayar == '1' ? '<a class="dropdown-item" data-id="'.$listDonasi->id_donasi.'" href="javascript():;" data-toggle="modal" data-target="#modalKwitansiDonasi">Kwitansi</a>' : ''); ?>
+                                        </a>
                                         <!-- <a class="dropdown-item" href="#">Lihat Data Donatur</a> -->
                                         <a class="dropdown-item<?= ($listDonasi->bayar == '1' ? ' disabled">Sudah
                                             Terverivikasi' : ' text-warning font-weight-bold"
@@ -377,6 +379,7 @@
         </div>
     </div>
 </div>
+<!-- Modal Action -->
 <div class="modal in" id="modalValidasiDonasi" tabindex="-1" role="dialog" aria-labelledby="modalValidasiDonasi-label"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
@@ -462,7 +465,160 @@
         </div>
     </div>
 </div>
-<!-- Toast -->
+<div class="modal in bg-white" id="modalKwitansiDonasi" tabindex="-1" role="dialog"
+    aria-labelledby="modalKwitansiDonasi-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container">
+                <div class="row align-items-center" id="kwitansi">
+                    <div class="col-12">
+                        <div class="card bg-secondary border border-secondary rounded-box shadow-lg"
+                            id="kwitansi-section">
+                            <div
+                                class="border-0 card-header bg-transparent justify-content-between d-flex align-items-center">
+                                <h1 class="display-4 mb-0 text-orange font-weight-bolder">Kwitansi Donasi</h1>
+                                <a href="#">
+                                    <img src="/assets/images/brand/pojok-berbagi-transparent.png" alt="Pojok Berbagi"
+                                        class="img-fluid">
+                                </a>
+                            </div>
+                            <div class="card-body d-flex flex-column gap-y-4">
+                                <div class="box rounded-box bg-orange text-white" id="kwitansi-note">
+                                    <div class="px-2">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <b>Nomor Kwitansi
+                                                    <div class="text-white-50" id="id-kwitansi">1000</div>
+                                                    <small class="text-white">
+                                                        Dibuat <span id="create-kwitansi-at">CKA</span>
+                                                    </small>
+                                                </b>
+                                            </div>
+                                            <div class="col-6 text-right">
+                                                <b>
+                                                    Donatur
+                                                    <div class="font-weight-bolder">
+                                                        <span id="nama-donatur">ND</span> (<span
+                                                            id="samaran-donatur">Hamba
+                                                            Allah</span>)
+                                                    </div>
+                                                </b>
+                                                <small class="gap-x-2 text-white-50">
+                                                    <span id="kontak-donatur">08213213214</span>
+                                                    <span id="email-donatur">donatur@donatur.id</span>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="row">
+                                            <div class="col-6 font-weight-bold">Donasi</div>
+                                            <div class="col-6 font-weight-bold text-right">Jumlah
+                                                Donasi</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 font-weight-bolder">
+                                                <span id="nama-bantuan">Judul Bantuanku dan Bantuanmu Sungguh
+                                                    Keren</span>
+                                            </div>
+                                            <div class="col-6 font-weight-bolder text-right">Rp. <span
+                                                    id="jumlah-donasi">10.000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="box rounded-box border" style="background-color: #88898a08;">
+                                            <b>Payment Method</b>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div>
+                                                        <span id="jenis-cp">jenis_cp</span>
+                                                        <div class="text-black-50 small" id="nomor-cp">
+                                                            nomor_cp
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-auto align-items-end d-flex">
+                                                    <img src="" alt="Gambar Channel Payment" id="img-cp">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row" style="height: 100%;">
+                                            <div class="col d-flex align-items-end justify-content-center">
+                                                <div id="signature"></div>
+                                                <h4 class="mb-0">CR Pojok Berbagi</h4>
+                                            </div>
+                                            <div class="col d-flex align-items-center justify-content-end"
+                                                id="canvas-qr">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer border-start border-lighter" style="border-top-style: dotted;">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div id="qs" class="text-center">
+                                            <i>"Sesungguhnya orang-orang yang bersedekah baik laki-laki maupun
+                                                perempuan dan
+                                                meminjamkan kepada Allah pinjaman yang baik, niscaya akan
+                                                dilipat-gandakan
+                                                pembayarannya oleh Allah kepada mereka, dan bagi mereka pahala yang
+                                                banyak."</i>
+                                            <b class="d-inline-block">QS. Al-Hadid:18</b>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-secondary border-start border-lighter rounded-box"
+                                style="border-top-style: dotted;">
+                                <div class="row">
+                                    <div class="col-4 d-flex gap-x-4 align-items-center">
+                                        <div class="item">
+                                            <img src="/assets/images/brand/pojok-berbagi-transparent.png"
+                                                alt="Pojok Berbagi">
+                                        </div>
+                                        <div class="item row">
+                                            <div class="col-12"><b>Kontak</b></div>
+                                            <div class="col-12">cr@pojokberbagi.id</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-8 text-right small">
+                                        <div>Jl. Kuningan Raya No. 86</div>
+                                        <div>Antapani, Kota Bandung</div>
+                                        <div class="font-weight-bolder"><i class="fab fa-whatsapp"></i>
+                                            0812-1333-1113</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 no-print">
+                        <div class="card p-4 border border-secondary rounded-box">
+                            <div class="row justify-content-end">
+                                <div class="col-auto">
+                                    <button class="btn btn-link text-black-50 font-weight-bolder"
+                                        data-dismiss="modal">Tutup</button>
+                                </div>
+                                <div class="col-auto">
+                                    <button id="print-button" class="btn btn-outline-orange">Cetak
+                                        Kwitansi</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Toast Action -->
 
 <div aria-live="polite" aria-atomic="true" style="bottom: 1em; right: 1em; z-index: 1050;"
     class="position-fixed d-flex justify-content-end flex-column align-items-end">

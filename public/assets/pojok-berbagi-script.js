@@ -213,3 +213,14 @@ function dateToID(date) {
     const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
     return new Date(date).toLocaleDateString("id-ID", optionsDate).replace(/\./g,':');
 }
+
+function nomorCPTunai(jenis, nomor) {
+    if (jenis != null) {
+        jenis = jenis.toUpperCase();
+    }
+    if (jenis == 'TN') {
+        return 'CR Kantor Pusat';
+    } else {
+        return nomor;
+    }
+}

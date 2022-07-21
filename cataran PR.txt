@@ -1,10 +1,11 @@
 URGEN MINGGU INI
 10. Jika Waktu akhir bantuan ada dan sudah lewat dan status bantuan sudah selesai DAN ingin reenable (buka ulang) maka arahkan ke halaman update ulang bantuan dengan update status bantuan menjadi D
 11. Cek dan atur min ukuran dimensi upload medium img ke width 726px
-16. Tambah verivikasi donasi manual selesaikan phpnya
 17. Tambah print kwitansi via CR dan donatur
 18. Tambah kelola hak akses pegawai
-19. 
+19. NF3 tabel donasi untuk kwitansi
+20. Sesuaikan seluruh query yang berhubungan dengan bayar dan waktu bayar akibat NF3 tabel donasi
+21. 
 BONUS KALO CUKUP Bulan Ini
 1. Kelola Banner MAIN bantuan
 2. Lvl Akses => pelajari ALC Lvl Akses

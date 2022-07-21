@@ -48,6 +48,15 @@ class DonasiModel extends HomeModel {
         return false;
     }
 
+    public function getKwitansiByIdDonasi($id_donasi) {
+        $this->db->query("SELECT k.id_kwitansi, formatTanggal(k.create_at) create_kwitansi_at, dur.id_donatur, dur.nama nama_donatur, FORMAT(dsi.jumlah_donasi,0,'id_ID') jumlah_donasi, COALESCE(dsi.alias, dur.samaran, 'Sahabat Berbagi') samaran, COALESCE(dsi.kontak, dur.kontak,'') kontak, dur.email, b.nama nama_bantuan, cp.jenis, cp.nama nama_cp, cp.nomor, gcp.path_gambar path_gambar_cp FROM kwitansi k JOIN donasi dsi ON (k.id_donasi = dsi.id_donasi) LEFT JOIN donatur dur USING(id_donatur) LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN bantuan b USING(id_bantuan) LEFT JOIN gambar gcp ON(gcp.id_gambar = cp.id_gambar) WHERE k.id_donasi = ?", array('k.id_donasi' => Sanitize::escape2($id_donasi)));
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return $this->data;
+        }
+        return false;
+    }
+
     public function getDataTagihanDonasi($id_donasi) {
         $this->db->query('SELECT donasi.*, donatur.nama nama_donatur, donatur.email, channel_payment.jenis, 
         channel_payment.nama nama_cp, channel_payment.kode, channel_payment.nomor, channel_payment.atas_nama, gambar.path_gambar path_gambar_cp

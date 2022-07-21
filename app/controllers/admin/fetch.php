@@ -254,8 +254,8 @@ class FetchController extends Controller {
         $this->checkToken($decoded['token']);
 
         switch ($params[0]) {
-            case 'donasi':
-                // donasi Params
+            case 'kwitansi':
+                // kwitansi Params
             break;
             
             default:
@@ -267,9 +267,9 @@ class FetchController extends Controller {
             break;
         }
 
-        // prepare method create name
+        // prepare method Get
         $action = $params[0] . 'Get';
-        // call method create
+        // call method Get
         $this->$action($decoded);
 
         return false;
@@ -1128,11 +1128,11 @@ class FetchController extends Controller {
         return false;
     }
 
-    private function donasiGet($decoded) {
+    private function kwitansiGet($decoded) {
         $decoded = Sanitize::thisArray($decoded);
 
         $this->model('Donasi');
-        $this->model->getTagihan($decoded['id_donasi']);
+        $this->model->getKwitansiByIdDonasi($decoded['id_donasi']);
         if ($this->model->affected()) {
             $data = $this->model->data();
         }

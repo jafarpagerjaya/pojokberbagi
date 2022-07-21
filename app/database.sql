@@ -448,6 +448,32 @@ INSERT INTO channel_payment(nama, kode, nomor, jenis, atas_nama, id_gambar) VALU
 ('Dana','1','081233311113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'dana')),
 ('Bank BRI','002','ID1022148253464','QR','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'qris'));
 
+-- FEATURE
+-- CREATE TABLE pembayaran (
+--     kode_pembayaran VARCHAR(64) PRIMARY KEY,
+--     id_donatur INT UNSIGNED NOT NULL,
+--     id_bantuan INT UNSIGNED NOT NULL,
+--     id_cp TINYINT UNSIGNED NOT NULL,
+--     jumlah_donasi INT UNSIGNED NOT NULL,
+--     email VARCHAR(96),
+--     kontak VARCHAR(13),
+--     doa VARCHAR(200),
+--     alias VARCHAR(30),
+--     status ENUM('BP','MP','SL') NOT NULL DEFAULT 'MP',
+--     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+--     CONSTRAINT F_ID_DONATUR_PEMBAYARAN_ODR FOREIGN KEY id_donatur REFERENCES donatur(id_donatur) ON DELETE RESTRICT ON UPDATE CASCADE,
+--     CONSTRAINT F_ID_BANTUAN_PEMBAYARAN_ODR FOREIGN KEY id_bantuan REFERENCES bantuan(id_bantuan) ON DELETE RESTRICT ON UPDATE CASCADE,
+--     CONSTRAINT F_ID_CP_PEMBAYARAN_ODR FOREIGN KEY id_cp REFERENCES channel_payment(id_cp) ON DELETE RESTRICT ON UPDATE CASCADE
+-- )ENGINE=INNODB;
+
+-- SET GLOBAL event_scheduler = ON
+-- CREATE EVENT EVENT_DELETE_UNPAID ON SCHEDULE EVERY 1 MINUTE 
+-- STARTS CONCAT(DATE(NOW()),' 00:00:00')
+-- ENABLE
+-- DO 
+-- DELETE FROM pembayaran WHERE create_at < CURRENT_TIMESTAMP - INTERVAL 24 HOUR;
+
 CREATE TABLE donasi (
     id_donasi BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     kode_pembayaran VARCHAR(64),
@@ -473,11 +499,34 @@ DELIMITER $$
 CREATE TRIGGER DONASI_CHECK_UPDATE
 BEFORE UPDATE ON donasi FOR EACH ROW
     BEGIN
+    DECLARE kwitansi_count TINYINT DEFAULT 0;
+    SET kwitansi_count = (SELECT COUNT(id_kwitansi) FROM kwitansi WHERE id_donasi = OLD.id_donasi);
         IF OLD.bayar = 1 AND NEW.bayar = 0 THEN
         SET NEW.waktu_bayar = NULL;
+            IF (kwitansi_count = 1) THEN
+            UPDATE kwitansi SET create_at = NULL WHERE id_donasi = OLD.id_donasi;
+            END IF;
+        ELSE
+            IF (kwitansi_count = 0) THEN
+            INSERT INTO kwitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,OLD.id_donasi);
+            ELSE 
+            UPDATE kwitansi SET create_at = NEW.waktu_bayar WHERE id_donasi = OLD.id_donasi;
+            END IF;
         END IF;
     END$$
 DELIMITER ;
+
+CREATE TABLE kwitansi (
+    id_kwitansi BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    waktu_cetak TIMESTAMP,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_donasi BIGINT UNSIGNED,
+    id_pengesah SMALLINT UNSIGNED,
+    CONSTRAINT F_ID_DONASI_KWITANSI_ODR FOREIGN KEY(id_donasi) REFERENCES donasi(id_donasi) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT F_ID_PENGESAH_KWITANSI_ODR FOREIGN KEY(id_pengesah) REFERENCES pegawai(id_pegawai) ON DELETE RESTRICT ON UPDATE CASCADE
+)ENGINE=INNODB;
+
+ALTER TABLE kwitansi AUTO_INCREMENT = 1001;
 
 -- status donasi 0 = pembayaran belum dilakukan, 1 = pembayaran berhasil;
 
@@ -851,8 +900,19 @@ DELIMITER $$
 CREATE TRIGGER DONASI_CHECK_UPDATE
 BEFORE UPDATE ON donasi FOR EACH ROW
     BEGIN
+    DECLARE kwitansi_count TINYINT DEFAULT 0;
+    SET kwitansi_count = (SELECT COUNT(id_kwitansi) FROM kwitansi WHERE id_donasi = OLD.id_donasi);
         IF OLD.bayar = 1 AND NEW.bayar = 0 THEN
         SET NEW.waktu_bayar = NULL;
+            IF (kwitansi_count = 1) THEN
+            UPDATE kwitansi SET create_at = NULL WHERE id_donasi = OLD.id_donasi;
+            END IF;
+        ELSE
+            IF (kwitansi_count = 0) THEN
+            INSERT INTO kwitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,OLD.id_donasi);
+            ELSE 
+            UPDATE kwitansi SET create_at = NEW.waktu_bayar WHERE id_donasi = OLD.id_donasi;
+            END IF;
         END IF;
     END$$
 DELIMITER ;
@@ -867,3 +927,20 @@ CREATE TABLE amin (
     CONSTRAINT F_ID_PENGUNJUNG_AMIN_ODN FOREIGN KEY(id_pengunjung) REFERENCES pengunjung(id_pengunjung) ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT F_ID_DONASI_AMIN_ODC FOREIGN KEY(id_donasi) REFERENCES donasi(id_donasi) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=INNODB;
+
+CREATE TABLE kwitansi (
+    id_kwitansi BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    waktu_cetak TIMESTAMP,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_donasi BIGINT UNSIGNED,
+    id_pengesah SMALLINT UNSIGNED,
+    CONSTRAINT F_ID_DONASI_KWITANSI_ODR FOREIGN KEY(id_donasi) REFERENCES donasi(id_donasi) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT F_ID_PENGESAH_KWITANSI_ODR FOREIGN KEY(id_pengesah) REFERENCES pegawai(id_pegawai) ON DELETE RESTRICT ON UPDATE CASCADE
+)ENGINE=INNODB;
+
+ALTER TABLE kwitansi AUTO_INCREMENT = 1001;
+
+INSERT INTO kwitansi(create_at, id_donasi)
+SELECT waktu_bayar, id_donasi FROM donasi WHERE waktu_bayar IS NOT NULL ORDER BY waktu_bayar ASC, id_donasi ASC;
+
+UPDATE kwitansi SET id_pengesah = (SELECT id_pegawai FROM pegawai WHERE email = 'maulinda.dinda98@gmail.com');
