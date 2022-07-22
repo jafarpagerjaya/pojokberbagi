@@ -38,6 +38,10 @@ $('#modalKwitansiDonasi').on('show.bs.modal', function(e) {
             let data = origin + '/kwitansi/#'+result.feedback.data.id_kwitansi;
             let jsonQrOptions = { "image": "/assets/images/brand/pojok-berbagi-transparent.png", "width": 100, "height": 100, "data": data, "margin": 0, "qrOptions": { "typeNumber": "0", "mode": "Byte", "errorCorrectionLevel": "Q" }, "imageOptions": { "hideBackgroundDots": true, "imageSize": 0.3, "margin": 2 }, "dotsOptions": { "type": "rounded", "color": "#000000", "gradient": null }, "backgroundOptions": { "color": "#ffffff" }, "dotsOptionsHelper": { "colorType": { "single": true, "gradient": false }, "gradient": { "linear": true, "radial": false, "color1": "#6a1a4c", "color2": "#6a1a4c", "rotation": "0" } }, "cornersSquareOptions": { "type": "extra-rounded", "color": "#000000" }, "cornersSquareOptionsHelper": { "colorType": { "single": true, "gradient": false }, "gradient": { "linear": true, "radial": false, "color1": "#000000", "color2": "#000000", "rotation": "0" } }, "cornersDotOptions": { "type": "", "color": "#000000" }, "cornersDotOptionsHelper": { "colorType": { "single": true, "gradient": false }, "gradient": { "linear": true, "radial": false, "color1": "#000000", "color2": "#000000", "rotation": "0" } }, "backgroundOptionsHelper": { "colorType": { "single": true, "gradient": false }, "gradient": { "linear": true, "radial": false, "color1": "#ffffff", "color2": "#ffffff", "rotation": "0" } } }
             const qrCode = new QRCodeStyling(jsonQrOptions);
+            if (document.getElementById("canvas-qr").children[0] != null) {
+                document.getElementById("canvas-qr").children[0].remove();
+            }
+            console.log(document.getElementById("canvas-qr").children)
             qrCode.append(document.getElementById("canvas-qr"));
 
             modal.find('#id-kwitansi').text(result.feedback.data.id_kwitansi);
@@ -63,4 +67,24 @@ $('#modalKwitansiDonasi').on('show.bs.modal', function(e) {
 
 $('#print-button').on('click', function (e) {
     window.print();
+
+    let data = {
+        id_kwitansi: $(this).parents('.modal').find('#id-kwitansi')
+    };
+
+    fetch('/admin/fetch/update/kwitansi', {
+        method: "POST",
+        cache: "no-cache",
+        mode: "same-origin",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        referrer: "no-referrer",
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(function(result) {
+        console.log(result);
+    });
 });

@@ -55,6 +55,12 @@
 
     body {
         -webkit-print-color-adjust: exact !important;
-        margin: 0px 2em !important;
+        /* margin: 0px 2em !important; */
+    }
+
+    body > *:not(#panel),
+    body #panel > *:not(:last-child),
+    body #panel #main-content > *:not(#modalKwitansiDonasi) {
+        display: none !important;
     }
 }

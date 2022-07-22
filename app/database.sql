@@ -944,3 +944,13 @@ INSERT INTO kwitansi(create_at, id_donasi)
 SELECT waktu_bayar, id_donasi FROM donasi WHERE waktu_bayar IS NOT NULL ORDER BY waktu_bayar ASC, id_donasi ASC;
 
 UPDATE kwitansi SET id_pengesah = (SELECT id_pegawai FROM pegawai WHERE email = 'maulinda.dinda98@gmail.com');
+
+DELIMITER $$
+CREATE TRIGGER DONASI_CHECK_INSERT
+AFTER INSERT ON donasi FOR EACH ROW
+    BEGIN
+    IF NEW.bayar = 1 AND NEW.waktu_bayar IS NOT NULL THEN
+        INSERT INTO kwitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,NEW.id_donasi);
+    END IF;
+    END$$
+DELIMITER ;

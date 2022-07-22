@@ -119,6 +119,9 @@ class FetchController extends Controller {
             case 'bantuan':
                 // bantuanUpdate
             break;
+            case 'kwitansi':
+                // kwitansiUpdate
+            break;
             
             default:
                 $this->_result['feedback'] = array(
@@ -798,6 +801,27 @@ class FetchController extends Controller {
         $count = $this->model->query("SELECT count(*) records FROM bantuan WHERE id_bantuan > ?", array($id_bantuan));
         $halaman = ceil(($count->records + 1) / $this->model->getLimit());
         $this->_result['feedback']['halaman'] = ceil(($count->records + 1) / $this->model->getLimit());
+
+        $this->result();
+        return false;
+    }
+
+    private function kwitansiUpdate($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+        $this->model('Donasi');
+        $date = new DateTime();
+        $waktu_sekarang = $date>format('Y-m-d H:i:s');
+        $this->model->update('kwitansi', array('waktu_cetak' => $waktu_sekarang), array('id_kwitansi','=',$decoded['id_kwitansi']));
+        if ($this->model->affected()) {
+            $this->_result['error'] = false;
+            $this->_result['feedback'] = array(
+                'message' => 'Kwitansi <span class="font-weight-bolder>#' . $decoded['id_kwitansi'] . '</span> dicetak <span class="font-weight-bold">' . $waktu_sekarang . '</span>'
+            );
+        } else {
+            $this->_result['feedback'] = array(
+                'message' => 'Failed to Update waktu cetak kwitansi'
+            );
+        }
 
         $this->result();
         return false;
