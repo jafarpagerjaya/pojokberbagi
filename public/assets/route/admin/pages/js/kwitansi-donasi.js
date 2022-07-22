@@ -44,6 +44,7 @@ $('#modalKwitansiDonasi').on('show.bs.modal', function(e) {
             console.log(document.getElementById("canvas-qr").children)
             qrCode.append(document.getElementById("canvas-qr"));
 
+            modal.find('#id-kwitansi').attr('data-id-kwitansi', result.feedback.data.id_kwitansi);
             modal.find('#id-kwitansi').text(result.feedback.data.id_kwitansi);
             modal.find('#create-kwitansi-at').text(result.feedback.data.create_kwitansi_at);
             modal.find('#nama-donatur').text(result.feedback.data.nama_donatur);
@@ -66,10 +67,9 @@ $('#modalKwitansiDonasi').on('show.bs.modal', function(e) {
 });
 
 $('#print-button').on('click', function (e) {
-    window.print();
-
     let data = {
-        id_kwitansi: $(this).parents('.modal').find('#id-kwitansi')
+        id_kwitansi: $(this).parents('.modal').find('#id-kwitansi').data('id-kwitansi'),
+        token: body.getAttribute('data-token')
     };
 
     fetch('/admin/fetch/update/kwitansi', {
@@ -85,6 +85,19 @@ $('#print-button').on('click', function (e) {
     })
     .then(response => response.json())
     .then(function(result) {
-        console.log(result);
+        if (result.error) {
+            $('.toast[data-toast="feedback"] .time-passed').text('Baru Saja');
+            $('.toast[data-toast="feedback"] .toast-body').html(data.feedback.message);
+            $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
+            $('.toast[data-toast="feedback"] .toast-header strong').text('Peringatan!');
+            console.log('there is some error in server side');
+            $('.toast').toast('show');
+        } else {
+            window.print();
+        }
+        body.setAttribute('data-token', result.token);
+        fetchTokenChannel.postMessage({
+            token: body.getAttribute('data-token')
+        });
     });
 });

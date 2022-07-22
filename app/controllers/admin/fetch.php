@@ -809,8 +809,8 @@ class FetchController extends Controller {
     private function kwitansiUpdate($decoded) {
         $decoded = Sanitize::thisArray($decoded);
         $this->model('Donasi');
-        $date = new DateTime();
-        $waktu_sekarang = $date>format('Y-m-d H:i:s');
+        $currentDate = new DateTime();
+        $waktu_sekarang = $currentDate->format('Y-m-d H:i:s');
         $this->model->update('kwitansi', array('waktu_cetak' => $waktu_sekarang), array('id_kwitansi','=',$decoded['id_kwitansi']));
         if ($this->model->affected()) {
             $this->_result['error'] = false;
