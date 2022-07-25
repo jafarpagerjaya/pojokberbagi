@@ -892,32 +892,32 @@ ALTER TABLE donasi MODIFY notifikasi CHAR(1) DEFAULT '1';
 ALTER TABLE donasi MODIFY notifikasi CHAR(1) DEFAULT NULL;
 
 -- JIKA DONATUR SYSROOT BELUM ADA FK KE AKUN
-UPDATE donatur SET id_akun = (SELECT id_akun FROM akun WHERE email = 'pojokberbagi.id@gmail.com') WHERE email = 'pojokberbagi.id@gmail.com';
+-- UPDATE donatur SET id_akun = (SELECT id_akun FROM akun WHERE email = 'pojokberbagi.id@gmail.com') WHERE email = 'pojokberbagi.id@gmail.com';
 
-ALTER TABLE pegawai DROP INDEX NU_JENIS_KELAMIN;
+-- ALTER TABLE pegawai DROP INDEX NU_JENIS_KELAMIN;
 
-DELIMITER $$
-CREATE TRIGGER DONASI_CHECK_UPDATE
-BEFORE UPDATE ON donasi FOR EACH ROW
-    BEGIN
-    DECLARE kwitansi_count TINYINT DEFAULT 0;
-    SET kwitansi_count = (SELECT COUNT(id_kwitansi) FROM kwitansi WHERE id_donasi = OLD.id_donasi);
-        IF OLD.bayar = 1 AND NEW.bayar = 0 THEN
-        SET NEW.waktu_bayar = NULL;
-            IF (kwitansi_count = 1) THEN
-            UPDATE kwitansi SET create_at = NULL WHERE id_donasi = OLD.id_donasi;
-            END IF;
-        ELSE
-            IF (kwitansi_count = 0) THEN
-            INSERT INTO kwitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,OLD.id_donasi);
-            ELSE 
-            UPDATE kwitansi SET create_at = NEW.waktu_bayar WHERE id_donasi = OLD.id_donasi;
-            END IF;
-        END IF;
-    END$$
-DELIMITER ;
+-- DELIMITER $$
+-- CREATE TRIGGER DONASI_CHECK_UPDATE
+-- BEFORE UPDATE ON donasi FOR EACH ROW
+--     BEGIN
+--     DECLARE kwitansi_count TINYINT DEFAULT 0;
+--     SET kwitansi_count = (SELECT COUNT(id_kwitansi) FROM kwitansi WHERE id_donasi = OLD.id_donasi);
+--         IF OLD.bayar = 1 AND NEW.bayar = 0 THEN
+--         SET NEW.waktu_bayar = NULL;
+--             IF (kwitansi_count = 1) THEN
+--             UPDATE kwitansi SET create_at = NULL WHERE id_donasi = OLD.id_donasi;
+--             END IF;
+--         ELSE
+--             IF (kwitansi_count = 0) THEN
+--             INSERT INTO kwitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,OLD.id_donasi);
+--             ELSE 
+--             UPDATE kwitansi SET create_at = NEW.waktu_bayar WHERE id_donasi = OLD.id_donasi;
+--             END IF;
+--         END IF;
+--     END$$
+-- DELIMITER ;
 
-ALTER TABLE bantuan MODIFY total_rab BIGINT UNSIGNED DEFAULT NULL;
+-- ALTER TABLE bantuan MODIFY total_rab BIGINT UNSIGNED DEFAULT NULL;
 
 CREATE TABLE amin (
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -928,29 +928,29 @@ CREATE TABLE amin (
     CONSTRAINT F_ID_DONASI_AMIN_ODC FOREIGN KEY(id_donasi) REFERENCES donasi(id_donasi) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=INNODB;
 
-CREATE TABLE kwitansi (
-    id_kwitansi BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    waktu_cetak TIMESTAMP,
-    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    id_donasi BIGINT UNSIGNED,
-    id_pengesah SMALLINT UNSIGNED,
-    CONSTRAINT F_ID_DONASI_KWITANSI_ODR FOREIGN KEY(id_donasi) REFERENCES donasi(id_donasi) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT F_ID_PENGESAH_KWITANSI_ODR FOREIGN KEY(id_pengesah) REFERENCES pegawai(id_pegawai) ON DELETE RESTRICT ON UPDATE CASCADE
-)ENGINE=INNODB;
+-- CREATE TABLE kwitansi (
+--     id_kwitansi BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+--     waktu_cetak TIMESTAMP NULL,
+--     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     id_donasi BIGINT UNSIGNED,
+--     id_pengesah SMALLINT UNSIGNED,
+--     CONSTRAINT F_ID_DONASI_KWITANSI_ODR FOREIGN KEY(id_donasi) REFERENCES donasi(id_donasi) ON DELETE RESTRICT ON UPDATE CASCADE,
+--     CONSTRAINT F_ID_PENGESAH_KWITANSI_ODR FOREIGN KEY(id_pengesah) REFERENCES pegawai(id_pegawai) ON DELETE RESTRICT ON UPDATE CASCADE
+-- )ENGINE=INNODB;
 
-ALTER TABLE kwitansi AUTO_INCREMENT = 1001;
+-- ALTER TABLE kwitansi AUTO_INCREMENT = 1001;
 
-INSERT INTO kwitansi(create_at, id_donasi)
-SELECT waktu_bayar, id_donasi FROM donasi WHERE waktu_bayar IS NOT NULL ORDER BY waktu_bayar ASC, id_donasi ASC;
+-- INSERT INTO kwitansi(create_at, id_donasi)
+-- SELECT waktu_bayar, id_donasi FROM donasi WHERE waktu_bayar IS NOT NULL ORDER BY waktu_bayar ASC, id_donasi ASC;
 
 UPDATE kwitansi SET id_pengesah = (SELECT id_pegawai FROM pegawai WHERE email = 'maulinda.dinda98@gmail.com');
 
-DELIMITER $$
-CREATE TRIGGER DONASI_CHECK_INSERT
-AFTER INSERT ON donasi FOR EACH ROW
-    BEGIN
-    IF NEW.bayar = 1 AND NEW.waktu_bayar IS NOT NULL THEN
-        INSERT INTO kwitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,NEW.id_donasi);
-    END IF;
-    END$$
-DELIMITER ;
+-- DELIMITER $$
+-- CREATE TRIGGER DONASI_CHECK_INSERT
+-- AFTER INSERT ON donasi FOR EACH ROW
+--     BEGIN
+--     IF NEW.bayar = 1 AND NEW.waktu_bayar IS NOT NULL THEN
+--         INSERT INTO kwitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,NEW.id_donasi);
+--     END IF;
+--     END$$
+-- DELIMITER ;

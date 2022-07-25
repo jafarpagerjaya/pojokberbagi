@@ -50,7 +50,7 @@ $('#modalKwitansiDonasi').on('show.bs.modal', function(e) {
             modal.find('#nama-donatur').text(result.feedback.data.nama_donatur);
             modal.find('#samaran-donatur').text(result.feedback.data.samaran);
             modal.find('#email-donatur').text(result.feedback.data.email);
-            modal.find('#kotak-donatur').text(result.feedback.data.kontak);
+            modal.find('#kontak-donatur').text(result.feedback.data.kontak);
             modal.find('#nama-bantuan').text(result.feedback.data.nama_bantuan);
             modal.find('span#jumlah-donasi').text(result.feedback.data.jumlah_donasi);
             modal.find('span#jenis-cp').text(keteranganJenisChannelPayment(result.feedback.data.jenis));
