@@ -57,6 +57,24 @@ class DonasiModel extends HomeModel {
         return false;
     }
 
+    public function getResumeKwitansiDonasi($id_kwitansi) {
+        $this->db->query("SELECT b.nama nama_bantuan, k.id_kwitansi, FORMAT(d.jumlah_donasi,0,'id_ID') jumlah_donasi, gcp.path_gambar path_gambar_cp, cp.nama nama_cp, cp.jenis jenis_cp FROM kwitansi k JOIN donasi d USING(id_donasi) LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN gambar gcp ON(cp.id_gambar = gcp.id_gambar) JOIN bantuan b ON(d.id_bantuan = b.id_bantuan) WHERE k.id_kwitansi = ?", array('k.id_kwitansi' => $id_kwitansi));
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return $this->data;
+        }
+        return false;
+    }
+
+    public function getTimeLineDonationByIdKwitansi($id_kwitansi) {
+        $this->db->query("SELECT CONCAT(formatTanggal(d.create_at), DATE_FORMAT(d.create_at, ' %H:%i')) siap_donasi, CONCAT(formatTanggal(d.waktu_bayar), DATE_FORMAT(d.waktu_bayar, ' %H:%i')) waktu_bayar, CONCAT(formatTanggal(k.create_at), DATE_FORMAT(k.create_at, ' %H:%i')) kwitansi_diterbitkan, CONCAT(formatTanggal(k.waktu_cetak), DATE_FORMAT(k.waktu_cetak, ' %H:%i')) waktu_cetak FROM kwitansi k JOIN donasi d USING(id_donasi) WHERE k.id_kwitansi = ?", array('k.id_kwitansi' => $id_kwitansi));
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return $this->data;
+        }
+        return false;
+    }
+
     public function getDataTagihanDonasi($id_donasi) {
         $this->db->query('SELECT donasi.*, donatur.nama nama_donatur, donatur.email, channel_payment.jenis, 
         channel_payment.nama nama_cp, channel_payment.kode, channel_payment.nomor, channel_payment.atas_nama, gambar.path_gambar path_gambar_cp
