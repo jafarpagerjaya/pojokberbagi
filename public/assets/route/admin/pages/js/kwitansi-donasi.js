@@ -24,7 +24,7 @@ $('#modalKwitansiDonasi').on('show.bs.modal', function(e) {
         })
         .then(response => response.json())
         .then(function(result) {
-            console.log(result)
+            // console.log(result)
             if (result.error) {
                 $('.toast[data-toast="feedback"] .time-passed').text('Baru Saja');
                 $('.toast[data-toast="feedback"] .toast-body').html(data.feedback.message);
@@ -41,7 +41,6 @@ $('#modalKwitansiDonasi').on('show.bs.modal', function(e) {
             if (document.getElementById("canvas-qr").children[0] != null) {
                 document.getElementById("canvas-qr").children[0].remove();
             }
-            console.log(document.getElementById("canvas-qr").children)
             qrCode.append(document.getElementById("canvas-qr"));
 
             modal.find('#id-kwitansi').attr('data-id-kwitansi', result.feedback.data.id_kwitansi);

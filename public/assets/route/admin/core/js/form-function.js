@@ -14,17 +14,17 @@ function numberToPrice(angka, prefix = '', e) {
     var number_string = angka.toString().replace(/[^,\d]/g, ''),
         split = number_string.split(','),
         sisa = split[0].length % 3,
-        rupiah = split[0].substr(0, sisa),
+        formed = split[0].substr(0, sisa),
         ribuan = split[0].substr(sisa).match(/\d{3}/gi);
 
     // tambahkan titik jika yang di input sudah menjadi angka ribuan
     if (ribuan) {
         separator = sisa ? '.' : '';
-        rupiah += separator + ribuan.join('.');
+        formed += separator + ribuan.join('.');
     }
 
-    rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-    return e == undefined ? prefix == undefined ? rupiah : (rupiah ? prefix + rupiah : '') : [prefix == undefined ? rupiah : (rupiah ? prefix + rupiah : ''), sisa, ribuan, prefix];
+    formed = split[1] != undefined ? formed + ',' + split[1] : formed;
+    return e == undefined ? prefix == undefined ? formed : (formed ? prefix + formed : '') : [prefix == undefined ? formed : (formed ? prefix + formed : ''), sisa, ribuan, prefix];
 }
 
 function priceToNumber(v){

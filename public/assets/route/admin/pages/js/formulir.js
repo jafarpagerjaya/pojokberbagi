@@ -484,30 +484,203 @@ textarea.addEventListener('keyup', function () {
     charLeft.innerHTML = ('<span class="text-orange">'+ this.value.length +'</span>' + '/' +255);
 });
 
-let minDonasi = document.getElementById('input-min-donasi');
+let minDonasi = document.getElementById('input-min-donasi'),
+    oldValueMinDonasi;
 // restrict number only
 minDonasi.addEventListener('keypress', preventNonNumbersInInput);
-
-minDonasi.addEventListener('keyup', function () {
+minDonasi.addEventListener('keydown', function(e) {
+    let prefix = 'Rp. ';
+    if (e.code == "ArrowUp" || e.target.selectionStart == 0 && e.target.selectionStart != e.target.selectionEnd && e.code == "ArrowLeft" || e.code == "ArrowLeft" && e.target.selectionStart == prefix.length || e.code == "Home") {
+        e.target.selectionStart = prefix.length;
+        e.target.selectionEnd = prefix.length;
+        e.preventDefault();
+        return false;
+    }
+    if (e.code == "Delete" || e.code == "Backspace") {
+        oldValueMinDonasi = this.value;
+        if (e.target.selectionStart <= prefix.length && e.target.selectionStart == e.target.selectionEnd && e.code == "Backspace") {
+            e.target.selectionStart = prefix.length;
+            e.target.selectionEnd = prefix.length;
+            e.preventDefault();
+            return false;
+        }
+    }
+});
+minDonasi.addEventListener('keyup', function (e) {
     if (this.value < 1 && this.value.length > 0) {
         this.value = 1;
     }
-    minDonasi.value = numberToPrice(this.value, 'Rp. ');
+    let ceret = e.target.selectionStart,
+        numberTPArray = numberToPrice(this.value, 'Rp. ', e),
+        value = numberTPArray[0],
+        sisa = numberTPArray[1],
+        ribuan = numberTPArray[2],
+        prefix = numberTPArray[3];
+
+    this.value = value;
+
+    if (e.code.match('Digit')) {
+        if (ribuan != null) {
+            if ((sisa == 1 && ceret + sisa > value.length - 3) || (sisa == 1 && ceret != prefix.length + 1 && ceret != value.length - prefix.length)) {
+                ceret++;
+            }
+            e.target.selectionStart = ceret;
+            e.target.selectionEnd = ceret;
+        }
+    }
+
+    if (e.code == "Delete") {
+        if (ribuan != null) {
+            if (sisa == 0 && ceret != prefix.length && ceret != this.value.length && ceret != this.value.length - 1 || sisa == 0 && ceret >= this.value.length - 3) {
+                ceret --;
+            }
+            if (oldValueMinDonasi == this.value) {
+                console.log(sisa, ribuan, ceret)
+                if (sisa == 0) {
+                    ceret += 2;
+                } else if (sisa == 2) {
+                    ceret++;
+                } else {
+                    ceret++;
+                }
+                this.value = numberToPrice(removeByIndex(this.value, ceret), prefix);
+                if (sisa == 1) {
+                    ceret--;
+                }
+            }
+            e.target.selectionStart = ceret;
+            e.target.selectionEnd = ceret;
+        }
+    }
+
+    if (e.code == "Backspace") {
+        if (ceret <= prefix.length && ribuan == null || ribuan != null && sisa == 0 && ceret == prefix.length) {
+            e.target.selectionStart = ceret;
+            e.target.selectionEnd = ceret;
+        }
+        if (ribuan != null && ceret > prefix.length) {
+            if (sisa == 0 && oldValueMinDonasi != this.value) {
+                ceret--;
+            }
+            if (oldValueMinDonasi == this.value) {
+                this.value = numberToPrice(removeByIndex(this.value, --ceret), prefix);
+                if (sisa == 1 && ceret > prefix.length + 1) {
+                    ceret--;
+                }
+            }
+            e.target.selectionStart = ceret;
+            e.target.selectionEnd = ceret;
+        }
+    }
 });
 
 minDonasi.addEventListener('change', function (e) {
-    if (priceToNumber(e.target.value) < 1000 && this.value.length > 0) {
-        this.value = 1000;
+    if (priceToNumber(e.target.value) < 10000 && this.value.length > 0) {
+        this.value = 10000;
     }
     minDonasi.value = numberToPrice(this.value, 'Rp. ');
 });
 
-let nominalRab = document.getElementById('input-rab');
+minDonasi.addEventListener('click', function(e) {
+    let prefix = 'Rp. ';
+    if (this.value.length && e.target.selectionStart <= prefix.length) {
+        e.target.selectionStart = prefix.length;
+    }
+});
+
+let nominalRab = document.getElementById('input-rab'),
+    oldValueNominalRab;
 // restrict number only
 nominalRab.addEventListener('keypress', preventNonNumbersInInput);
+nominalRab.addEventListener('keydown', function(e) {
+    let prefix = 'Rp. ';
+    if (e.code == "ArrowUp" || e.target.selectionStart == 0 && e.target.selectionStart != e.target.selectionEnd && e.code == "ArrowLeft" || e.code == "ArrowLeft" && e.target.selectionStart == prefix.length || e.code == "Home") {
+        e.target.selectionStart = prefix.length;
+        e.target.selectionEnd = prefix.length;
+        e.preventDefault();
+        return false;
+    }
+    if (e.code == "Delete" || e.code == "Backspace") {
+        oldValueNominalRab = this.value;
+        if (e.target.selectionStart <= prefix.length && e.target.selectionStart == e.target.selectionEnd && e.code == "Backspace") {
+            e.target.selectionStart = prefix.length;
+            e.target.selectionEnd = prefix.length;
+            e.preventDefault();
+            return false;
+        }
+    }
+});
 
-nominalRab.addEventListener('keyup', function () {
-    nominalRab.value = numberToPrice(this.value, 'Rp. ');
+nominalRab.addEventListener('keyup', function (e) {
+    let ceret = e.target.selectionStart,
+        numberTPArray = numberToPrice(this.value, 'Rp. ', e),
+        value = numberTPArray[0],
+        sisa = numberTPArray[1],
+        ribuan = numberTPArray[2],
+        prefix = numberTPArray[3];
+
+    this.value = value;
+
+    if (e.code.match('Digit')) {
+        if (ribuan != null) {
+            if ((sisa == 1 && ceret + sisa > value.length - 3) || (sisa == 1 && ceret != prefix.length + 1 && ceret != value.length - prefix.length)) {
+                ceret++;
+            }
+            e.target.selectionStart = ceret;
+            e.target.selectionEnd = ceret;
+        }
+    }
+
+    if (e.code == "Delete") {
+        if (ribuan != null) {
+            if (sisa == 0 && ceret != prefix.length && ceret != this.value.length && ceret != this.value.length - 1 || sisa == 0 && ceret >= this.value.length - 3) {
+                ceret --;
+            }
+            if (oldValueNominalRab == this.value) {
+                console.log(sisa, ribuan, ceret)
+                if (sisa == 0) {
+                    ceret += 2;
+                } else if (sisa == 2) {
+                    ceret++;
+                } else {
+                    ceret++;
+                }
+                this.value = numberToPrice(removeByIndex(this.value, ceret), prefix);
+                if (sisa == 1) {
+                    ceret--;
+                }
+            }
+            e.target.selectionStart = ceret;
+            e.target.selectionEnd = ceret;
+        }
+    }
+
+    if (e.code == "Backspace") {
+        if (ceret <= prefix.length && ribuan == null || ribuan != null && sisa == 0 && ceret == prefix.length) {
+            e.target.selectionStart = ceret;
+            e.target.selectionEnd = ceret;
+        }
+        if (ribuan != null && ceret > prefix.length) {
+            if (sisa == 0 && oldValueNominalRab != this.value) {
+                ceret--;
+            }
+            if (oldValueNominalRab == this.value) {
+                this.value = numberToPrice(removeByIndex(this.value, --ceret), prefix);
+                if (sisa == 1 && ceret > prefix.length + 1) {
+                    ceret--;
+                }
+            }
+            e.target.selectionStart = ceret;
+            e.target.selectionEnd = ceret;
+        }
+    }
+});
+
+nominalRab.addEventListener('click', function(e) {
+    let prefix = 'Rp. ';
+    if (this.value.length && e.target.selectionStart <= prefix.length) {
+        e.target.selectionStart = prefix.length;
+    }
 });
 
 function handleMask(event, mask) {

@@ -590,15 +590,15 @@ let oldValue;
 inputJumlahDonasi.addEventListener('keypress', preventNonNumbersInInput);
 inputJumlahDonasi.addEventListener('keydown', function(e) {
     let prefix = 'Rp. ';
-    if (e.code == "ArrowUp") {
+    if (e.code == "ArrowUp" || e.target.selectionStart == 0 && e.target.selectionStart != e.target.selectionEnd && e.code == "ArrowLeft" || e.code == "ArrowLeft" && e.target.selectionStart == prefix.length || e.code == "Home") {
         e.target.selectionStart = prefix.length;
         e.target.selectionEnd = prefix.length;
         e.preventDefault();
         return false;
     }
-    if (e.code == "Delete" || e.code == "Backspace" || e.code == "ArrowLeft") {
+    if (e.code == "Delete" || e.code == "Backspace") {
         oldValue = this.value;
-        if (e.target.selectionStart <= prefix.length && e.target.selectionStart == e.target.selectionEnd || e.target.selectionStart == 0 && e.target.selectionStart != e.target.selectionEnd && e.code == "ArrowLeft") {
+        if (e.target.selectionStart <= prefix.length && e.target.selectionStart == e.target.selectionEnd && e.code == "Backspace") {
             e.target.selectionStart = prefix.length;
             e.target.selectionEnd = prefix.length;
             e.preventDefault();
@@ -606,6 +606,7 @@ inputJumlahDonasi.addEventListener('keydown', function(e) {
         }
     }
 });
+inputJumlahDonasi.value = numberToPrice(123456789,'Rp. ');
 inputJumlahDonasi.addEventListener('keyup', function (e) {
     let ceret = e.target.selectionStart,
         numberTPArray = numberToPrice(this.value, 'Rp. ', e),
@@ -628,14 +629,22 @@ inputJumlahDonasi.addEventListener('keyup', function (e) {
 
     if (e.code == "Delete") {
         if (ribuan != null) {
-            if ((sisa == 0 && ceret + sisa > value.length - 3) || (sisa == 0 && ceret != prefix.length + 1 && ceret != value.length - prefix.length)) {
-                ceret--;
+            if (sisa == 0 && ceret != prefix.length && ceret != this.value.length && ceret != this.value.length - 1 || sisa == 0 && ceret >= this.value.length - 3) {
+                ceret --;
             }
             if (oldValue == this.value) {
-                this.value = numberToPrice(removeByIndex(this.value, ceret+1), prefix);
-            }
-            if (ribuan.length == 1 && ceret <= prefix.length) {
-                ceret = prefix.length;
+                console.log(sisa, ribuan, ceret)
+                if (sisa == 0) {
+                    ceret += 2;
+                } else if (sisa == 2) {
+                    ceret++;
+                } else {
+                    ceret++;
+                }
+                this.value = numberToPrice(removeByIndex(this.value, ceret), prefix);
+                if (sisa == 1) {
+                    ceret--;
+                }
             }
             e.target.selectionStart = ceret;
             e.target.selectionEnd = ceret;
@@ -643,17 +652,19 @@ inputJumlahDonasi.addEventListener('keyup', function (e) {
     }
 
     if (e.code == "Backspace") {
-        if (ceret <= prefix.length && ribuan == null) {
+        if (ceret <= prefix.length && ribuan == null || ribuan != null && sisa == 0 && ceret == prefix.length) {
             e.target.selectionStart = ceret;
             e.target.selectionEnd = ceret;
         }
-        if (ribuan != null) {
-            if ((sisa == 0 && ceret + sisa > value.length - 3) || (sisa == 0 && ceret != prefix.length + 1 && ceret != value.length - prefix.length)) {
+        if (ribuan != null && ceret > prefix.length) {
+            if (sisa == 0 && oldValue != this.value) {
                 ceret--;
             }
             if (oldValue == this.value) {
-                this.value = numberToPrice(removeByIndex(this.value, ceret-1), prefix);
-                ceret--;
+                this.value = numberToPrice(removeByIndex(this.value, --ceret), prefix);
+                if (sisa == 1 && ceret > prefix.length + 1) {
+                    ceret--;
+                }
             }
             e.target.selectionStart = ceret;
             e.target.selectionEnd = ceret;
