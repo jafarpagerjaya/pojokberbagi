@@ -10,8 +10,8 @@ function preventNonNumbersInInput(event){
     }
 };
 
-function numberToPrice(angka, prefix) {
-    var number_string = angka.replace(/[^,\d]/g, '').toString(),
+function numberToPrice(angka, prefix = '', e) {
+    var number_string = angka.toString().replace(/[^,\d]/g, ''),
         split = number_string.split(','),
         sisa = split[0].length % 3,
         rupiah = split[0].substr(0, sisa),
@@ -24,7 +24,7 @@ function numberToPrice(angka, prefix) {
     }
 
     rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-    return prefix == undefined ? rupiah : (rupiah ? prefix + rupiah : '');
+    return e == undefined ? prefix == undefined ? rupiah : (rupiah ? prefix + rupiah : '') : [prefix == undefined ? rupiah : (rupiah ? prefix + rupiah : ''), sisa, ribuan, prefix];
 }
 
 function priceToNumber(v){
@@ -35,6 +35,10 @@ function priceToNumber(v){
 }
 
 function isNumber(n) { return /^[0-9.]+$/.test(n); }
+
+function removeByIndex(str,index) {
+    return str.slice(0,index) + str.slice(index+1);
+}
 
 function autoResize() { 
     this.style.height = 'auto'; 
