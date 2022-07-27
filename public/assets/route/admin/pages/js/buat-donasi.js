@@ -606,7 +606,6 @@ inputJumlahDonasi.addEventListener('keydown', function(e) {
         }
     }
 });
-inputJumlahDonasi.value = numberToPrice(123456789,'Rp. ');
 inputJumlahDonasi.addEventListener('keyup', function (e) {
     let ceret = e.target.selectionStart,
         numberTPArray = numberToPrice(this.value, 'Rp. ', e),
@@ -629,11 +628,10 @@ inputJumlahDonasi.addEventListener('keyup', function (e) {
 
     if (e.code == "Delete") {
         if (ribuan != null) {
-            if (sisa == 0 && ceret != prefix.length && ceret != this.value.length && ceret != this.value.length - 1 || sisa == 0 && ceret >= this.value.length - 3) {
+            if (sisa == 0 && ceret != prefix.length && ceret != this.value.length && ceret != this.value.length - 1 || sisa == 0 && ceret >= this.value.length - 3 && ceret > prefix.length) {
                 ceret --;
             }
             if (oldValue == this.value) {
-                console.log(sisa, ribuan, ceret)
                 if (sisa == 0) {
                     ceret += 2;
                 } else if (sisa == 2) {
