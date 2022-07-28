@@ -198,7 +198,7 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
         checkDoa.prop('checked', false)
     }
 
-    stopPassed($('.toast[data-toast="validasi-donasi"]').data('toast'));
+    stopPassed($('.toast[data-toast="donasi"]').data('toast'));
     $('.toast').toast("dispose");
 }).on('hidden.bs.modal', function() {
     if ($(this).find('#pesan-doa').length) {
@@ -213,12 +213,12 @@ verivikasiBtn.on('click', function (e) {
 
     if (dataVerivikasi.waktu_bayar == 'Invalid Date') {
         // tampilkan pesan waktu bayar wajib diisi
-        $('.toast[data-toast="validasi-donasi"] .time-passed').text('Baru Saja');
-        $('.toast[data-toast="validasi-donasi"] .toast-body').html('<b>Waktu bayar</b> donasi wajib diisi');
-        $('.toast[data-toast="validasi-donasi"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
-        $('.toast[data-toast="validasi-donasi"] .toast-header strong').text('Peringatan!');
-        $('.toast[data-toast="validasi-donasi"]').toast({autohide: false}).toast('show');
-        toastPassed(document.querySelector('.toast[data-toast="validasi-donasi"] .time-passed'));
+        $('.toast[data-toast="donasi"] .time-passed').text('Baru Saja');
+        $('.toast[data-toast="donasi"] .toast-body').html('<b>Waktu bayar</b> donasi wajib diisi');
+        $('.toast[data-toast="donasi"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
+        $('.toast[data-toast="donasi"] .toast-header strong').text('Peringatan!');
+        $('.toast[data-toast="donasi"]').toast({autohide: false}).toast('show');
+        toastPassed(document.querySelector('.toast[data-toast="donasi"] .time-passed'));
         e.preventDefault();
         return false;
     }
@@ -241,13 +241,13 @@ verivikasiBtn.on('click', function (e) {
     .then(response => response.json())
     .then(function(result) {
         if (result.error) {
-            $('.toast[data-toast="validasi-donasi"] .time-passed').text('Baru Saja');
-            $('.toast[data-toast="validasi-donasi"] .toast-body').html(data.feedback.message);
-            $('.toast[data-toast="validasi-donasi"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
-            $('.toast[data-toast="validasi-donasi"] .toast-header strong').text('Peringatan!');
+            $('.toast[data-toast="donasi"] .time-passed').text('Baru Saja');
+            $('.toast[data-toast="donasi"] .toast-body').html(data.feedback.message);
+            $('.toast[data-toast="donasi"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
+            $('.toast[data-toast="donasi"] .toast-header strong').text('Peringatan!');
             console.log('there is some error in server side');
-            $('.toast[data-toast="validasi-donasi"]').toast({autohide: false}).toast('show');
-            toastPassed(document.querySelector('.toast[data-toast="validasi-donasi"] .time-passed'));
+            $('.toast[data-toast="donasi"]').toast({autohide: false}).toast('show');
+            toastPassed(document.querySelector('.toast[data-toast="donasi"] .time-passed'));
             return false;
         }
 
@@ -275,11 +275,11 @@ verivikasiBtn.on('click', function (e) {
 
         modal.modal('hide');
 
-        $('.toast[data-toast="validasi-donasi"] .time-passed').text('Baru Saja');
-        $('.toast[data-toast="validasi-donasi"] .toast-body').html(result.feedback.message);
-        $('.toast[data-toast="validasi-donasi"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
-        $('.toast[data-toast="validasi-donasi"] .toast-header strong').text('Informasi');
-        $('.toast[data-toast="validasi-donasi"]').toast('show');
+        $('.toast[data-toast="donasi"] .time-passed').text('Baru Saja');
+        $('.toast[data-toast="donasi"] .toast-body').html(result.feedback.message);
+        $('.toast[data-toast="donasi"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
+        $('.toast[data-toast="donasi"] .toast-header strong').text('Informasi');
+        $('.toast[data-toast="donasi"]').toast('show');
     });
 });
 

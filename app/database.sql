@@ -393,6 +393,8 @@ INSERT INTO bantuan(nama,status,min_donasi,create_at,deskripsi,id_kategori,id_se
 ("SEDEKAH AL-QUR'AN UNTUK ORANG TUA",'D',20000,'2022-04-18','*Wakaf Al-Qur&#039;an atas nama orang tua* bisa menjadi bentuk ikhtiar kita untuk membahagiakan kedua orang tua, hadiah luar biasa yang insya Allah pahalanya akan terus mengalir serta menjadi syafaat untuk keduanya di hari akhir nanti.',4,'S');
 
 UPDATE bantuan SET action_at = create_at;
+-- INSERT bantuan yang sudah ada donasinya dan yang di buat oleh dinda
+INSERT INTO bantuan(nama, nama_penerima,status,prioritas,lama_penayangan,min_donasi,deskripsi,create_at,modified_at,action_at,id_sektor,id_kategori) VALUES('RAIH SURGA BERSAMA POJOK QURBAN','anak yatim, kaum dhuafa, dan mustahik','D',1,50,2750000,'Ayo gapai keberkahan Idul Adha dan hadirkan kebahagiaan dengan berikan qurban terbaikmu hingga ke pojok desa. &ldquo;Sesungguhnya Kami telah memberikan karunia sangat banyak kepadamu,&nbsp;maka sholatlah untuk Tuhanmu&nbsp;&nbsp;dan sembelihlah kurban.&rd','2022-05-25 16:06:10','2022-06-23 14:57:33','2022-05-25 16:06:10','S',3);
 
 CREATE TABLE kebutuhan_bantuan (
     jumlah INT UNSIGNED NOT NULL DEFAULT 1,
@@ -634,7 +636,7 @@ CREATE TABLE anggaran_pelaksanaan_donasi (
 )ENGINE=INNODB;
 
 INSERT INTO kebutuhan(nama) VALUES('RAB CSR BJB SEMBAKO'),
-('RAB GEBERR');
+('RAB GEBERR'),('RAB CSR KURBAN');
 INSERT INTO anggaran_pelaksanaan_donasi (id_donasi, id_pelaksanaan, id_kebutuhan, nominal_kebutuhan, nominal_penggunaan_donasi, saldo_kebutuhan, saldo_donasi, keterangan) VALUES
 (1,1,1,2312500000,2312500000,0,0,"TOTAL RAB"),
 (2,2,1,3125000000,3125000000,0,0,"TOTAL RAB"),
@@ -954,3 +956,14 @@ UPDATE kwitansi SET id_pengesah = (SELECT id_pegawai FROM pegawai WHERE email = 
 --     END IF;
 --     END$$
 -- DELIMITER ;
+
+-- CEK JIKA BELUM INSERT DONASI UNTUK BANTUAN KURBAN
+-- INSERT INTO donasi(alias,id_donatur,jumlah_donasi,bayar,waktu_bayar,create_at,modified_at,id_cp,id_bantuan) VALUES
+-- ((SELECT samaran FROM donatur WHERE email = 'csr@bjb.co.id'), (SELECT id_donatur FROM donatur WHERE email = 'csr@bjb.co.id'), 1185000000,1,'2022-07-08','2022-07-08','2022-07-08',(SELECT id_cp FROM channel_payment WHERE jenis = 'GI' AND nomor = '0001000080001'),(SELECT id_bantuan FROM bantuan WHERE UPPER(nama) = 'RAIH SURGA BERSAMA POJOK QURBAN'));
+
+-- INSERT INTO pelaksanaan(deskripsi,jumlah_pelaksanaan,total_anggaran,status,create_at) VALUES('Program Kurban BJB 2022', 43, 1185000000, 'S', '2022-07-09');
+-- INSERT INTO kebutuhan(nama) VALUES('RAB CSR KURBAN');
+-- INSERT INTO anggaran_pelaksanaan_donasi (id_donasi, id_pelaksanaan, id_kebutuhan, nominal_kebutuhan, nominal_penggunaan_donasi, saldo_kebutuhan, saldo_donasi, keterangan) VALUES
+-- ((SELECT id_donasi FROM donasi WHERE alias = (SELECT alias FROM donatur WHERE email = 'csr@bjb.co.id') AND waktu_bayar = '2022-07-08 00:00:00' AND jumlah_donasi = 1185000000),(SELECT id_pelaksanaan FROM pelaksanaan WHERE deskripsi = 'Program Kurban BJB 2022'),(SELECT id_kebutuhan FROM kebutuhan WHERE nama = 'RAB CSR KURBAN'),1185000000,1185000000,0,0,'TOTAL RAB');
+
+-- UPDATE bantuan SET tanggal_awal = create_at, tanggal_akhir = DATE_ADD(create_at, INTERVAL lama_penayangan DAY)  WHERE lama_penayangan IS NOT NULL

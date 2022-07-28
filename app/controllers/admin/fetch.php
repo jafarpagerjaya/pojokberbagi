@@ -1,6 +1,6 @@
 <?php 
 class FetchController extends Controller {
-    private $_result = array('error' => true);
+    private $_result = array('error' => true), $_auth;
     protected $path_gambar;
 
     public function __construct() {
@@ -807,15 +807,19 @@ class FetchController extends Controller {
     }
 
     private function kwitansiUpdate($decoded) {
+        $this->model('Auth');
+        $this->_auth = $this->model;
+        $this->_auth->getData('p.id_pegawai','pegawai p JOIN admin a USING(id_pegawai)',array('a.id_akun','=',$this->_auth->data()->id_akun));
+        $id_pegawai = Sanitize::escape2($this->_auth->data()->id_pegawai);
         $decoded = Sanitize::thisArray($decoded);
         $this->model('Donasi');
         $currentDate = new DateTime();
         $waktu_sekarang = $currentDate->format('Y-m-d H:i:s');
-        $this->model->update('kwitansi', array('waktu_cetak' => $waktu_sekarang), array('id_kwitansi','=',$decoded['id_kwitansi']));
+        $this->model->update('kwitansi', array('waktu_cetak' => $waktu_sekarang, 'id_pengesah' => $id_pegawai), array('id_kwitansi','=',$decoded['id_kwitansi']));
         if ($this->model->affected()) {
             $this->_result['error'] = false;
             $this->_result['feedback'] = array(
-                'message' => 'Kwitansi <span class="font-weight-bolder>#' . $decoded['id_kwitansi'] . '</span> dicetak <span class="font-weight-bold">' . $waktu_sekarang . '</span>'
+                'message' => 'Kwitansi <span class="font-weight-bolder">#' . $decoded['id_kwitansi'] . '</span> dicetak pada <span class="font-weight-bold">' . $waktu_sekarang . '</span>'
             );
         } else {
             $this->_result['feedback'] = array(
@@ -824,6 +828,10 @@ class FetchController extends Controller {
         }
 
         $this->result();
+
+        if (Session::exists('toast')) {
+            Session::delete('toast');
+        }
         return false;
     }
 

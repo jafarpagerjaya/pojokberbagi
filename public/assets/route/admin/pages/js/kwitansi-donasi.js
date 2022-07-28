@@ -63,6 +63,10 @@ $('#modalKwitansiDonasi').on('show.bs.modal', function(e) {
             });
         });
     }
+}).on('hidden.bs.modal', function(e) {
+    if ($('.toast[data-toast="donasi"] .toast-header .small-box').hasClass('bg-success')) {
+        $('.toast').toast('show');
+    }
 });
 
 $('#print-button').on('click', function (e) {
@@ -85,15 +89,17 @@ $('#print-button').on('click', function (e) {
     .then(response => response.json())
     .then(function(result) {
         if (result.error) {
-            $('.toast[data-toast="feedback"] .time-passed').text('Baru Saja');
-            $('.toast[data-toast="feedback"] .toast-body').html(data.feedback.message);
-            $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
-            $('.toast[data-toast="feedback"] .toast-header strong').text('Peringatan!');
+            $('.toast[data-toast="donasi"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
+            $('.toast[data-toast="donasi"] .toast-header strong').text('Peringatan!');
             console.log('there is some error in server side');
             $('.toast').toast('show');
         } else {
             window.print();
+            $('.toast[data-toast="donasi"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
+            $('.toast[data-toast="donasi"] .toast-header strong').text('Informasi');
         }
+        $('.toast[data-toast="donasi"] .time-passed').text('Baru Saja');
+        $('.toast[data-toast="donasi"] .toast-body').html(result.feedback.message);
         body.setAttribute('data-token', result.token);
         fetchTokenChannel.postMessage({
             token: body.getAttribute('data-token')

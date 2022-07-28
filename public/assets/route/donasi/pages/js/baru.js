@@ -55,18 +55,102 @@ let textarea = document.querySelector(".textarea");
 
 textarea.addEventListener('input', autoResize, false);
 
-let nominalDonasi = document.getElementById('floatingInputDonasi');
+let nominalDonasi = document.getElementById('floatingInputDonasi'),
+    oldValueNominalDonasi;
 
 nominalDonasi.addEventListener('keydown', function (e) {
     if (e.key == 0 && !this.value.length) {
         e.preventDefault();
+    }
+    let prefix = 'Rp. ';
+    if (e.code == "ArrowUp" || e.target.selectionStart == 0 && e.target.selectionStart != e.target.selectionEnd && e.code == "ArrowLeft" || e.code == "ArrowLeft" && e.target.selectionStart == prefix.length || e.code == "Home") {
+        e.target.selectionStart = prefix.length;
+        e.target.selectionEnd = prefix.length;
+        e.preventDefault();
+        return false;
+    }
+    if (e.code == "Delete" || e.code == "Backspace") {
+        oldValueNominalDonasi = this.value;
+        if (e.target.selectionStart <= prefix.length && e.target.selectionStart == e.target.selectionEnd && e.code == "Backspace") {
+            e.target.selectionStart = prefix.length;
+            e.target.selectionEnd = prefix.length;
+            e.preventDefault();
+            return false;
+        }
     }
 });
 
 nominalDonasi.addEventListener('keypress', preventNonNumbersInInput);
 
 nominalDonasi.addEventListener('keyup', function (e) {
-    this.value = formatTSparator(this.value, 'Rp. ');
+    let ceret = e.target.selectionStart,
+        numberTPArray = formatTSparator(this.value, 'Rp. ', e),
+        value = numberTPArray[0],
+        sisa = numberTPArray[1],
+        ribuan = numberTPArray[2],
+        prefix = numberTPArray[3];
+
+    this.value = value;
+
+    if (e.code.match('Digit')) {
+        if (ribuan != null) {
+            if ((sisa == 1 && ceret + sisa > value.length - 3) || (sisa == 1 && ceret != prefix.length + 1 && ceret != value.length - prefix.length)) {
+                ceret++;
+            }
+            e.target.selectionStart = ceret;
+            e.target.selectionEnd = ceret;
+        }
+    }
+
+    if (e.code == "Delete") {
+        if (ribuan != null) {
+            if (sisa == 0 && ceret != prefix.length && ceret != this.value.length && ceret != this.value.length - 1 || sisa == 0 && ceret >= this.value.length - 3 && ceret > prefix.length) {
+                ceret --;
+            }
+            if (oldValueNominalDonasi == this.value) {
+                if (sisa == 0) {
+                    ceret += 2;
+                } else if (sisa == 2) {
+                    ceret++;
+                } else {
+                    ceret++;
+                }
+                this.value = formatTSparator(removeByIndex(this.value, ceret), prefix);
+                if (sisa == 1) {
+                    ceret--;
+                }
+            }
+            e.target.selectionStart = ceret;
+            e.target.selectionEnd = ceret;
+        }
+    }
+
+    if (e.code == "Backspace") {
+        if (ceret <= prefix.length && ribuan == null || ribuan != null && sisa == 0 && ceret == prefix.length) {
+            e.target.selectionStart = ceret;
+            e.target.selectionEnd = ceret;
+        }
+        if (ribuan != null && ceret > prefix.length) {
+            if (sisa == 0 && oldValueNominalDonasi != this.value) {
+                ceret--;
+            }
+            if (oldValueNominalDonasi == this.value) {
+                this.value = formatTSparator(removeByIndex(this.value, --ceret), prefix);
+                if (sisa == 1 && ceret > prefix.length + 1) {
+                    ceret--;
+                }
+            }
+            e.target.selectionStart = ceret;
+            e.target.selectionEnd = ceret;
+        }
+    }
+});
+
+nominalDonasi.addEventListener('click', function(e) {
+    let prefix = 'Rp. ';
+    if (this.value.length && e.target.selectionStart <= prefix.length) {
+        e.target.selectionStart = prefix.length;
+    }
 });
 
 let min = 2000;
