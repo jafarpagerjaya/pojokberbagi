@@ -9,11 +9,11 @@ function responseUpdateCp(elements, response) {
     elCp.querySelector('img').setAttribute('alt', response.alt);
     
     if (response.data.error) {
-        feedback = response.data.server_feedback+' :(';
+        feedback = response.data.feedback+' :(';
         $('.toast .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
         $('.toast .toast-header strong').text('Peringatan!');
     } else {
-        feedback = response.data.server_feedback+' ke <span class="font-weight-bolder">'+response.typeDesc+' <span class="text-primary">'+response.alt+'</span></span> :)';
+        feedback = response.data.feedback+' ke <span class="font-weight-bolder">'+response.typeDesc+' <span class="text-primary">'+response.alt+'</span></span> :)';
         $('.toast .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
         $('.toast .toast-header strong').text('Pemberitahuan');
     }
@@ -284,7 +284,7 @@ $('#modalKonfirmasiGantiMetodePembayaran [type="submit"]').on('click', function(
     .then(function(data) {
         if (data.error == false) {
             // Success
-            message = data.server_feedback+' ke <span class="font-weight-bolder">'+dataImgCP.typeDesc+' <span class="text-primary">'+dataImgCP.alt+'</span></span> :)';
+            message = data.feedback+' ke <span class="font-weight-bolder">'+dataImgCP.typeDesc+' <span class="text-primary">'+dataImgCP.alt+'</span></span> :)';
 
             dataImgCP.elements.querySelector('[data-jenis-cp]').setAttribute('data-jenis-cp', dataImgCP.type);
             dataImgCP.elements.querySelector('[data-jenis-cp]').innerText = dataImgCP.typeDesc;
@@ -292,7 +292,7 @@ $('#modalKonfirmasiGantiMetodePembayaran [type="submit"]').on('click', function(
             dataImgCP.elements.querySelector('img').setAttribute('alt', dataImgCP.alt);
             dataImgCP.elements.parentElement.parentElement.querySelector('a~.dropdown-menu>a').setAttribute('data-cp', id_cp);
         } else {
-            message = data.server_feedback+' :(';
+            message = data.feedback+' :(';
             console.log('there is some error in server side');
         }
 

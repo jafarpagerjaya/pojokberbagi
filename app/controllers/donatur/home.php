@@ -46,11 +46,24 @@ class HomeController extends Controller {
                 'href' => '/assets/main/css/inputGroup.css'
 			),
             array(
+                'href' => '/assets/main/css/kwitansi.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/admin-style.css'
+			),
+            array(
                 'href' => '/assets/route/donatur/core/css/donatur.css'
 			)
         );
 
         $this->script_action = array (
+            array(
+                'src' => 'https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js',
+                'source' => 'trushworty'
+            ),
+            array(
+                'src' => '/assets/route/donatur/core/js/kwitansi.js'
+            ),
             array(
                 'src' => '/assets/route/donatur/core/js/donatur.js'
             )

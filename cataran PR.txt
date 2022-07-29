@@ -1,7 +1,6 @@
 URGEN MINGGU INI
 10. Jika Waktu akhir bantuan ada dan sudah lewat dan status bantuan sudah selesai DAN ingin reenable (buka ulang) maka arahkan ke halaman update ulang bantuan dengan update status bantuan menjadi D
 11. Cek dan atur min ukuran dimensi upload medium img ke width 726px
-17. Tambah print kwitansi via CR dan donatur
 18. Tambah kelola hak akses pegawai
 19. NF3 tabel donasi untuk kwitansi
 20. Sesuaikan seluruh query yang berhubungan dengan bayar dan waktu bayar akibat NF3 tabel donasi

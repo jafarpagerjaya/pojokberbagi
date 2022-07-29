@@ -14,7 +14,7 @@
     content: '#';
 }
 
-#kwitansi img {
+#kwitansi img:not(.signature) {
     width: 60px;
 }
 
@@ -35,6 +35,10 @@
 
 #kwitansi #signature {
     background-image: url("/assets/images/brand/patern-pojok-berbagi-horizontal.png");
+}
+
+#kwitansi #alias::after {
+    content: 'Pojok Berbagi';
 }
 
 @media print {

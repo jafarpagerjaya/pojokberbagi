@@ -35,6 +35,12 @@ class TagihanController extends Controller {
                 'href' => '/assets/main/css/inputGroup.css'
 			),
             array(
+                'href' => '/assets/main/css/kwitansi.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/admin-style.css'
+			),
+            array(
                 'href' => '/assets/route/donatur/core/css/donatur.css'
 			)
         );

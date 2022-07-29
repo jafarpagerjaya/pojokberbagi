@@ -35,9 +35,11 @@ CREATE TABLE pegawai (
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     id_atasan SMALLINT UNSIGNED,
     id_jabatan TINYINT UNSIGNED,
+    id_tanda_tangan INT UNSIGNED,
     CONSTRAINT NU_EMAIL_PEGAWAI UNIQUE(email),
     CONSTRAINT U_KONTAK_PEGAWAI UNIQUE(kontak),
-    CONSTRAINT F_ID_JABATAN_PEGAWAI_ODN FOREIGN KEY(id_jabatan) REFERENCES jabatan(id_jabatan) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT F_ID_JABATAN_PEGAWAI_ODN FOREIGN KEY(id_jabatan) REFERENCES jabatan(id_jabatan) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_ID_TANDA_TANGAN_PEGAWAI_ODN FOREIGN KEY(id_tanda_tangan) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE
 )ENGINE=INNODB;
 
 INSERT INTO pegawai(nama,jenis_kelamin,tanggal_lahir,email,kontak,alamat) VALUES
@@ -967,3 +969,8 @@ UPDATE kwitansi SET id_pengesah = (SELECT id_pegawai FROM pegawai WHERE email = 
 -- ((SELECT id_donasi FROM donasi WHERE alias = (SELECT alias FROM donatur WHERE email = 'csr@bjb.co.id') AND waktu_bayar = '2022-07-08 00:00:00' AND jumlah_donasi = 1185000000),(SELECT id_pelaksanaan FROM pelaksanaan WHERE deskripsi = 'Program Kurban BJB 2022'),(SELECT id_kebutuhan FROM kebutuhan WHERE nama = 'RAB CSR KURBAN'),1185000000,1185000000,0,0,'TOTAL RAB');
 
 -- UPDATE bantuan SET tanggal_awal = create_at, tanggal_akhir = DATE_ADD(create_at, INTERVAL lama_penayangan DAY)  WHERE lama_penayangan IS NOT NULL
+
+ALTER TABLE pegawai ADD COLUMN id_tanda_tangan INT UNSIGNED;
+INSERT INTO gambar(nama,path_gambar,label) VALUES('jafar-signature','/uploads/images/signature/jafar-signature.png','signature');
+UPDATE pegawai SET id_tanda_tangan = (SELECT id_gambar FROM gambar WHERE label = 'signature' AND nama = 'jafar-signature') WHERE email = 'jafarpager@gmail.com';
+ALTER TABLE pegawai ADD CONSTRAINT F_ID_TANDA_TANGAN_PEGAWAI_ODN FOREIGN KEY(id_tanda_tangan) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE;
