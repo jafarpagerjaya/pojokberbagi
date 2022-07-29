@@ -970,7 +970,7 @@ UPDATE kwitansi SET id_pengesah = (SELECT id_pegawai FROM pegawai WHERE email = 
 
 -- UPDATE bantuan SET tanggal_awal = create_at, tanggal_akhir = DATE_ADD(create_at, INTERVAL lama_penayangan DAY)  WHERE lama_penayangan IS NOT NULL
 
-ALTER TABLE pegawai ADD COLUMN id_tanda_tangan INT UNSIGNED;
-INSERT INTO gambar(nama,path_gambar,label) VALUES('jafar-signature','/uploads/images/signature/jafar-signature.png','signature');
-UPDATE pegawai SET id_tanda_tangan = (SELECT id_gambar FROM gambar WHERE label = 'signature' AND nama = 'jafar-signature') WHERE email = 'jafarpager@gmail.com';
-ALTER TABLE pegawai ADD CONSTRAINT F_ID_TANDA_TANGAN_PEGAWAI_ODN FOREIGN KEY(id_tanda_tangan) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE;
+-- ALTER TABLE pegawai ADD COLUMN id_tanda_tangan INT UNSIGNED;
+-- INSERT INTO gambar(nama,path_gambar,label) VALUES('jafar-signature','/uploads/images/signature/jafar-signature.png','signature');
+-- UPDATE pegawai SET id_tanda_tangan = (SELECT id_gambar FROM gambar WHERE label = 'signature' AND nama = 'jafar-signature') WHERE email = 'jafarpager@gmail.com';
+-- ALTER TABLE pegawai ADD CONSTRAINT F_ID_TANDA_TANGAN_PEGAWAI_ODN FOREIGN KEY(id_tanda_tangan) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE;

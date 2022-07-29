@@ -59,6 +59,7 @@
 
     body {
         -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
         /* margin: 0px 2em !important; */
     }
 
