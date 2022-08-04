@@ -156,19 +156,26 @@
                             </td>
                         </tr>
                         <?php }} else {
-                            Ui::tableIsNull(5,'Donasi');
+                            Ui::tableIsNull(6,'Donasi & Tagihanku');
                         } ?>
                     </tbody>
                 </table>
             </div>
             <div class="card-footer py-4">
-                <nav aria-label="...">
-                    <ul class="pagination justify-content-end mb-0">
-                        <?= 
-                            Ui::pageing($this->data['halaman'], $this->data['record'], 10); 
-                        ?>
-                    </ul>
-                </nav>
+                <div class="row align-items-center">
+                    <div class="col">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Cari.." name="search"
+                                autocomplete="off" <?=(isset($data['search']) ? 'value="' . $data['search'] . '"' : '' )
+                                ?>>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <ul class="pagination pagination-sm justify-content-end mb-0"
+                            data-pages="<?= $this->data['pages']; ?>">
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

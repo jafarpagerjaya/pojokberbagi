@@ -40,6 +40,9 @@ class HomeController extends Controller {
     public function index() {
         $this->rel_action = array(
             array(
+                'href' => '/assets/main/css/pagination.css'
+			),
+            array(
                 'href' => '/assets/main/css/utility.css'
 			),
             array(
@@ -57,6 +60,9 @@ class HomeController extends Controller {
         );
 
         $this->script_action = array (
+            array(
+                'src' => '/assets/main/js/pagination.js'
+			),
             array(
                 'src' => 'https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js',
                 'source' => 'trushworty'
@@ -77,11 +83,12 @@ class HomeController extends Controller {
             'jumlah_info_bantuan' => $this->model->getJumlahDonasiTersalurkan($this->data['donatur']->id_donatur)->jumlah_info_bantuan
         );
 
+        // Tabel data D n T
         $this->_donasi = $this->model('Donasi');
         $data_donasi = $this->_donasi->dataDonasi($this->_id_donatur);
-        $this->data['donasi_donatur'] = $data_donasi;
-        $this->data['halaman'] = 1;
-        $this->data['record'] = $this->_donasi->affected();
+        $this->data['donasi_donatur'] = $this->_donasi->data()['data'];
+        $this->data['limit'] = $this->model->getLimit();
+        $this->data['pages'] = ceil($this->_donasi->data()['total_record'] / $this->data['limit']);
 
         $this->_donasi->query("SELECT cp.id_cp, cp.nama nama_cp, cp.jenis jenis_cp, g.path_gambar  FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
         $this->data['channel_payment'] = $this->model->readAllData();

@@ -5,7 +5,7 @@ class HomeModel {
               $cookieName;
 
     private $_halaman = array(1,10),
-            $_offset = 10,
+            $_offset = 0,
             $_limit = 10,
             $_order = 1,
             $_orderBy = 1,

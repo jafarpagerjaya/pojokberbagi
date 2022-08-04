@@ -570,7 +570,17 @@ class FetchController extends Controller {
             return false;
         }
 
-        $waktu_bayar = new DateTime(date('Y-m-d', strtotime($decoded['waktu_bayar'])));
+        $dateDiff = strtotime($decoded['waktu_bayar']) - strtotime(date("Y-m-d"));
+        $difference = floor($dateDiff/(60*60*24));
+        // waktu_bayar = hari ini
+        if ($difference == '0') {
+            $decoded['waktu_bayar'] = date('Y-m-d H:i:s');
+        } else {
+            $create_at = new DateTime(date('Y-m-d H:i:s', strtotime($decoded['waktu_bayar'])));
+            $decoded['create_at'] = $create_at->format('Y-m-d H:i:s');
+        }
+
+        $waktu_bayar = new DateTime(date('Y-m-d H:i:s', strtotime($decoded['waktu_bayar'])));
         $decoded['waktu_bayar'] = $waktu_bayar->format('Y-m-d H:i:s');
         $decoded['jumlah_donasi'] = Sanitize::toInt2($decoded['jumlah_donasi']);
         $this->model('Donasi');

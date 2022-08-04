@@ -534,6 +534,7 @@ $('.datepicker').datepicker({
         this.closest('.form-group.is-invalid').removeAttribute('data-label-after');
         this.closest('.form-group.is-invalid').classList.remove('is-invalid');
     }
+    iNames.waktu_bayar = $(this).datepicker( 'getDate' );
 }).on('show', function(e) {
     let allowedPicker = [],
         untilPicker = undefined,
@@ -870,7 +871,7 @@ submitBtn.addEventListener('click', function() {
                     }
                 }
             }
-            if (name.value.length && name?.tagName.toLowerCase() !== 'textarea' && name.getAttribute('name') != 'alias') {
+            if (name.value.length && name?.tagName.toLowerCase() !== 'textarea' && name.getAttribute('name') != 'alias' && name.getAttribute('name') != 'waktu_bayar') {
                 iNames[name.getAttribute('name')] = name.value;
             }
         }
