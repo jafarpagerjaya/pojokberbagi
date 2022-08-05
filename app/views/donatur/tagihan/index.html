@@ -8,10 +8,12 @@
                             <h3 class="mb-0">Tagihan Ku</h3>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" id="unpaid-tab" data-toggle="tab" href="#unpaid" role="tab" aria-controls="unpaid" aria-selected="true">UNPAID</a>
+                            <a class="nav-link active" id="unpaid-tab" data-toggle="tab" href="#unpaid" role="tab"
+                                aria-controls="unpaid" aria-selected="true">UNPAID</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="paid-tab" data-toggle="tab" href="#paid" role="tab" aria-controls="paid" aria-selected="false">PAID</a>
+                            <a class="nav-link" id="paid-tab" data-toggle="tab" href="#paid" role="tab"
+                                aria-controls="paid" aria-selected="false">PAID</a>
                         </li>
                     </ul>
                 </div>
@@ -23,38 +25,53 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col" class="sort" data-sort="budget">Nama Bantuan</th>
-                                    <th scope="col" class="sort" data-sort="nominal_donasi">Nominal</th>
-                                    <th scope="col" class="sort" data-sort="status">Status Bayar</th>
+                                    <th scope="col" class="sort text-right" data-sort="nominal_donasi">Nominal</th>
                                     <th scope="col" class="sort" data-sort="id_cp">Metode Pembayaran Dipilih</th>
+                                    <th scope="col" class="sort" data-sort="status">Status Bayar</th>
                                     <th scope="col" class="sort" data-sort="create_at">Dibuat Pada</th>
                                     <th scope="col"></th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody<?= (isset($this->data['tagihan_unpaid']['limit']) ? ' data-limit="'.
+                                $this->data['tagihan_unpaid']['limit'] .'"' : '') ?>>
                                 <?php if (!is_null($data['tagihan_unpaid']['data'])) {
                                     foreach($data['tagihan_unpaid']['data'] as $data_unpaid) { ?>
                                 <tr>
                                     <th scope="row">
                                         <div class="media align-items-center">
-                                            <a target="_blank" href="<?= '/bantuan/detil/'. $data_unpaid->id_bantuan; ?>" data-nama-bantuan="<?= $data_unpaid->nama; ?>">
-                                                <span class="name mb-0 text-sm"><?= $data_unpaid->nama; ?></span>
+                                            <a target="_blank"
+                                                href="<?= '/bantuan/detil/'. $data_unpaid->id_bantuan; ?>"
+                                                data-nama-bantuan="<?= $data_unpaid->nama_bantuan; ?>">
+                                                <span class="name mb-0 text-sm font-weight-bolder">
+                                                    <?= $data_unpaid->nama_bantuan; ?>
+                                                </span>
                                             </a>
                                         </div>
                                     </th>
                                     <td class="text-right">
-                                        <b data-id-donasi="<?= $data_unpaid->id_donasi; ?>"><?= Output::tSparator($data_unpaid->jumlah_donasi); ?></b>
+                                        <b data-id-donasi="<?= $data_unpaid->id_donasi; ?>">
+                                            <?= $data_unpaid->jumlah_donasi; ?>
+                                        </b>
+                                    </td>
+                                    <td>
+                                        <div class="channel-payment d-flex justify-content-between align-items-center">
+                                            <p class="text-info m-0" data-jenis-cp="<?= $data_unpaid->jenis_cp; ?>">
+                                                <?= Utility::keteranganJenisChannelPayment($data_unpaid->jenis_cp); ?>
+                                            </p>
+                                            <img class="img-fluid" src="<?= $data_unpaid->path_gambar_cp; ?>"
+                                                alt="<?= $data_unpaid->nama_cp; ?>">
+                                        </div>
                                     </td>
                                     <td>
                                         <?= '<span class="badge badge-pill ' . ($data_unpaid->bayar != 1 ? 'badge-warning">Belum Bayar' : 'badge-success">Sudah Bayar') . '</span>'; ?>
                                     </td>
                                     <td>
-                                        <div class="channel-payment d-flex justify-content-center align-items-end">
-                                            <p class="text-info m-0" data-jenis-cp="<?= $data_unpaid->jenis; ?>"><?= Utility::keteranganJenisChannelPayment($data_unpaid->jenis); ?></p>
-                                            <img class="img-fluid" src="<?= $data_unpaid->path_gambar; ?>" alt="<?= $data_unpaid->nama_cp; ?>">
+                                        <a class="font-weight-bolder" href="javascript:;">
+                                            <?= $data_unpaid->id_donasi; ?>
+                                        </a>
+                                        <div class="font-weight-bold text-black-50">
+                                            <?= $data_unpaid->create_at; ?>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <?= $data_unpaid->create_at; ?>
                                     </td>
                                     <td class="text-right">
                                         <div class="dropdown">
@@ -65,7 +82,10 @@
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                                                 <!-- <a class="dropdown-item font-weight-600 text-green" href="<?= '/donatur/donasi/data/'. $data_unpaid->id_donasi ?>">Lihat Lebih Detil</a> -->
                                                 <?php if ($data_unpaid->bayar != 1 && isset($data_unpaid->id_cp)) { ?>
-                                                    <a href="javascript:;"class="dropdown-item text-warning font-weight-bolder" role="button" data-toggle="modal" data-target="#modalGantiMetodePembayaran" data-cp="<?= $data_unpaid->id_cp; ?>">Ganti Metode Bayar</a>
+                                                <a href="javascript:;"
+                                                    class="dropdown-item text-warning font-weight-bolder" role="button"
+                                                    data-toggle="modal" data-target="#modalGantiMetodePembayaran"
+                                                    data-cp="<?= $data_unpaid->id_cp; ?>">Ganti Metode Bayar</a>
                                                 <?php } ?>
                                             </div>
                                         </div>
@@ -74,17 +94,25 @@
                                 <?php }} else {
                                     Ui::tableIsNull(5,'Tagihan (UNPAID)');
                                 } ?>
-                            </tbody>
+                                </tbody>
                         </table>
+
                     </div>
                     <div class="card-footer py-4">
-                        <nav aria-label="...">
-                            <ul class="pagination justify-content-end mb-0">
-                                <?= 
-                                    Ui::pageing($this->data['tagihan_unpaid']['halaman'], $this->data['tagihan_unpaid']['record'], 10); 
-                                ?>
-                            </ul>
-                        </nav>
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Cari.." name="search"
+                                        autocomplete="off" <?=(isset($data['tagihan_unpaid']['search']) ? 'value="' .
+                                        $data['tagihan_unpaid']['search'] . '"' : '' ) ?>>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <ul class="pagination pagination-sm justify-content-end mb-0"
+                                    data-pages="<?= $this->data['tagihan_unpaid']['pages']; ?>" data-tagihan="unpaid">
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="paid" role="tabpanel" aria-labelledby="paid-tab">
@@ -93,85 +121,111 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col" class="sort" data-sort="budget">Nama Bantuan</th>
-                                    <th scope="col" class="sort" data-sort="jumlah_donasi">Nominal</th>
+                                    <th scope="col" class="sort text-right" data-sort="jumlah_donasi">Nominal</th>
                                     <th scope="col" class="sort" data-sort="status">Status Bayar</th>
                                     <th scope="col" class="sort" data-sort="id_cp">Metode Pembayaran Terpilih</th>
                                     <th scope="col" class="sort" data-sort="create_at">Dibuat Pada</th>
                                     <th scope="col"></th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody<?= (isset($this->data['tagihan_paid']['limit']) ? ' data-limit="'.
+                                $this->data['tagihan_paid']['limit'] .'"' : '') ?>>
                                 <?php if (!is_null($data['tagihan_paid']['data'])) {
                                     foreach($data['tagihan_paid']['data'] as $data_paid) { ?>
                                 <tr>
                                     <th scope="row">
                                         <div class="media align-items-center">
                                             <a href="#">
-                                                <span class="name mb-0 text-sm font-weight-bolder"><?= $data_paid->nama; ?></span>
+                                                <span class="name mb-0 text-sm font-weight-bolder">
+                                                    <?= $data_paid->nama_bantuan; ?>
+                                                </span>
                                             </a>
                                         </div>
                                     </th>
                                     <td class="text-right">
-                                        <b><?= Output::tSparator($data_paid->jumlah_donasi); ?></b>
+                                        <b>
+                                            <?= $data_paid->jumlah_donasi; ?>
+                                        </b>
                                     </td>
                                     <td>
-                                        <div class="badge badge-success text-black-50 font-weight-bolder px-2">Sudah Bayar</div>
-                                        <div class="text-black-50 font-weight-bold ml-2"><?= $data_paid->waktu_bayar; ?></div>
-                                    </td>
-                                    <td>
-                                        <?= '<div class="channel-payment d-flex justify-content-center align-items-end">
-                                            <p class="text-info m-0">'. Utility::keteranganJenisChannelPayment($data_paid->jenis) .'</p>
-                                            <img class="img-fluid" src="'. $data_paid->path_gambar .'" alt="'. $data_paid->nama_cp .'">
+                                        <?= '<div class="channel-payment d-flex justify-content-between align-items-center">
+                                            <p class="text-info m-0">'. Utility::keteranganJenisChannelPayment($data_paid->jenis_cp) .'</p>
+                                            <img class="img-fluid" src="'. $data_paid->path_gambar_cp .'" alt="'. $data_paid->nama_cp .'">
                                         </div>'; 
                                     ?>
                                     </td>
                                     <td>
-                                        <a class="font-weight-bolder" href="javascript:;"><?= $data_paid->id_donasi; ?></a>
-                                        <div class="font-weight-bold text-black-50"><?= $data_paid->create_at; ?></div>
+                                        <div class="badge badge-success text-black-50 font-weight-bolder px-2">Sudah
+                                            Bayar</div>
+                                        <div class="text-black-50 font-weight-bold ml-2">
+                                            <?= $data_paid->waktu_bayar; ?>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a class="font-weight-bolder" href="javascript:;">
+                                            <?= $data_paid->id_donasi; ?>
+                                        </a>
+                                        <div class="font-weight-bold text-black-50">
+                                            <?= $data_paid->create_at; ?>
+                                        </div>
                                     </td>
                                     <td class="text-right">
                                         <!-- Ini nanti dihilangkan setelah fitur halaman detil donasi dibuat -->
-                                        <?php if ($data_paid->bayar != 1) { ?>
                                         <div class="dropdown">
                                             <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
                                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                                <a class="dropdown-item" href="/donatur/donasi/data/<?= $data_paid->id_donasi; ?>">Lihat Data</a>
+                                                <?php if ($data_paid->bayar == 1) { ?>
+                                                <!-- <a class="dropdown-item"
+                                                    href="/donatur/donasi/data/<?= $data_paid->id_donasi; ?>">Lihat
+                                                    Data</a> -->
+                                                <a class="dropdown-item" data-id="<?= $data_paid->id_donasi ?>"
+                                                    href="javascript():;" data-toggle="modal"
+                                                    data-target="#modalKwitansiDonasi">Kwitansi</a>
+                                                <?php } ?>
                                             </div>
                                         </div>
-                                        <?php } ?>
                                     </td>
                                 </tr>
                                 <?php }} else {
                                     Ui::tableIsNull(5,'Tagihan (PAID)');
                                 } ?>
-                            </tbody>
+                                </tbody>
                         </table>
                     </div>
                     <div class="card-footer py-4">
-                        <nav aria-label="...">
-                            <ul class="pagination justify-content-end mb-0">
-                                <?= 
-                                    Ui::pageing($this->data['tagihan_paid']['halaman'], $this->data['tagihan_paid']['record'], 10); 
-                                ?>
-                            </ul>
-                        </nav>
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Cari.." name="search"
+                                        autocomplete="off" <?=(isset($data['tagihan_paid']['search']) ? 'value="' .
+                                        $data['tagihan_paid']['search'] . '"' : '' ) ?>>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <ul class="pagination pagination-sm justify-content-end mb-0"
+                                    data-pages="<?= $this->data['tagihan_paid']['pages']; ?>" data-tagihan="paid">
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
+
         </div>
     </div>
 </div>
 <!-- Modal -->
-<div class="modal fade in" id="modalGantiMetodePembayaran" tabindex="-1" role="dialog" aria-labelledby="modalGantiMetodePembayaranLabel" aria-hidden="true">
+<div class="modal fade in" id="modalGantiMetodePembayaran" tabindex="-1" role="dialog"
+    aria-labelledby="modalGantiMetodePembayaranLabel" aria-hidden="true">
     <div class="modal-dialog fullscreen d-block" role="document">
         <div class="modal-content justify-content-center align-items-center scaleIn">
             <div class="container p-0 py-md-3 py-lg-5 px-lg-3">
                 <div class="modal-header px-3 p-md-4 d-flex align-items-center">
-                    <h5 class="modal-title" id="modalGantiMetodePembayaranLabel">Ganti Metode Pembayaran <a target="_blank" class="text-orange">Nama Bantuan</a></h5>
+                    <h5 class="modal-title" id="modalGantiMetodePembayaranLabel">Ganti Metode Pembayaran <a
+                            target="_blank" class="text-orange">Nama Bantuan</a></h5>
                     <button type="button fs-5" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -187,17 +241,23 @@
                                     if (!is_null($data['channel_payment'])) {
                                         foreach($data['channel_payment'] as $data_cp) {
                                         ?>
-                                        <div class="item p-3 d-flex flex-column justify-content-center align-items-center border rounded border-3">
-                                            <div class="inputGroup">
-                                                <input id="radio2" value="<?= $data_cp->id_cp; ?>" name="id_cp" type="radio" />
-                                                <label for="radio2"><?= $data_cp->nama_cp; ?></label>
-                                            </div>
-                                            <div class="overflow-hidden d-flex justify-content-center align-items-center h-100">
-                                                <img src="<?= $data_cp->path_gambar; ?>" alt="<?= $data_cp->nama_cp; ?>" class="img-fluid" data-jenis-cp="<?= $data_cp->jenis_cp; ?>">
-                                            </div>
-                                            <h6 class="m-0 text-center"><?= $data_cp->nama_cp; ?></h6>
-                                        </div>
-                                        <?php
+                                <div
+                                    class="item p-3 d-flex flex-column justify-content-center align-items-center border rounded border-3">
+                                    <div class="inputGroup">
+                                        <input id="radio2" value="<?= $data_cp->id_cp; ?>" name="id_cp" type="radio" />
+                                        <label for="radio2">
+                                            <?= $data_cp->nama_cp; ?>
+                                        </label>
+                                    </div>
+                                    <div class="overflow-hidden d-flex justify-content-center align-items-center h-100">
+                                        <img src="<?= $data_cp->path_gambar_cp; ?>" alt="<?= $data_cp->nama_cp; ?>"
+                                            class="img-fluid" data-jenis-cp="<?= $data_cp->jenis_cp; ?>">
+                                    </div>
+                                    <h6 class="m-0 text-center">
+                                        <?= $data_cp->nama_cp; ?>
+                                    </h6>
+                                </div>
+                                <?php
                                         }
                                     }
                                 ?>
@@ -205,10 +265,15 @@
                         </div>
                         <div class="col-12 col-md-5 px-0 order-first order-md-1">
                             <div class="position-sticky">
-                                <p class="bg-lighter p-3 rounded">Metode pembayaran terpilih sebelumnya adalah <b class="text-warning"><span class="jenis-cp">Jenis_CP</span> - <span class="nama-cp">Nama_CP</span></b>, silahkan pilih salah satu metode pembayaran yang tersedia dan konfirmasi perubahan tersebut.</p>
+                                <p class="bg-lighter p-3 rounded">Metode pembayaran terpilih sebelumnya adalah <b
+                                        class="text-warning"><span class="jenis-cp">Jenis_CP</span> - <span
+                                            class="nama-cp">Nama_CP</span></b>, silahkan pilih salah satu metode
+                                    pembayaran yang tersedia dan konfirmasi perubahan tersebut.</p>
                                 <div class="d-flex flex-column align-items-end buttons mt-md-5" id="sticky-on-mob">
                                     <button type="button" class="btn btn-link m-0" data-dismiss="modal">Batal</button>
-                                    <button type="button" class="btn btn-primary ml-auto m-0 w-100 w-425-auto disabled" data-toggle="modal" data-target="#modalKonfirmasiGantiMetodePembayaran">Simpan Perubahan Metode Bayar</button>
+                                    <button type="button" class="btn btn-primary ml-auto m-0 w-100 w-425-auto disabled"
+                                        data-toggle="modal" data-target="#modalKonfirmasiGantiMetodePembayaran">Simpan
+                                        Perubahan Metode Bayar</button>
                                 </div>
                             </div>
                         </div>
@@ -218,14 +283,16 @@
         </div>
     </div>
 </div>
-<div class="modal fade in" tabindex="-2" id="modalKonfirmasiGantiMetodePembayaran" role="dialog" aria-labelledby="modalKonfirmasiGantiMetodePembayaranLabel" aria-hidden="true">
+<div class="modal fade in" tabindex="-2" id="modalKonfirmasiGantiMetodePembayaran" role="dialog"
+    aria-labelledby="modalKonfirmasiGantiMetodePembayaranLabel" aria-hidden="true">
     <div class="modal-dialog modal-danger modal-dialog-centered fullscreen">
         <div class="modal-content bg-gradient-danger d-flex justify-content-center">
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-12 col-md-8 col-lg-6">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modalKonfirmasiGantiMetodePembayaranLabel">Konfirmasi Perubahan</h5>
+                            <h5 class="modal-title" id="modalKonfirmasiGantiMetodePembayaranLabel">Konfirmasi Perubahan
+                            </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -234,11 +301,17 @@
                             <div class="py-3 text-center">
                                 <i class="ni ni-bell-55 ni-3x"></i>
                                 <h4 class="heading mt-4">Anda harus baca ini!</h4>
-                                <p class="font-weight-lighter">Apakah anda yakin mengubah metode pembayaran donasi <a target="_blank" class="font-weight-bolder text-underline badge badge-primary p-2" id="nama-bantuan">nama_bantuan</a> menjadi <span class="jenis-cp font-weight-bolder"></span> - <span class="nama-cp font-weight-bolder"></span>?</p>
+                                <p class="font-weight-lighter">Apakah anda yakin mengubah metode pembayaran donasi <a
+                                        target="_blank"
+                                        class="font-weight-bolder text-underline badge badge-primary p-2"
+                                        id="nama-bantuan">nama_bantuan</a> menjadi <span
+                                        class="jenis-cp font-weight-bolder"></span> - <span
+                                        class="nama-cp font-weight-bolder"></span>?</p>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-link text-white mr-auto" data-dismiss="modal">Tidak</button>
+                            <button type="button" class="btn btn-link text-white mr-auto"
+                                data-dismiss="modal">Tidak</button>
                             <!-- <a type="button" class="btn btn-secondary font-weight-bolder" href="<?= '/donatur/donasi/formulir/'. $data_donasi->id_donasi; ?>">Ya</a> -->
                             <button type="submit" class="btn btn-secondary font-weight-bolder">Ya</button>
                         </div>
@@ -248,10 +321,172 @@
         </div>
     </div>
 </div>
+<div class="modal in bg-white" id="modalKwitansiDonasi" tabindex="-1" role="dialog"
+    aria-labelledby="modalKwitansiDonasi-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container">
+                <div class="row align-items-center" id="kwitansi">
+                    <div class="col-12">
+                        <div class="card bg-secondary border border-secondary rounded-box shadow-lg"
+                            id="kwitansi-section">
+                            <div
+                                class="border-0 card-header bg-transparent justify-content-between d-flex align-items-center">
+                                <h1 class="display-4 mb-0 text-orange font-weight-bolder">Kwitansi Donasi</h1>
+                                <div class="item">
+                                    <img src="/assets/images/brand/pojok-berbagi-transparent.png" alt="Pojok Berbagi"
+                                        class="img-fluid">
+                                </div>
+                            </div>
+                            <div class="card-body d-flex flex-column gap-y-4">
+                                <div class="box rounded-box bg-orange text-white" id="kwitansi-note">
+                                    <div class="px-2">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <b>Nomor Kwitansi
+                                                    <div class="text-white-50" id="id-kwitansi">1000</div>
+                                                    <small class="text-white">
+                                                        Dibuat <span id="create-kwitansi-at">CKA</span>
+                                                    </small>
+                                                </b>
+                                            </div>
+                                            <div class="col-6 text-right">
+                                                <b>
+                                                    Donatur
+                                                    <div class="font-weight-bolder">
+                                                        <span id="nama-donatur">ND</span> (<span
+                                                            id="samaran-donatur">Hamba
+                                                            Allah</span>)
+                                                    </div>
+                                                </b>
+                                                <small class="gap-x-2 text-white-50">
+                                                    <span id="kontak-donatur">08213213214</span>
+                                                    <span id="email-donatur">donatur@donatur.id</span>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="row">
+                                            <div class="col-6 font-weight-bold">Donasi</div>
+                                            <div class="col-6 font-weight-bold text-right">Jumlah
+                                                Donasi</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 font-weight-bolder">
+                                                <span id="nama-bantuan">Judul Bantuanku dan Bantuanmu Sungguh
+                                                    Keren</span>
+                                            </div>
+                                            <div class="col-6 font-weight-bolder text-right">Rp. <span
+                                                    id="jumlah-donasi">10.000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="box rounded-box border" style="background-color: #88898a08;">
+                                            <b>Payment Method</b>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div>
+                                                        <span id="jenis-cp">jenis_cp</span>
+                                                        <div class="text-black-50 small" id="nomor-cp">
+                                                            nomor_cp
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-auto align-items-end d-flex">
+                                                    <img src="" alt="Gambar Channel Payment" id="img-cp">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row" style="height: 100%;">
+                                            <div
+                                                class="col d-flex align-items-center justify-content-between flex-column">
+                                                <div id="signature">
+                                                    <img src="" alt="" class="img-fluid signature">
+                                                </div>
+                                                <div id="pengesah">
+                                                    <p id="nama-pengesah" class="mb-0 text-capitalize"></p>
+                                                    <h4 class="mb-0 gap-x-1 d-flex align-items-end" id="alias">
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="col d-flex align-items-center justify-content-end"
+                                                id="canvas-qr">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer border-start border-lighter" style="border-top-style: dotted;">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div id="qs" class="text-center">
+                                            <i>"Sesungguhnya orang-orang yang bersedekah baik laki-laki maupun
+                                                perempuan dan
+                                                meminjamkan kepada Allah pinjaman yang baik, niscaya akan
+                                                dilipat-gandakan
+                                                pembayarannya oleh Allah kepada mereka, dan bagi mereka pahala yang
+                                                banyak."</i>
+                                            <b class="d-inline-block">QS. Al-Hadid:18</b>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-secondary border-start border-lighter rounded-box"
+                                style="border-top-style: dotted;">
+                                <div class="row">
+                                    <div class="col-4 d-flex gap-x-4 align-items-center">
+                                        <div class="item">
+                                            <img src="/assets/images/brand/pojok-berbagi-transparent.png"
+                                                alt="Pojok Berbagi">
+                                        </div>
+                                        <div class="item row">
+                                            <div class="col-12"><b>Kontak</b></div>
+                                            <div class="col-12">cr@pojokberbagi.id</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-8 text-right small">
+                                        <div>Jl. Kuningan Raya No. 86</div>
+                                        <div>Antapani, Kota Bandung</div>
+                                        <div class="font-weight-bolder"><i class="fab fa-whatsapp"></i>
+                                            0812-1333-1113</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 no-print">
+                        <div class="card p-4 border border-secondary rounded-box">
+                            <div class="row justify-content-end">
+                                <div class="col-auto">
+                                    <button class="btn btn-link text-black-50 font-weight-bolder"
+                                        data-dismiss="modal">Tutup</button>
+                                </div>
+                                <div class="col-auto">
+                                    <button id="print-button" class="btn btn-outline-orange">Cetak
+                                        Kwitansi</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Akhir Modal -->
 <!-- Toast -->
-<div aria-live="polite" aria-atomic="true" class="position-fixed d-flex justify-content-end flex-column align-items-end">
-    <div class="toast w-100 fade bg-white" role="alert" aria-live="assertive" aria-atomic="true" data-delay="10000">
+<div aria-live="polite" aria-atomic="true"
+    class="position-fixed d-flex justify-content-end flex-column align-items-end">
+    <div class="toast w-100 fade bg-white" role="alert" aria-live="assertive" aria-atomic="true" data-delay="10000"
+        data-toast="donatur">
         <div class="toast-header d-flex gap-x-2 justify-content-center align-items-center">
             <div class="small-box rounded bg-danger p-2 ailgn-items-center"></div>
             <strong class="mr-auto"></strong>

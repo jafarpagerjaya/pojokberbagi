@@ -8,15 +8,20 @@ p {
 
 .table .channel-payment {
     gap: .5rem;
-}
-
-.table .channel-payment>p {
-    font-size: 0.8rem;
-    line-height: 1.2;
+    flex-direction: row-reverse;
 }
 
 .table .channel-payment>img {
     max-width: 50px;
+    margin: 0;
+}
+
+.table .channel-payment>p {
+    font-size: 0.825rem !important;
+}
+
+.table .channel-payment>img[alt*="Bank"] {
+    margin-bottom: .8em;
 }
 
 .modal .modal-body>.row {

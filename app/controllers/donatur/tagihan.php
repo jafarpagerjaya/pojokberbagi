@@ -17,6 +17,13 @@ class TagihanController extends Controller {
 			)
         );
 
+        $this->script_controller = array(
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/pojok-berbagi-script.js'
+			)
+        );
+
         $this->data['akun'] = $this->_auth->data();
 
         $this->model("Donatur");
@@ -28,6 +35,9 @@ class TagihanController extends Controller {
 
     public function index() {
         $this->rel_action = array(
+            array(
+                'href' => '/assets/main/css/pagination.css'
+			),
             array(
                 'href' => '/assets/main/css/utility.css'
 			),
@@ -47,31 +57,50 @@ class TagihanController extends Controller {
 
         $this->script_action = array (
             array(
+                'src' => '/assets/route/admin/core/js/form-function.js'
+			),
+            array(
+                'src' => '/assets/main/js/pagination.js'
+			),
+            array(
+                'src' => 'https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js',
+                'source' => 'trushworty'
+            ),
+            array(
+                'src' => '/assets/route/donatur/core/js/kwitansi.js'
+            ),
+            array(
                 'src' => '/assets/route/donatur/core/js/donatur.js'
+            ),
+            array(
+                'src' => '/assets/route/donatur/pages/js/tagihan.js'
             )
-            // array(
-                //         'href' => '/assets/route/donatur/pages/css/tagihan.css'
-                //     )
         );
 
         $this->_donasi = $this->model('Donasi');
-        $dataTagihanUnpaid = $this->_donasi->dataTagihan($this->data['donatur']->id_donatur, '0');
-        $dataTagihanUnpaidRecord = $this->_donasi->countRecordTagihan($this->data['donatur']->id_donatur, '0')->jumlah_record;
+        $this->_donasi->dataTagihan($this->data['donatur']->id_donatur, '0');
+        $dataTagihanUnpaid = $this->_donasi->data();
+        // $dataTagihanUnpaidRecord = $this->_donasi->countRecordTagihan($this->data['donatur']->id_donatur, '0')->jumlah_record;
         $this->data['tagihan_unpaid'] = array(
             'halaman' => 1,
-            'data' => $dataTagihanUnpaid,
-            'record' => $dataTagihanUnpaidRecord
+            'data' => $dataTagihanUnpaid['data'],
+            'record' => $dataTagihanUnpaid['total_record'],
+            'limit' => $this->model->getLimit(),
+            'pages' => ceil($dataTagihanUnpaid['total_record'] / $this->model->getLimit())
         );
 
         $dataTagihanPaid = $this->_donasi->dataTagihan($this->data['donatur']->id_donatur, '1');
-        $dataTagihanPaidRecord = $this->_donasi->countRecordTagihan($this->data['donatur']->id_donatur, '0')->jumlah_record;
+        $dataTagihanPaid = $this->_donasi->data();
+        // $dataTagihanPaidRecord = $this->_donasi->countRecordTagihan($this->data['donatur']->id_donatur, '1')->jumlah_record;
         $this->data['tagihan_paid'] = array(
             'halaman' => 1,
-            'data' => $dataTagihanPaid,
-            'record' => $dataTagihanPaidRecord
+            'data' => $dataTagihanPaid['data'],
+            'record' => $dataTagihanPaid['total_record'],
+            'limit' => $this->model->getLimit(),
+            'pages' => ceil($dataTagihanPaid['total_record'] / $this->model->getLimit())
         );
 
-        $this->_donasi->query("SELECT cp.id_cp, cp.nama nama_cp, cp.jenis jenis_cp, g.path_gambar  FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
+        $this->_donasi->query("SELECT cp.id_cp, cp.nama nama_cp, cp.jenis jenis_cp, g.path_gambar path_gambar_cp  FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
         $this->data['channel_payment'] = $this->model->readAllData();
 
         // Token for fetch

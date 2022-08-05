@@ -1,7 +1,6 @@
 const origin = window.location.origin;
 let id_donasi_kwitansi;
 
-console.log()
 $('#modalKwitansiDonasi').on('show.bs.modal', function(e) {
     const id_donasi = e.relatedTarget.getAttribute('data-id'), 
           modal = $(this);

@@ -218,7 +218,7 @@ class FetchController extends Controller {
                 break;
 
                 case 'list':
-                    // bantuan Params
+                    // list Params
                 break;
                 
                 default:

@@ -71,7 +71,7 @@ class FetchController extends Controller {
         if (isset($params[1])) {
             switch ($params[1]) {
                 case 'list':
-                    // bantuan Params
+                    // list Params
                 break;
 
                 case 'kategori':

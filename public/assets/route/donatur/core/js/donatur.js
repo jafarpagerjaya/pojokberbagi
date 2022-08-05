@@ -286,11 +286,18 @@ $('#modalKonfirmasiGantiMetodePembayaran [type="submit"]').on('click', function(
             // Success
             message = data.feedback+' ke <span class="font-weight-bolder">'+dataImgCP.typeDesc+' <span class="text-primary">'+dataImgCP.alt+'</span></span> :)';
 
-            dataImgCP.elements.querySelector('[data-jenis-cp]').setAttribute('data-jenis-cp', dataImgCP.type);
-            dataImgCP.elements.querySelector('[data-jenis-cp]').innerText = dataImgCP.typeDesc;
-            dataImgCP.elements.querySelector('img').setAttribute('src', dataImgCP.src);
-            dataImgCP.elements.querySelector('img').setAttribute('alt', dataImgCP.alt);
-            dataImgCP.elements.parentElement.parentElement.querySelector('a~.dropdown-menu>a').setAttribute('data-cp', id_cp);
+            let elCP = dataImgCP.elements;
+
+            elCP.querySelector('[data-jenis-cp]').setAttribute('data-jenis-cp', dataImgCP.type);
+            elCP.querySelector('[data-jenis-cp]').innerText = dataImgCP.typeDesc;
+            elCP.querySelector('img').setAttribute('src', dataImgCP.src);
+            elCP.querySelector('img').setAttribute('alt', dataImgCP.alt);
+            elCP.parentElement.parentElement.querySelector('a~.dropdown-menu>a').setAttribute('data-cp', id_cp);
+            elCP.closest('tr').classList.add('highlight');
+
+            setTimeout(() => {
+                elCP.closest('tr').classList.remove('highlight');
+            }, 3100);
         } else {
             message = data.feedback+' :(';
             console.log('there is some error in server side');

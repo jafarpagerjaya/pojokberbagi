@@ -1,21 +1,3 @@
-const counterTarget = document.querySelectorAll('.counter-card'),
-      counterSpeed = 2000;
-
-counterUpSup(counterTarget, counterSpeed);
-
-let client = JSON.parse(atob(decodeURIComponent(getCookie('client-pojokberbagi'))));
-
-if (client) {
-    if (client.auth) {
-        authChannelSignin.auth = client.auth;
-        authChannelSignin['sender'] = window.location.pathname;
-        authChannel.postMessage({
-            action: "signin",
-            rule: authChannelSignin
-        });
-    }
-}
-
 let jumlah_halaman = 0,
     delayTimer;
 
@@ -40,7 +22,7 @@ let fetchData = function(url, data, root) {
         .then(response => response.json())
         .then(function(result) {
             let sentData = data;
-            console.log(result)
+            // console.log(result)
             if (result.error == false) {
                 let data = result.feedback.data;
 
@@ -105,7 +87,7 @@ let fetchData = function(url, data, root) {
                         }
                     }
                 } else {
-                    const tr0 = '<tr><td colspan="5">Data donasi & tagihan tidak ditemukan...</td></tr>';
+                    const tr0 = '<tr><td colspan="6">Data tagihan tidak ditemukan...</td></tr>';
                     root.find('tbody').append(tr0);
                 }
 
@@ -116,7 +98,7 @@ let fetchData = function(url, data, root) {
                 // Failed
                 let tagihan_type = url.split('/').at(-1);
                 $('.toast[data-toast="donatur"] .time-passed').text('Baru Saja');
-                $('.toast[data-toast="donatur"] .toast-body').html(result.feedback.message + ' <spam class="font-weight-bolder">'+ tagihan_type +'</span>');
+                $('.toast[data-toast="donatur"] .toast-body').html(result.feedback.message + ' <spam class="font-weight-bolder">' + tagihan_type + '</span>');
                 $('.toast[data-toast="donatur"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
                 $('.toast[data-toast="donatur"] .toast-header strong').text('Peringatan!');
                 console.log('there is some error in server side');
@@ -132,10 +114,11 @@ let fetchData = function(url, data, root) {
     };
 
 $('.pagination').on('click', '.page-link:not(.disabled)[data-id!="?"]:not(.prev):not(.next)', function(e) {
-    const root = $(this).parents('.card');
-    let page = $(this).data('id'),
+    let root = $(this).closest('.tab-pane.active.show'),
+        page = $(this).data('id'),
         limit = root.find('tbody').data('limit'),
-        token = document.querySelector('body').getAttribute('data-token');
+        token = document.querySelector('body').getAttribute('data-token'),
+        tagihan_type = $(this).closest('.pagination').data('tagihan');
             
     let data = {
         'token': token,
@@ -149,7 +132,7 @@ $('.pagination').on('click', '.page-link:not(.disabled)[data-id!="?"]:not(.prev)
         data.search = search.val();
     }
     
-    fetchData('/donatur/fetch/read/donasi-tagihan', data, root);
+    fetchData('/donatur/fetch/read/tagihan-type/' + tagihan_type, data, root);
 
     e.preventDefault();
 });
@@ -166,10 +149,11 @@ $('input[name="search"]').on('keyup', function() {
     }
     clearTimeout(delayTimer);
     delayTimer = setTimeout(() => {
-        const root = $(this).parents('.card');
-        let page = root.find('.pagination .page-link.active').data('id'),
+        let root = $(this).closest('.tab-pane.active.show'),
+            page = root.find('.pagination .page-link.active').data('id'),
             limit = root.find('tbody').data('limit'),
-            token = document.querySelector('body').getAttribute('data-token');
+            token = document.querySelector('body').getAttribute('data-token'),
+            tagihan_type = root.find('.pagination').data('tagihan');
 
         let data = {
             'token': token,
@@ -181,6 +165,6 @@ $('input[name="search"]').on('keyup', function() {
             data.search = sValue;
         }
 
-        fetchData('/donatur/fetch/read/donasi-tagihan', data, root);
+        fetchData('/donatur/fetch/read/tagihan-type/' + tagihan_type, data, root);
     }, 1000);
 });

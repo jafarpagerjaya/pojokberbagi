@@ -91,45 +91,50 @@
                     <thead class="thead-light">
                         <tr>
                             <th scope="col" class="sort" data-sort="budget">Nama Bantuan</th>
-                            <th scope="col" class="sort" data-sort="nominal_donasi">Nominal</th>
-                            <th scope="col" class="sort" data-sort="status">Status</th>
+                            <th scope="col" class="sort text-right" data-sort="nominal_donasi">Nominal</th>
                             <th scope="col" class="sort" data-sort="id_cp">Metode Pembayaran Dipilih</th>
+                            <th scope="col" class="sort" data-sort="status">Status</th>
                             <th scope="col" class="sort" data-sort="create_at">Dibuat Pada</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody<?= (isset($this->data['limit']) ? ' data-limit="'. $this->data['limit'] .'"' : '') ?>>
                         <?php if (!is_null($data['donasi_donatur'])) {
                             foreach($data['donasi_donatur'] as $data_donasi) { ?>
                         <tr>
                             <th scope="row">
                                 <div class="media align-items-center">
                                     <a target="_blank" href="<?= '/bantuan/detil/'. $data_donasi->id_bantuan; ?>"
-                                        data-nama-bantuan="<?= $data_donasi->nama; ?>">
-                                        <span class="name mb-0 text-sm">
-                                            <?= $data_donasi->nama; ?>
+                                        data-nama-bantuan="<?= $data_donasi->nama_bantuan; ?>">
+                                        <span class="name mb-0 text-sm font-weight-bolder">
+                                            <?= $data_donasi->nama_bantuan; ?>
                                         </span>
                                     </a>
                                 </div>
                             </th>
                             <td class="text-right">
                                 <b data-id-donasi="<?= $data_donasi->id_donasi; ?>">
-                                    <?= Output::tSparator($data_donasi->jumlah_donasi); ?>
+                                    <?= $data_donasi->jumlah_donasi; ?>
                                 </b>
+                            </td>
+                            <td>
+                                <?= '<div class="channel-payment d-flex justify-content-between align-items-center">
+                                        <p class="text-info m-0" data-jenis-cp="' . $data_donasi->jenis_cp . '">'. Utility::keteranganJenisChannelPayment($data_donasi->jenis_cp) .'</p>
+                                        <img class="img-fluid" src="'. $data_donasi->path_gambar_cp .'" alt="'. $data_donasi->nama_cp .'"' . ($data_donasi->jenis_cp == "TN" ? ' style="width: 42px;"' : '') . '>
+                                    </div>';
+                                ?>
                             </td>
                             <td>
                                 <?= '<span class="badge badge-pill ' . ($data_donasi->bayar != 1 ? 'badge-warning">Belum Bayar' : 'badge-success">Sudah Bayar') . '</span>'; ?>
                                 <?= (!empty($data_donasi->waktu_bayar) ? '<div class="ml-2">' . $data_donasi->waktu_bayar . '</div>' :  ''); ?>
                             </td>
                             <td>
-                                <?= '<div class="channel-payment d-flex justify-content-center align-items-end">
-                                        <p class="text-info m-0" data-jenis-cp="' . $data_donasi->jenis . '">'. Utility::keteranganJenisChannelPayment($data_donasi->jenis) .'</p>
-                                        <img class="img-fluid" src="'. $data_donasi->path_gambar .'" alt="'. $data_donasi->nama_cp .'"' . ($data_donasi->jenis == "TN" ? ' style="width: 42px;"' : '') . '>
-                                    </div>';
-                                ?>
-                            </td>
-                            <td>
-                                <?= $data_donasi->create_at; ?>
+                                <a class="font-weight-bolder" href="javascript:;">
+                                    <?= $data_donasi->id_donasi; ?>
+                                </a>
+                                <div class="font-weight-bold text-black-50">
+                                    <?= $data_donasi->create_at; ?>
+                                </div>
                             </td>
                             <td class="text-right">
                                 <!-- Ini nanti dihilangkan setelah fitur halaman detil donasi dibuat -->
@@ -158,7 +163,7 @@
                         <?php }} else {
                             Ui::tableIsNull(6,'Donasi & Tagihanku');
                         } ?>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
             <div class="card-footer py-4">
@@ -213,7 +218,7 @@
                                         </label>
                                     </div>
                                     <div class="overflow-hidden d-flex justify-content-center align-items-center h-100">
-                                        <img src="<?= $data_cp->path_gambar; ?>" alt="<?= $data_cp->nama_cp; ?>"
+                                        <img src="<?= $data_cp->path_gambar_cp; ?>" alt="<?= $data_cp->nama_cp; ?>"
                                             class="img-fluid" data-jenis-cp="<?= $data_cp->jenis_cp; ?>">
                                     </div>
                                     <h6 class="m-0">

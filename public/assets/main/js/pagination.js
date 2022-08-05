@@ -286,11 +286,13 @@ let controlPaginationButton = function (state, rootPagi, p, lAP) {
     }
 };
 
-controlPaginationButton(0, rootPagi, rootPagi.data('pages'));
+rootPagi.each((i, el) => {
+    controlPaginationButton(0, $(el), el.dataset.pages);
+});
 
 $('.pagination').on('click', '.page-link:not(.next):not(.prev):not(.disabled)', function () {
     $(this).addClass('active').siblings().removeClass('active');
-    controlPaginationButton.call( $(this), 1, rootPagi, rootPagi[0].dataset.pages);
+    controlPaginationButton.call( $(this), 1, $(this).closest('.pagination'), $(this).closest('.pagination')[0].dataset.pages);
 });
 
 $('.pagination').on('click', '.page-link.next:not(.disabled)', function () {

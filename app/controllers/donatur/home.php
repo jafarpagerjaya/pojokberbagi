@@ -61,6 +61,9 @@ class HomeController extends Controller {
 
         $this->script_action = array (
             array(
+                'src' => '/assets/route/admin/core/js/form-function.js'
+			),
+            array(
                 'src' => '/assets/main/js/pagination.js'
 			),
             array(
@@ -85,12 +88,12 @@ class HomeController extends Controller {
 
         // Tabel data D n T
         $this->_donasi = $this->model('Donasi');
-        $data_donasi = $this->_donasi->dataDonasi($this->_id_donatur);
+        $this->_donasi->dataDonasi($this->_id_donatur);
         $this->data['donasi_donatur'] = $this->_donasi->data()['data'];
         $this->data['limit'] = $this->model->getLimit();
         $this->data['pages'] = ceil($this->_donasi->data()['total_record'] / $this->data['limit']);
 
-        $this->_donasi->query("SELECT cp.id_cp, cp.nama nama_cp, cp.jenis jenis_cp, g.path_gambar  FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
+        $this->_donasi->query("SELECT cp.id_cp, cp.nama nama_cp, cp.jenis jenis_cp, g.path_gambar path_gambar_cp  FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
         $this->data['channel_payment'] = $this->model->readAllData();
 
         // TToken for fetch
