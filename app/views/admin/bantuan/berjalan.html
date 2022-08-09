@@ -59,17 +59,17 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="rupiah">Rp. <?= number_format($data_bantuan->total_donasi,0,',','.'); ?></span>
+                                <span class="rupiah">Rp. <?= (is_null($data_bantuan->total_donasi) ? '0' : number_format($data_bantuan->total_donasi,0,',','.')) ?></span>
                             </td>
                             <td>
-                                <span class="rupiah">Rp. <?= number_format($data_bantuan->saldo_donasi,0,',','.'); ?></span>
+                                <span class="rupiah">Rp. <?= (is_null($data_bantuan->saldo_donasi) ? '0' : number_format($data_bantuan->saldo_donasi,0,',','.')) ?></span>
                             </td>
                             <td>
                                 <span class="badge badge-dot mr-4">
                                     <?php if ($data_bantuan->blokir == 1) {
                                         $class = 'bg-danger'; $status = 'Diblok';
                                     } else {
-                                        $class = 'bg-success'; $status = 'Aktif';
+                                        $class = 'bg-success'; $status = 'Normal';
                                     } ?>
                                     <i class="<?= $class; ?>"></i>
                                     <span class="status"><?= $status; ?></span>

@@ -207,7 +207,7 @@ class BantuanModel extends HomeModel {
         LEFT JOIN pelaksanaan p
         ON(apd.id_pelaksanaan = p.id_pelaksanaan)
         WHERE b.status = ?
-        GROUP BY b.id_bantuan ORDER BY b.create_at DESC LIMIT {$this->getOffset()}";
+        GROUP BY b.id_bantuan ORDER BY b.create_at DESC LIMIT {$this->getLimit()}";
         $data = $this->db->query($sql, array($nama_kategori, $status_bantuan));
         if ($data->count()) {
             $this->data = $data->results();
