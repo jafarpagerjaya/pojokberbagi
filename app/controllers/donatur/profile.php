@@ -1,6 +1,23 @@
 <?php
 class ProfileController extends Controller {
     public function __construct() {
+        $this->rel_controller = array(
+            array(
+                'href' => '/assets/pojok-berbagi-style.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/admin-style.css'
+            )
+        );
+
+        $this->script_controller = array(
+            array(
+                'src' => '/assets/pojok-berbagi-script.js'
+            ),
+            array(
+                'src' => '/assets/route/admin/core/js/admin-script.js'
+            )
+        );
 		$this->title = 'Profile';
 
         $this->_auth = $this->model("Auth");
@@ -44,9 +61,6 @@ class ProfileController extends Controller {
         }
 
         $this->rel_action = array(
-            array(
-                'href' => '/assets/route/admin/core/css/admin-style.css'
-            ),
             array(
                 'href' => '/assets/route/admin/core/css/form-element.css'
             )

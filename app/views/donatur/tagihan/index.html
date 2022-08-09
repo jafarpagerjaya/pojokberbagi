@@ -3,15 +3,13 @@
         <div class="card">
             <div class="card-header bg-transparent">
                 <div class="nav-wrapper">
-                    <ul class="nav nav-pills" id="tabs-icons-text" role="tablist">
+                    <ul class="nav nav-pills justify-content-between" id="tabs-icons-text" role="tablist">
                         <li class="nav-item align-items-center d-flex mr-4">
                             <h3 class="mb-0">Tagihan Ku</h3>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item d-flex gap-x-3">
                             <a class="nav-link active" id="unpaid-tab" data-toggle="tab" href="#unpaid" role="tab"
                                 aria-controls="unpaid" aria-selected="true">UNPAID</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" id="paid-tab" data-toggle="tab" href="#paid" role="tab"
                                 aria-controls="paid" aria-selected="false">PAID</a>
                         </li>
@@ -99,16 +97,16 @@
 
                     </div>
                     <div class="card-footer py-4">
-                        <div class="row align-items-center">
-                            <div class="col">
+                        <div class="row align-items-center gap-y-3">
+                            <div class="col-12 col-md-6">
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="Cari.." name="search"
                                         autocomplete="off" <?=(isset($data['tagihan_unpaid']['search']) ? 'value="' .
                                         $data['tagihan_unpaid']['search'] . '"' : '' ) ?>>
                                 </div>
                             </div>
-                            <div class="col">
-                                <ul class="pagination pagination-sm justify-content-end mb-0"
+                            <div class="col-12 col-md-6">
+                                <ul class="pagination pagination-sm justify-content-center justify-content-md-end mb-0"
                                     data-pages="<?= $this->data['tagihan_unpaid']['pages']; ?>" data-tagihan="unpaid">
                                 </ul>
                             </div>
@@ -196,16 +194,16 @@
                         </table>
                     </div>
                     <div class="card-footer py-4">
-                        <div class="row align-items-center">
-                            <div class="col">
+                        <div class="row align-items-center gap-y-3">
+                            <div class="col-12 col-md-6">
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="Cari.." name="search"
                                         autocomplete="off" <?=(isset($data['tagihan_paid']['search']) ? 'value="' .
                                         $data['tagihan_paid']['search'] . '"' : '' ) ?>>
                                 </div>
                             </div>
-                            <div class="col">
-                                <ul class="pagination pagination-sm justify-content-end mb-0"
+                            <div class="col-12 col-md-6">
+                                <ul class="pagination pagination-sm justify-content-center justify-content-md-end mb-0"
                                     data-pages="<?= $this->data['tagihan_paid']['pages']; ?>" data-tagihan="paid">
                                 </ul>
                             </div>

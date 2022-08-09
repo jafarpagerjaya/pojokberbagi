@@ -60,12 +60,13 @@
 <div class="row">
     <div class="col-12 col-xl-8">
         <div class="card" id="list-donasi">
-            <div class="card-header d-flex justify-content-between" style="column-gap: .25rem;">
-                <div>
+            <div class="card-header d-flex justify-content-between flex-column flex-md-row"
+                style="row-gap: 1rem; column-gap: .25rem;">
+                <div class="item">
                     Kelola
                     <span class="text-green">List Donasi</span>
                 </div>
-                <div class="right-header d-flex align-items-center gap-x-2">
+                <div class="right-header d-flex align-items-center gap-x-2 justify-content-between">
                     <a href="/admin/donasi/buat" class="btn btn-sm btn-outline-primary py-2 px-3">Buat Data Donasi</a>
                     <div class="status" style="font-size: .75rem; right: 1.25rem;">
                         <div class="font-weight-bold text-black-50">
@@ -184,7 +185,7 @@
                 </table>
             </div>
             <div class="card-footer">
-                <div class="row align-items-center">
+                <div class="row align-items-center gap-y-3">
                     <div class="col">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Cari.." name="search"
@@ -193,7 +194,7 @@
                         </div>
                     </div>
                     <div class="col">
-                        <ul class="pagination pagination-sm justify-content-end mb-0"
+                        <ul class="pagination pagination-sm justify-content-center justify-content-md-end mb-0"
                             data-pages="<?= $this->data['pages']; ?>">
                         </ul>
                     </div>

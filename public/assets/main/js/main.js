@@ -7,6 +7,8 @@ let footerSetter = function() {
     
     if (kurangHeight > 0) {
         mc.css('min-height', (mcHeight + kurangHeight)+'px');
+    } else {
+        mc.css('min-height', wh - (mc.offset().top + $('footer').height()))
     }
 };
 

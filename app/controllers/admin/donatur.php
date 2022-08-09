@@ -5,16 +5,21 @@ class DonaturController extends Controller {
     public function __construct() {
         $this->rel_controller = array(
             array(
-                'href' => ASSET_PATH . 'route' . DS . basename(dirname(__FILE__)) . DS . 'core' . DS . 'css' . DS . 'admin-style.css'
+                'href' => '/assets/pojok-berbagi-style.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/admin-style.css'
             )
         );
 
         $this->script_controller = array(
-			array(
-				'type' => 'text/javascript',
+            array(
                 'src' => '/assets/pojok-berbagi-script.js'
-			)
-		);
+            ),
+            array(
+                'src' => '/assets/route/admin/core/js/admin-script.js'
+            )
+        );
 
         $this->title = 'Donatur';
         $auth = $this->model('Auth');
@@ -35,13 +40,6 @@ class DonaturController extends Controller {
     }
 
     public function index() {
-        $this->script_action = array(
-			array(
-				'type' => 'text/javascript',
-                'src' => '/assets/route/admin/core/js/admin-script.js'
-			)
-		);
-
         switch (strtoupper($this->data['admin_alias'])) {
             case 'SYS':
                 $this->sys();
@@ -96,12 +94,6 @@ class DonaturController extends Controller {
 
     public function halaman($params) {
         if (count(is_countable($params) ? $params : [])) {
-            $this->script_action = array(
-                array(
-                    'type' => 'text/javascript',
-                    'src' => '/assets/route/admin/core/js/admin-script.js'
-                )
-            );
             $this->model('Cr');
             $this->data['info-card'] = array(
                 'jumlah_donatur' => $this->model->jumlahDonatur(),

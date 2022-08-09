@@ -14,6 +14,15 @@ class BantuanController extends Controller {
             )
         );
 
+        $this->script_controller = array(
+            array(
+                'src' => '/assets/pojok-berbagi-script.js'
+            ),
+            array(
+                'src' => '/assets/route/admin/core/js/admin-script.js'
+            )
+        );
+
         $this->title = 'Bantuan';
         $auth = $this->model('Auth');
         if (!$auth->hasPermission('admin')) {
@@ -38,12 +47,6 @@ class BantuanController extends Controller {
         $this->script_action = array(
             array(
                 'src' => '/assets/main/js/token.js'
-            ),
-            array(
-                'src' => '/assets/pojok-berbagi-script.js'
-            ),
-            array(
-                'src' => '/assets/route/admin/core/js/admin-script.js'
             ),
             array(
                 'src' => '/assets/main/js/token-action-updater.js'
@@ -101,13 +104,6 @@ class BantuanController extends Controller {
             $this->script_action = array(
                 array(
                     'src' => '/assets/main/js/token.js'
-                ),
-                array(
-                    'src' => '/assets/pojok-berbagi-script.js'
-                ),
-                array(
-                    'type' => 'text/javascript',
-                    'src' => '/assets/route/admin/core/js/admin-script.js'
                 )
             );
 
@@ -287,12 +283,6 @@ class BantuanController extends Controller {
             $this->script_action = array(
                 array(
                     'src' => '/assets/main/js/token.js'
-                ),
-                array(
-                    'src' => '/assets/pojok-berbagi-script.js'
-                ),
-                array(
-                    'src' => '/assets/route/admin/core/js/admin-script.js'
                 )
             );
         } else {
@@ -330,12 +320,6 @@ class BantuanController extends Controller {
                 $this->script_action = array(
                     array(
                         'src' => '/assets/main/js/token.js'
-                    ),
-                    array(
-                        'src' => '/assets/pojok-berbagi-script.js'
-                    ),
-                    array(
-                        'src' => '/assets/route/admin/core/js/admin-script.js'
                     )
                 );
             }
@@ -373,12 +357,6 @@ class BantuanController extends Controller {
                 $this->script_action = array(
                     array(
                         'src' => '/assets/main/js/token.js'
-                    ),
-                    array(
-                        'src' => '/assets/pojok-berbagi-script.js'
-                    ),
-                    array(
-                        'src' => '/assets/route/admin/core/js/admin-script.js'
                     )
                 );
             }
@@ -431,13 +409,10 @@ class BantuanController extends Controller {
         );
 
         $this->script_action = array(
-            array(
-				'type' => 'text/javascript',
-                'src' => VENDOR_PATH.'chart.js'. DS .'dist'. DS .'Chart.min.js'
-			),
-            array(
-                'src' => '/assets/pojok-berbagi-script.js'
-            ),
+            // array(
+			// 	'type' => 'text/javascript',
+            //     'src' => VENDOR_PATH.'chart.js'. DS .'dist'. DS .'Chart.min.js'
+			// ),
             array(
                 'src' => '/assets/main/js/pagination.js'
             ),

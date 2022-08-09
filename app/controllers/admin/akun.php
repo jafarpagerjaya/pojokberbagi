@@ -6,7 +6,19 @@ class AkunController extends Controller {
     public function __construct() {
         $this->rel_controller = array(
             array(
+                'href' => '/assets/pojok-berbagi-style.css'
+            ),
+            array(
                 'href' => '/assets/route/admin/core/css/admin-style.css'
+            )
+        );
+
+        $this->script_controller = array(
+            array(
+                'src' => '/assets/pojok-berbagi-script.js'
+            ),
+            array(
+                'src' => '/assets/route/admin/core/js/admin-script.js'
             )
         );
 
@@ -31,16 +43,6 @@ class AkunController extends Controller {
         $this->rel_action = array(
             array(
                 'href' => '/assets/route/admin/pages/css/akun.css'
-            )
-        );
-
-        $this->script_action = array(
-            array(
-				'type' => 'text/javascript',
-                'src' => '/assets/pojok-berbagi-script.js'
-			),
-            array(
-                'src' => '/assets/route/admin/core/js/admin-script.js'
             )
         );
 
@@ -104,16 +106,6 @@ class AkunController extends Controller {
                 $this->data['record'] = $this->_auth->countData();
                 $this->data['halaman'] = $params[0];
                 $this->data['list_akun'] = $dataAkun;
-
-                $this->script_action = array(
-                    array(
-                        'type' => 'text/javascript',
-                        'src' => '/assets/pojok-berbagi-script.js'
-                    ),
-                    array(
-                        'src' => '/assets/route/admin/core/js/admin-script.js'
-                    )
-                );
 
                 return VIEW_PATH.'admin'.DS.'akun'.DS.'index.html';
             }

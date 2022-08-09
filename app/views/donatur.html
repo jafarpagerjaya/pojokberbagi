@@ -75,7 +75,7 @@
             <div class="container-fluid">
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Navbar links -->
-                    <ul class="navbar-nav align-items-center  ml-md-auto ">
+                    <ul class="navbar-nav align-items-center ml-md-auto">
                         <li class="nav-item d-xl-none">
                             <!-- Sidenav toggler -->
                             <div class="pr-3 sidenav-toggler sidenav-toggler-dark" data-action="sidenav-pin"
@@ -87,13 +87,8 @@
                                 </div>
                             </div>
                         </li>
-                        <li class="nav-item d-sm-none">
-                            <a class="nav-link" href="#" data-action="search-show" data-target="#navbar-search-main">
-                                <i class="ni ni-zoom-split-in"></i>
-                            </a>
-                        </li>
                     </ul>
-                    <ul class="navbar-nav align-items-center  ml-auto ml-md-0 ">
+                    <ul class="navbar-nav align-items-center ml-auto ml-md-0">
                         <li class="nav-item dropdown">
                             <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false">
@@ -101,14 +96,14 @@
                                     <span class="avatar bg-white avatar-sm rounded-circle">
                                         <img alt="Avatarku" src="/assets/images/default.png">
                                     </span>
-                                    <div class="media-body  ml-2  d-none d-lg-block">
+                                    <div class="media-body ml-2  d-none d-lg-block">
                                         <span class="mb-0 text-sm  font-weight-bold">
                                             <?= ucwords(strtolower($data['donatur']->nama)) ?>
                                         </span>
                                     </div>
                                 </div>
                             </a>
-                            <div class="dropdown-menu  dropdown-menu-right ">
+                            <div class="dropdown-menu  dropdown-menu-right">
                                 <div class="dropdown-header noti-title">
                                     <h6 class="text-overflow m-0">Welcome!</h6>
                                 </div>
@@ -174,7 +169,7 @@
                         } ?>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-link ml-auto" data-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
@@ -188,7 +183,7 @@
     <script src="/vendors/jquery-scroll-lock/dist/jquery-scrollLock.min.js"></script>
     <!-- Core Script -->
     <script src="/assets/route/auth/js/auth.js"></script>
-    <script src="/assets/main/js/main.js"></script>
+    <script src="/assets/main/js/main.js?v=080822"></script>
     <?= $this->getScript('controller'); ?>
     <?= $this->getScript('action'); ?>
     <!-- Argon JS -->

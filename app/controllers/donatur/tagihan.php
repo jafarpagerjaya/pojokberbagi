@@ -13,6 +13,9 @@ class TagihanController extends Controller {
                 'href' => '/assets/pojok-berbagi-style.css'
 			),
             array(
+                'href' => '/assets/route/admin/core/css/admin-style.css'
+            ),
+            array(
                 'href' => '/assets/route/donatur/core/css/donatur.css'
 			)
         );
@@ -21,7 +24,11 @@ class TagihanController extends Controller {
             array(
 				'type' => 'text/javascript',
                 'src' => '/assets/pojok-berbagi-script.js'
-			)
+			),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/core/js/admin-script.js'
+            )
         );
 
         $this->data['akun'] = $this->_auth->data();
@@ -46,13 +53,7 @@ class TagihanController extends Controller {
 			),
             array(
                 'href' => '/assets/main/css/kwitansi.css'
-            ),
-            array(
-                'href' => '/assets/route/admin/core/css/admin-style.css'
-			),
-            array(
-                'href' => '/assets/route/donatur/core/css/donatur.css'
-			)
+            )
         );
 
         $this->script_action = array (

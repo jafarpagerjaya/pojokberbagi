@@ -6,10 +6,19 @@ class DonasiController extends Controller {
         $this->rel_controller = array(
             array(
                 'href' => '/assets/pojok-berbagi-style.css'
-			),
+            ),
             array(
                 'href' => '/assets/route/admin/core/css/admin-style.css'
-			)
+            )
+        );
+
+        $this->script_controller = array(
+            array(
+                'src' => '/assets/pojok-berbagi-script.js'
+            ),
+            array(
+                'src' => '/assets/route/admin/core/js/admin-script.js'
+            )
         );
         
         $this->model("Auth");
@@ -58,16 +67,10 @@ class DonasiController extends Controller {
         );
         $this->script_action = array(
             array(
-                'src' => '/assets/pojok-berbagi-script.js'
-            ),
-            array(
                 'src' => '/assets/main/js/pagination.js'
             ),
             array(
                 'src' => '/assets/main/js/token.js'
-            ),
-            array(
-                'src' => '/assets/route/admin/core/js/admin-script.js'
             ),
             array(
                 'src' => '/assets/route/admin/core/js/form-function.js'
@@ -173,12 +176,6 @@ class DonasiController extends Controller {
             array(
                 'src' => '/vendors/bootstrap-datepicker/dist/locales/bootstrap-datepicker.id.min.js',
                 'charset' => 'UTF-8'
-            ),
-            array(
-                'src' => '/assets/pojok-berbagi-script.js'
-            ),
-            array(
-                'src' => '/assets/route/admin/core/js/admin-script.js'
             ),
             array(
                 'src' => '/assets/route/admin/core/js/form-function.js'

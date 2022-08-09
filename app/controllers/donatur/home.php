@@ -9,7 +9,10 @@ class HomeController extends Controller {
         $this->rel_controller = array(
             array(
                 'href' => '/assets/pojok-berbagi-style.css'
-			)
+			),
+            array(
+                'href' => '/assets/route/admin/core/css/admin-style.css'
+            )
         );
 
         $this->script_controller = array(
@@ -17,6 +20,10 @@ class HomeController extends Controller {
 				'type' => 'text/javascript',
                 'src' => '/assets/pojok-berbagi-script.js'
 			),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/core/js/admin-script.js'
+            ),
 			array(
 				'type' => 'text/javascript',
                 'src' => '/assets/route/donatur/pages/js/home.js'
@@ -51,9 +58,6 @@ class HomeController extends Controller {
             array(
                 'href' => '/assets/main/css/kwitansi.css'
             ),
-            array(
-                'href' => '/assets/route/admin/core/css/admin-style.css'
-			),
             array(
                 'href' => '/assets/route/donatur/core/css/donatur.css'
 			)
