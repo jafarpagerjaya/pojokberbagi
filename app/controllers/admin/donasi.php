@@ -21,20 +21,23 @@ class DonasiController extends Controller {
             )
         );
         
-        $this->model("Auth");
-        
-        if (!$this->model->hasPermission('admin')) {
+        $this->_auth = $this->model("Auth");
+        if (!$this->_auth->hasPermission('admin')) {
             Redirect::to('donatur');
         }
 
-        $this->data['akun'] = $this->model->data();
+        $this->data['akun'] = $this->_auth->data();
 
-        $this->model("Admin");
-        $this->model->getAllData('pegawai', array('email','=', $this->data['akun']->email));
-        $this->data['pegawai'] = $this->model->data();
+        $this->_admin = $this->model("Admin");
+        $this->_admin->getAllData('pegawai', array('email','=', $this->data['akun']->email));
+        $this->data['pegawai'] = $this->_admin->getResult();
 
-        $this->model->getData('alias', 'jabatan', array('id_jabatan','=',$this->data['pegawai']->id_jabatan));
-        $this->data['admin_alias'] = $this->model->data()->alias;
+        if (is_null($this->data['pegawai']->id_jabatan)) {
+            Redirect::to('donatur');
+        }
+
+        $this->_admin->getData('alias', 'jabatan', array('id_jabatan','=',$this->data['pegawai']->id_jabatan));
+        $this->data['admin_alias'] = $this->_admin->getResult()->alias;
     }
 
     public function index($params) {
@@ -194,7 +197,7 @@ class DonasiController extends Controller {
 
         $donatur = $this->model->query("SELECT id_donatur, nama, email, kontak FROM donatur ORDER BY id_donatur DESC LIMIT 25");
         if ($donatur) {
-            $this->data['data_donatur'] = $this->model->readAllData();
+            $this->data['data_donatur'] = $this->model->getResults();
         }
 
         // Token for fetch

@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row mb-4">
     <div class="col-lg-8">
         <div class="card">
             <div class="card-header">
@@ -34,7 +34,7 @@
                     alt="<?= 'Gambar ' . $this->data['detil_bantuan']->nama_gambar_medium; ?>"
                     class="img-fluid d-flex d-md-none">
             </div>
-            <div class="table-responsive p-0 pb-2">
+            <div class="table-responsive p-0">
                 <table class="table table-borderless table-hover">
                     <thead>
                         <tr>
@@ -66,11 +66,11 @@
                                     </a>
                                     <div class="media-body">
                                         <div class="name mb-0 text-black-50 font-weight-bolder">
-                                            <?= ucwords(strtolower($donasiBantuan->nama_donatur)); ?>
+                                            <?= ucwords(strtolower($donasiBantuan->nama_donatur ?? 'Hamba Allah')); ?>
                                         </div>
                                         <div class="small text-black-50 font-weight-bold">
                                             <span class="kontak">
-                                                <?= $donasiBantuan->kontak; ?>
+                                                <?= ($donasiBantuan->kontak ?? ((is_null($donasiBantuan->kontak) && is_null($donasiBantuan->email)) ? 'Tanpa Kontak dan Email' : '')); ?>
                                             </span>
                                             <span class="email">
                                                 <?= $donasiBantuan->email; ?>
@@ -240,9 +240,9 @@
                     <div class="row small">
                         <div class="col-6 small text-muted">Total Pencairan/Kali</div>
                         <div class="col-6 small text-right"><span class="pencairan">
-                                <?= Output::tSparator($this->data['detil_bantuan']->donasi_terlaksana); ?>
+                                <?= Output::tSparator($this->data['detil_bantuan']->total_donasi_disalurkan); ?>
                             </span>/<span class="font-weight-bold">
-                                <?= $this->data['detil_bantuan']->sekian_kali_pencairan; ?>
+                                <?= $this->data['detil_bantuan']->sekian_kali_pelaksanaan; ?>
                             </span></div>
                     </div>
                 </div>

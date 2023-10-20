@@ -301,7 +301,7 @@ $('#imgCanvasCropper').on('show.bs.modal', function () {
         cropData.height = 386;
     } else {
         cropData.aspectRatio = 16 / 9;
-        cropData.width = 696;
+        cropData.width = 726;
         cropData.height = (cropData.width / 16) * 9;
     }
 }).on('shown.bs.modal', function () {
@@ -408,40 +408,6 @@ $('#imgCanvasCropper').on('click', '.modal-footer [type="button"]', function () 
     eTarget.closest('[data-file-passed]').removeAttribute('data-file-passed');
 
     delete nameNew[inputFileName];
-});
-
-$('.toast').on('hidden.bs.toast', function () {
-    const toastId = $(this).data('toast');
-    stopPassed(toastId);
-    $(this).find('.toast-header .time-passed').text('');
-    $(this).find('.toast-body').text('');
-});
-
-let timeIntervalList = {};
-
-function toastPassed(element) {
-    const startTime = new Date();
-    let dataToast;
-
-    element.innerHTML = 'Beberapa saat yang lalu';
-
-    dataToast = element.closest('.toast[data-toast]').getAttribute('data-toast');
-    
-    let timeInterval = setInterval(() => {
-        element.innerHTML = timePassed(startTime);
-        // console.log(timePassed(startTime));
-    }, 60000);
-
-    timeIntervalList[dataToast] = timeInterval;
-};
-
-function stopPassed(dataToast) {
-    clearInterval(timeIntervalList[dataToast]);
-    delete timeIntervalList[dataToast];
-}
-
-$('.toast').toast({
-    'autohide': false
 });
 
 let jumlahTarget = document.getElementById('input-jumlah-target'),
@@ -946,11 +912,11 @@ let nameOld = {},
     errorRequired = {};
 
 let submitControl = function (self) {
-    self.value = escapeRegExp(self.value);
+    let selfValue = escapeRegExp(self.value);
     let min = self.getAttribute('data-min');
 
-    if (self.value != nameOld[self.name] && !min || self.value != nameOld[self.name] && min && self.value.length) {
-        nameNew[self.name] = self.value;
+    if (selfValue != nameOld[self.name] && !min || selfValue != nameOld[self.name] && min && selfValue.length) {
+        nameNew[self.name] = selfValue;
     } else {
         delete nameNew[self.name];
     }
@@ -1066,17 +1032,29 @@ submit.addEventListener('click', function (e) {
         // console.log(data);
         if (data.error == false) {
             // Success
-            $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
-            $('.toast[data-toast="feedback"] .toast-header strong').text('Pemberitahuan');
+            $('#'+ data.toast.id +'.toast[data-toast="'+ data.toast.data_toast +'"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
+            $('#'+ data.toast.id +'.toast[data-toast="'+ data.toast.data_toast +'"] .toast-header strong').text('Pemberitahuan');
         } else {
             // Failed
-            $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
-            $('.toast[data-toast="feedback"] .toast-header strong').text('Peringatan!');
+            createNewToast(document.querySelector('[aria-live="polite"]'), data.toast.id, data.toast.data_toast);
+            $('#'+ data.toast.id +'.toast[data-toast="'+ data.toast.data_toast +'"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
+            $('#'+ data.toast.id +'.toast[data-toast="'+ data.toast.data_toast +'"] .toast-header strong').text('Peringatan!');
+            $('#'+ data.toast.id +'.toast[data-toast="'+ data.toast.data_toast +'"] .time-passed').text('Baru Saja');
+            $('#'+ data.toast.id +'.toast[data-toast="'+ data.toast.data_toast +'"] .toast-body').html(data.feedback.message);
+            $('#'+ data.toast.id +'.toast[data-toast="'+ data.toast.data_toast +'"]').toast({
+                'autohide': false
+            }).toast('show');
+            $('#'+ data.toast.id +'.toast[data-toast="'+ data.toast.data_toast +'"]').on('hidden.bs.toast', function () {
+                stopPassed(data.toast.data_toast);
+                $(this).remove();
+            }).on('shown.bs.toast', function() {
+                setTimeout(()=> {
+                    let toast = document.getElementById(data.toast.id);
+                    toastPassed(toast.querySelector('.time-passed'));
+                }, 0);
+            });
             console.log('there is some error in server side');
         }
-
-        $('.toast[data-toast="feedback"] .time-passed').text('Baru Saja');
-        $('.toast[data-toast="feedback"] .toast-body').html(data.feedback.message);
 
         document.querySelector('body').setAttribute('data-token', data.token);
         nameNew.token = data.token;

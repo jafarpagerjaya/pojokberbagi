@@ -7,12 +7,13 @@ class Controller {
 			  $rel_action,
 			  $script_controller,
 			  $script_action,
-			  $page_record_limit = 10,
-			  $cookie_exists_signal = false;
-	
+			  $page_record_limit = 10;
+
 	private $_create_pengunjung = false, 
 			$_update_pengunjung = false,
-			$_client = array();
+			$_client = array(),
+			$_update_client_key = false,
+			$_set_cookie = true;
 
 	public function getData() {
 		return $this->data;
@@ -54,112 +55,104 @@ class Controller {
 		}
 	}
 
-	// protected function setKunjungan($params = null) {
-
-	// 	$db = Database::getInstance();
-
-    //     $cekPengunjung = $db->get('id_pengunjung','pengunjung',array('ip_address','=',Config::getClientIP()),'and',array('mac_address','=',Config::getClientMac()));
-        
-	// 	if (!$cekPengunjung->count()) {
-	// 		$db->insert('pengunjung',array(
-	// 			'ip_address' => Config::getClientIP(),
-	// 			'mac_address' => Config::getClientMac()
-	// 		));
-    //     }
-
-	// 	$pengunjung = $db->get('id_pengunjung','pengunjung',array('ip_address','=',Config::getClientIP()),'and',array('mac_address','=',Config::getClientMac()))->result();
-
-	// 	$halaman = $db->get('id_halaman','halaman',array('uri','=',$this->getUri($params)));
-	// 	if (!$halaman->count()) {
-	// 		$db->insert('halaman',array(
-	// 			'uri' => $this->getUri($params)
-	// 		));
-	// 		$halaman = $db->get('id_halaman','halaman',array('uri','=',$this->getUri($params)));
-	// 	}
-	// 	$halaman = $halaman->result();
-
-	// 	$cekKunjungan = $db->query("SELECT count(*) cek FROM kunjungan WHERE id_pengunjung = ? AND id_halaman = ? AND DATE(create_at) = DATE(NOW())", array('id_pengunjung' => $pengunjung->id_pengunjung, 'id_halaman' => $halaman->id_halaman))->result();
-
-	// 	if ($cekKunjungan->cek == 0) {
-	// 		$db->insert('kunjungan',array(
-	// 			'id_halaman' => $halaman->id_halaman,
-	// 			'id_pengunjung' => $pengunjung->id_pengunjung
-	// 		));
-	// 	}
-    // }
-
-	protected function setKunjungan2($params = null) {
-		if (!Cookie::exists(Config::get('client/cookie_name'))) {
-			$client = json_encode(array(
-				'client_ip' => Config::getClientIP(),
-				'expiry' => time() + Config::get('client/cookie_expiry')
-			));
-			Cookie::put(Config::get('client/cookie_name'), base64_encode($client), Config::get('client/cookie_expiry'));
-			$this->cookie_exists_signal = true;
-		}
-
-		if ($this->cookie_exists_signal) {
-			$cookie_value = $client;
-		} else {
-			$cookie_value = base64_decode(Cookie::get(Config::get('client/cookie_name')));
-		}
-
-		$cookie_value = json_decode($cookie_value);
-
-		// if (isset($cookie_value->auth)) {
-		// 	$cookie_value	
-		// }
-
-		$client_key = base64_encode(json_encode($cookie_value));
-
+	protected function setKunjungan2($params = null, $js_uri = null, $js_path = null) {
 		$db = Database::getInstance();
-		// 
-		// Data tabel pengunjung perlu ditambahkan kolom baru yaitu geoloc ip(kota, kodepos, lat, mat) 
-		// 
-		$cekPengunjung = $db->query("SELECT id_pengunjung FROM pengunjung WHERE ip_address = ? AND client_key = ? AND modified_at >= NOW() - INTERVAL 1 DAY", 
-		array(
-			Sanitize::escape(trim($cookie_value->client_ip)), 
-			Sanitize::escape(trim($client_key))
-		));
 
-		if ($cekPengunjung->count() > 0) {
-			$id_pengunjung = $cekPengunjung->result()->id_pengunjung;
+		if (!Cookie::exists(Config::get('client/cookie_name'))) {
+			$this->_client = array(
+				'client_ip' => Config::getClientIP(),
+				'expiry' => time() + Config::get('client/cookie_expiry'),
+				'device_id' => $this->getClientDeviceID()
+			);
+
+			$this->_create_pengunjung = true;
+
+			$cookie_value = $this->_client;
 		} else {
-			if (!isset($cookie_value->auth)) {
-				$db->insert('pengunjung',array(
-					'ip_address' => Sanitize::escape(trim($cookie_value->client_ip)),
-					'client_key' => Sanitize::escape(trim($client_key)),
-					'os' => Config::getClientOS(),
-					'browser' => Config::getClientBrowser()
-				));
-				$id_pengunjung = $db->lastInsertId();
-			} else {
-				// Rute Dari Signin.php Langsung Dengan auth True
-				$id_pengunjung = $cookie_value->id_pengunjung;
-			}
-		}		
-		
-		if ($this->cookie_exists_signal) {
-			// Debug::pr($cookie_value);
+			$cookie_value = Sanitize::thisArray(json_decode(base64_decode(Cookie::get(Config::get('client/cookie_name'))), true));
+
+			$cekPengunjung = $db->query("SELECT COUNT(id_pengunjung) cek FROM pengunjung WHERE ip_address = ? AND device_id = ? AND client_key = ? AND modified_at >= NOW() - INTERVAL 1 YEAR", 
+			array(
+				Sanitize::escape(trim($cookie_value['client_ip'])), 
+				Sanitize::escape(trim($cookie_value['device_id'])),
+				Cookie::get(Config::get('client/cookie_name'))
+			));
 			
-			// Add new property
-			$cookie_value->id_pengunjung = $id_pengunjung;
-			$client = base64_encode(json_encode($cookie_value));
-			$expiry = $cookie_value->expiry;
-			// Debug::pr($cookie_value);
-			// Debug::vd('no cookie first');
-			// Debug::vd($cookie_value);
-			// Do Update Value Cookie
-			Cookie::update(Config::get('client/cookie_name'), $client, $expiry);
-			// Do Update client_key
-			$db->update('pengunjung', array('client_key' => $client), array('id_pengunjung', '=', Sanitize::escape(trim($id_pengunjung))));
+			if ($cekPengunjung->result()->cek == 0) {
+				$this->_create_pengunjung = true;
+				$this->_client = array(
+					'client_ip' => Config::getClientIP(),
+					'expiry' => time() + Config::get('client/cookie_expiry'),
+					'device_id' => $this->getClientDeviceID()
+				);
+			} else {
+				// Tiap cookie sudah expiry
+				if (time() > $cookie_value['expiry']) {
+					$cookie_value['expiry'] = time() + Config::get('client/cookie_expiry');
+					$this->_update_client_key = true;
+				} else {
+					$this->_set_cookie = false;
+				}
+				
+				// ** Optional **
+				// Tiap Hari update cookie
+				// $current_expires = date_create(date("Y-m-d", $cookie_value['expiry']));
+				// $target_expires = date_create(date("Y-m-d", time() + Config::get('client/cookie_expiry')));
+				// $date_diff = date_diff($current_expires, $target_expires);
+				// if ($date_diff->format("%R%a") > 0) {
+				// 	$cookie_value['expiry'] = time() + Config::get('client/cookie_expiry');
+				// 	$this->_update_client_key = true;
+				// } else {
+				// 	$this->_set_cookie = false;
+				// }
+
+				$this->_client = $cookie_value;
+				$this->setClientDeviceID($cookie_value['device_id']);
+			}
 		}
 
-		$dataHalaman = $db->get('id_halaman','halaman',array('uri','=',$this->getUri($params)));
+		if ($this->_create_pengunjung) {
+			$this->_client_key = base64_encode(json_encode($this->_client));
+
+			// Data tabel pengunjung perlu ditambahkan kolom baru yaitu geoloc ip (kota, kodepos, lat, mat) 
+			$db->insert('pengunjung',array(
+				'ip_address' => Sanitize::escape(trim($this->_client['client_ip'])),
+				'client_key' => Sanitize::escape(trim($this->_client_key)),
+				'device_id' => Sanitize::escape(trim($this->_client['device_id'])),
+				'os' => Config::getClientDevice('os'),	
+				'os_bit' => Config::getClientDevice('os_bit'),
+				'browser' => Config::getClientDevice('browser'),
+				'browser_version' => Config::getClientDevice('browser_version'),
+				'device_type' => Config::getClientDevice('device_type')
+			));
+			$this->_client['id_pengunjung'] = $db->lastInsertId();
+			$this->_update_client_key = true;
+		}
+
+
+		if ($this->_update_client_key) {
+			$this->_client_key = base64_encode(json_encode($this->_client));
+
+			$db->update('pengunjung', array(
+				'client_key' => Sanitize::escape2(trim($this->_client_key))
+			), array('id_pengunjung', '=', $this->_client['id_pengunjung']));
+		}
+
+		if ($this->_set_cookie) {
+			Cookie::put(Config::get('client/cookie_name'), $this->_client_key, Config::get('client/cookie_expiry'));
+		}
+
+		$path = Sanitize::escape(trim($this->getPath($params, $js_path)));
+		$uri = Sanitize::escape(trim($this->getUri($js_uri)));
+
+		$dataHalaman = $db->get('id_halaman, track','halaman', array('path','=',$path));
+
 		if (!$dataHalaman->count()) {
 			try {
-				$db->insert('halaman',array(
-					'uri' => $this->getUri($params)
+				$db->insert('halaman', array(
+					// 'uri' => $this->getUri($params, $js_uri)
+					'uri' => $uri,
+					'path' => $path
 				));
 				$id_halaman = $db->lastInsertId();
 			} catch (\Throwable $e) {
@@ -167,15 +160,18 @@ class Controller {
 				return $this;
 			}
 		} else {
+			if ($dataHalaman->result()->track != 1) {
+				return false;
+			}
 			$id_halaman = $dataHalaman->result()->id_halaman;
 		}
 
-		$cekKunjungan = $db->query("SELECT count(*) cek FROM kunjungan WHERE id_pengunjung = ? AND id_halaman = ? AND DATE(create_at) = DATE(NOW())", array('id_pengunjung' => Sanitize::escape(trim($id_pengunjung)), 'id_halaman' => Sanitize::escape(trim($id_halaman))))->result();
+		$cekKunjungan = $db->query("SELECT count(*) cek FROM kunjungan WHERE id_pengunjung = ? AND id_halaman = ? AND DATE(create_at) = DATE(NOW())", array('id_pengunjung' => Sanitize::escape(trim($this->_client['id_pengunjung'])), 'id_halaman' => Sanitize::escape(trim($id_halaman))))->result();
 
 		if ($cekKunjungan->cek == 0) {
 			$db->insert('kunjungan',array(
 				'id_halaman' => $id_halaman,
-				'id_pengunjung' => $id_pengunjung
+				'id_pengunjung' => $this->_client['id_pengunjung']
 			));
 		}
     }
@@ -304,7 +300,7 @@ class Controller {
 			$this->_client['client_key'] = base64_encode(json_encode($this->_client['client_key']));
 			$db->update('pengunjung', array('client_key' => $this->_client['client_key']), array('id_pengunjung', '=', Sanitize::escape(trim($id_pengunjung))));
 
-			Cookie::update(Config::get('client/cookie_name'), $this->_client['client_key'], $this->_client['cookie_expiry']);
+			Cookie::update(Config::get('client/cookie_name'), $this->_client['client_key'], time() + $this->_client['cookie_expiry']);
 		}
 
 		// $dataHalaman = $db->get('id_halaman','halaman',array('uri','=',$this->getUri($params, $js_uri)));

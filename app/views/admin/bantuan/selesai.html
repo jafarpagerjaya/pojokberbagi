@@ -35,7 +35,7 @@
                                 </div>
                             </th>
                             <td>
-                                <?= $data_bantuan->nama; ?>
+                                <?= $data_bantuan->nama_bantuan; ?>
                             </td>
                             <td>
                                 <b><?= (is_null($data_bantuan->jumlah_target) ? 'Unlimited' : number_format($data_bantuan->jumlah_target,0,',','.')); ?></b>
@@ -44,7 +44,7 @@
                                 <div class="progress-wrapper" style="padding-top: 0px;">
                                     <div class="progress-info">
                                         <div class="progress-label">
-                                            <span><?= number_format($data_bantuan->jumlah_pelaksanaan,0,',','.') ?></span>
+                                            <span><?= number_format($data_bantuan->total_pelaksanaan,0,',','.') ?></span>
                                         </div>
                                         <div class="progress-percentage">
                                             <span><?= $data_bantuan->persentase_pelaksanaan; ?>%</span>

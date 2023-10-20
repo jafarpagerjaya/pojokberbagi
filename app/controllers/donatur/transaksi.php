@@ -15,7 +15,7 @@ class TransaksiController extends Controller {
 
         $this->model("Donatur");
         $this->model->getAllData('donatur', array('email','=', $this->data['akun']->email));
-        $this->data['donatur'] = $this->model->data();
+        $this->data['donatur'] = $this->model->getResult();
         $this->data['route_alias'] = 'donatur';
 	}
 

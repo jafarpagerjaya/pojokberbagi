@@ -37,8 +37,17 @@
     flex-direction: column;
 }
 
-#commit-bantuan-area p {
-    font-size: .75rem;
+#commit-bantuan-area p,
+#selengkapnya p {
+    font-size: .725rem;
+}
+
+#selengkapnya p *:not(img) {
+    padding: 0px .25em;
+}
+
+#selengkapnya img {
+    margin: 1em auto;
 }
 
 #commit-bantuan-area .logo {
@@ -56,6 +65,39 @@
     font-size: 1rem;
 }
 
+#commit-bantuan-area img::after {
+    font-size: xx-small;
+}
+
+#deskripsi-selengkapnya-area img {
+    border-radius: 0.75em;
+}
+
+#deskripsi-selengkapnya-area .date {
+    margin: 0 2px;
+    font-size: .55rem;
+}
+
+#deskripsi-selengkapnya-area #sharer {
+    grid-auto-flow: column;
+}
+
+#deskripsi-selengkapnya-area .btns > span:first-child {
+    font-size: .95em !important;
+}
+
+#deskripsi-selengkapnya-area #sharer i {
+    font-size: 1.25em;
+}
+
+#selengkapnya p {
+    margin-bottom: 1em;
+}
+
+#selengkapnya * {
+    line-height: 2em;
+}
+
 #info-berita-area .content .app-image.img-wrapper {
     max-height: calc((100% - var(--bs-gutter-x)) / 16 * 9);
     min-height: calc((100% - var(--bs-gutter-x)) / 16 * 9);
@@ -64,6 +106,72 @@
 #detil-banner-area .app-image.img-wrapper img {
     min-height: inherit;
     width: 100%;
+}
+
+h4 {
+    font-size: 1rem;
+}
+
+h5 {
+    font-size: 1rem;
+}
+
+h6 {
+    font-size: 13px;
+}
+
+#deskripsi-selengkapnya-area #title {
+    position: relative;
+    overflow: hidden;
+}
+
+#deskripsi-selengkapnya-area #title::before,
+#deskripsi-selengkapnya-area #title::after {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    content: '';
+}
+
+#deskripsi-selengkapnya-area #title::before {
+    background-color: #f8f9fa;
+    border-top-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+    left: -.5em;
+    top: -.5em;
+}
+
+#deskripsi-selengkapnya-area #title::after {
+    background-color: var(--orange);
+    border-top-left-radius: inherit;
+    bottom: calc(-100% + .5em);
+    left: 75%;
+}
+
+#deskripsi-selengkapnya-area #title > * {
+    z-index: 1;
+}
+
+#deskripsi-selengkapnya-area #title>span.node {
+    position: absolute;
+    left: -.5em;
+    bottom: .5em;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background-color: #f8f9fa;
+    border-bottom-right-radius: 10px;
+}
+
+#deskripsi-selengkapnya-area #title>span.node::before {
+    width: 100%;
+    height: 100%;
+    content: '';
+    background-color: #f8f9fa;
+    position: absolute;
+    top: .5em;
+    left: -.5em;
+    border-bottom-right-radius: 5px;
 }
 
 @media (min-width: 320px) {
@@ -89,12 +197,9 @@
         min-height: 197.62px;
     }
 
-    #commit-bantuan-area {
-        flex-direction: row;
-    }
-
-    #commit-bantuan-area p {
-        font-size: .8rem;
+    #commit-bantuan-area p,
+    #selengkapnya p {
+        font-size: .75rem;
     }
 }
 
@@ -117,8 +222,9 @@
         font-size: 1.25rem;
     }
 
-    #commit-bantuan-area p {
-        font-size: .85rem;
+    #commit-bantuan-area p,
+    #selengkapnya p {
+        font-size: .8rem;
     }
 }
 
@@ -137,12 +243,25 @@
         min-height: 239.625px;
     }
 
-    #commit-bantuan-area p {
+    #commit-bantuan-area p,
+    #selengkapnya p {
         font-size: .9rem;
+    }
+
+    h5 {
+        font-size: 20px;
+    }
+
+    h6 {
+        font-size: 1rem;
     }
 }
 
 @media (min-width: 767px) {
+
+    #commit-bantuan-area {
+        flex-direction: row;
+    }
 
     #detil-banner-area .app-image.img-wrapper {
         max-height: 290.25px;
@@ -172,6 +291,19 @@
     #commit-bantuan-area .logo {
         --avatar-wh: 125px;
     }
+
+    #commit-bantuan-area img::after {
+        font-size: x-small;
+        padding: 0px 5px;
+    }
+
+    #deskripsi-selengkapnya-area .btns > span:first-child {
+        font-size: 1.1em !important;
+    }
+
+    #deskripsi-selengkapnya-area #sharer i {
+        font-size: 1.5em;
+    }
 }
 
 @media (min-width: 992px) {
@@ -181,8 +313,17 @@
         min-height: calc((569px / 1913) * 936);
     }
 
-    #commit-bantuan-area p {
+    #commit-bantuan-area p,
+    #selengkapnya p {
         font-size: 1rem;
+    }
+
+    #deskripsi-selengkapnya-area .date {
+        font-size: .75rem;
+    }
+
+    h4 {
+        font-size: 1.2rem;
     }
 
     #commit-bantuan-area .logo {
@@ -199,11 +340,35 @@
         max-height: calc((569px / 1913) * 1116);
         min-height: calc((569px / 1913) * 1116);
     }
+
+    #deskripsi-selengkapnya-area .date {
+        font-size: .95rem;
+    }
+
+    h4 {
+        font-size: 1.5rem;
+    }
+
+    #deskripsi-selengkapnya-area .btns > span:first-child {
+        font-size: 1.35em !important;
+    }
+
+    #deskripsi-selengkapnya-area #sharer i {
+        font-size: 2em;
+    }
 }
 
 @media (min-width: 1400px) {
     #detil-banner-area .app-image.img-wrapper {
         max-height: calc((569px / 1913) * 1296);
         min-height: calc((569px / 1913) * 1296);
+    }
+
+    .date {
+        font-size: .95rem;
+    }
+
+    h4 {
+        font-size: 25px;
     }
 }

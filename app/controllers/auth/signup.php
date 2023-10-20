@@ -171,9 +171,9 @@ class SignupController extends Controller {
 							} else {
 								// Donatur sudah pernah berdonasi
 								try {
-									$link = Config::getHTTPHost().'/auth/signup/hook/'. $this->model->data()->id_donatur .'/'. $id_akun .'/'. strtolower(Sanitize::noSpace(Input::get('email'))) .'/'. $salt;
+									$link = Config::getHTTPHost().'/auth/signup/hook/'. $this->model->getResult()->id_donatur .'/'. $id_akun .'/'. strtolower(Sanitize::noSpace(Input::get('email'))) .'/'. $salt;
 									$dataHook = array(
-										'nama' => $this->model->data()->nama,
+										'nama' => $this->model->getResult()->nama,
 										'link' => $link
 									);
 									// Send mail Hook
@@ -241,7 +241,7 @@ class SignupController extends Controller {
 			Sanitize::escape2($params[2]),
 			Sanitize::escape2($params[3])
 		));
-		if ($this->model->data()->found == 0) {
+		if ($this->model->getResult()->found == 0) {
 			Session::flash('danger','Token Hook anda bermasalah');
 			Redirect::to('auth/signup');
 		}
@@ -297,7 +297,7 @@ class SignupController extends Controller {
 			Sanitize::escape2($params[2]),
 			Sanitize::escape2($params[3])
 		));
-		if ($this->model->data()->found == 0) {
+		if ($this->model->getResult()->found == 0) {
 			Session::flash('danger','Token Aktivasi anda bermasalah');
 			Redirect::to('auth/signup');
 		}

@@ -93,7 +93,7 @@
     color: var(--success) !important;
 }
 
-@keyframes pulseInputGroup {
+@keyframes pulse {
     from {
         opacity: 1;
     }
@@ -105,7 +105,7 @@
 
 .inputGroup[data-file-passed="false"] i::before {
     content: "\ea0e";
-    animation: pulseInputGroup .3s linear infinite alternate;
+    animation: pulse .3s linear infinite alternate;
 }
 
 .inputGroup[data-file-passed="true"]:hover i::before {

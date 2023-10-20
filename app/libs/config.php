@@ -76,4 +76,39 @@ class Config {
 	final public static function getHTTPHost() {
 		return Config::getHTTProtocol(). ''. $_SERVER['HTTP_HOST'];
 	}
+
+	public static function replaceKey($arr, $oldkey, $newkey) {
+		if(array_key_exists( $oldkey, $arr)) {
+			$keys = array_keys($arr);
+			$keys[array_search($oldkey, $keys)] = $newkey;
+			return array_combine($keys, $arr);	
+		}
+		return $arr;    
+	}
+
+	public static function recursiveChangeKey($arr, $set) {
+        if (is_array($arr) && is_array($set)) {
+    		$newArr = array();
+    		foreach ($arr as $k => $v) {
+    		    $key = array_key_exists( $k, $set) ? $set[$k] : $k;
+    		    $newArr[$key] = is_array($v) ? recursive_change_key($v, $set) : $v;
+    		}
+    		return $newArr;
+    	}
+    	return $arr;    
+    }
+
+	public static function search($array, $key, $value)
+	{
+		$results = array();
+		if (is_array($array)) {
+			if (isset($array[$key]) && $array[$key] == $value) {
+				$results[] = $array;
+			}
+			foreach ($array as $subarray) {
+				$results = array_merge($results, self::search($subarray, $key, $value));
+			}
+		}
+		return $results;
+	}
 }

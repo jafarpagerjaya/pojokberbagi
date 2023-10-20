@@ -20,25 +20,25 @@ class HomeController extends Controller {
                 'src' => '/assets/route/admin/core/js/admin-script.js'
             )
         );
-        
-        $this->model("Auth");
-        
-        if (!$this->model->hasPermission('admin')) {
-            if ($this->model->isSignIn()) {
-                $this->model->getData('nama, id_pegawai', 'pegawai', array('email','=',$this->model->data()->email));
-                Session::flash('error','Assalamualaikum, '. ucwords(strtolower($this->model->data()->nama)) .' [PBI-'. $this->model->data()->id_pegawai .']');
+
+        $this->_auth = $this->model("Auth");
+
+        if (!$this->_auth->hasPermission('admin')) {
+            if ($this->_auth->isSignIn()) {
+                $this->_auth->getData('nama, id_pegawai', 'pegawai', array('email','=',$this->_auth->data()->email));
+                Session::flash('error','Assalamualaikum, '. ucwords(strtolower($this->_auth->data()->nama)) .' [PBI-'. $this->_auth->data()->id_pegawai .']');
             }
             Redirect::to('donatur');
         }
 
-        $this->data['akun'] = $this->model->data();
+        $this->data['akun'] = $this->_auth->data();
 
-        $this->model("Admin");
-        $this->model->getAllData('pegawai', array('email','=', $this->data['akun']->email));
-        $this->data['pegawai'] = $this->model->data();
+        $this->_admin = $this->model("Admin");
+        $this->_admin->getAllData('pegawai', array('email','=', $this->data['akun']->email));
+        $this->data['pegawai'] = $this->_admin->getResult();
 
-        $this->model->getData('alias', 'jabatan', array('id_jabatan','=',$this->data['pegawai']->id_jabatan));
-        $this->data['admin_alias'] = $this->model->data()->alias;
+        $this->_admin->getData('alias', 'jabatan', array('id_jabatan','=',$this->data['pegawai']->id_jabatan));
+        $this->data['admin_alias'] = $this->_admin->getResult()->alias;
     }
 
     public function index() {
@@ -63,8 +63,9 @@ class HomeController extends Controller {
                 return VIEW_PATH.'admin'.DS.'home'.DS.'cre.html';
             break;
 
-            case 'PRO':
-                $this->program();
+            case 'DE':
+                $this->de();
+                return VIEW_PATH.'admin'.DS.'home'.DS.'de.html';
             break;
             
             default:
@@ -75,8 +76,8 @@ class HomeController extends Controller {
         }
     }
 
-    public function program() {
-        $this->title = 'Program';
+    public function de() {
+        $this->title = 'Direcktur Eksekutif';
     }
 
     public function cr() {
@@ -99,5 +100,37 @@ class HomeController extends Controller {
             'jumlah_donasi' => $this->model->jumlahDonasi(),
             'jumlah_bantuan' => $this->model->jumlahBantuanAktif()
         );
+
+        
+        // fontte
+        
+        // $token = "PztvP7T!cE!jqs2!WH4R";
+        // $target = "085860774199";
+
+        // $curl = curl_init();
+
+        // curl_setopt_array($curl, array(
+        // CURLOPT_URL => 'https://api.fonnte.com/send',
+        // CURLOPT_RETURNTRANSFER => true,
+        // CURLOPT_ENCODING => '',
+        // CURLOPT_MAXREDIRS => 10,
+        // CURLOPT_TIMEOUT => 0,
+        // CURLOPT_FOLLOWLOCATION => true,
+        // CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        // CURLOPT_CUSTOMREQUEST => 'POST',
+        // CURLOPT_POSTFIELDS => array(
+        // 'target' => $target,
+        // 'message' => 'Donasi anda telah kami terima. Eit tapi Boong', 
+        // 'countryCode' => '62', //optional
+        // ),
+        // CURLOPT_HTTPHEADER => array(
+        //     "Authorization: {$token}" //change TOKEN to your actual token
+        // ),
+        // ));
+
+        // $response = curl_exec($curl);
+
+        // curl_close($curl);
+        // echo $response;
     }
 }

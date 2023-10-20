@@ -2,7 +2,7 @@
 <!-- Hero Area -->
 <section class="hero-area section">
     <div class="main__circle3 bg-light"></div>
-    <div id="banner-carousel" class="carousel slide carousel-dark" data-bs-ride="carousel" data-bs-interval="10000">
+    <div id="banner-carousel" class="carousel slide carousel-dark" data-bs-ride="carousel" data-bs-interval="5000">
         <div class="carousel-indicators">
             <?php 
             if (count(is_countable($data['banner']) ? $data['banner'] : [])) {
@@ -68,7 +68,7 @@
                                 data-wow-delay="<?php $time += $delay; echo $time.'s'; ?>"
                                 data-animation-name="pojokers">
                                 <div
-                                    class="col-12 bg-white overflow-hidden img-wrapper d-flex justify-content-center align-items-center">
+                                    class="col-12 bg-transparent overflow-hidden img-wrapper d-flex justify-content-center align-items-center">
                                     <a href="<?= '/bantuan/detil/'.$banner->id_bantuan; ?>">
                                         <img src="<?= $banner->path_gambar_medium; ?>"
                                             alt="<?= $banner->nama_gambar_medium; ?>" class="img-fluid">
@@ -122,7 +122,7 @@
                                             </small></p>
                                         <div class="progress mt-1">
                                             <div class="progress-bar bg-green" role="progressbar" style="width: 0%"
-                                                aria-valuenow="<?= $banner->persentase_donasi_dilaksanakan; ?>"
+                                                aria-valuenow="<?= $banner->persentase_donasi_disalurkan; ?>"
                                                 aria-valuemin="0" aria-valuemax="100"></div>
                                         </div>
                                     </div>
@@ -240,7 +240,7 @@
                         <div class="service-icon shadow d-flex justify-content-center align-items-center position-absolute bottom left"
                             data-animation-name="slide" <?=(isset($list_bantuan->warna) ? 'style="background-color:' .
                             $list_bantuan->warna .'"' : '') ?>>
-                            <?= Utility::iconSektor($list_bantuan->layanan); ?>
+                            <?= Utility::iconSektor($list_bantuan->id_sektor); ?>
                         </div>
                     </div>
                     <h6 class="my-3 overflow-hidden title">
@@ -261,8 +261,8 @@
                     </div>
                     <div class="progress">
                         <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
-                            aria-valuenow="<?= $list_bantuan->persentase_donasi_dilaksanakan; ?>" <?='style="width: ' .
-                            $list_bantuan->persentase_donasi_dilaksanakan .'%"'; ?>></div>
+                            aria-valuenow="<?= $list_bantuan->persentase_donasi_disalurkan; ?>" <?='style="width: ' .
+                            $list_bantuan->persentase_donasi_disalurkan .'%"'; ?>></div>
                     </div>
                     <a href="<?= '/bantuan/detil/'. $list_bantuan->id_bantuan; ?>" class="mt-3"
                         <?=(isset($list_bantuan->warna) ? 'style="color:' . $list_bantuan->warna .'"' : '') ?>>Lihat

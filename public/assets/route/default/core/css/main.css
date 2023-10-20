@@ -2049,10 +2049,16 @@ ol {
   margin-right: 20px;
 }
 
+.button .signout {
+  margin-left: 20px;
+}
+
+.button .signout:hover,
 .button .signin:hover {
   text-decoration: underline;
 }
 
+.button .enter,
 .button .signup {
   background-color: #fff;
   color: #151515;
@@ -2066,22 +2072,28 @@ ol {
   background-color: #fd723b;
 }
 
+.sticky .button .signout,
 .sticky .button .signin {
   color: #151515;
 }
 
+.sticky .button .signout:hover,
 .sticky .button .signin:hover {
   color: #3080E3;
 }
 
+.sticky .button .enter,
 .sticky .button .signup {
   background-color: #3080E3;
   color: #fff;
 }
 
+.sticky .button .enter:hover {
+  background-color: var(--green);
+}
+
 .sticky .button .signup:hover {
   background-color: #fd723b;
-  color: #fff;
 }
 
 .others-pages {

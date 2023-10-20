@@ -28,12 +28,16 @@ class ProfileController extends Controller {
 
         $this->data['akun'] = $this->_auth->data();
 
-        $admin = $this->model("Admin");
-        $this->model->getAllData('pegawai', array('email','=', $this->_auth->data()->email));
-        $this->data['pegawai'] = $admin->data();
+        $this->_admin = $this->model("Admin");
+        $this->_admin->getAllData('pegawai', array('email','=', $this->data['akun']->email));
+        $this->data['pegawai'] = $this->_admin->getResult();
 
-        $this->model->getData('alias', 'jabatan', array('id_jabatan','=',$admin->data()->id_jabatan));
-        $this->data['admin_alias'] = $admin->data()->alias;
+        if (is_null($this->data['pegawai']->id_jabatan)) {
+            Redirect::to('donatur');
+        }
+
+        $this->_admin->getData('alias', 'jabatan', array('id_jabatan','=',$this->data['pegawai']->id_jabatan));
+        $this->data['admin_alias'] = $this->_admin->getResult()->alias;
     }
 
     public function index() {
@@ -43,16 +47,16 @@ class ProfileController extends Controller {
             )
         );
 
-        $data = $this->model->getData('nama','jabatan',array('id_jabatan','=',$this->data['pegawai']->id_jabatan));
-        $this->data['jabatan'] = $data;
+        $this->model->getData('nama','jabatan',array('id_jabatan','=',$this->data['pegawai']->id_jabatan));
+        $this->data['jabatan'] = $this->model->getResult();
         if ($this->data['akun']->id_gambar == 1) {
-            $id_gambar = ((strtolower($this->data['pegawai']->jenis_kelamin) == 'p') ? 2 : 3);
+            $id_gambar = ((strtolower($this->data['pegawai']->jenis_kelamin ?? '') == 'p') ? 2 : ((strtolower($this->data['pegawai']->jenis_kelamin ?? '') == 'l') ? 3 : 1));
         } else {
             $id_gambar = $this->data['akun']->id_gambar;
         }
         $dataGambar = $this->model->getData('path_gambar','gambar',array('id_gambar','=',$id_gambar));
         if ($dataGambar) {
-            $this->data['gambar'] = $dataGambar;
+            $this->data['gambar'] = $this->model->getResult();
         }
     }
 
@@ -60,17 +64,15 @@ class ProfileController extends Controller {
         if (!Token::check($params[0])) {
             Redirect::to('admin/profile');
         }
-        $data = $this->model->getData('nama','jabatan',array('id_jabatan','=',$this->data['pegawai']->id_jabatan));
-        $this->data['jabatan'] = $data;
+        $this->model->getData('nama','jabatan',array('id_jabatan','=',$this->data['pegawai']->id_jabatan));
+        $this->data['jabatan'] = $this->model->getResult();
         if ($this->data['akun']->id_gambar == 1) {
-            $id_gambar = ((strtolower($this->data['pegawai']->jenis_kelamin) == 'p') ? 2 : 3);
+            $id_gambar = ((strtolower($this->data['pegawai']->jenis_kelamin ?? '') == 'p') ? 2 : ((strtolower($this->data['pegawai']->jenis_kelamin ?? '') == 'l') ? 3 : 1));
         } else {
             $id_gambar = $this->data['akun']->id_gambar;
         }
-        $dataGambar = $this->model->getData('path_gambar','gambar',array('id_gambar','=',$id_gambar));
-        if ($dataGambar) {
-            $this->data['gambar'] = $dataGambar;
-        }
+        $this->model->getData('path_gambar','gambar',array('id_gambar','=',$id_gambar));
+        $this->data['gambar'] = $this->model->getResult();
 
         $this->rel_action = array(
             array(

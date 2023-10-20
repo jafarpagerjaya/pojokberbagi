@@ -22,19 +22,24 @@ class DonaturController extends Controller {
         );
 
         $this->title = 'Donatur';
-        $auth = $this->model('Auth');
-        if (!$auth->hasPermission('admin')) {
+        
+        $this->_auth = $this->model("Auth");
+        if (!$this->_auth->hasPermission('admin')) {
             Redirect::to('donatur');
         }
 
-        $this->data['akun'] = $auth->data();
+        $this->data['akun'] = $this->_auth->data();
 
-        $admin = $this->model("Admin");
-        $this->model->getAllData('pegawai', array('email','=', $auth->data()->email));
-        $this->data['pegawai'] = $admin->data();
+        $this->_admin = $this->model("Admin");
+        $this->_admin->getAllData('pegawai', array('email','=', $this->data['akun']->email));
+        $this->data['pegawai'] = $this->_admin->getResult();
 
-        $this->model->getData('alias', 'jabatan', array('id_jabatan','=',$admin->data()->id_jabatan));
-        $this->data['admin_alias'] = $admin->data()->alias;
+        if (is_null($this->data['pegawai']->id_jabatan)) {
+            Redirect::to('donatur');
+        }
+
+        $this->_admin->getData('alias', 'jabatan', array('id_jabatan','=',$this->data['pegawai']->id_jabatan));
+        $this->data['admin_alias'] = $this->_admin->getResult()->alias;
 
         $this->_donatur = $this->model('Donatur');
     }
@@ -123,7 +128,7 @@ class DonaturController extends Controller {
     public function formUpdate($id_donatur) {
         $data = $this->_donatur->getData('id_donatur,nama,kontak,email','donatur',array('id_donatur','=',$id_donatur));
         if ($data) {
-            $this->data['data_donatur'] = $this->_donatur->data();
+            $this->data['data_donatur'] = $this->_donatur->getResult();
         }
     }
 
@@ -157,13 +162,13 @@ class DonaturController extends Controller {
                         Session::put('error_feedback', $validate->getValueFeedback());
                         Redirect::to('admin/donatur/formulir/'.$params[0]);      
                     } else {
-                        $result = $this->_donatur->update('donatur', array(
+                        $this->_donatur->update('donatur', array(
                             'nama' => Sanitize::escape(trim(Input::get('nama'))),
                             'kontak' => Sanitize::escape(trim(Input::get('kontak'))),
                             'email' => Sanitize::escape(trim(Input::get('email')))
                             ), array('id_donatur','=', Sanitize::escape(Input::get('id_donatur')))
                         );
-                        if ($result) {
+                        if ($this->_donatur->affected()) {
                             $this->_donatur->hasAccount(Sanitize::escape(Input::get('id_donatur')));
                             if ($this->_donatur->data()->account_found != 0) {
                                 $id_akun = $this->_donatur->data()->id_akun;
@@ -177,7 +182,6 @@ class DonaturController extends Controller {
                                         'id_pegawai','=', Sanitize::escape2($id_pegawai)
                                     ));
                                 }
-                                Debug::vd($this->_donatur->data()->account_found);
                                 $this->_donatur->update('akun', array(
                                     'email' => Sanitize::escape2(Input::get('email'))
                                 ), array('id_akun', '=', Sanitize::escape2($id_akun)));
@@ -281,20 +285,20 @@ class DonaturController extends Controller {
     //     if (Token::check2($params[1])) {
     //         $this->_donatur->getData('nama, email','donatur',array('id_donatur','=', intval($params[0])),'AND',array('id_akun','IS',NULL));
     //         if ($this->_donatur->affected()) {
-    //             if (!is_null($this->_donatur->data()->email)) {
+    //             if (!is_null($this->_donatur->getResult()->email)) {
     //                 $this->model('Auth');
     //                 $salt = Hash::salt(32);
     //                 $akunArray = array(
-    //                     'username' 	=> strtolower($this->_donatur->data()->email),
-    //                     'password' 	=> Sanitize::noSpace2(Hash::make(strtolower($this->_donatur->data()->email), $salt)),
+    //                     'username' 	=> strtolower($this->_donatur->getResult()->email),
+    //                     'password' 	=> Sanitize::noSpace2(Hash::make(strtolower($this->_donatur->getResult()->email), $salt)),
     //                     'salt' 		=> $salt,
-    //                     'email' 	=> strtolower($this->_donatur->data()->email)
+    //                     'email' 	=> strtolower($this->_donatur->getResult()->email)
     //                 );
     //                 // Check email is staff
     //                 $staff = $this->_auth->isStaff(Sanitize::noSpace(Input::get('email')), 'email');
 
     //                 if ($staff) {
-    //                     $id_pegawai = $this->_auth->data()->id_pegawai;
+    //                     $id_pegawai = $this->_auth->getResult()->id_pegawai;
     //                     $akunArray['hak_akses'] = 'A';
     //                 }
                     
@@ -303,24 +307,24 @@ class DonaturController extends Controller {
     //                 $id_akun = $this->_auth->lastIID();
     //                 // Send Mail here
     //                 $pengirim = "pojokberbagi.id";    
-    //                 $penerima = $this->_donatur->data()->email;    
+    //                 $penerima = $this->_donatur->getResult()->email;    
     //                 $subjek = "Mengkaitkan Akun Pojok Berbagi";    
-    //                 $pesan = "Klik <a href='https://pojokberbagi.id/auth/signup/hook/". $params[0]. "/" . $id_akun . "/" . $this->_donatur->data()->email . "/" . $salt ."'>disini</a> untuk mengkaitkan akunmu.";   
+    //                 $pesan = "Klik <a href='https://pojokberbagi.id/auth/signup/hook/". $params[0]. "/" . $id_akun . "/" . $this->_donatur->getResult()->email . "/" . $salt ."'>disini</a> untuk mengkaitkan akunmu.";   
     //                 $headers = "Dari :" . $pengirim;    
     //                 mail($penerima,$subjek,$pesan, $headers);
     //                 Session::put('notifikasi', array(
-    //                     'pesan' => 'Cek email <b>' . $this->_donatur->data()->email . '</b> untuk mengkaitkan akun baru',
+    //                     'pesan' => 'Cek email <b>' . $this->_donatur->getResult()->email . '</b> untuk mengkaitkan akun baru',
     //                     'state' => 'success'
     //                 ));
     //             } else {
     //                 Session::put('notifikasi', array(
-    //                     'pesan' => 'Donatur <b>' . $this->_donatur->data()->nama . '</b> belum terdata alamat emailnya sehingga gagal dikaitkan',
+    //                     'pesan' => 'Donatur <b>' . $this->_donatur->getResult()->nama . '</b> belum terdata alamat emailnya sehingga gagal dikaitkan',
     //                     'state' => 'warning'
     //                 ));
     //             }
     //         } else {
     //             Session::put('notifikasi', array(
-    //                 'pesan' => 'Akun donatur <b>' . $this->_donatur->data()->nama . '</b> tidak ditemukan sehingga gagal dikaitkan',
+    //                 'pesan' => 'Akun donatur <b>' . $this->_donatur->getResult()->nama . '</b> tidak ditemukan sehingga gagal dikaitkan',
     //                 'state' => 'danger'
     //             ));
     //         }

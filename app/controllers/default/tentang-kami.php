@@ -7,6 +7,9 @@ class TentangKamiController extends Controller {
                 'href' => '/assets/pojok-berbagi-style.css'
             )
         );
+
+        $this->_auth = $this->model('Auth');
+		$this->data['signin'] = $this->_auth->isSignIn();
     }
     public function index() {
         $this->rel_action = array(

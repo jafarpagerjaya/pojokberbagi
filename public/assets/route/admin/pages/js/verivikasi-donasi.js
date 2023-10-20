@@ -114,10 +114,10 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
     .then(response => response.json())
     .then(function(result) {
         if (result.error) {
-            $('.toast[data-toast="feedback"] .time-passed').text('Baru Saja');
-            $('.toast[data-toast="feedback"] .toast-body').html(data.feedback.message);
-            $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
-            $('.toast[data-toast="feedback"] .toast-header strong').text('Peringatan!');
+            $('.toast[data-toast="donasi"] .time-passed').text('Baru Saja');
+            $('.toast[data-toast="donasi"] .toast-body').html(result.feedback.message);
+            $('.toast[data-toast="donasi"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
+            $('.toast[data-toast="donasi"] .toast-header strong').text('Peringatan!');
             console.log('there is some error in server side');
             $('.toast').toast('show');
             return false;
@@ -242,7 +242,7 @@ verivikasiBtn.on('click', function (e) {
     .then(function(result) {
         if (result.error) {
             $('.toast[data-toast="donasi"] .time-passed').text('Baru Saja');
-            $('.toast[data-toast="donasi"] .toast-body').html(data.feedback.message);
+            $('.toast[data-toast="donasi"] .toast-body').html(result.feedback.message);
             $('.toast[data-toast="donasi"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
             $('.toast[data-toast="donasi"] .toast-header strong').text('Peringatan!');
             console.log('there is some error in server side');
@@ -282,24 +282,3 @@ verivikasiBtn.on('click', function (e) {
         $('.toast[data-toast="donasi"]').toast('show');
     });
 });
-
-let timeIntervalList = {};
-function toastPassed(element) {
-    const startTime = new Date();
-    let dataToast;
-
-    element.innerHTML = 'Beberapa saat yang lalu';
-
-    dataToast = element.closest('.toast[data-toast]').getAttribute('data-toast');
-    
-    let timeInterval = setInterval(() => {
-        element.innerHTML = timePassed(startTime);
-    }, 60000);
-
-    timeIntervalList[dataToast] = timeInterval;
-};
-
-function stopPassed(dataToast) {
-    clearInterval(timeIntervalList[dataToast]);
-    delete timeIntervalList[dataToast];
-}

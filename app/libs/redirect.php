@@ -12,8 +12,8 @@ class Redirect {
 					exit();
 				break;
 			}
-			header('location: ' . DS . $location);
-			exit();
 		}
+		header('location: ' . DS . $location);
+		exit();
 	}
 }

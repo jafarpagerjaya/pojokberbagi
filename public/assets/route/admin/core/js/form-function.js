@@ -1,11 +1,11 @@
-function restrictNumber () {  
-    var newValue = this.value.replace(new RegExp(/[^\d]/,'ig'), "");
+function restrictNumber() {
+    var newValue = this.value.replace(new RegExp(/[^\d]/, 'ig'), "");
     this.value = newValue;
 };
 
-function preventNonNumbersInInput(event){
+function preventNonNumbersInInput(event) {
     let characters = String.fromCharCode(event.which);
-    if(!(/[0-9]/.test(characters))){
+    if (!(/[0-9]/.test(characters))) {
         event.preventDefault();
     }
 };
@@ -27,22 +27,26 @@ function numberToPrice(angka, prefix = '', e) {
     return e == undefined ? prefix == undefined ? formed : (formed ? prefix + formed : '') : [prefix == undefined ? formed : (formed ? prefix + formed : ''), sisa, ribuan, prefix];
 }
 
-function priceToNumber(v){
-    if(!v){return 0;}
-    v=v.split('.').join('');
-    v=v.split(',').join('.');
+function priceToNumber(v) {
+    if (!v) { return 0; }
+    v = v.split('.').join('');
+    v = v.split(',').join('.');
     return Number(v.replace(/[^0-9.]/g, ""));
 }
 
 function isNumber(n) { return /^[0-9.]+$/.test(n); }
 
-function removeByIndex(str,index) {
-    return str.slice(0,index) + str.slice(index+1);
+function removeByIndex(str, index) {
+    return str.slice(0, index) + str.slice(index + 1);
 }
 
-function autoResize() { 
-    this.style.height = 'auto'; 
-    this.style.height = this.scrollHeight + 'px'; 
+String.prototype.replaceAt = function (indexStart, indexEnd, replacement) {
+    return this.substring(0, indexStart) + replacement + this.substring(indexEnd);
+}
+
+function autoResize() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
 }
 
 function htmlEntities(str) {
@@ -61,7 +65,7 @@ function ucwords(string, trim = true) {
     if (trim) {
         str.trim()
     }
-    return str.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+    return str.toLowerCase().replace(/\b[a-z]/g, function (letter) {
         return letter.toUpperCase();
     });
 };
@@ -69,7 +73,7 @@ function ucwords(string, trim = true) {
 function checkEmailChar(char) {
     const pattern = /[^~`!#$%^&*()+={}:;'"<>,/?\[\]|\\\s]/; // not acceptable char
 
-    return pattern.test(char); 
+    return pattern.test(char);
 }
 
 function checkEmailPattern(str) {
@@ -78,12 +82,12 @@ function checkEmailPattern(str) {
     return pattern.test(str.toLowerCase());
 }
 
-const inputMaxlengthList = document.querySelectorAll('input[maxlength]');
+const inputMaxlengthList = document.querySelectorAll('input[maxlength], textarea[maxlength]');
 inputMaxlengthList.forEach(input => {
     let maxlength = input.getAttribute('maxlength');
     let tag = document.createElement('span');
     tag.classList.add('input-char-left');
-    tag.innerHTML = '<span class="current-length text-orange">'+ input.value.length +'</span> / <span>'+ maxlength +'</span>';
+    tag.innerHTML = '<span class="current-length text-orange">' + input.value.length + '</span> / <span>' + maxlength + '</span>';
     input.parentElement.appendChild(tag);
 
     if (input.currentStyle ? input.currentStyle.display : getComputedStyle(input, null).display == 'none') {
@@ -91,12 +95,18 @@ inputMaxlengthList.forEach(input => {
     }
 
     // Event
-    input.addEventListener('keyup', function(e) {
+    input.addEventListener('keyup', function (e) {
         this.parentElement.querySelector('.current-length').innerText = this.value.length;
+    });
+
+    input.addEventListener('paste', function (e) {
+        setTimeout(() => {
+            this.parentElement.querySelector('.current-length').innerText = this.value.length;
+        }, 0);
     });
 });
 
-$('select').on('change', function() {
+$('select').on('change', function () {
     if (this.classList.contains('is-invalid')) {
         this.classList.remove('is-invalid');
     }
@@ -106,4 +116,16 @@ $('select').on('change', function() {
     if (this.closest('.form-group').classList.contains('is-invalid')) {
         this.closest('.form-group').classList.remove('is-invalid');
     }
+});
+
+document.querySelectorAll('.form-label-group.input-group .form-control').forEach(fc => {
+    fc.addEventListener('focusin', function () {
+        this.closest('.input-group').classList.add('focused');
+    });
+    fc.addEventListener('focusout', function () {
+        this.closest('.input-group').classList.remove('focused');
+    });
+    fc.parentElement.querySelector('.input-group-append').addEventListener('click', function () {
+        fc.focus();
+    });
 });

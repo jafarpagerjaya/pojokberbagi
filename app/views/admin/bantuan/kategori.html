@@ -42,7 +42,7 @@
                                     <?= $statusClassText['text']; ?>
                                 </span>
                                 <div class="time small text-black-50">
-                                    <?= $list_kategori->create_bantuan_at; ?>
+                                    <?= $list_kategori->bantuan_create_at; ?>
                                 </div>
                             </td>
                             <td class="py-2">
@@ -76,7 +76,7 @@
                                     <div class="progress-info">
                                         <div class="progress-label">
                                             <span class="py-1 px-2">
-                                                <?= number_format($list_kategori->jumlah_pelaksanaan,0,',','.') ?>
+                                                <?= number_format($list_kategori->total_pelaksanaan,0,',','.') ?>
                                             </span>
                                         </div>
                                         <div class="progress-percentage">
@@ -96,7 +96,7 @@
                             <td class="py-2 fit">
                                 <div class="row">
                                     <div class="col-6 px-1 font-weight-bold text-right">
-                                        <?= $list_kategori->jumlah_donasi; ?>
+                                        <?= $list_kategori->total_donasi; ?>
                                     </div>
                                     <div class="col-6 px-1 text-left">Donasi</div>
                                 </div>
@@ -109,7 +109,7 @@
                             </td>
                             <td class="py-2 fit">
                                 <div class="text-right">
-                                    <?= $list_kategori->donasi_terlaksana; ?>
+                                    <?= $list_kategori->total_penggunaan_donasi; ?>
                                 </div>
                             </td>
                             <td class="py-2 fit">

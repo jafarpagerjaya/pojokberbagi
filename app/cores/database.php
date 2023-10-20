@@ -66,7 +66,7 @@ class Database {
 
 	private function filter($where = array()) {
 		$filter = array();
-		$operators = array('=', '>', '<', '>=', '<=', '!=','IS','IN','LIKE');
+		$operators = array('=', '>', '<', '>=', '<=', '!=','IS','IN','LIKE','LIKEL','LIKEU');
 
 		$field    = $where[0];
 		$operator = $where[1];
@@ -81,6 +81,19 @@ class Database {
 				if ($operator == 'LIKE') {
 					$filter = array(
 						"{$field} {$operator} CONCAT('%',?,'%')",
+						1
+					);
+				}
+				else if ($operator == 'LIKEL') {
+					Debug::prd('lol');
+					$filter = array(
+						"{$field} {$operator} LOWER(CONCAT('%',?,'%'))",
+						1
+					);
+				}
+				else if ($operator == 'LIKEU') {
+					$filter = array(
+						"{$field} {$operator} UPPER(CONCAT('%',?,'%'))",
 						1
 					);
 				} else {

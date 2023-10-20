@@ -24,22 +24,26 @@ class BantuanController extends Controller {
         );
 
         $this->title = 'Bantuan';
-        $auth = $this->model('Auth');
-        if (!$auth->hasPermission('admin')) {
+        $this->_auth = $this->model("Auth");
+        if (!$this->_auth->hasPermission('admin')) {
             Redirect::to('donatur');
         }
 
-        $this->data['akun'] = $auth->data();
+        $this->data['akun'] = $this->_auth->data();
 
-        $admin = $this->model("Admin");
-        $this->model->getAllData('pegawai', array('email','=', $auth->data()->email));
-        $this->data['pegawai'] = $admin->data();
+        $this->_admin = $this->model("Admin");
+        $this->_admin->getAllData('pegawai', array('email','=', $this->data['akun']->email));
+        $this->data['pegawai'] = $this->_admin->getResult();
 
-        $this->model->getData('alias', 'jabatan', array('id_jabatan','=',$admin->data()->id_jabatan));
-        $this->data['admin_alias'] = $admin->data()->alias;
+        if (is_null($this->data['pegawai']->id_jabatan)) {
+            Redirect::to('donatur');
+        }
+
+        $this->_admin->getData('alias', 'jabatan', array('id_jabatan','=',$this->data['pegawai']->id_jabatan));
+        $this->data['admin_alias'] = $this->_admin->getResult()->alias;
         
         $this->_bantuan = $this->model('Bantuan');
-        $this->_bantuan->setDataLimit($this->getPageRecordLimit());
+        $this->_bantuan->setLimit(10);
         $this->data['limit'] = $this->getPageRecordLimit();
     }
 
@@ -64,18 +68,18 @@ class BantuanController extends Controller {
         $this->data['halaman'] = 1;
         
         // New Via Offset
-        // $this->_bantuan->setDataOffset(0);
+        // $this->_bantuan->setOffset(0);
         // Limit Wajib Di set Jika tidak ingin mengikuti nilai limit di controller
-        // $this->_bantuan->setDataLimit(2);
+        // $this->_bantuan->setLimit(2);
 
         // $this->_bantuan->newDataOffset();
 
         // New Via Seek
         // set Direction dan Limit sebelum Betweem
         // Limit Wajib Di set Jika tidak ingin mengikuti nilai limit di construct
-        // $this->_bantuan->setDataLimit(2);
+        // $this->_bantuan->setLimit(2);
 
-        $this->data['limit'] = $this->_bantuan->getDataLimit();
+        $this->data['limit'] = $this->_bantuan->getLimit();
         // $this->_bantuan->setDirection('ASC');
         $this->_bantuan->setDataBetween($this->data['halaman']);
         $this->_bantuan->newDataSeek();
@@ -108,16 +112,16 @@ class BantuanController extends Controller {
             );
 
             // New Via Offset Set Limit dulu Khawatir Offset ambil default = 10
-            // $this->_bantuan->setDataLimit(1);
+            // $this->_bantuan->setLimit(1);
 
-            // $this->_bantuan->setDataOffsetHalaman($params[0]);
+            // $this->_bantuan->setOffsetByHalaman($params[0]);
             // $this->_bantuan->newDataOffset();
 
             // New Via Seek
             // Limit Wajib Di set Jika tidak ingin mengikuti nilai limit di construct
-            // $this->_bantuan->setDataLimit(2);
+            // $this->_bantuan->setLimit(2);
 
-            $this->data['limit'] = $this->_bantuan->getDataLimit();
+            $this->data['limit'] = $this->_bantuan->getLimit();
 
             // Khusus seek method jika data yang ingin ditampilkan secara DESC maka wajib di set order_directionnya
             $this->_bantuan->setDirection('DESC');
@@ -233,10 +237,10 @@ class BantuanController extends Controller {
         if (count(is_countable($params) ? $params : []) > 0) {
             $this->formUpdate($params[0]);
             $min_jumlah_target = null;
-            $this->_bantuan->getData('SUM(jumlah_pelaksanaan) min_jumlah_pelaksanaan','pelaksanaan RIGHT JOIN anggaran_pelaksanaan_donasi USING(id_pelaksanaan) RIGHT JOIN donasi USING(id_donasi)',array('id_bantuan','=',Sanitize::escape($params[0])));
+            $this->_bantuan->getData('SUM(p.jumlah_pelaksanaan) min_jumlah_pelaksanaan','pelaksanaan p JOIN rencana r USING(id_rencana)',array('r.id_bantuan','=',Sanitize::escape($params[0])));
 
             if ($this->_bantuan->affected()) {
-                $min_jumlah_target = $this->_bantuan->data()->min_jumlah_pelaksanaan;    
+                $min_jumlah_target = $this->_bantuan->getResult()->min_jumlah_pelaksanaan;    
                 $this->data['min_jumlah_target'] = $min_jumlah_target;
             }
 
@@ -246,6 +250,70 @@ class BantuanController extends Controller {
             
             return VIEW_PATH.'admin'.DS.'bantuan'.DS.'form-update.html';
         }
+    }
+
+    public function selengkapnya($params = array()) {
+        $this->rel_action = array(
+            array(
+                'href' => '/assets/main/css/utility.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/form-element.css'
+            ),
+            // array(
+            //     'href' => VENDOR_PATH.'cropper'.DS.'dist'.DS.'cropper.min.css'
+            // ),
+            array(
+                'href' => '/assets/route/admin/core/css/form-element.css'
+            ),
+            array(
+                'href' => 'https://cdn.quilljs.com/1.3.6/quill.snow.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/editor.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/pages/css/selengkapnya.css'
+            )
+        );
+
+        $this->script_action = array(
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/core/js/form-function.js'
+			),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/main/js/token.js'
+			),
+            // array(
+			// 	'type' => 'text/javascript',
+            //     'src' => VENDOR_PATH.'cropper'. DS .'dist'. DS .'cropper.min.js'
+			// ),
+            array(
+                'type' => 'text/javascript',
+                'src' => 'https://cdn.quilljs.com/1.3.6/quill.js',
+                'source' => 'trushworty'
+            ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/core/js/editor.js'
+			),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/vendors/quill/js/image-drop.js'
+            ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/vendors/quill/js/image-resize.js'
+            ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/pages/js/selengkapnya.js'
+			)
+        );
+        // Token for fetch
+        $this->data[Config::get('session/token_name')] = Token::generate();
     }
 
     public function kategori($params = array()) {
@@ -262,8 +330,8 @@ class BantuanController extends Controller {
             // $this->_bantuan->setSearch('Qr');
             $this->_bantuan->setOrder(1);
             $this->_bantuan->setDirection('ASC');
-            $this->_bantuan->setDataOffsetHalaman($halaman);
-            $this->_bantuan->setDataLimit(10);
+            $this->_bantuan->setOffsetByHalaman($halaman);
+            $this->_bantuan->setLimit(10);
             $this->_bantuan->readDataBantuanKategori($kategori);
             $this->data['kategori'] = ucwords($kategori);
             
@@ -302,8 +370,8 @@ class BantuanController extends Controller {
                     $this->data['halaman'] = Sanitize::escape2($params[2]);
                     // return VIEW_PATH.'admin'.DS.'bantuan'.DS.'index.html';
                 }
-                $this->_bantuan->setDataOffsetHalaman($this->data['halaman']);
-                $this->_bantuan->setDataLimit(10);
+                $this->_bantuan->setLimit(10);
+                $this->_bantuan->setOffsetByHalaman($this->data['halaman']);
                 $dataBantuanKategori = $this->_bantuan->dataBantuanKategori(Sanitize::escape2($params[1]));
 
                 if (empty($dataBantuanKategori)) {
@@ -313,8 +381,14 @@ class BantuanController extends Controller {
                     }
                     Redirect::to('admin/bantuan/berjalan/' . $params[0] . '/' . $kategori_param . '/' . $halaman);
                 }
-                $this->data['record'] = $this->_bantuan->affected();
+                if ($this->_bantuan->countData("bantuan b LEFT JOIN kategori k USING(id_kategori)",array("k.nama = ? AND b.blokir IS NULL AND LOWER(b.status) = LOWER('D')",Sanitize::escape2($params[1]))) != false) {
+                    $this->data['record'] = $this->_bantuan->countData("bantuan b LEFT JOIN kategori k USING(id_kategori)",array("k.nama = ? AND b.blokir IS NULL AND LOWER(b.status) = LOWER('D')",Sanitize::escape2($params[1])))->jumlah_record;
+                } else {
+                    $this->data['record'] = 0;
+                }
                 $this->data['data_bantuan_kategori'] = $dataBantuanKategori;
+                $this->data['limit'] = $this->_bantuan->getLimit();
+
                 // Token for fetch
                 $this->data[Config::get('session/token_name')] = Token::generate();
                 $this->script_action = array(
@@ -339,8 +413,8 @@ class BantuanController extends Controller {
                     $this->data['halaman'] = Sanitize::escape2($params[2]);
                     // return VIEW_PATH.'admin'.DS.'bantuan'.DS.'index.html';
                 }
-                $this->_bantuan->setDataOffsetHalaman($this->data['halaman']);
-                $this->_bantuan->setDataLimit(10);
+                $this->_bantuan->setLimit(10);
+                $this->_bantuan->setOffsetByHalaman($this->data['halaman']);
                 $dataBantuanKategori = $this->_bantuan->dataBantuanKategori(Sanitize::escape2($params[1]), 'S');
 
                 if (empty($dataBantuanKategori)) {
@@ -384,17 +458,17 @@ class BantuanController extends Controller {
         $dataSaldo = $this->_bantuan->getSaldoBantuan($params[0]);
         $this->data['saldo_bantuan'] = $dataSaldo;
 
-        $this->_bantuan->setDataLimit(3);
+        $this->_bantuan->setLimit(3);
         $this->_bantuan->setStatus(1);
         $this->_bantuan->setDirection('DESC');
-        // $this->_bantuan->setDataOffsetHalaman(1);
+        // $this->_bantuan->setOffsetByHalaman(1);
 
         $dataDonatur = $this->_bantuan->dataDonasiDonaturBantuan($params[0]);
         $this->data['donasi_bantuan'] = $dataDonatur;
         $this->data['halaman'] = 1;
         $this->data['record'] = $this->_bantuan->countDonasiBantuan($params[0]);
-        $this->data['pages'] = ceil($this->data['record']->jumlah_record / $this->_bantuan->getDataLimit());
-        $this->data['limit'] = $this->_bantuan->getDataLimit();
+        $this->data['pages'] = ceil($this->data['record']->jumlah_record / $this->_bantuan->getLimit());
+        $this->data['limit'] = $this->_bantuan->getLimit();
 
         $this->rel_action = array(
             array(
@@ -476,7 +550,7 @@ class BantuanController extends Controller {
 
     public function formUpdate($id = null) {
         if (!is_null($id)) {
-            $hasil = $this->_bantuan->getData(
+            $this->_bantuan->getData(
                 'gm.nama nama_gambar_medium, gw.nama nama_gambar_wide, gm.path_gambar path_gambar_medium, gw.path_gambar path_gambar_wide, b.*', 
                 'bantuan b LEFT JOIN gambar gm ON(b.id_gambar_medium = gm.id_gambar) LEFT JOIN gambar gw ON(b.id_gambar_wide = gw.id_gambar)', 
                 array('b.id_bantuan', '=', Sanitize::escape2($id)),'AND',array('b.blokir','IS', NULL)
@@ -486,7 +560,7 @@ class BantuanController extends Controller {
                 Redirect::to('admin/bantuan/formulir');
             }
 
-            $this->data['bantuan'] = $hasil;
+            $this->data['bantuan'] = $this->_bantuan->getResult();
         }
     }
 }

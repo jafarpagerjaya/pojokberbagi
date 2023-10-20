@@ -1,0 +1,1180 @@
+<div class="row pb-6" id="row-header">
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-stats">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h5 class="card-title text-uppercase text-muted mb-0">Total Rencana</h5>
+                        <span class="h2 font-weight-bold mb-0"><?= $data['info_card']->total_rencana; ?></span>
+                    </div>
+                    <div class="col-auto">
+                        <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
+                            <i class="ni ni-active-40"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-stats">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h5 class="card-title text-uppercase text-muted mb-0">Tugas</h5>
+                        <span class="h2 font-weight-bold mb-0"><?= $data['info_card']->tugas; ?></span>
+                    </div>
+                    <div class="col-auto">
+                        <div
+                            class="icon icon-shape bg-gradient-success text-white rounded-circle shadow">
+                            <i class="ni ni-bullet-list-67"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-stats">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h5 class="card-title text-uppercase text-muted mb-0">Perbaikan</h5>
+                        <span class="h2 font-weight-bold mb-0"><?= $data['info_card']->perbaikan; ?></span>
+                    </div>
+                    <div class="col-auto">
+                        <div class="icon icon-shape bg-gradient-warning text-white rounded-circle shadow">
+                            <i class="ni ni-notification-70"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-stats">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h5 class="card-title text-uppercase text-muted mb-0">Disetujui</h5>
+                        <span class="h2 font-weight-bold mb-0"><?= $data['info_card']->disetujui; ?></span>
+                    </div>
+                    <div class="col-auto">
+                        <div class="icon icon-shape bg-gradient-info text-white rounded-circle shadow">
+                            <i class="ni ni-like-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt--6">
+    <div class="col">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center border-0">
+                <h2 class="mb-0">Daftar Rencana Pelaksanaan Bantuan</h2>
+                <div class="btn btn-primary d-flex align-items-center justify-content-center"
+                    data-toggle="modal" data-target="#modalBuatRencana">
+                    <span class="d-none d-md-block">Buat Rencana Baru</span>
+                    <i class="d-md-none fa fa-plus m-0"></i>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <div>
+                        <table class="table align-items-center mb-0 table-hover table-borderless" id="list-rencana">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col" class="sort" data-sort="id">Rencana</th>
+                                    <th scope="col">Keterangan</th>
+                                    <th scope="col" class="sort fit" data-sort="anggaran">Anggaran</th>
+                                    <th scope="col" class="sort fit" data-sort="tahap">Tahap</th>
+                                    <th scope="col" class="sort fit" data-sort="status">Status</th>
+                                    <th scope="col" class="fit"></th>
+                                </tr>
+                            </thead>
+                            <tbody<?= (isset($this->data['list_rab']['limit']) ? ' data-limit="'. $this->data['list_rab']['limit'] .'"' : '') ?>>
+                                <?php 
+                                    if (count(is_countable($data['list_rab']['data']) ? $data['list_rab']['data'] : []) > 0) {
+                                        foreach($data['list_rab']['data'] as $listRab) {
+                                            if ($listRab->tahap == 'Perencanaan') {
+                                                $badge_class = 'badge-warning';
+                                            } else if ($listRab->tahap == 'Pencairan') {
+                                                $badge_class = 'badge-success';
+                                            } else if ($listRab->tahap == 'Persiapan') {
+                                                $badge_class = 'badge-primary';
+                                            } else if ($listRab->tahap == 'Pengadaan') {
+                                                $badge_class = 'badge-danger';
+                                            } else if ($listRab->tahap == 'Pencairan Lanjutan') {
+                                                $badge_class = 'badge-success';
+                                            } else if ($listRab->tahap == 'Pengadaan Lanjutan') {
+                                                $badge_class = 'badge-danger';
+                                            } else {
+                                                $badge_class = 'badge-secondary';
+                                            }
+                                                                                    
+                                            $status_tahap = Utility::statusTahap($listRab->tahap, $listRab->total_penarikan, $listRab->total_pengadaan, $listRab->total_anggaran, $listRab->status_rencana, $listRab->status_pelaksanaan, $listRab->banyak_penarikan)
+                                ?>
+                                <tr data-id-rencana="<?= $listRab->id_rencana; ?>">
+                                    <th scope="row">
+                                        <div class="d-flex flex-column">
+                                            <a href="#" class="font-weight-bolder">
+                                                <span><?= $listRab->nama_bantuan; ?></span>
+                                            </a>
+                                            <span class="mb-0"><?= $listRab->create_at_rencana; ?></span>
+                                        </div>
+                                    </th>
+                                    <td class="align-bottom">
+                                        <div class="d-flex flex-column">
+                                            <span class="mb-0 "><?= $listRab->keterangan_rencana; ?></span>
+                                        </div>
+                                    </td>
+                                    <td class="anggaran d-flex flex-column">
+                                        <div class="total_anggaran font-weight-bold">
+                                            <span><?= $listRab->total_anggaran; ?></span>
+                                        </div>
+                                        <div class="jumlah-item">
+                                            <span><?= $listRab->jumlah_item; ?></span>
+                                        </div>
+                                    </td>
+                                    <td class="fit">
+                                        <span class="badge <?= $badge_class; ?> p-2 text-capitalize">
+                                            <?= $listRab->tahap; ?>
+                                        </span>
+                                    </td>
+                                    <td class="fit">
+                                        <span class="badge badge-dot mr-4">
+                                            <i class="<?= (!is_null($status_tahap['class']) ? $status_tahap['class']:'bg-gradient-primary'); ?>"></i>
+                                            <span class="status"><?= $status_tahap['text']; ?></span>
+                                        </span>
+                                    </td>
+                                    <td class="text-right fit">
+                                        <div class="dropdown">
+                                            <a class="btn btn-sm btn-icon-only text-light" href="#"
+                                                role="button" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false"
+                                                aria-label="Drop Down Action Record">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </a>
+                                            <div
+                                                class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                                <a class="dropdown-item" href="#" data-toggle="modal"
+                                                    data-target="#modalRincianRAB">Lihat RAB</a>
+                                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalPerubahanRAB">Ubah RAB</a>
+                                                <a class="dropdown-item" href="#">Something else
+                                                    here</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php 
+                                        }
+                                    } else {
+                                    
+                                    }
+                                ?>
+                            </tbody>
+                            <tfoot class="tfoot-light">
+                                <tr>
+                                    <th scope="col" class="sort" data-sort="id">Rencana</th>
+                                    <th scope="col">Keterangan</th>
+                                    <th scope="col" class="sort fit" data-sort="anggaran">Anggaran</th>
+                                    <th scope="col" class="sort fit" data-sort="tahap">Tahap</th>
+                                    <th scope="col" class="sort fit" data-sort="status">Status</th>
+                                    <th scope="col" class="fit"></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer border-0">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Cari.." name="search"
+                                autocomplete="off" <?=(isset($data['list_rab']['search']) ? 'value="' . $data['list_rab']['search'] . '"' : '' )
+                                ?>>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <ul class="pagination pagination-sm justify-content-center justify-content-md-end mb-0" data-pages="<?= $this->data['list_rab']['pages']; ?>">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" id="modalBuatRencana" tabindex="-1" role="dialog"
+    aria-labelledby="modalBuatRencana-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container p-0 py-md-3 py-lg-5 px-lg-3 px-3 px-md-0">
+                <div class="row gap-y-5 p-3">
+                    <div class="col-12 bg-lighter rounded" id="stepper">
+                        <div class="wrapper py-3 px-2">
+                            <ol class="c-stepper mb-0">
+                                <li class="c-stepper__item" id="step-rencana">
+                                    <div class="d-flex flex-column gap-1">
+                                        <h6 class="mb-0 c-stepper__title">
+                                            <span class="d-none d-md-block">Perencanaan Anggaran</span>
+                                            <span class="d-md-none">RAB</span>
+                                        </h6>
+                                        <p class="mb-0 text-sm">
+                                            Menentukan program yang akan dianggarkan
+                                        </p>
+                                        <span class="date">29 Juli 2022 23:30</span>
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="col-12 px-0 tab-content" id="tab-rencana-pencairan">
+                        <div class="tab-pane gap-y-5 show active" id="tab-rencana">
+                            <div class="w-100" id="rencana">
+                                <div class="row mx-0 gap-y-5">
+                                    <div class="px-0 col-12 col-md" id="rencana-program">
+                                        <div class="form-group position-relative mb-0">
+                                            <span class="font-weight-bolder position-absolute mt-3">
+                                                <label for="id-bantuan"
+                                                    class="form-control-label">Rencana Untuk
+                                                    Program</label>
+                                            </span>
+                                            <select class="custom-select" id="id-bantuan"
+                                                name="id_bantuan" required>
+                                                <option value="0" disabled selected hidden>Pilih salah satu</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="px-0 col-12">
+                                        <div class="form-label-group">
+                                            <input type="text" id="input-keterangan-rencana"
+                                                class="form-control" name="keterangan"
+                                                placeholder="Keterangan" autocomplete="off"
+                                                maxlength="50">
+                                            <label for="input-keterangan-rencana"
+                                                class="form-control-label">Keterangan</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane gap-y-5 " id="tab-pelaksanaan">
+                            <div class="row gap-y-5 gap-x-2">
+                                <div class="col-md col-12">
+                                    <div class="py-3 px-4 rounded bg-lighter">
+                                        <h4 class="mb-1">Total RAB</h4>
+                                        <div class="text-sm" id="total-rab">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-md col-12">
+                                    <div class="py-3 px-4 rounded bg-lighter">
+                                        <h4 class="mb-1">Anggaran Tersedia</h4>
+                                        <div class="text-sm" id="anggaran-tersedia">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-md col-12">
+                                    <div class="py-3 px-4 rounded bg-lighter">
+                                        <h4 class="mb-1">Pelaksanaan Ke</h4>
+                                        <div class="text-sm" id="pelaksanaan-ke">
+                                            1
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="py-3 px-4 rounded bg-lighter">
+                                        <div class="text-sm">Penggunaan Anggaran</div>
+                                        <h1 class="sm mb-0" id="penggunaan-anggaran">
+                                            1.000.000
+                                        </h1>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row gap-y-5">
+                                <div class="col">
+                                    <table class="table list-rab m-0" id="pilih-anggaran">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th class="fit">Kebutuhan</th>
+                                                <th>Keterangan / Spesifikasi</th>
+                                                <th class="text-right">Sub Total</th>
+                                                <th class="text-right">Anggarkan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- <tr data-id-rab="1">
+                                                <td class="fit">
+                                                    <span>Kebutuhan 1</span>
+                                                </td>
+                                                <td>
+                                                    g elit. Fuga eum quia cum totam quos perspiciatis.
+                                                </td>
+                                                <td class="text-right">1.000.000</td>
+                                                <td class="text-right">
+                                                    <label class="custom-toggle ml-auto">
+                                                        <input type="checkbox" checked>
+                                                        <span
+                                                            class="custom-toggle-slider rounded-circle"
+                                                            data-label-off="Jangan"
+                                                            data-label-on="Ya"></span>
+                                                    </label>
+                                                </td>
+                                            </tr> -->
+                                        </tbody>
+                                        <tfoot class="tfoot-light">
+                                            <tr>
+                                                <th class="fit">Kebutuhan</th>
+                                                <th>Keterangan / Spesifikasi</th>
+                                                <th class="text-right">Sub Total</th>
+                                                <th class="text-right">Anggarkan</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row gap-y-5 gap-x-2">
+                                <div class="col-12 col-md">
+                                    <div class="form-label-group">
+                                        <input type="text" name="jumlah_pelaksanaan"
+                                            placeholder="Jumlah Target Pelaksanaan"
+                                            class="form-control price" id="input-jumlah-pelaksanaan"
+                                            autocomplete="off">
+                                        <label for="input-jumlah-pelaksanaan"
+                                            class="form-control-label">Jumlah Target Pelaksanaan</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-label-group">
+                                        <textarea type="text" name="deskripsi" id="textarea-deskripsi"
+                                            class="form-control px-4 py-3"
+                                            placeholder="Deskripsi Pelaksanaan" autocomplete="off"
+                                            maxlength="255"></textarea>
+                                        <label for="textarea-deskripsi"
+                                            class="form-control-label">Deskripsi Pelaksanaan</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="input-group form-label-group" id="tanggal-eksekusi">
+                                        <input spellcheck="false" class="form-control datepicker"
+                                            placeholder="Tanggal Pelaksanaan" type="text"
+                                            name="tanggal_eksekusi" id="input-tanggal-pelaksanaan"
+                                            data-date-end-date="+10d" autocomplete="off">
+                                        <label for="input-tanggal-pelaksanaan"
+                                            class="form-control-label">Tanggal Pelaksanaan</label>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="ni ni-calendar-grid-58 px-1"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane gap-y-5 " id="tab-pencairan">
+                            <div class="row gap-y-5 gap-x-2">
+                                <div class="col-md col-12">
+                                    <div class="py-3 px-4 rounded bg-lighter">
+                                        <h4 class="mb-1">Saldo RAB</h4>
+                                        <div class="text-sm" id="saldo-rab">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-md col-12">
+                                    <div class="py-3 px-4 rounded bg-lighter">
+                                        <h4 class="mb-1">Anggaran Tersedia</h4>
+                                        <div class="text-sm" id="anggaran-tersedia">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-md col-12">
+                                    <div class="py-3 px-4 rounded bg-lighter">
+                                        <h4 class="mb-1">Pencairan Ke</h4>
+                                        <div class="text-sm">
+                                            1
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="py-3 px-4 rounded bg-lighter">
+                                        <h4 class="mb-1">Max Anggaran Dicairkan</h4>
+                                        <div class="text-sm" id="max-pencairan">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row gap-y-5 gap-x-2">
+                                <div class="col-12 col-md">
+                                    <div class="form-label-group">
+                                        <input type="text" name="persentase_penarikan"
+                                            placeholder="Persentase Penarikan" class="form-control"
+                                            id="input-persentase-penarikan" autocomplete="off">
+                                        <label for="input-persentase-penarikan"
+                                            class="form-control-label">Persentase Penarikan</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md">
+                                    <div class="form-label-group">
+                                        <input type="text" name="nominal_penarikan"
+                                            placeholder="Nominal Penarikan" class="form-control price"
+                                            id="input-nominal-penarikan" autocomplete="off">
+                                        <label for="input-nominal-penarikan"
+                                            class="form-control-label">Nominal Penarikan</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="p-0 rounded">
+                                        <div class="form-label-group bg-transparent">
+                                            <textarea type="text" name="keterangan" id="keterangan-pencairan"
+                                                class="form-control px-4 py-3" placeholder="Keterangan" autocomplete="off"
+                                                maxlength="255"></textarea>
+                                            <label for="keterangan-pencairan" class="form-control-label">Keterangan</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group position-relative" id="petugas">
+                                        <span class="font-weight-bolder position-absolute mt-2">
+                                            <label for="petugas-pencairan"
+                                                class="form-control-label">Petugas Pencairan</label>
+                                        </span>
+                                        <select class="custom-select" id="petugas-pencairan"
+                                            name="petugas_pencairan" multiple>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane gap-y-5 " id="tab-penarikan">
+                            <div class="row gap-y-5 gap-x-2">
+                                <div class="col-12">
+                                    <div class="px-4 py-3 bg-lighter rounded">
+                                        <div class="row">
+                                            <div class="col">
+                                                <h4 class="mb-0">
+                                                    Total Penarikan
+                                                </h4>
+                                                <div id="total-penarikan"></div>
+                                            </div>
+                                            <div
+                                                class="col d-flex align-items-center justify-content-end">
+                                                <button class=" btn btn-icon btn-outline-orange btn-sm"
+                                                    type="button" id="rekalkulasi-penarikan">
+                                                    <span class="btn-inner--icon"><i
+                                                            class="fas fa-sync"></i></span>
+                                                    <span class="btn-inner--text">Refresh</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <table class="table table-hover border list-rab rounded mb-0"
+                                        id="list-penarikan">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th class="fit">
+                                                    Penarikan Dari
+                                                </th>
+                                                <th>Status Dana</th>
+                                                <th class="text-right">
+                                                    Jumlah
+                                                </th>
+                                                <th class="text-right fit">
+
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- <tr data-id-ca="1">
+                                                <td>
+                                                    <div class="media align-items-center gap-x-3">
+                                                        <div class="avatar rounded bg-transparent border"
+                                                            data-id-donatur="2">
+                                                            <img src="/img/payment/bjb.png" alt="BJB"
+                                                                class="img-fluid">
+                                                        </div>
+                                                        <div class="media-body small">
+                                                            <div class="text-black-50 font-weight-bold">
+                                                                0001000080001
+                                                            </div>
+                                                            <div
+                                                                class="text-black-50 font-weight-bolder">
+                                                                Pojok Berbagi Indonesia
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <a href="#"
+                                                        class="badge badge-pill badge-success">Siap
+                                                        ditarik</a>
+                                                    <a href="#"
+                                                        class="px-2 badge badge-pill badge-warning">Sedang
+                                                        dalam proses pinbuk</a>
+                                                    <p
+                                                        class="px-2 font-weight-900 mb-0 small nominal-pinbuk">
+                                                        10.000
+                                                    </p>
+                                                </td>
+                                                <td class="text-right nominal">
+                                                    100.000
+                                                </td>
+                                                <td class="fit">A
+                                                    <button class="btn btn-outline-orange btn-sm"
+                                                        data-toggle="modal"
+                                                        data-target="#modalFormPinbuk">:</button>
+                                                </td>
+                                            </tr> -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between py-3" id="action">
+                        <button class="btn btn-link font-weight-bolder text-warning"
+                            data-dismiss="modal" type="button">Batal</button>
+                        <div class="btn btn-outline-primary" id="buat-rab" type="submit"
+                            data-reactive-btn="true">Buat
+                            RAB</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" id="modalPerubahanRAB" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container p-0 py-md-3 py-lg-5 px-lg-3 px-3 px-md-0">
+                <div class="row">
+                    <div class="col">
+                        <h2>Form Update Rencana</h2>
+                    </div>
+                </div>
+                <div class="row gap-y-5 mt-4" id="box-bg-light-info">
+                    <div class="col">
+                        <div class="px-4 py-3 bg-lighter rounded">
+                            <h4 class="mb-0">Rencana Bantuan</h4>
+                            <span id="nama-bantuan-update"></span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="px-4 py-3 bg-lighter rounded">
+                            <div class="row">
+                                <div class="col">
+                                    <h4 class="mb-0">Total Anggaran</h4>
+                                    <span id="total-anggaran-update" class="update-total-rab"></span>
+                                </div>
+                                <div class="col font-weight-900">
+                                    <h4 class="mb-0">Saldo Anggaran</h4>
+                                    <span id="saldo-donasi-update" class="max-anggaran"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="row m-0 gap-x-5 bg-lighter rounded">
+                            <div class="col px-4 py-3">
+                                <h4 class="mb-0">Total Teranggarkan</h4>
+                                <div class="text-sm font-weight-bold text-success"
+                                    id="total-teranggarkan-rencana-update">
+                                </div>
+                            </div>
+                            <div class="col px-4 py-3">
+                                <h4 class="mb-0">Belum Teranggarkan</h4>
+                                <div class="text-sm font-weight-bold text-warning"
+                                    id="belum-teranggarkan-rencana-update">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="bg-lighter rounded py-3">
+                            <div class="row gap-x-5 gap-y-2 m-0">
+                                <div class="col-12 col-lg px-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="text-sm">Waktu Pembuatan</div>
+                                            <div class="text-sm font-weight-bold" id="waktu-buat-rencana-update">20 Juni 2023
+                                                22:30:33
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="text-sm">Pembaharuan Terakhir</div>
+                                            <div class="text-sm font-weight-bold" id="waktu-pembaharuan-rencana-update">20 Juni 2023
+                                                22:30:33
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg px-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="text-sm">Status Rencana</div>
+                                            <div class="text-sm font-weight-bold text-orange"
+                                                id="status-rencana-update">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="text-sm">Pembuat Rencana</div>
+                                            <div class="text-sm font-weight-bold"
+                                                id="nama-pembuat-rencana-update">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="p-0 bg-lighter rounded">
+                            <div class="form-label-group bg-transparent">
+                                <textarea type="text" name="keterangan" id="keterangan-rencana-update"
+                                    class="form-control px-4 py-3" placeholder="Keterangan" autocomplete="off"
+                                    maxlength="50"></textarea>
+                                <label for="keterangan-rencana-update" class="form-control-label">Keterangan</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-4 py-2 gap-y-4">
+                    <div class="col-12">
+                        <button class="btn btn-outline-primary" data-toggle="modal" data-target="#modalFormRab" id="tambah-item-rab">Tambah</button>
+                    </div>
+                    <div class="col">
+                        <table class="table table-borderless table-hover table-responsive list-rab">
+                            <thead class="thead-light"><tr><th>Kebutuhan</th><th>Keterangan / Spesifikasi</th><th class="text-right">Harga Satuan</th><th class="text-right">Jumlah</th><th class="text-right">Sub Total</th><th colspan="2" class="fit text-center">Aksi</th></tr></thead>
+                            <tbody>
+                                <!-- <tr data-id-rab="1" class=""><td>Operasional</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="px-0"><a href="#" class="btn btn-outline-danger btn-sm font-weight-bolder delete">Hapus</a></td><td><a href="#" class="btn btn-outline-orange btn-sm font-weight-bolder update">Ubah</a></td></tr> -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row my-4">
+                    <div class="col">
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-link font-weight-bolder text-warning"
+                                data-dismiss="modal" type="button">Tutup</button>
+                            <div>
+                                <button class="btn btn-primary" type="submit">Simpan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalFormRab" tabindex="-1" role="dialog"
+    aria-labelledby="modalFormRabLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header align-items-center justify-content-between">
+                <i class="ni ni-bold-left text-warning" data-dismiss="modal"></i>
+                <h5 class="modal-title font-weight-bolder"><span id="formJudul">Tambah</span> Item RAB
+                </h5>
+                <button type="button" class="close p-3 ml-0" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group position-relative" id="nama-kebutuhan">
+                    <span class="font-weight-bolder position-absolute mt-2">
+                        <label for="id-kebutuhan" class="form-control-label">Kebutuhan</label>
+                    </span>
+                    <select class="custom-select" id="id-kebutuhan" name="id_kebutuhan">
+                        <option value="0" disabled selected hidden>Pilih salah satu</option>
+                    </select>
+                </div>
+                <div class="form-label-group mb-4">
+                    <input type="text" name="harga_satuan" id="input-harga-satuan"
+                        class="form-control px-3 price" placeholder="Harga Satuan">
+                    <label for="input-harga-satuan" class="form-control-label">Harga Satuan</label>
+                </div>
+                <div class="form-label-group mb-4">
+                    <input type="text" name="jumlah" id="input-jumlah" class="form-control px-3 price"
+                        placeholder="Jumlah">
+                    <label for="input-jumlah" class="form-control-label">Jumlah</label>
+                </div>
+                <div class="form-label-group mb-4">
+                    <input type="text" name="keterangan" id="input-keterangan-rab"
+                        class="form-control px-3" placeholder="Keterangan / Spesifikasi" maxlength="50">
+                    <label for="input-keterangan-rab" class="form-control-label">Keterangan /
+                        Spesifikasi</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex w-100 align-items-center justify-content-center">
+                    <button class="btn d-flex btn-link" data-toggle="modal"
+                        data-target="#modalTambahKebutuhan" type="button">Tambah Kebutuhan</button>
+                    <i class="fa fa-question-circle text-gray" data-toggle="tooltip"
+                        data-placement="top"
+                        title="Menambahkan kebutuhan baru jika di kolom pencarian tidak ditemukan."></i>
+                </div>
+                <div class="btn btn-link font-weight-bolder text-muted" type="clear" id="cl">Kosongkan
+                </div>
+                <div class="btn btn-primary ml-auto" type="submit">Simpan</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalTambahKebutuhan" tabindex="-1" role="dialog"
+    aria-labelledby="modalTambahKebutuhanLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header align-items-center justify-content-between">
+                <i class="ni ni-bold-left text-warning" data-dismiss="modal"></i>
+                <h5 class="modal-title font-weight-bolder">Tambah Kebutuhan
+                </h5>
+                <button type="button" class="close p-3 ml-0" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" type="button">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group position-relative" id="nama-kategori">
+                    <span class="font-weight-bolder position-absolute mt-2">
+                        <label for="id-kk" class="form-control-label">Kategori</label>
+                    </span>
+                    <select class="custom-select" id="id-kk" name="id_kk">
+                        <option value="0" disabled selected hidden>Pilih salah satu</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
+                </div>
+                <div class="form-label-group mb-4">
+                    <input type="text" name="nama" id="input-nama-kebutuhan" class="form-control px-3"
+                        placeholder="Nama" autocomplete="off" maxlength="50">
+                    <label for="input-nama-kebutuhan" class="form-control-label">Nama</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn btn-link font-weight-bolder text-muted" type="clear">Kosongkan</div>
+                <div class="btn btn-primary ml-auto" type="submit">Simpan</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalKonfirmasiHapusRab" tabindex="-1" role="dialog"
+    aria-labelledby="modalKonfirmasiHapusRabLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header align-items-center justify-content-between p-4">
+                <h5 class="modal-title font-weight-bolder">Konfirmasi Hapus RAB</h5>
+                <button type="button" class="close p-3 ml-0" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-sm">Apakah yakin menghapus data RAB kebutuhan
+                    <div>
+                        <span id="kebutuhan" class="font-weight-bolder">Operasional</span>
+                        <span id="spec-ket" class="text-orange">biaya pengerjaan keseluruhan untuk
+                        internal</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer p-4">
+                <button class="btn btn-link font-weight-bolder text-orange m-0" data-dismiss="modal"
+                    aria-label="Close" type="button">Batal</button>
+                <div class="btn btn-danger ml-auto m-0" type="submit">Hapus</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" id="modalRincianRAB" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container p-0 py-md-3 py-lg-5 px-lg-3 px-3 px-md-0">
+                <div class="row gap-y-5 mt-4 pb-2">
+                    <div class="col">
+                        <div class="px-4 py-3 bg-lighter rounded">
+                            <h4 class="mb-0">Rencana Bantuan</h4>
+                            <span id="nama-bantuan">Bantuan 1</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="px-4 py-3 bg-lighter rounded">
+                            <h4 class="mb-0">Total Anggaran</h4>
+                            <span id="total-anggaran">300.000</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="bg-lighter rounded py-4">
+                            <div class="row gap-4 mx-0">
+                                <div class="col-md col-12 px-4">
+                                    <h5>Keterangan Rencana</h5>
+                                    <div class="text-sm" id="keterangan-rencana">Lorem, ipsum dolor sit amet consectetur
+                                        adipisicing elit. Maxime voluptates placeat ea, aperiam odit
+                                        dicta quam hic laudantium qui saepe.</div>
+                                </div>
+                                <div class="col-md col-12 px-4">
+                                    <div class="row gap-y-3">
+                                        <div class="col-6">
+                                            <div class="text-sm">Pembuat Rencana</div>
+                                            <div class="text-sm font-weight-bold" id="nama-pembuat-rencana">
+                                                Bobobouy
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="text-sm">Waktu Pembuatan</div>
+                                            <div class="text-sm font-weight-bold" id="waktu-buat-rencana">20 Juni 2022
+                                                22:30:33
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="text-sm">Status Rencana</div>
+                                            <div class="font-weight-bold text-orange"
+                                                id="status-rencana" style="font-size: .875rem!important;">
+                                                Belum
+                                                Disetujui
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-4">
+                    <div class="col">
+                        <table class="table table-hover list-rab table-absolute-first table-borderless">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th class="fit">Kebutuhan</th>
+                                    <th>Keterangan / Spesifikasi</th>
+                                    <th class="text-right">Harga Satuan</th>
+                                    <th class="text-right">Jumlah</th>
+                                    <th class="text-right">Sub Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-zero="true">
+                                    <td class="fit" colspan="5">
+                                        <span>Kebutuhan 1</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="tfoot-light">
+                                <tr>
+                                    <th class="fit">Kebutuhan</th>
+                                    <th>Keterangan / Spesifikasi</th>
+                                    <th class="text-right">Harga Satuan</th>
+                                    <th class="text-right">Jumlah</th>
+                                    <th class="text-right">Sub Total</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="row my-4">
+                    <div class="col">
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-link font-weight-bolder text-warning"
+                                data-dismiss="modal" type="button">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade " id="modalFormPinbuk" tabindex="-1" role="dialog"
+    aria-labelledby="modalFormPinbukLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header align-items-center justify-content-between">
+                <i class="ni ni-bold-left text-warning" data-dismiss="modal"></i>
+                <h5 class="modal-title font-weight-bolder">Pinbuk Dana Donasi
+                </h5>
+                <button type="button" class="close p-3 ml-0" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group position-relative" id="channel-account-pengirim">
+                    <span class="font-weight-bolder position-absolute mt-2">
+                        <label for="id-ca-pengirim" class="form-control-label">Sumber Dana</label>
+                    </span>
+                    <select class="custom-select" id="id-ca-pengirim" name="id_ca_pengirim" readonly>
+                        
+                    </select>
+                </div>
+                <div class="form-group position-relative" id="channel-account-penerima">
+                    <span class="font-weight-bolder position-absolute mt-2">
+                        <label for="id-ca-penerima" class="form-control-label">Rekening Tujuan</label>
+                    </span>
+                    <select class="custom-select" id="id-ca-penerima" name="id_ca_penerima">
+                        <option value="0" disabled selected hidden>Pilih salah satu</option>
+                    </select>
+                </div>
+                <div class="form-label-group mb-4">
+                    <input type="text" name="nominal_pinbuk" id="input-nominal-pinbuk"
+                        class="form-control price" placeholder="Nominal">
+                    <label for="input-nominal-pinbuk" class="form-control-label">Nominal</label>
+                </div>
+                <div class="form-label-group mb-4">
+                    <input type="text" name="keterangan_pinbuk" id="input-keterangan-pinbuk"
+                        class="form-control" placeholder="Keterangan / Spesifikasi" maxlength="50">
+                    <label for="input-keterangan-pinbuk" class="form-control-label">Keterangan</label>
+                </div>
+                <div class="form-group mb-4">
+                    <div class="inputGroup">
+                        <input class="custom-control-input" type="checkbox" name="sudah_pinbuk"
+                            id="sudah-pinbuk">
+                        <label class="position-relative w-auto" for="sudah-pinbuk">
+                            <span class="text-muted">Sudah Dipinbuk</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn btn-link font-weight-bolder text-muted" type="clear" id="cl">Kosongkan
+                </div>
+                <div class="btn btn-primary ml-auto" type="submit"
+                    data-target="#modalKonfirmasiAksiPinbuk1" data-toggle="modal">Pinbuk</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" id="modalDetilPinbuk" tabindex="-1" role="dialog" aria-labelledby="modalDetilPinbukLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header align-items-center justify-content-between">
+                <i class="ni ni-bold-left text-warning" data-dismiss="modal"></i>
+                <h5 class="modal-title font-weight-bolder">Detil Pinbuk Donasi
+                </h5>
+                <button type="button" class="close p-3 ml-0" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover border list-rab rounded mb-0" id="list-detil-pinbuk">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Pinbuk</th>
+                            <th class="fit">Status</th>
+                            <th class="text-right fit">Nominal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="row justify-content-center align-items-center w-100 nowrap m-0">
+                                    <div class="col-auto px-0">
+                                        <div class="avatar rounded bg-transparent border">
+                                            <img src="/assets/images/partners/bri.png" alt="bank-bri" class="img-fluid">
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-arrow-right text-danger"></i>
+                                    </div>
+                                    <div class="col px-0">
+                                        <div class="media align-items-center gap-x-3"><div class="avatar rounded bg-transparent border"><img src="/assets/images/partners/bri.png" alt="bank-bri" class="img-fluid"></div><div class="media-body small"><div class="text-black-50 font-weight-bold">107001000272300</div><div class="text-black-50 font-weight-bolder">POJOK BERBAGI INDONESIA</div></div></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="fit">
+                                <span class="badge badge-pill pt-2 badge-danger">Belum Diproses</span>
+                                <!-- <span class="badge badge-pill pt-2 badge-info">On Proses</span>
+                                <span class="badge badge-pill pt-2 badge-warning">Menunggu Diverivikasi</span>
+                                <span class="badge badge-pill pt-2 badge-success">Success</span> -->
+                            </td>
+                            <td class="text-right fit">
+                                <b>1.000.000</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="row justify-content-center align-items-center w-100 nowrap m-0">
+                                    <div class="col-auto px-0">
+                                        <div class="avatar rounded bg-transparent border">
+                                            <img src="/assets/images/partners/bri.png" alt="bank-bri" class="img-fluid">
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-arrow-right text-danger"></i>
+                                    </div>
+                                    <div class="col px-0">
+                                        <div class="media align-items-center gap-x-3"><div class="avatar rounded bg-transparent border"><img src="/assets/images/partners/bri.png" alt="bank-bri" class="img-fluid"></div><div class="media-body small"><div class="text-black-50 font-weight-bold">107001000272300</div><div class="text-black-50 font-weight-bolder">POJOK BERBAGI INDONESIA</div></div></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="fit">
+                                <span class="badge badge-pill pt-2 badge-warning">Menunggu Diverivikasi</span>
+                            </td>
+                            <td class="text-right fit">
+                                <b>100.000</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="row justify-content-center align-items-center w-100 nowrap m-0">
+                                    <div class="col-auto px-0">
+                                        <div class="avatar rounded bg-transparent border">
+                                            <img src="/assets/images/partners/bri.png" alt="bank-bri" class="img-fluid">
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-arrow-left text-success"></i>
+                                    </div>
+                                    <div class="col px-0">
+                                        <div class="media align-items-center gap-x-3"><div class="avatar rounded bg-transparent border"><img src="/assets/images/partners/bri.png" alt="bank-bri" class="img-fluid"></div><div class="media-body small"><div class="text-black-50 font-weight-bold">107001000272300</div><div class="text-black-50 font-weight-bolder">POJOK BERBAGI INDONESIA</div></div></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="fit">
+                                <span class="badge badge-pill pt-2 badge-success">Success</span>
+                            </td>
+                            <td class="text-right fit">
+                                <b>1.000.000</b>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link ml-auto shadow-none font-weight-bolder text-warning"
+                        data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+<div class="modal fade in" tabindex="-2" id="modalKonfirmasiAksiPinbuk" role="dialog"
+    aria-labelledby="modalKonfirmasiAksiPinbukLabel" aria-hidden="true">
+    <div class="modal-dialog modal-danger modal-dialog-centered fullscreen">
+        <div class="modal-content bg-gradient-danger d-flex justify-content-center">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalKonfirmasiAksiPinbukLabel">
+                                Konfirmasi Perubahan
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="py-3 text-center">
+                                <i class="ni ni-bell-55 ni-3x"></i>
+                                <h4 class="heading mt-4">Anda harus baca ini!</h4>
+                                <p class="font-weight-lighter">Apakah anda yakin memindah bukukan dana
+                                    sebanyak <a target="_blank"
+                                        class="font-weight-bolder text-underline badge badge-primary p-2"
+                                        id="jumlah-pinbuk">0</a> dari <span
+                                        class="id-ca-pengirim"></span> - <span
+                                        class="id-ca-penerima"></span>?</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-link text-white mr-auto"
+                                data-dismiss="modal">Tidak</button>
+                            <button type="submit"
+                                class="btn btn-secondary font-weight-bolder">Ya</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" id="modalImgCanvasCropper" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container p-0 py-md-3 py-lg-5 px-lg-3 px-3 px-md-0">
+                <div class="row gap-y-5 mt-4">
+                    <div class="col">
+                        <div class="modal-header px-4 align-items-center">
+                            <div class="modal-title text-primary" id="modalImgCanvasCropperLabel">Bukti
+                                Pinbuk <span class="text-orange"></span></div>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body py-0 px-4">
+                            <div
+                                class="img-wrapper rounded overflow-hidden justify-content-center d-flex">
+                                <img src="" class="img-fluid rounded-box" id="image">
+                            </div>
+                        </div>
+                        <div class="modal-footer px-4 justify-content-center">
+                            <button type="button" class="btn btn-outline-primary">Crop</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalKeteranganPerbaikanRAB" tabindex="-1" role="dialog"
+    aria-labelledby="modalKeteranganPerbaikanRABLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header align-items-center justify-content-between">
+                <i class="ni ni-bold-left text-warning" data-dismiss="modal"></i>
+                <h5 class="modal-title font-weight-bolder">Pesan Perbaikan
+                </h5>
+                <button type="button" class="close p-3 ml-0" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-label-group mb-4">
+                    <textarea type="text" name="keterangan" id="textarea-keterangan"
+                        class="form-control px-4 py-3" placeholder="Keterangan" autocomplete="off"
+                        maxlength="50"></textarea>
+                    <label for="textarea-keterangan" class="form-control-label">Keterangan</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn btn-link font-weight-bolder text-muted mx-0 px-2" type="clear">Kosongkan
+                </div>
+                <div class="btn btn-primary ml-auto" type="submit">Kirim</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalKonfirmasiAksi" tabindex="-1" role="dialog"
+    aria-labelledby="modalKonfirmasiAksiLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header align-items-center justify-content-between p-4">
+                <h5 class="modal-title font-weight-bolder">Konfirmasi <span>persetujuan</span> RAB
+                </h5>
+                <button type="button" class="close p-3 ml-0" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-sm">Apakah yakin <span class="font-weight-bolder">mode-work</span>
+                    proses Rencana Anggaran Belanja
+                    <span id="rencana-bantuan" class="font-weight-bolder">Bantuan</span> yang sudah
+                    dibuat ?
+                </div>
+            </div>
+            <div class="modal-footer p-4">
+                <button class="btn btn-link font-weight-bolder text-black-50 m-0" data-dismiss="modal"
+                    aria-label="Close" type="button">Tidak</button>
+                <div class="btn btn-warning ml-auto m-0" type="submit">Ya, Tentu</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div aria-live="polite" aria-atomic="true"
+    class="position-fixed d-flex justify-content-end flex-column align-items-end">
+</div>

@@ -23,20 +23,24 @@ class AkunController extends Controller {
         );
 
         $this->title = 'Akun';
+
         $this->_auth = $this->model("Auth");
-        
         if (!$this->_auth->hasPermission('admin')) {
             Redirect::to('donatur');
         }
 
         $this->data['akun'] = $this->_auth->data();
 
-        $admin = $this->model("Admin");
-        $this->model->getAllData('pegawai', array('email','=', $this->_auth->data()->email));
-        $this->data['pegawai'] = $admin->data();
+        $this->_admin = $this->model("Admin");
+        $this->_admin->getAllData('pegawai', array('email','=', $this->data['akun']->email));
+        $this->data['pegawai'] = $this->_admin->getResult();
 
-        $this->model->getData('alias', 'jabatan', array('id_jabatan','=',$admin->data()->id_jabatan));
-        $this->data['admin_alias'] = $admin->data()->alias;
+        if (is_null($this->data['pegawai']->id_jabatan)) {
+            Redirect::to('donatur');
+        }
+
+        $this->_admin->getData('alias', 'jabatan', array('id_jabatan','=',$this->data['pegawai']->id_jabatan));
+        $this->data['admin_alias'] = $this->_admin->getResult()->alias;
     }
 
     public function index() {

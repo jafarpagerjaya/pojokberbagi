@@ -16,6 +16,7 @@ class FetchController extends Controller {
             $this->result();
             return false;
         }
+        return true;
     }
 
     private function contentTypeJsonDecoded($server_content_type) {
@@ -52,7 +53,7 @@ class FetchController extends Controller {
         $decoded = $this->contentTypeJsonDecoded($_SERVER["CONTENT_TYPE"]);
 
         // Check Token
-        $this->checkToken($decoded['token']);
+        if (!$this->checkToken($decoded['token'])) { return false; }
 
         switch ($params[0]) {
             case 'bantuan':
@@ -80,6 +81,10 @@ class FetchController extends Controller {
                         $decoded['nama_kategori'] = $params[2];
                     }
                 break;
+
+                case 'deskripsi':
+                    // deskripsi Params
+                break;
                 
                 default:
                     $this->_result['feedback'] = array(
@@ -97,6 +102,23 @@ class FetchController extends Controller {
         $action = $params[0] . 'Read';
         // call method create
         $this->$action($decoded);
+
+        return false;
+    }
+
+    // getDeskripsi(); Route Default BantuanController
+    private function bantuanDeskripsiRead($decoded) {
+        $this->model('Bantuan');
+        $this->model->getAllData('deskripsi', array('id_bantuan', '=', $decoded['id_bantuan']));
+        if ($this->model->affected()) {
+            $this->data['deskripsi'] = $this->model->getResult();
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => $this->data['deskripsi']->isi
+        );
+        $this->result();
 
         return false;
     }
@@ -153,19 +175,24 @@ class FetchController extends Controller {
 
             $newestData = $this->model->data();
             if ($newestData) {
-                $decoded['offset'] = count($currentListId);
-                if ((count($newestData) % $decoded['limit']) != 0) {
-                    $limit += $decoded['limit'] - (count($newestData) % $decoded['limit']);
+                $decoded['offset'] += sizeof($newestData);
+                if ((count($newestData) % $limit) != 0) {
+                    $limit -= (count($newestData) % $limit);
+                    if ($limit < $decoded['limit'] / 2) {
+                        $limit += $decoded['limit'];
+                    }
+                } else {
+                    $limit = $decoded['limit'];
                 }
             }
         }
 
         if (count(is_countable($removeData) ? $removeData : [])) {
-            $decoded['offset'] -= sizeof($removeData);
+            $decoded['offset'] -= count($removeData);
             if (count(is_countable($newListId) ? $newListId : [])) {
-                $limit += $decoded['limit'] - (count($removeData) % $decoded['limit']) - ($limit - $decoded['limit']);
+                $limit += count($removeData);
             } else {
-                $limit += $decoded['limit'] - (count($removeData) % $decoded['limit']);
+                $limit = $decoded['limit'];
             }
         }
 
@@ -225,6 +252,7 @@ class FetchController extends Controller {
         }
 
         // $data['limit'] == $limit
+        // setel ulang limit dan offset ke aturan awal yakni 6
         if ($data['limit'] != $decoded['limit']) {
             $data['offset'] += $limit - $decoded['limit'];
             $data['limit'] = $decoded['limit'];
@@ -306,19 +334,24 @@ class FetchController extends Controller {
 
             $newestData = $this->model->data();
             if ($newestData) {
-                $decoded['offset'] = count($currentListId);
-                if ((count($newestData) % $decoded['limit']) != 0) {
-                    $limit += $decoded['limit'] - (count($newestData) % $decoded['limit']);
+                $decoded['offset'] += sizeof($newestData);
+                if ((count($newestData) % $limit) != 0) {
+                    $limit -= (count($newestData) % $limit);
+                    if ($limit < $decoded['limit'] / 2) {
+                        $limit += $decoded['limit'];
+                    }
+                } else {
+                    $limit = $decoded['limit'];
                 }
             }
         }
 
         if (count(is_countable($removeData) ? $removeData : [])) {
-            $decoded['offset'] -= sizeof($removeData);
+            $decoded['offset'] -= count($removeData);
             if (count(is_countable($newListId) ? $newListId : [])) {
-                $limit += $decoded['limit'] - (count($removeData) % $decoded['limit']) - ($limit - $decoded['limit']);
+                $limit += count($removeData);
             } else {
-                $limit += $decoded['limit'] - (count($removeData) % $decoded['limit']);
+                $limit = $decoded['limit'];
             }
         }
 
@@ -377,6 +410,7 @@ class FetchController extends Controller {
         }
 
         // $data['limit'] == $limit
+        // setel ulang limit dan offset ke aturan awal yakni 6
         if ($data['limit'] != $decoded['limit']) {
             $data['offset'] += $limit - $decoded['limit'];
             $data['limit'] = $decoded['limit'];

@@ -29,7 +29,7 @@ class ProfileController extends Controller {
 
         $this->model("Donatur");
         $this->model->getAllData('donatur', array('email','=', $this->data['akun']->email));
-        $this->data['donatur'] = $this->model->data();
+        $this->data['donatur'] = $this->model->getResult();
         $this->data['route_alias'] = 'donatur';
         $checkIsPegawai = $this->model->isEmployee($this->data['akun']->id_akun);
         if ($checkIsPegawai) {
@@ -49,9 +49,9 @@ class ProfileController extends Controller {
             )
         );
 
-        $dataGambar = $this->model->getData('path_gambar','gambar',array('id_gambar','=', $this->data['akun']->id_gambar));
+        $dataGambar = $this->model->getData('path_gambar','gambar',array('id_gambar','=', ($this->data['akun']->id_gambar ?? '1')));
         if ($dataGambar) {
-            $this->data['gambar'] = $dataGambar;
+            $this->data['gambar'] = $this->model->getResult();
         }
     }
 
@@ -78,10 +78,8 @@ class ProfileController extends Controller {
             )
         );
         
-        $dataGambar = $this->model->getData('path_gambar','gambar',array('id_gambar','=', $this->data['akun']->id_gambar));
-        if ($dataGambar) {
-            $this->data['gambar'] = $dataGambar;
-        }
+        $this->model->getData('path_gambar','gambar',array('id_gambar','=', $this->data['akun']->id_gambar));
+        $this->data['gambar'] = $this->model->getResult();
         return VIEW_PATH.'donatur'.DS.'profile'.DS.'form-edit-profile.html';
     }
 

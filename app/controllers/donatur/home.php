@@ -39,7 +39,7 @@ class HomeController extends Controller {
 
         $this->model("Donatur");
         $this->model->getAllData('donatur', array('email','=', $this->data['akun']->email));
-        $this->data['donatur'] = $this->model->data();
+        $this->data['donatur'] = $this->model->getResult();
         $this->_id_donatur = $this->data['donatur']->id_donatur;
         $this->data['route_alias'] = 'donatur';
 	}
@@ -98,7 +98,7 @@ class HomeController extends Controller {
         $this->data['pages'] = ceil($this->_donasi->data()['total_record'] / $this->data['limit']);
 
         $this->_donasi->query("SELECT cp.id_cp, cp.nama nama_cp, cp.jenis jenis_cp, g.path_gambar path_gambar_cp  FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
-        $this->data['channel_payment'] = $this->model->readAllData();
+        $this->data['channel_payment'] = $this->model->getResults();
 
         // TToken for fetch
         $this->data[Config::get('session/token_name')] = Token::generate();

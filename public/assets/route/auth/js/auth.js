@@ -121,7 +121,8 @@ if (typeof jsonClientAuth == 'string' && jsonClientAuth == 'null') {
     // If cookie kosong / null
     if (localStorage.getItem("client-pojokberbagi")) {
         // If local ada
-        setCookie('client-pojokberbagi', localStorage.getItem("client-pojokberbagi"), 1, '/');
+        setCookie('client-pojokberbagi', localStorage.getItem("client-pojokberbagi"), 365, '/');
+        // console.log('local storage ada isinya diset cookie => ' + localStorage.getItem("client-pojokberbagi"));
     } else {
         // Local tidak ada do setKunjungan()
         setTimeout(()=>{
@@ -136,6 +137,7 @@ if (typeof jsonClientAuth == 'string' && jsonClientAuth == 'null') {
                     function(data, success) {
                         if (success) {
                             localStorage.setItem("client-pojokberbagi", decodeURIComponent(getCookie('client-pojokberbagi')));
+                            // console.log('kunjungan isi local storage ambil dari cookie => ' + decodeURIComponent(getCookie('client-pojokberbagi')));
                         }
                     }
                 );

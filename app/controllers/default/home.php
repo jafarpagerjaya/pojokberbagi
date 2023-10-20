@@ -1,5 +1,7 @@
 <?php
 class HomeController extends Controller {
+
+	private $_auth;
 	
 	public function __construct() {
 		$this->title = 'Home';
@@ -13,6 +15,8 @@ class HomeController extends Controller {
 				'src' => '/assets/pojok-berbagi-script.js'
 			)
 		);
+		$this->_auth = $this->model('Auth');
+		$this->data['signin'] = $this->_auth->isSignIn();
 	}
 
 	public function index() {
@@ -68,7 +72,7 @@ class HomeController extends Controller {
 		$path = Sanitize::escape(trim($_POST['path']));
 
 		$this->model('Home');
-		$this->setKunjungan(null, $uri, $path);
+		$this->setKunjungan2(null, $uri, $path);
 		return false;
 	}
 }

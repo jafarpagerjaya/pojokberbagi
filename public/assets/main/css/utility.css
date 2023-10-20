@@ -8,6 +8,22 @@
     gap: var(--gap-x);
 }
 
+.border-dashed {
+    border-style: dashed;
+}
+
+.border-bottom-dashed {
+    border-bottom-style: dashed;
+}
+
+.border-dotted {
+    border-style: dotted;
+}
+
+.border-bottom-dotted {
+    border-bottom-style: dotted;
+}
+
 .border-2 {
     border-width: 2px !important;
 }
@@ -57,6 +73,80 @@
 .modal.show .modal-dialog.fullscreen .modal-content.scaleIn>* {
     transform: scale(1);
     transition: all .15s ease-out;
+}
+
+.modal.show {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#keterangan {
+    padding-left: 1.6em;
+    padding-right: 1.6em;
+}
+
+.form-label-group {
+    position: relative;
+}
+
+.form-label-group textarea::placeholder,
+.form-label-group input::placeholder {
+    color: transparent !important;
+}
+
+.form-label-group label {
+    font-weight: bolder;
+    font-size: 0.875rem;
+    position: absolute;
+    top: 10px;
+    left: 1.4rem;
+    display: block;
+    width: auto;
+    margin-bottom: 0;
+    line-height: 1.5;
+    color: #495057;
+    pointer-events: none;
+    cursor: text;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    transition: all .1s ease-in-out;
+    z-index: 3;
+}
+
+.form-label-group textarea~label,
+.form-label-group input~label {
+    top: 0.875em;
+}
+
+.form-label-group textarea:placeholder-shown~label,
+.form-label-group input:placeholder-shown~label {
+    opacity: .5;
+}
+
+.form-label-group textarea:not(:placeholder-shown),
+.form-label-group input:not(:placeholder-shown) {
+    padding-top: 1.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.form-label-group textarea:not(:placeholder-shown)~label,
+.form-label-group input:not(:placeholder-shown)~label {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    font-size: 12px;
+    top: 0px;
+}
+
+.form-label-group.bg-transparent label,
+.form-label-group.bg-transparent textarea {
+    background-color: inherit;
+}
+
+.form-label-group.bg-transparent textarea:focus {
+    background-color: white;
+}
+
+.disabled {
+    cursor: wait !important;
 }
 
 @media (min-width: 425px) {

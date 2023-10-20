@@ -66,15 +66,17 @@ class AuthModel {
 	}
 	
 	public function hasPermission($hak_akses = null) {
-		$data =  $this->_db->get('izin', 'akses', array('hak_akses', '=', $this->data()->hak_akses));
-		$this->_accessRight = $data->result()->izin;
+		if ($this->isSignIn()) {
+			$data =  $this->_db->get('izin', 'akses', array('hak_akses', '=', $this->data()->hak_akses));
+			$this->_accessRight = $data->result()->izin;
 
-		if ($this->_accessRight) {
-			$permession = json_decode($this->_accessRight, true);
-			if (array_key_exists($hak_akses, $permession)) {
-				return true;
-			}
-		}	
+			if ($this->_accessRight) {
+				$permession = json_decode($this->_accessRight, true);
+				if (array_key_exists($hak_akses, $permession)) {
+					return true;
+				}
+			}	
+		}
 		return false;
 	}
 

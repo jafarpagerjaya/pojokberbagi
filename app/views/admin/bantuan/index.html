@@ -129,8 +129,8 @@
                             ?>
                         <tr>
                             <th scope="row">
-                                <div class="row align-items-center flex-row">
-                                    <div class="col-8 font-weight-bolder overflow-hidden">
+                                <div class="d-flex align-items-center flex-row justify-content-between gap-x-3">
+                                    <div class="font-weight-bolder overflow-hidden">
                                         <div class="media align-items-center">
                                             <a href="#" data-id="<?= $data_bantuan->id_bantuan; ?>"
                                                 class="d-flex flex-row">
@@ -139,7 +139,7 @@
                                                 </div>
                                                 <div class="ml-1" <?=(isset($data_bantuan->warna) ? ' style="color: '.
                                                     $data_bantuan->warna .'"' : ''); ?>>
-                                                    <?= $data_bantuan->nama ?>
+                                                    <?= $data_bantuan->nama_bantuan ?>
                                                 </div>
                                             </a>
                                         </div>
@@ -147,7 +147,7 @@
                                             <?= $data_bantuan->create_bantuan_at; ?>
                                         </div>
                                     </div>
-                                    <div class="col justify-content-end d-flex">
+                                    <div class="justify-content-end d-flex">
                                         <div class="media align-items-center flex-column">
                                             <div class="badge badge-dot text-capitalize">
                                                 <i class="<?= $blokir['class']; ?> m-0"></i>
@@ -181,7 +181,7 @@
                                     <div class="progress-info">
                                         <div class="progress-label">
                                             <span class="py-2">
-                                                <?= number_format($data_bantuan->jumlah_pelaksanaan,0,',','.') ?>
+                                                <?= number_format($data_bantuan->total_pelaksanaan,0,',','.') ?>
                                             </span>
                                         </div>
                                         <div class="progress-percentage">
@@ -202,10 +202,10 @@
                             <td>
                                 <div class="media align-item-center flex-column">
                                     <b>
-                                        <?= $data_bantuan->donasi_terlaksana; ?>
+                                        <?= $data_bantuan->total_penggunaan_donasi; ?>
                                     </b>
                                     <div class="small badge badge-primary text-black-50 text-capitalize">
-                                        <?= $data_bantuan->sekian_kali_pencairan; ?> Pencairan
+                                        <?= $data_bantuan->sekian_kali_pelaksanaan; ?> Pelaksanaan
                                     </div>
                                 </div>
                             </td>
@@ -215,7 +215,7 @@
                                         <?= $data_bantuan->total_donasi; ?>
                                     </b>
                                     <div class="badge badge-primary text-orange text-capitalize">
-                                        <?= $data_bantuan->total_donatur; ?> Donatur
+                                        <?= $data_bantuan->jumlah_donatur; ?> Donatur
                                     </div>
                                 </div>
                             </th>

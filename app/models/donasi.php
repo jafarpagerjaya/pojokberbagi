@@ -150,6 +150,19 @@ class DonasiModel extends HomeModel {
         return false;
     }
 
+    public function getDataTagihanDonasiDonatur($id_donasi) {
+        $fields = "dt.nama nama_donatur, dt.email, (CASE WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin IS NULL) THEN '/assets/images/default.png' WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin = 'P') THEN '/assets/images/female-avatar.jpg' WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin = 'L') THEN '/assets/images/male-avatar.jpg' ELSE gad.path_gambar END) path_gambar_akun, (CASE WHEN (gad.nama IS NULL AND dt.jenis_kelamin IS NULL) THEN 'default' WHEN (gad.nama IS NULL AND dt.jenis_kelamin = 'P') THEN 'female-avatar' WHEN (gad.nama IS NULL AND dt.jenis_kelamin = 'L') THEN 'male-avatar' ELSE gad.nama END) nama_path_gambar_akun, b.nama nama_bantuan, FORMAT(dn.jumlah_donasi,0,'id_ID') jumlah_donasi, dn.doa, dt.create_at, cp.jenis, gcp.path_gambar path_gambar_cp, gcp.nama nama_path_gambar_cp";
+        $tables = "donasi dn JOIN donatur dt USING(id_donatur) LEFT JOIN akun a USING(id_akun) LEFT JOIN gambar gad ON(a.id_gambar = gad.id_gambar) JOIN bantuan b USING(id_bantuan) JOIN channel_payment cp USING(id_cp) LEFT JOIN gambar gcp ON(cp.id_gambar = gcp.id_gambar)";
+
+        $this->db->get($fields, $tables, array('dn.id_donasi', '=', $id_donasi));
+        
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return $this->data;
+        }
+        return false;
+    }
+
     public function getDataTransaksiDonasi($id_donasi) {
         $this->db->query('SELECT donasi.alias, donasi.jumlah_donasi, donasi.bayar, donasi.waktu_bayar, donasi.create_at, donatur.nama nama_donatur, channel_payment.jenis, 
         channel_payment.nama nama_cp, gambar.path_gambar path_cp, bantuan.nama nama_bantuan, bantuan.nama_penerima
@@ -186,13 +199,13 @@ class DonasiModel extends HomeModel {
         SUM(IF(LOWER(cp.nama) LIKE '%bjb%', d.jumlah_donasi, 0)) saldo_bjb,
         SUM(IF(LOWER(cp.nama) LIKE '%bsi%', d.jumlah_donasi, 0)) saldo_bsi,
         SUM(IF(LOWER(cp.nama) LIKE '%bri%', d.jumlah_donasi, 0)) saldo_bri,
-        SUM(IF(LOWER(cp.nama) LIKE '%tunai%', d.jumlah_donasi, 0)) saldo_tunai,
+        SUM(IF(LOWER(cp.nama) LIKE '%kantor%', d.jumlah_donasi, 0)) saldo_tunai,
         SUM(IF(LOWER(cp.nama) LIKE '%gopay%', d.jumlah_donasi, 0)) saldo_gopay,
         SUM(IF(LOWER(cp.nama) LIKE '%dana%', d.jumlah_donasi, 0)) saldo_dana,
         (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bjb' AND cptb.jenis = 'TB') nomor_bjb,
         (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bsi' AND cptb.jenis = 'TB') nomor_bsi,
         (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bri' AND cptb.jenis = 'TB') nomor_bri,
-        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'tunai' AND cptb.jenis = 'TN') nomor_tunai,
+        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'cr kantor pusat' AND cptb.jenis = 'TN') nomor_tunai,
         (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'gopay' AND cpew.jenis = 'EW') nomor_gopay,
         (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'dana' AND cpew.jenis = 'EW') nomor_dana
         FROM channel_payment cp LEFT JOIN donasi d ON(d.id_cp = cp.id_cp)

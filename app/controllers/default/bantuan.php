@@ -16,6 +16,9 @@ class BantuanController extends Controller {
             )
         );
         $this->_bantuan = $this->model('Bantuan');
+
+        $this->_auth = $this->model('Auth');
+		$this->data['signin'] = $this->_auth->isSignIn();
     }
 
     private function kategori() {
@@ -45,6 +48,9 @@ class BantuanController extends Controller {
 
     public function detil($params) {
         if (count(is_countable($params) ? $params : [])) {
+            // Token for fetch
+        $this->data[Config::get('session/token_name')] = Token::generate();
+
             $this->rel_action = array(
                 array(
                     'href' => '/assets/route/default/pages/css/detil.css'
@@ -53,23 +59,36 @@ class BantuanController extends Controller {
 
             $this->script_action = array(
                 array(
+                    'type' => 'text/javascript',
+                    'src' => '/assets/main/js/token.js'
+                ),
+                array(
+                    'type' => 'text/javascript',
+                    'src' => 'https://cdn.quilljs.com/1.3.6/quill.js',
+                    'source' => 'trushworty'
+                ),
+                array(
                     'src' => '/assets/route/default/pages/js/detil.js'
                 )
             );
 
-            $this->model('Bantuan');
-            $this->model->getData('COUNT(id_bantuan) found','bantuan',array('id_bantuan','=',Sanitize::escape2($params[0])),'AND',array('status','IN',array('D','S')));
-            if ($this->model->data()->found == 0) {
+            $this->_bantuan->getData('COUNT(id_bantuan) found','bantuan',array('id_bantuan','=',Sanitize::escape2($params[0])),'AND',array('status','IN',array('D','S')));
+            if ($this->_bantuan->getResult()->found == 0) {
                 Session::flash('notifikasi', array(
                     'pesan' => 'Halaman detil bantuan yang anda cari tidak ditemukan',
                     'state' => 'warning'
                 ));
                 Redirect::to('home');
             }
-            $this->setKunjungan($params);
-            $this->model->getDetilBantuan($params[0]);
-            if ($this->model->affected()) {
-                $this->data['detil_bantuan'] = $this->model->data();
+            $this->setKunjungan2($params);
+            $this->_bantuan->getDetilBantuan($params[0]);
+            if ($this->_bantuan->affected()) {
+                $this->data['detil_bantuan'] = $this->_bantuan->data();
+            }
+
+            $this->_bantuan->getData('judul, FormatTanggal(create_at) create_at', 'deskripsi', array('id_bantuan','=',$params[0]));
+            if ($this->_bantuan->affected()) {
+                $this->data['deskripsi'] = $this->_bantuan->getResult();
             }
         } else {
             Redirect::to('home');

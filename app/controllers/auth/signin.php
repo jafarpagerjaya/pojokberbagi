@@ -49,9 +49,7 @@ class SigninController extends Controller {
 					$this->data['remember_meV'] = "";
 					$remember = (Input::get('remember_me') === 'on') ? true : false;
 					$signin = $this->_auth->signin(Input::get('email_username'), Input::get('password'), $remember);
-					// Debug::vd($signin);
 					if ($signin && $this->_auth->data()->aktivasi == true) {
-						// $this->isExistsAkunPengunjung($this->_auth);
 						$dataAkun = $this->_auth->data();
 
 						$this->_auth->isStaff($dataAkun->email, 'email');
@@ -178,7 +176,7 @@ class SigninController extends Controller {
 								$found = true;
 								do {
 									$this->model->getData('COUNT(id_pengunjung) count', 'pengunjung', array('device_id', '=', $device_id));
-									if ($this->model->data()->count != 0) {
+									if ($this->model->getResult()->count != 0) {
 										$device_id = Hash::unique();
 									} else {
 										$found = false;
@@ -256,18 +254,6 @@ class SigninController extends Controller {
 			);
 		}
     }
-
-	private function isExistsAkunPengunjung($model) {
-		$id_pengunjung = $model->getIdPengunjung();
-		$id_akun = $model->data()->id_akun;
-		$hasilCek = $model->cekAkunPengunjung($id_pengunjung, $id_akun);
-		if (!$hasilCek) {
-			$model->createDynamic('akun_pengunjung', array(
-				'id_akun' => $id_akun,
-				'id_pengunjung' => $id_pengunjung
-			));
-		}
-	}
 
     // public function google() {
 

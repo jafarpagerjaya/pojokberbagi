@@ -175,3 +175,79 @@ const counterTarget = document.querySelectorAll('.box-info h6[data-count-up-valu
 
 counterUpSup(counterTarget, counterSpeed);
 counterUpProgress(progressBar, counterSpeed);
+
+// selengkapnya
+const quill = new Quill('#selengkapnya', {
+    modules: {
+        toolbar: false
+    },
+    readOnly: true
+});
+
+let data = {
+        id_bantuan: window.location.href.split('/')[5],
+        token: document.querySelector('body').getAttribute('data-token')
+    };
+
+fetch('/default/fetch/read/bantuan/deskripsi', {
+    method: "POST",
+    cache: "no-cache",
+    mode: "same-origin",
+    credentials: "same-origin",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    referrer: "no-referrer",
+    body: JSON.stringify(data)
+})
+.then(response => response.json())
+.then(function (response) {
+    // console.log(response);
+
+    // render the content
+    quill.setContents(JSON.parse(response.feedback.data));
+    document.querySelector('body').setAttribute('data-token', response.token);
+    fetchTokenChannel.postMessage({
+        token: document.querySelector('body').getAttribute('data-token')
+    });
+
+    // createNewToast(document.querySelector('[aria-live="polite"]'), response.toast.id, response.toast.data_toast, response.toast);
+    
+    // $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast({
+    //     'autohide': true
+    // }).toast('show');
+});
+
+// Get all share buttons
+const shareButtons = document.querySelectorAll('.share a.medsos-icon');
+
+// Add click event listener to each button
+shareButtons.forEach(button => {
+   button.addEventListener('click', () => {
+      // Get the URL of the current page
+      const url = window.location.href;
+
+      // Get the social media platform from the button's class name
+      const platform = button.children[0].classList[1];
+
+      // Set the URL to share based on the social media platform
+      let shareUrl;
+      switch (platform) {
+        //  case 'facebook':
+        //  shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+        //  break;
+         case 'lni-twitter-filled':
+         shareUrl = `https://twitter.com/share?url=${encodeURIComponent(url)}`;
+         break;
+        //  case 'linkedin':
+        //  shareUrl = `https://www.linkedin.com/shareArticle?url=${encodeURIComponent(url)}`;
+        //  break;
+         case 'lni-whatsapp':
+         shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(url)}`;
+         break;
+      }
+
+    //   Open a new window to share the URL
+      window.open(shareUrl, '_blank');
+   });
+});

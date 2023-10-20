@@ -31,7 +31,7 @@ let tableWidthSetter = function(table) {
             table.removeClass('table-responsive');
         }
     }
-}
+};
 
 tableWidthSetter($('table.table'));
 
@@ -75,3 +75,21 @@ sideNavTogglerBtn.addEventListener('click', function () {
         }, 0);
     }
 });
+
+// warna header for box-info row bg
+const header = document.querySelector('#panel.main-content > .header');
+if (header != null) {
+    let rgb = window.getComputedStyle(header).backgroundColor;
+    const RHeader = document.getElementById('row-header');
+    if (RHeader != null) {
+        RHeader.style.backgroundColor = rgb;
+    }
+}
+
+function findIndex(node) {
+    let i = 1;
+    while ((node = node.previousSibling) != null) {
+        if (node.nodeType === 1) i++;
+    }
+    return i;
+}

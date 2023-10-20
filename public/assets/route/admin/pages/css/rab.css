@@ -1,0 +1,544 @@
+#modalBuatRencana .table-borderless th {
+    border-top-width: 1px;
+    border-top-style: solid;
+}
+
+#modalBuatRencana .rounded.col-12.mx-3.mx-md-0 {
+    flex-basis: calc(100% - 2rem);
+}
+
+h2 {
+    font-size: 1rem;
+    width: 50%;
+}
+
+.btn[data-target="#modalBuatRencana"] {
+    height: 44px;
+    width: 48px;
+}
+
+.custom-select {
+    height: 80px;
+    padding-top: 40px;
+}
+
+.custom-select#id-bantuan,
+.p-3#balance {
+    padding-left: 1.4rem !important;
+    padding-right: 1.4rem !important;
+}
+
+#modalTambahKebutuhan .custom-select,
+#modalFormRab .custom-select {
+    height: 60px;
+    padding-top: 30px;
+}
+
+#modalTambahKebutuhan .custom-select,
+#modalTambahKebutuhan input,
+#modalFormRab .custom-select,
+#modalFormRab input,
+#modalFormPinbuk .custom-select,
+#modalFormPinbuk input {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+
+#modalTambahKebutuhan .form-label-group label,
+#modalFormRab .form-label-group label,
+#modalFormPinbuk .form-label-group label {
+    left: calc(1rem + 1px) !important;
+}
+
+#bantuan>span {
+    margin-left: calc(1.6em - 2.6px);
+    margin-right: calc(1.6em - 2.6px);
+}
+
+#rencana>.row,
+#rab>.row {
+    column-gap: 2.15em;
+}
+
+#balance>.text-sm::before,
+#total-rab.text-sm::before,
+#anggaran-tersedia.text-sm::before,
+#penggunaan-anggaran::before,
+#saldo-rab::before,
+#max-pencairan::before,
+#budget-warning .text-sm>b::before {
+    content: 'Rp. ';
+}
+
+#kategori>span,
+#kebutuhan>span {
+    margin-left: calc(1rem + 1px) !important;
+    margin-right: calc(1rem + 1px) !important;
+}
+
+#bantuan>span,
+#kategori>span,
+#kebutuhan>span {
+    pointer-events: none;
+}
+
+#input-keterangan-rencana,
+#input-jumlah-pelaksanaan,
+#input-anggaran-pelaksanaan,
+#input-persentase-pencairan,
+#input-persentase-penarikan,
+#input-nominal-pencairan,
+#input-nominal-penarikan,
+#input-tanggal-pelaksanaan {
+    padding-left: 1.6em;
+    padding-right: 1.6em;
+}
+
+#modalKonfirmasiHapusRab .text-sm > *:last-child::after {
+    content: '?';
+}
+
+#id-bantuan[disabled],
+#input-keterangan-rencana[disabled] {
+    opacity: 1;
+    background-color: var(--lighter);
+    border-color: var(--lighter);
+}
+
+#list-penarikan thead>tr>th {
+    border-top: 0px !important;
+}
+
+#list-penarikan thead>tr>th:first-child {
+    border-left: 0px !important;
+}
+
+#list-penarikan thead>tr>th:last-child {
+    border-right: 0px !important;
+}
+
+#list-penarikan tbody>tr>td {
+    padding-top: .75em;
+    padding-bottom: .75em;
+    border-left: 0px !important;
+    border-right: 0px !important;
+}
+
+#list-penarikan tbody>tr>td .avatar {
+    width: 38px;
+    height: 38px;
+}
+
+#list-penarikan button {
+    padding: 4px 1em !important;
+}
+
+.modal textarea[maxlength]~span.input-char-left,
+.modal input[maxlength]~span.input-char-left {
+    bottom: 1rem;
+    transition: bottom .15s ease-in-out;
+}
+
+.modal input[maxlength]~span.input-char-left {
+    right: 1.15rem;
+}
+
+.modal textarea[maxlength]~span.input-char-left {
+    right: 1.65rem;
+}
+
+.modal input[maxlength].is-invalid.form-control~span.input-char-left {
+    right: 2.05rem;
+    transition: right 0s ease-in-out;
+}
+
+.modal textarea[maxlength].is-invalid.form-control {
+    background-position-y: 1rem;
+    background-position-x: calc(100% - 1.5rem);
+    padding-right: 1.5rem !important;
+}
+
+.modal input[maxlength]:not(:placeholder-shown)~span.input-char-left {
+    bottom: 1.5rem;
+}
+
+.modal textarea[maxlength]:not(:placeholder-shown)~span.input-char-left {
+    bottom: .25rem;
+}
+
+#spec-ket::before {
+    content: '(Ket. ';
+    left: 0;
+    color: var(--dark);
+}
+
+#spec-ket::after {
+    content: ')';
+    right: 0;
+    color: var(--dark);
+}
+
+table.list-rab:not(.table-borderless):not(.table-responsive.table-absolute-first) thead tr th:first-of-type,
+table.list-rab:not(.table-borderless):not(.table-responsive.table-absolute-first) tfoot tr th:first-of-type,
+table.list-rab:not(.table-borderless):not(.table-responsive.table-absolute-first) tbody>tr>*:first-of-type {
+    border-left: 1px solid #e9ecef !important;
+}
+
+table.list-rab:not(.table-borderless):not(.table-responsive.table-absolute-first) thead tr th:last-of-type,
+table.list-rab:not(.table-borderless):not(.table-responsive.table-absolute-first) tfoot tr th:last-of-type,
+table.list-rab:not(.table-borderless):not(.table-responsive.table-absolute-first) tbody>tr>*:last-of-type {
+    border-right: 1px solid #e9ecef !important;
+}
+
+table.list-rab thead tr th:first-of-type,
+table.list-rab tfoot tr th:first-of-type {
+    padding-left: 1.325rem !important;
+}
+
+table.list-rab thead tr th:last-of-type,
+table.list-rab tfoot tr th:last-of-type {
+    padding-right: 1.325rem !important;
+}
+
+table.list-rab tbody tr td:first-of-type {
+    padding-left: 1.6em;
+}
+
+table.list-rab tbody tr td:last-of-type {
+    padding-right: 1.6em;
+}
+
+table.list-rab tbody tr.budgeted td:first-of-type > span,
+table.list-rab tbody tr.not-budgeted td:first-of-type > span {
+    display: flex;
+    gap: 0.25rem;
+}
+
+table.list-rab tbody tr.budgeted td:first-of-type > span::before,
+table.list-rab tbody tr.not-budgeted td:first-of-type > span::before {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    font-family: "Font Awesome 5 Free"; 
+    font-weight: 900; 
+}
+
+table.list-rab tbody tr.budgeted td:first-of-type > span::before {
+    color: var(--green);
+    content: "\f058"
+}
+
+table.list-rab tbody tr.not-budgeted td:first-of-type > span::before {
+    color: var(--orange);
+    content: "\f057"
+}
+
+table.table-absolute-first {
+    border: 1px solid #e9ecef;
+    border-radius: .25rem;
+}
+
+table.table-absolute-first tr[style] th:first-of-type,
+table.table-absolute-first tr[style] td:first-of-type {
+    white-space: normal;
+}
+
+[data-dismiss] {
+    cursor: pointer;
+}
+
+.tooltip-inner {
+    text-align: left;
+}
+
+/* Tab */
+#tab-rencana-pencairan.tab-content>.tab-pane.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* stepper */
+:root {
+    --circle-size: 2.25rem;
+}
+
+ol {
+    padding: 0px;
+}
+
+.c-stepper__item:last-child {
+    min-width: 250px;
+}
+
+.c-stepper__item span.date,
+.c-stepper__item:last-child p.text-sm {
+    font-size: 0.75em !important;
+}
+
+.c-stepper__item:last-child span.date {
+    display: none;
+}
+
+.c-stepper__item:not(:last-child):before {
+    background-color: #fff;
+}
+
+.c-stepper__item:not(:last-child) p.text-sm {
+    display: none;
+}
+
+.select2-results__options::-webkit-scrollbar-thumb {
+    background-color: white;
+}
+
+/* floating */
+.form-label-group textarea~label {
+    top: 1rem;
+    min-width: calc(100% - 3rem);
+    background-color: #fff;
+    padding-left: 1px;
+    padding-right: 1px;
+}
+
+.form-label-group textarea:not(:placeholder-shown) {
+    padding-top: 1.75rem !important;
+}
+
+.form-label-group textarea:not(:placeholder-shown)~label {
+    padding-top: 0.5rem !important;
+    padding-left: 1.5px;
+    padding-right: 1.5px;
+    top: 1px !important;
+}
+
+/* Select2 */
+.select2-results .select2-results__option--highlighted .badge {
+    color: var(--primary);
+}
+
+select.custom-select:not(#id-bantuan)~.select2>.selection>.select2-selection {
+    padding-top: .45em;
+    padding-bottom: 0px;
+    height: 60px;
+}
+
+select.custom-select:not(#id-bantuan)~.select2>.selection>.select2-selection .select2-selection__rendered {
+    padding-left: 6px !important;
+    padding-right: 0px;
+    gap: .25em;
+    line-height: normal;
+}
+
+select.custom-select#id-ca~.select2>.selection>.select2-selection .select2-selection__rendered {
+    padding-left: 4px !important;
+}
+
+select.custom-select#id-bantuan~.select2>.selection>.select2-selection {
+    padding-top: 1.1rem;
+    height: 80px;
+}
+
+select.custom-select#id-bantuan~.select2>.selection>.select2-selection .select2-selection__rendered {
+    padding-left: 10px !important;
+    padding-right: 0px;
+    gap: .5em;
+    line-height: normal;
+}
+
+select.custom-select:not(#id-bantuan)~.select2>.selection>.select2-selection .select2-selection__rendered>label,
+select.custom-select:not(#id-bantuan)~.select2>.selection>.select2-selection .select2-selection__rendered>label+div {
+    height: 18px;
+}
+
+select.custom-select:not(#id-bantuan)~.select2>.selection>.select2-selection .select2-selection__rendered>label {
+    font-size: 12px;
+}
+
+select.custom-select~.select2>.selection>.select2-selection .select2-selection__rendered>label {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+select.custom-select#id-bantuan~.select2>.selection>.select2-selection .select2-selection__rendered>label {
+    margin-bottom: 0.5rem;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice,
+select.custom-select#petugas-pencairan~.select2>.selection>.select2-selection.select2-selection--multiple .select2-selection__rendered {
+    padding: 0px !important;
+}
+
+select#petugas-pencairan~.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    padding-left: 25px !important;
+}
+
+select.custom-select~.select2 .select2-selection__arrow {
+    display: flex;
+    height: 50%;
+    width: 40px;
+    top: 4px;
+    right: 7px;
+}
+
+select.custom-select.is-invalid~.select2::after {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+    position: absolute;
+    right: calc(1rem + 4px);
+    top: calc(50% + 2px);
+    content: '';
+    width: calc(.75em + .375rem);
+    height: calc(.75em + .375rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+}
+
+select.custom-select.is-invalid[multiple]~.select2::after {
+    right: 1rem;
+}
+
+.select2-container.select2-container--open [aria-label="Rekening Bank"] .select2-results__option img,
+select+.select2 img[alt*="Bank"] {
+    margin-top: -5px !important;
+}
+
+/*Select2 ReadOnly Start*/
+select[readonly].select2-hidden-accessible+.select2-container {
+    pointer-events: none;
+    touch-action: none;
+}
+
+select[readonly].select2-hidden-accessible+.select2-container .select2-selection {
+    background: #eee;
+    box-shadow: none;
+}
+
+select[readonly].select2-hidden-accessible+.select2-container .select2-selection__arrow,
+select[readonly].select2-hidden-accessible+.select2-container .select2-selection__clear {
+    display: none;
+}
+
+/*Select2 ReadOnly End*/
+
+/* span>label[data-label-after] {
+    z-index: 3;
+}
+
+.is-invalid>span+select.custom-select~.select2 label {
+    visibility: hidden;
+}
+
+.form-group>span>label[for="id-bantuan"] {
+    margin-left: 1.5rem;
+} */
+
+#petugas.form-group.position-relative>span.position-absolute {
+    z-index: 1;
+    margin-left: 1.5em;
+    pointer-events: none;
+    margin-top: 6px !important;
+    margin-left: 0px;
+    left: 1.5em;
+}
+
+#petugas.form-group.position-relative>span.position-absolute label {
+    margin-bottom: 0px;
+}
+
+#rab>.row>button.col-12 {
+    border-bottom-left-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+}
+
+#rab>.row>.col-12:not(button) {
+    border-top-left-radius: 0px !important;
+    border-top-right-radius: 0px !important;
+}
+
+table .custom-toggle {
+    width: 66px;
+}
+
+table .custom-toggle input:checked+.custom-toggle-slider::before {
+    left: 15px;
+}
+
+#modalFormPinbuk img#img-pengirim {
+    width: 50px !important;
+}
+
+.pinbuk[data-target="#modalFormPinbuk"]::before {
+    content: "\f362";
+    font-size: 0.85rem;
+    font-family: 'Font Awesome 5 Free';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nowrap {
+    flex-wrap: nowrap;
+}
+
+table .badge {
+    padding-top: .85em;
+}
+
+img[alt*="bri"] {
+    margin-bottom: .25rem;
+}
+
+/* custom file */
+.inputGroup.input-file:hover {
+    background-color: var(--lighter) !important;
+    border-color: var(--lighter) !important;
+}
+
+.inputGroup.input-file.is-invalid:hover {
+    border-color: #fb6340 !important;
+}
+
+.inputGroup.input-file {
+    border: 1px solid #dee2e6;
+}
+
+.inputGroup[data-file-passed="true"]:hover *,
+.inputGroup[data-file-passed="false"]:hover * {
+    color: inherit;
+}
+
+.inputGroup[data-file-passed="true"]:hover i::before {
+    color: #21ba45 !important;
+}
+
+.inputGroup[data-file-passed="false"]:hover i::before {
+    color: #fb6340 !important;
+}
+
+@media (min-width: 768px) {
+    #modalBuatRencana .rounded.col-12.mx-3.mx-md-0 {
+        flex-basis: 0;
+    }
+
+    .btn[data-target="#modalBuatRencana"] {
+        height: auto;
+        width: auto;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+        width: auto;
+    }
+
+    #rab>.row>button.col-12 {
+        border-bottom-left-radius: 0.375rem !important;
+        border-bottom-right-radius: 0.375rem !important;
+    }
+
+    #rab>.row>.col-12:not(button) {
+        border-top-left-radius: 0.375rem !important;
+        border-top-right-radius: 0.375rem !important;
+    }
+}

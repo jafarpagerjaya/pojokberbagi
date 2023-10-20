@@ -111,7 +111,7 @@ class BuatController extends Controller {
 
         // Masih dibatasi TB dulu
         $dataCP = $this->_home->query("SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar FROM channel_payment cp LEFT JOIN gambar USING(id_gambar) WHERE jenis = 'TB'", array());
-        $this->data['metode_pembayaran'] = $this->_home->readAllData();
+        $this->data['metode_pembayaran'] = $this->_home->getResults();
     }
 
     public function ajax() {

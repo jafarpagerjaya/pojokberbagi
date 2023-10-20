@@ -36,15 +36,19 @@ div.animation:hover>.app-image.img-wrapper img.opacity {
     max-height: 80vh;
 }
 
+.header:not(.sticky) .button .enter,
 .header:not(.sticky) .button .signup {
     background-color: var(--green);
     color: #fff;
 }
 
+.header:not(.sticky) .button .signout,
 .header:not(.sticky) .button .signin {
     color: var(--orange) !important;
 }
 
+.header .navbar-collapse .button .enter,
+.header .navbar-collapse .button a.enter:hover,
 .header .navbar-collapse .button .signup,
 .header .navbar-collapse .button a.signup:hover {
     color: #fff !important;

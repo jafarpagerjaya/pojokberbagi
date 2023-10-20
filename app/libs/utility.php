@@ -149,4 +149,118 @@ class Utility {
         }
         return $icon;
     }
+
+    public static function statusRencana($status) {
+        if (strtoupper($status) == 'BD') {
+            $arrayStatus = array(
+                'text' => 'Belum Disetujui',
+                'class' => 'bg-gradient-default'
+            );
+        } else if (strtoupper($status) == 'SD') {
+            $arrayStatus = array(
+                'text' => 'Sudah Disetujui',
+                'class' => 'bg-gradient-success'
+            );
+        } else if (strtoupper($status) == 'BP') {
+            $arrayStatus = array(
+                'text' => 'Butuh Perbaikan',
+                'class' => 'bg-gradient-warning'
+            );
+        } else {
+            $arrayStatus = array(
+                'text' => 'Tidak Disetujui',
+                'class' => 'bg-gradient-danger'
+            );
+        }
+        return $arrayStatus;
+    }
+
+    public static function statusTahap($tahap, $total_penarikan, $total_pengadaan, $total_anggaran, $status_rencana, $status_pelaksanaan, $banyak_penarikan) {
+        $total_penarikan = Sanitize::toInt2($total_penarikan);
+        $total_anggaran = Sanitize::toInt2($total_anggaran);
+        $total_pengadaan = Sanitize::toInt2($total_pengadaan);
+
+        if (strtoupper($tahap) == 'PERENCANAAN') {
+            $status_akhir = self::statusRencana($status_rencana);
+        } else if (strtoupper($tahap) == 'PERSIAPAN') {
+            $status_akhir = array(
+                'text' => 'menyusun pencairan',
+                'class' => 'bg-gradient-info'
+            );
+        } else if (strtoupper($tahap) == 'PENCAIRAN') {
+            $persentase = round(($total_penarikan / $total_anggaran) * 100, 2) . ' % tercairkan';
+            $status_akhir = array(
+                'text' => $persentase,
+                'class' => 'bg-gradient-info'
+            );
+        } else if (strtoupper($tahap) == 'PENGADAAN LANJUTAN') {
+            $sisa_pengadaan = Output::tSparator($total_penarikan - $total_pengadaan) . ' belum dibelanjakan';
+            $status_akhir = array(
+                'text' => $sisa_pengadaan,
+                'class' => 'bg-gradient-warning'
+            );
+        } else if (strtoupper($tahap) == 'PENGADAAN') {
+            $persentase = round(($total_penarikan / $total_pengadaan) * 100, 2) . ' % digunakan';
+            $status_akhir = array(
+                'text' => $persentase,
+                'class' => 'bg-gradient-success'
+            );
+        } else if (strtoupper($tahap) == 'PENCAIRAN LANJUTAN') {
+            $sisa_pencairan = tSparator($total_anggaran - $total_penarikan) . ' perlu dicairkan';
+            $status_akhir = array(
+                'text' => $sisa_pencairan,
+                'class' => 'bg-gradient-danger'
+            );
+        } else if (strtoupper($tahap) == 'SELESAI') {
+            if ($total_pengadaan <> $total_anggaran) {
+                if (is_null($banyak_penarikan)) {
+                    $text = 'data persiapan kosong';
+                } else if ($total_penarikan <> $total_anggaran || is_null($total_pengadaan)) {
+                    $text = 'data pencairan kosong';
+                } else if ($total_pengadaan < $total_penarikan) {
+                    $text = 'data pengadaan kosong';
+                } 
+            } else {
+                $text = 'final';
+            }
+            $status_akhir = array(
+                'text' => $text,
+                'class' => 'bg-gradient-primary'
+            );
+        } else {
+            if (strtoupper($status_pelaksanaan) != 'S') {
+                $status_akhir = array(
+                    'text' => 'program',
+                    'class' => 'bg-gradient-danger'
+                );
+            }
+        }
+        return $status_akhir;
+    }
+
+    public static function statusRencanaText($status) {
+        if (strtoupper($status) == 'BD') {
+            $arrayStatus = array(
+                'text' => 'Belum Disetujui',
+                'class' => 'text-default'
+            );
+        } else if (strtoupper($status) == 'SD') {
+            $arrayStatus = array(
+                'text' => 'Sudah Disetujui',
+                'class' => 'text-success'
+            );
+        } else if (strtoupper($status) == 'BP') {
+            $arrayStatus = array(
+                'text' => 'Butuh Perbaikan',
+                'class' => 'text-warning'
+            );
+        } else {
+            $arrayStatus = array(
+                'text' => 'Tidak Disetujui',
+                'class' => 'text-danger'
+            );
+        }
+        $arrayStatus['value'] = strtoupper($status);
+        return $arrayStatus;
+    }
 }

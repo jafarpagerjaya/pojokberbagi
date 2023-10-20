@@ -24,6 +24,10 @@
     justify-content: center;
     width: var(--circle-size);
     height: var(--circle-size);
+    min-width: var(--circle-size);
+    min-height: var(--circle-size);
+    max-width: var(--circle-size);
+    max-height: var(--circle-size);
     border-radius: 50%;
     font-weight: 900;
     font-size: 16px;

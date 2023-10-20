@@ -3,7 +3,14 @@ class Debug {
     public static function pr($param) {
         echo '<pre>';
         print_r($param);
-        echo 'End param Debug</pre>';
+        echo '<br/>End param Debug</pre>';
+    }
+
+    public static function prd($param) {
+        echo '<pre>';
+        print_r($param);
+        echo '<br/>End param Debug</pre>';
+		die();
     }
 
     public static function vd($param) {

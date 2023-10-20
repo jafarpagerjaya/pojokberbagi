@@ -53,7 +53,7 @@
                     <i class="lni lni-grow"></i>
                 </div>
                 <div class="box-info d-flex flex-column">
-                    <h6 class="mb-0" data-count-up-value="<?= $data['detil_bantuan']->donasi_terlaksana ?>">0</h6>
+                    <h6 class="mb-0" data-count-up-value="<?= $data['detil_bantuan']->total_donasi_disalurkan ?>">0</h6>
                     <p><small class="text-muted">
                             <?= (isset($data['detil_bantuan']->jenis_penyaluran) ? $data['detil_bantuan']->jenis_penyaluran : 'Donasi') ?>
                             Tersalurkan
@@ -88,8 +88,7 @@
             data-start-delay-wow="1.2">
             <div class="col justify-content-center d-flex flex-column wow fadeInUp bg-light rounded-box align-items-center py-4"
                 data-wow-delay="1.2s">
-                <div
-                    class="logo d-flex align-items-center justify-content-center border-1 rounded-box bg-white overflow-hidden border border-light shadow-none text-center">
+                <div class="logo d-flex align-items-center justify-content-center border-1 rounded-box bg-white overflow-hidden border border-light shadow-none text-center">
                     <img class="img-fluid" src="<?= $data['detil_bantuan']->path_gambar_logo_pengaju_bantuan; ?>"
                         alt="Logo <?= $data['detil_bantuan']->pengaju_bantuan; ?>">
                 </div>
@@ -113,6 +112,40 @@
                             <?= $data['detil_bantuan']->deskripsi; ?>
                         </p>
                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-0 gap-3 gap-md-4 bg-white position-relative pt-2 pt-lg-3 ql-container ql-disabled mt-2 wow fadeInUp" id="deskripsi-selengkapnya-area" data-wow-delay="1.4s">
+            <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center justify-content-between" id="title">
+                <div class="desc align-self-end">
+                    <?php 
+                        if (isset($data['deskripsi'])) {
+                            echo '<p class="date">'. $data['deskripsi']->create_at .'</p><h4>'. $data['deskripsi']->judul .'</h4>';
+                        } else { 
+                    ?>
+                        <h4>Belum ada deskripsi selengkapnya</h4>
+                    <?php
+                        }
+                    ?>
+                </div>
+                <div class="btns">
+                    <span class="m-0 fw-bolder fs-5">Bagikan</span>
+                    <div class="d-grid gap-3 align-items-center justify-content-end share" id="sharer">
+                        <a target="_blank" href="https://twitter.com/pojok_berbagi" class="medsos-icon"><i class="lni lni-twitter-filled text-secondary"></i></a>
+                        <a target="_blank" href="https://bit.ly/pojok-berbagi-indonesia"class="medsos-icon"><i class="lni lni-whatsapp text-secondary"></i></a>
+                    </div>
+                </div>
+                <span class="node"></span>
+            </div>
+            <div class="col-12 p-md-3 rounded-box">
+                <div class="row justify-content-center">
+                    <?php if (isset($data['deskripsi'])) { ?>
+                    <div class="col-lg-8" id="selengkapnya">
+                    </div>
+                    <?php } else { ?>
+                    
+                    <?php } ?>
                 </div>
             </div>
         </div>

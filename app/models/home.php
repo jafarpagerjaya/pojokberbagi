@@ -2,15 +2,13 @@
 class HomeModel {
     protected $db,
               $data,
-              $cookieName;
+              $cookieName,
+              $_offset = 0,
+              $_limit = 10,
+              $_order_direction = 'DESC';
 
     private $_halaman = array(1,10),
-            $_offset = 0,
-            $_limit = 10,
             $_order = 1,
-            $_orderBy = 1,
-            $_order_direction = 'DESC',
-            $_ascDsc = 'ASC',
             $_search;
 
     public function __construct() {
@@ -55,8 +53,12 @@ class HomeModel {
         return false;
 	}
 
-    public function readAllData() {
+    public function getResults() {
         return $this->db->results();
+    }
+
+    public function getResult() {
+        return $this->db->result();
     }
 
     public function getAllData($table, $where = array()) {
@@ -65,7 +67,7 @@ class HomeModel {
                 throw new Exception("Error Processing Read All Data " . $table);
             }
             if ($this->db->count()) {
-                $this->data = $this->db->result();
+                $this->data = $this->db->results();
                 return $this->data;
             }
         }
@@ -78,7 +80,7 @@ class HomeModel {
                 throw new Exception("Error Processing Read Data " . $table);
             }
             if ($this->db->count()) {
-                $this->data = $this->db->result();
+                $this->data = $this->db->results();
                 return $this->data;
             }
         }
@@ -145,7 +147,7 @@ class HomeModel {
     public function query($sql, $params = array()) {
         $this->db->query($sql, $params);
         if ($this->db->count()) {
-			$this->data = $this->db->result();
+			$this->data = $this->db->results();
 			return $this->data;
 		}
 		return false;
@@ -165,7 +167,7 @@ class HomeModel {
     }
 
     public function setOffset($offset) {
-        $this->_offset = Sanitize::escape2($offset);
+        $this->_offset = Sanitize::toInt2($offset);
     }
 
     public function getOffset() {
@@ -173,7 +175,7 @@ class HomeModel {
     }
 
     public function setLimit($limit) {
-        $this->_limit = Sanitize::escape2($limit);
+        $this->_limit = Sanitize::toInt2($limit);
     }
 
     public function getLimit() {
@@ -196,14 +198,14 @@ class HomeModel {
         return $this->_order;
     }
 
-    public function setHalaman($params, $table) {   
+    public function setHalaman($params, $table) { 
         $param1 = (($params-1) * $this->getLimit()) + 1;
         if ($param1 < 0) {
             $param1 = 0;
         }
         $param2 = $params * $this->getLimit();
         // Cek apakah OFFSET ATAU SEEK
-        if ($this->_search == null) {
+        if (is_null($this->getSearch())) {
             // SEEK
             // Cek Direction
             if ($this->_order_direction == 'DESC') {
