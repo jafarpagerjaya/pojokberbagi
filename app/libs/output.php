@@ -33,4 +33,8 @@ class Output {
         $time = new DateTime($time);
         return $formatter->format($time);
     }
+
+    public static function decodeEscape($string) {
+        return html_entity_decode($string, ENT_QUOTES, "UTF-8");
+    }
 }

@@ -116,7 +116,7 @@ class FetchController extends Controller {
 
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(
-            'data' => $this->data['deskripsi']->isi
+            'data' => Output::decodeEscape($this->data['deskripsi']->isi)
         );
         $this->result();
 
