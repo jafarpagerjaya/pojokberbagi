@@ -2644,14 +2644,19 @@ let fetchGetRencana = function(url, inputData, root, result) {
         root.querySelector('#status-rencana').classList.add(data.rencana.status.class);
 
         root.querySelector('tbody').innerHTML = '';
+        const tafon = root.querySelector('table[table-absolute-first="on"]');
         if (data.rab_list.length > 0) {
-            root.querySelector('table[table-absolute-first="on"]').classList.add('table-responsive');
+            if (tafon != null) {
+                tafon.classList.add('table-responsive');
+            }
             data.rab_list.forEach(field => {
                 let tr = '<tr style="height: 0px"><td class="fit" style="width:0px"><span>'+ field.nama_kebutuhan +'</span></td><td style="padding-left: calc(0px + 1rem)">'+ field.keterangan +'</td><td class="text-right">'+ field.harga_satuan +'</td><td class="text-right">'+ field.jumlah +'</td><td class="text-right">'+ field.nominal_kebutuhan +'</td></tr>';
                 root.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
             });
         } else {
-            root.querySelector('table[table-absolute-first="on"]').classList.remove('table-responsive');
+            if (tafon != null) {
+                tafon.classList.remove('table-responsive');
+            }
             let tr = '<tr data-zero="true"><td colspan="5">Belum ada data RAB di rencana ini ... </td></tr>'
             root.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
         }
@@ -4062,130 +4067,6 @@ $('.datepicker').datepicker({
         });
     }
 }).datepicker('setStartDate', d);
-
-function doAbsoluteFirstAdd(table) {
-    let theadThEl = table.querySelector('thead tr > th:first-of-type'),
-        theadThFW = theadThEl.offsetWidth,
-        tfootThEl = table.querySelector('tfoot tr > th:first-of-type'),
-        tableHW = table.offsetWidth / 2;
-
-    let tbodyTFW = 0;
-
-    if (theadThFW > tableHW) {
-        theadThFW = tableHW;
-        tbodyTFW = tableHW;
-    }
-
-    if (tbodyTFW == 0) {
-        table.querySelectorAll('tbody tr:not([data-zero="true"]) > *:first-of-type').forEach(el => {
-            if (tableHW <= el.offsetWidth) {
-                tbodyTFW = tableHW;
-                theadThFW = tableHW;
-                return false;
-            }
-            if (el.offsetWidth > theadThFW) {
-                theadThFW = el.offsetWidth;
-            } else {
-                tbodyTFW = theadThFW;
-            }
-            if (tbodyTFW < el.offsetWidth) {
-                tbodyTFW = el.offsetWidth;
-            }
-        });
-    }
-
-    if (table.querySelector('tbody tr[data-zero="true"]') == null) {
-        theadThEl.setAttribute('style', 'width: ' + theadThFW + 'px');
-        theadThEl.nextElementSibling.setAttribute('style', 'padding-left: calc(' + theadThFW + 'px + 1rem)');
-        // theadThEl.parentElement.setAttribute('style', 'height: ' + theadThEl.offsetHeight + 'px');
-        table.classList.add('table-responsive');
-    }
-
-    table.querySelectorAll('tbody tr:not([data-zero="true"]) > *:first-of-type').forEach(el => {
-        el.setAttribute('style', 'width:' + tbodyTFW + 'px');
-        el.nextElementSibling.setAttribute('style', 'padding-left: calc(' + tbodyTFW + 'px + 1rem)');
-        if (el.children[0] != null) {
-            const computedStyle = getComputedStyle(el);
-            let elementWidth = el.clientWidth;
-            elementWidth -= parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
-            if (el.children[0].offsetWidth > elementWidth || elementWidth - el.children[0].offsetWidth <= 1) {
-                el.parentElement.setAttribute('style', '');
-                setTimeout(() => {
-                    el.parentElement.setAttribute('style', 'height: ' + el.offsetHeight + 'px');
-                }, 0)
-            }
-        } else if (el.children[0] == undefined) {
-            const computedStyle = getComputedStyle(el);
-            let elementWidth = el.clientWidth;
-            elementWidth -= parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
-            if (el.offsetWidth > elementWidth || elementWidth - el.offsetWidth <= 1) {
-                el.parentElement.setAttribute('style', '');
-                setTimeout(() => {
-                    el.setAttribute('style', 'height: ' + el.nextElementSibling.offsetHeight + 'px; width: '+ tbodyTFW +'px');
-                }, 0)
-            }
-        }
-    });
-
-    if (tfootThEl != null) {
-        if (table.querySelector('tbody tr[data-zero="true"]') == null) {
-            tfootThEl.setAttribute('style', 'width: ' + theadThFW + 'px');
-            tfootThEl.nextElementSibling.setAttribute('style', 'padding-left: calc(' + theadThFW + 'px + 1rem)');
-            // tfootThEl.parentElement.setAttribute('style', 'height: ' + tfootThEl.offsetHeight + 'px');
-        }
-    }
-
-    if (!table.classList.contains('table-absolute-first')) {
-        if (table.querySelector('tbody tr[data-zero="true"]') == null) {
-            table.classList.add('table-absolute-first');
-        }
-    }
-}
-
-function doAbsoluteFirstRemove(table) {
-    let theadThEl = table.querySelector('thead tr > th:first-of-type'),
-        tfootThEl = table.querySelector('tfoot tr > th:first-of-type');
-
-    theadThEl.removeAttribute('style');
-    theadThEl.nextElementSibling.removeAttribute('style');
-    theadThEl.parentElement.removeAttribute('style');
-
-    table.querySelectorAll('tbody tr:not([data-zero="true"]) > *:first-of-type').forEach(el => {
-        el.removeAttribute('style');
-        el.nextElementSibling.removeAttribute('style');
-        el.parentElement.removeAttribute('style');
-    });
-
-    if (tfootThEl != null) {
-        tfootThEl.removeAttribute('style');
-        tfootThEl.nextElementSibling.removeAttribute('style');
-        tfootThEl.parentElement.removeAttribute('style');
-    }
-}
-
-const tableAbsoluteFirstList = document.querySelectorAll('table.table-absolute-first');
-if (tableAbsoluteFirstList.length > 0) {
-    tableAbsoluteFirstList.forEach(table => {
-        if (table.classList.contains('table-responsive')) {
-            doAbsoluteFirstAdd(table);
-        }
-    });
-    let resizeTimeoutRab
-    window.addEventListener('resize', function (e) {
-        clearTimeout(resizeTimeoutRab)
-        resizeTimeoutRab = setTimeout(() => {
-            if (tableAbsoluteFirstList.length > 0) {
-                tableAbsoluteFirstList.forEach(table => {
-                    if (table.classList.contains('table-responsive')) {
-                        doAbsoluteFirstAdd(table);
-                    } else {
-                        doAbsoluteFirstRemove(table);
-                    }
-                })
-            }
-        }, 50);
-    });
-}
 
 function doScollRightStepper() {
     let elList = document.querySelectorAll('.c-stepper > .c-stepper__item');

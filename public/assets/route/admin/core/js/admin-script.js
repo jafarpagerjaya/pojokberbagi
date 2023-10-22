@@ -93,3 +93,150 @@ function findIndex(node) {
     }
     return i;
 }
+
+// Table absolute first
+function doAbsoluteFirstAdd(table) {
+    let theadThEl = table.querySelector('thead tr > *:first-child'),
+        theadThFW = theadThEl.offsetWidth,
+        tfootThEl = table.querySelector('tfoot tr > *:first-child'),
+        tableHW = table.offsetWidth / 2;
+
+    let tbodyTFW = 0;
+
+    if (theadThFW > tableHW) {
+        theadThFW = tableHW;
+        tbodyTFW = tableHW;
+    }
+
+    if (tbodyTFW == 0) {
+        let i = 0;
+        table.querySelectorAll('tbody tr:not([data-zero="true"]) > *:first-child').forEach(el => {
+            if (tableHW <= el.offsetWidth) {
+                tbodyTFW = tableHW;
+                theadThFW = tableHW;
+                return false;
+            }
+            if (el.offsetWidth > theadThFW) {
+                theadThFW = el.offsetWidth;
+            } else {
+                tbodyTFW = theadThFW;
+                if (i == 0) {
+                    el.removeAttribute('style');
+                    theadThFW = el.offsetWidth;
+                }
+            }
+            if (tbodyTFW < el.offsetWidth) {
+                tbodyTFW = el.offsetWidth;
+            }
+            i++;
+        });
+    }
+
+    if (table.querySelector('tbody tr[data-zero="true"]') == null) {
+        theadThEl.setAttribute('style', 'width: ' + theadThFW + 'px');
+        theadThEl.nextElementSibling.setAttribute('style', 'padding-left: calc(' + theadThFW + 'px + 1rem)');
+        // theadThEl.parentElement.setAttribute('style', 'height: ' + theadThEl.offsetHeight + 'px');
+        table.classList.add('table-responsive');
+    }
+
+    table.querySelectorAll('tbody tr:not([data-zero="true"]) > *:first-child').forEach(el => {
+        el.setAttribute('style', 'width:' + tbodyTFW + 'px');
+        el.nextElementSibling.setAttribute('style', 'padding-left: calc(' + tbodyTFW + 'px + 1rem)');
+        if (el.children[0] != null) {
+            const computedStyle = getComputedStyle(el);
+            let elementWidth = el.clientWidth;
+            elementWidth -= parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
+            if (el.children[0].offsetWidth > elementWidth || elementWidth - el.children[0].offsetWidth <= 1) {
+                el.parentElement.setAttribute('style', '');
+                setTimeout(() => {
+                    el.parentElement.setAttribute('style', 'height: ' + el.offsetHeight + 'px');
+                }, 0)
+            }
+        } else if (el.children[0] == undefined) {
+            const computedStyle = getComputedStyle(el);
+            let elementWidth = el.clientWidth;
+            elementWidth -= parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
+            if (el.offsetWidth > elementWidth || elementWidth - el.offsetWidth <= 1) {
+                el.parentElement.setAttribute('style', '');
+                setTimeout(() => {
+                    el.setAttribute('style', 'height: ' + el.nextElementSibling.offsetHeight + 'px; width: '+ tbodyTFW +'px');
+                }, 0)
+            }
+        }
+    });
+
+    if (tfootThEl != null) {
+        if (table.querySelector('tbody tr[data-zero="true"]') == null) {
+            tfootThEl.setAttribute('style', 'width: ' + theadThFW + 'px');
+            tfootThEl.nextElementSibling.setAttribute('style', 'padding-left: calc(' + theadThFW + 'px + 1rem)');
+            // tfootThEl.parentElement.setAttribute('style', 'height: ' + tfootThEl.offsetHeight + 'px');
+        }
+    }
+
+    if (!table.classList.contains('table-absolute-first')) {
+        if (table.querySelector('tbody tr[data-zero="true"]') == null) {
+            table.classList.add('table-absolute-first');
+        }
+    }
+}
+
+function doAbsoluteFirstRemove(table) {
+    let theadThEl = table.querySelector('thead tr > *:first-child'),
+        tfootThEl = table.querySelector('tfoot tr > *:first-child');
+
+    theadThEl.removeAttribute('style');
+    theadThEl.nextElementSibling.removeAttribute('style');
+    theadThEl.parentElement.removeAttribute('style');
+
+    table.querySelectorAll('tbody tr:not([data-zero="true"]) > *:first-child').forEach(el => {
+        el.removeAttribute('style');
+        el.nextElementSibling.removeAttribute('style');
+        el.parentElement.removeAttribute('style');
+    });
+
+    if (tfootThEl != null) {
+        tfootThEl.removeAttribute('style');
+        tfootThEl.nextElementSibling.removeAttribute('style');
+        tfootThEl.parentElement.removeAttribute('style');
+    }
+}
+
+const tableAbsoluteFirstList = document.querySelectorAll('table.table-absolute-first');
+if (tableAbsoluteFirstList.length > 0) {
+    tableAbsoluteFirstList.forEach(table => {
+        if (table.classList.contains('table-responsive')) {
+            doAbsoluteFirstAdd(table);
+        }
+    });
+    let resizeTimeoutRab
+    window.addEventListener('resize', function (e) {
+        clearTimeout(resizeTimeoutRab)
+        resizeTimeoutRab = setTimeout(() => {
+            if (tableAbsoluteFirstList.length > 0) {
+                tableAbsoluteFirstList.forEach(table => {
+                    if (table.classList.contains('table-responsive')) {
+                        doAbsoluteFirstAdd(table);
+                    } else {
+                        doAbsoluteFirstRemove(table);
+                    }
+                })
+            }
+        }, 50);
+    });
+}
+
+let tableAblsoluteFirstScroll = function() {
+    const tAL = document.querySelectorAll('table.table-responsive.table-absolute-first');
+    if (tAL != null) {
+        tAL.forEach(table => {
+            table.querySelectorAll('tbody tr>*:not(:first-child').forEach(element => {
+                element.addEventListener('mousewheel', function(e) {
+                    e.preventDefault();
+                    table.scrollLeft += e.deltaY;
+                });
+            });
+        });
+    }
+};
+
+tableAblsoluteFirstScroll();

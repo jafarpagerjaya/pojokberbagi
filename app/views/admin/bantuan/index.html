@@ -105,8 +105,8 @@
                     </div>
                 </div>
             </div>
-            <div class="table-responsive table-striped table-hover">
-                <table class="table">
+            <div class="table-striped table-hover">
+                <table class="table table-absolute-first">
                     <thead class="thead-light">
                         <tr>
                             <th scope="col" class="sort" data-sort="name">Bantuan</th>
@@ -128,8 +128,8 @@
                                 $sektorKategori = Utility::imploderArray(array($data_bantuan->nama_sektor, $data_bantuan->nama_kategori));
                             ?>
                         <tr>
-                            <th scope="row">
-                                <div class="d-flex align-items-center flex-row justify-content-between gap-x-3">
+                            <td scope="row">
+                                <div class="d-flex align-items-start align-items-md-center flex-md-row justify-content-between gap-x-3 flex-column">
                                     <div class="font-weight-bolder overflow-hidden">
                                         <div class="media align-items-center">
                                             <a href="#" data-id="<?= $data_bantuan->id_bantuan; ?>"
@@ -148,7 +148,7 @@
                                         </div>
                                     </div>
                                     <div class="justify-content-end d-flex">
-                                        <div class="media align-items-center flex-column">
+                                        <div class="media align-items-center gap-x-2 flex-md-column">
                                             <div class="badge badge-dot text-capitalize">
                                                 <i class="<?= $blokir['class']; ?> m-0"></i>
                                                 <span class="small">
@@ -249,6 +249,18 @@
                             Ui::tableIsNull(7,'Bantuan');
                         } ?>
                     </tbody>
+                    <tfoot class="tfoot-light">
+                        <tr>
+                            <th scope="col" class="sort" data-sort="name">Bantuan</th>
+                            <th scope="col" class="sort fit" data-sort="budget">Kategori Penerima</th>
+                            <th scope="col" class="sort fit" data-sort="jumlah_target">Target</th>
+                            <th scope="col" class="sort" data-sort="realisasi">Realisasi</th>
+                            <th scope="col" class="sort" data-sort="jumlah_pencairan">Total Pencairan</th>
+                            <th scope="col" class="sort" data-sort="donasi_donatur">Donasi Donatur</th>
+                            <th scope="col" class="sort fit" data-sort="saldo">Saldo</th>
+                            <th scope="col" class="fit"></th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
             <div class="card-footer py-4">

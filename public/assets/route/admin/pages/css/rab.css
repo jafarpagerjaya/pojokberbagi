@@ -240,11 +240,6 @@ table.table-absolute-first {
     border-radius: .25rem;
 }
 
-table.table-absolute-first tr[style] th:first-of-type,
-table.table-absolute-first tr[style] td:first-of-type {
-    white-space: normal;
-}
-
 [data-dismiss] {
     cursor: pointer;
 }

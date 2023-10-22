@@ -49,11 +49,11 @@
                                             }
                                         ?>
                                         <div class="text-orange">
-                                            <?= $banner->nama_bantuan; ?>
+                                            <?= Output::decodeEscape($banner->nama_bantuan); ?>
                                         </div>
                                     </h1>
                                     <p>
-                                        <?= $banner->deskripsi; ?>
+                                        <?= Output::decodeEscape($banner->deskripsi); ?>
                                     </p>
                                 </div>
                                 <div class="button">
@@ -244,7 +244,7 @@
                         </div>
                     </div>
                     <h6 class="my-3 overflow-hidden title">
-                        <?= $list_bantuan->nama_bantuan ?>
+                        <?= Output::decodeEscape($list_bantuan->nama_bantuan); ?>
                     </h6>
                     <div class="row mb-2 align-items-end">
                         <div class="col">

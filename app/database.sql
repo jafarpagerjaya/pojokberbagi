@@ -2982,8 +2982,7 @@ ALTER TABLE rencana_anggaran_belanja AUTO_INCREMENT = 1;
 DELETE FROM kebutuhan;
 ALTER TABLE kebutuhan AUTO_INCREMENT = 1;
 
-INSERT INTO kebutuhan(nama) VALUES('RAB CSR BJB SEMBAKO'),
-('RAB GEBERR'),('RAB CSR KURBAN');
+INSERT INTO kebutuhan(nama) VALUES('RAB Full Cover ada di Internal');
 
 INSERT INTO rencana(keterangan, status, create_at, id_pembuat) VALUE('Program sembako BJB Agustus 2021', 'SD', '2021-08-11', 1),
 ('Program sembako BJB November 2021', 'SD', '2021-11-10', 1),
@@ -2997,10 +2996,12 @@ UPDATE rencana SET id_bantuan = (SELECT id_bantuan FROM bantuan WHERE nama = 'RA
 
 INSERT INTO rencana_anggaran_belanja(nominal_kebutuhan, harga_satuan, keterangan, id_kebutuhan, id_rencana) VALUES
 (2312500000, 2312500000, 'TOTAL RAB', 1, 1),
-(3125000000, 3125000000, 'TOTAL RAB', 2, 2),
+(3125000000, 3125000000, 'TOTAL RAB', 1, 2),
 (750000, 750000, 'TOTAL RAB', 1, 3),
 (3125000000, 3125000000, 'TOTAL RAB', 1, 4),
-(1185000000, 1185000000, 'TOTAL RAB', 3, 5);
+(1185000000, 1185000000, 'TOTAL RAB', 1, 5);
+
+UPDATE rencana SET status = 'SD' WHERE status = 'BD';
 
 INSERT INTO pelaksanaan(deskripsi, jumlah_pelaksanaan, status, total_anggaran) VALUE('Program sembako BJB Agustus 2021', 15000, 'S', 2312500000),
 ('Program sembako BJB November 2021', 25000, 'S', 3125000000),
