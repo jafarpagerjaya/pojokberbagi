@@ -509,7 +509,7 @@ class FetchController extends Controller {
     }
 
     private function bantuanDeskripsiSelengkapnyaCreate($decoded) {
-        $decoded = Sanitize::thisArray($decoded['deskripsi']);
+        $decoded = $decoded['deskripsi'];
 
         if (empty($decoded['id_bantuan']) || !isset($decoded['id_bantuan'])) {
             $this->_result['feedback'] = array(
@@ -621,7 +621,7 @@ class FetchController extends Controller {
 
         $decoded['isi'] = json_encode($content);
                 
-        $this->model->create('deskripsi', $decoded);
+        $this->model->create('deskripsi', Sanitize::thisArray($decoded));
 
         if (!$this->model->affected()) {
             $this->_result['feedback'] = array(
@@ -1068,7 +1068,7 @@ class FetchController extends Controller {
 
         $dataFindId = $this->model->query("SELECT (SELECT count(id_bantuan) FROM bantuan WHERE id_bantuan = ?) bantuan_count, (SELECT count(id_cp) FROM channel_payment WHERE id_cp = ?) cp_count, (SELECT count(id_donatur) FROM donatur WHERE id_donatur = ?) donatur_count", array('id_bantuan' => $decoded['id_bantuan'], 'id_cp' => $decoded['id_cp'], 'id_donatur' => $decoded['id_donatur']));
 
-        if (!$dataFindId->bantuan_count) {
+        if (!$this->model->getResult()->bantuan_count) {
             $this->_result['feedback'] = array(
                 'message' => 'Data bantuan terpilih tidak ditemukan'
             );
@@ -1076,7 +1076,7 @@ class FetchController extends Controller {
             return false;
         }
 
-        if (!$dataFindId->cp_count) {
+        if (!$this->model->getResult()->cp_count) {
             $this->_result['feedback'] = array(
                 'message' => 'Data channel payment terpilih tidak ditemukan'
             );
@@ -1084,7 +1084,7 @@ class FetchController extends Controller {
             return false;
         }
 
-        if (!$dataFindId->donatur_count) {
+        if (!$this->model->getResult()->donatur_count) {
             $this->_result['feedback'] = array(
                 'message' => 'Data donatur terpilih tidak ditemukan'
             );

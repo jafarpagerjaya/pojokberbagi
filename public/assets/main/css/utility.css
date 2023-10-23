@@ -145,7 +145,7 @@
     background-color: white;
 }
 
-.disabled {
+[type="submit"].disabled {
     cursor: wait !important;
 }
 

@@ -11,7 +11,8 @@
     --green-box : #21ba45;
 }
 
-body {
+body,
+body *:not(i) {
     font-family: "Nunito", Roboto, sans-serif !important;
 }
 

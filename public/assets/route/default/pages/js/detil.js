@@ -176,14 +176,6 @@ const counterTarget = document.querySelectorAll('.box-info h6[data-count-up-valu
 counterUpSup(counterTarget, counterSpeed);
 counterUpProgress(progressBar, counterSpeed);
 
-// selengkapnya
-const quill = new Quill('#selengkapnya', {
-    modules: {
-        toolbar: false
-    },
-    readOnly: true
-});
-
 let data = {
         id_bantuan: window.location.href.split('/')[5],
         token: document.querySelector('body').getAttribute('data-token')
@@ -203,19 +195,31 @@ fetch('/default/fetch/read/bantuan/deskripsi', {
 .then(response => response.json())
 .then(function (response) {
     // console.log(response);
+    if (!response.error) {
 
-    // render the content
-    quill.setContents(JSON.parse(response.feedback.data));
-    document.querySelector('body').setAttribute('data-token', response.token);
-    fetchTokenChannel.postMessage({
-        token: document.querySelector('body').getAttribute('data-token')
-    });
+        const quill = new Quill('#selengkapnya', {
+            modules: {
+                toolbar: false
+            },
+            readOnly: true
+        });
 
-    // createNewToast(document.querySelector('[aria-live="polite"]'), response.toast.id, response.toast.data_toast, response.toast);
+        // render the content
+        quill.setContents(JSON.parse(response.feedback.data));
+        document.querySelector('body').setAttribute('data-token', response.token);
+        fetchTokenChannel.postMessage({
+            token: document.querySelector('body').getAttribute('data-token')
+        });
     
-    // $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast({
-    //     'autohide': true
-    // }).toast('show');
+    }
+
+    if (response.toast != null) {
+        createNewToast(document.querySelector('[aria-live="polite"]'), response.toast.id, response.toast.data_toast, response.toast);
+    
+        $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast({
+            'autohide': true
+        }).toast('show');
+    }
 });
 
 // Get all share buttons

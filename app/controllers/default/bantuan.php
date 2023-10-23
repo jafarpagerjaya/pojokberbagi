@@ -53,6 +53,10 @@ class BantuanController extends Controller {
 
             $this->rel_action = array(
                 array(
+                    'href' => 'https://cdn.quilljs.com/1.3.7/quill.snow.css',
+                    'source' => 'trushworty'
+                ),
+                array(
                     'href' => '/assets/route/default/pages/css/detil.css'
                 )
             );
@@ -64,7 +68,7 @@ class BantuanController extends Controller {
                 ),
                 array(
                     'type' => 'text/javascript',
-                    'src' => 'https://cdn.quilljs.com/1.3.6/quill.js',
+                    'src' => 'https://cdn.quilljs.com/1.3.7/quill.js',
                     'source' => 'trushworty'
                 ),
                 array(

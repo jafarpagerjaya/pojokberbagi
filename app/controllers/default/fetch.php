@@ -110,16 +110,20 @@ class FetchController extends Controller {
     private function bantuanDeskripsiRead($decoded) {
         $this->model('Bantuan');
         $this->model->getAllData('deskripsi', array('id_bantuan', '=', $decoded['id_bantuan']));
-        if ($this->model->affected()) {
-            $this->data['deskripsi'] = $this->model->getResult();
+        if (!$this->model->affected()) {
+            $this->result();
+            return false;
         }
 
         $this->_result['error'] = false;
-        $this->_result['feedback'] = array(
-            'data' => Output::decodeEscape($this->data['deskripsi']->isi)
-        );
+        $this->data['deskripsi'] = $this->model->getResult();
+        if (!is_null($this->data['deskripsi'])) {
+            $this->_result['feedback'] = array(
+                'data' => Output::decodeEscape($this->data['deskripsi']->isi)
+            );
+        }
+        
         $this->result();
-
         return false;
     }
 

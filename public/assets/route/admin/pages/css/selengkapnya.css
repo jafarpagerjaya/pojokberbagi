@@ -1,3 +1,4 @@
+#input-id-bantuan,
 #input-judul,
 .ql-editor {
     padding-left: 1.4rem;
@@ -72,4 +73,12 @@
 
 b, strong {
     font-weight: 800 !important;
+}
+
+.ql-editor p:not(:first-child) {
+    margin-top: 1em;
+}
+
+.ql-editor * {
+    line-height: 2;
 }

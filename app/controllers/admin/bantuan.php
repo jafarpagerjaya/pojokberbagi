@@ -267,7 +267,7 @@ class BantuanController extends Controller {
                 'href' => '/assets/route/admin/core/css/form-element.css'
             ),
             array(
-                'href' => 'https://cdn.quilljs.com/1.3.6/quill.snow.css'
+                'href' => 'https://cdn.quilljs.com/1.3.7/quill.snow.css'
             ),
             array(
                 'href' => '/assets/route/admin/core/css/editor.css'
@@ -292,7 +292,7 @@ class BantuanController extends Controller {
 			// ),
             array(
                 'type' => 'text/javascript',
-                'src' => 'https://cdn.quilljs.com/1.3.6/quill.js',
+                'src' => 'https://cdn.quilljs.com/1.3.7/quill.js',
                 'source' => 'trushworty'
             ),
             array(

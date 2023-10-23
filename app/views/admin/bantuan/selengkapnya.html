@@ -10,51 +10,47 @@
                 </div>
             </div>
             <div class="card-body p-0">
-                <div class="table-responsive">
-                    <div>
-                        <table class="table align-items-center mb-0 table-hover table-borderless">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th scope="col" class="sort" data-sort="id">Program</th>
-                                    <th scope="col" class="fit"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <th scope="row">
-                                        <div class="d-flex flex-column">
-                                            <a href="#" class="font-weight-bolder">
-                                                3
-                                            </a>
-                                            <span class="mb-0">19 November 2022 15:00:00</span>
-                                        </div>
-                                    </th>
-                                    <td class="text-right">
-                                        <div class="dropdown">
-                                            <a class="btn btn-sm btn-icon-only text-light" href="#"
-                                                role="button" data-toggle="dropdown"
-                                                aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </a>
-                                            <div
-                                                class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                                <a class="dropdown-item font-weight-bold" href="#">Lihat Isi</a>
-                                                <a class="dropdown-item font-weight-bold text-warning" href="#">Ubah Isi</a>
-                                                <a class="dropdown-item font-weight-bold text-danger" href="#">Hapus</a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tfoot class="tfoot-light">
-                                <tr>
-                                    <th scope="col" class="sort" data-sort="id">Program</th>
-                                    <th scope="col" class="fit"></th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
+                <table class="table align-items-center mb-0 table-hover table-borderless">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col" class="sort" data-sort="id">Program</th>
+                            <th scope="col" class="fit"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">
+                                <div class="d-flex flex-column">
+                                    <a href="#" class="font-weight-bolder">
+                                        3
+                                    </a>
+                                    <span class="mb-0">19 November 2022 15:00:00</span>
+                                </div>
+                            </th>
+                            <td class="text-right">
+                                <div class="dropdown">
+                                    <a class="btn btn-sm btn-icon-only text-light" href="#"
+                                        role="button" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <div
+                                        class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                        <a class="dropdown-item font-weight-bold" href="#">Lihat Isi</a>
+                                        <a class="dropdown-item font-weight-bold text-warning" href="#">Ubah Isi</a>
+                                        <a class="dropdown-item font-weight-bold text-danger" href="#">Hapus</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="tfoot-light">
+                        <tr>
+                            <th scope="col" class="sort" data-sort="id">Program</th>
+                            <th scope="col" class="fit"></th>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
             <div class="card-footer border-0">
                 <div class="row align-items-center">
@@ -80,17 +76,17 @@
         <div class="modal-content justify-content-center align-items-center scaleIn">
             <div class="container p-0 py-md-3 py-lg-5 px-lg-3 px-3 px-md-0">
                 <div class="row gap-y-4">
-                    <div class="col-6">
+                    <div class="col-12 col-md-6">
                         <div class="form-label-group">
                             <input type="text" id="input-id-bantuan" class="form-control"
                                 name="id_bantuan" placeholder="Id Bantuan" autocomplete="off">
                             <label for="input-id-bantuan" class="form-control-label">Id Bantuan</label>
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-12 col-md-6">
                         <div class="form-label-group">
                             <input type="text" id="input-judul" class="form-control"
-                                name="judul" placeholder="Judul" autocomplete="off">
+                                name="judul" placeholder="Judul" autocomplete="off" maxlength="100">
                             <label for="input-judul" class="form-control-label">Judul</label>
                         </div>
                     </div>
