@@ -21,7 +21,7 @@ let toolbarOptions = [
 
 let defaultOptions = {
     theme: 'snow',
-    placeholder: 'Isi lengkap program...',
+    placeholder: 'Isi lengkap deskripsi...',
     modules: { 
         toolbar: toolbarOptions, 
         imageDrop: true,

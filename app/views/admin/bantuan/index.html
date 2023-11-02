@@ -139,7 +139,7 @@
                                                 </div>
                                                 <div class="ml-1" <?=(isset($data_bantuan->warna) ? ' style="color: '.
                                                     $data_bantuan->warna .'"' : ''); ?>>
-                                                    <?= $data_bantuan->nama_bantuan ?>
+                                                    <?= Output::decodeEscape($data_bantuan->nama_bantuan); ?>
                                                 </div>
                                             </a>
                                         </div>

@@ -93,6 +93,8 @@ class BantuanController extends Controller {
 
         // Token for fetch
         $this->data[Config::get('session/token_name')] = Token::generate();
+
+        Cookie::delete('deskripsi-selengkapnya', '/admin/bantuan/selengkapnya');
     }
 
     public function halaman($params = array()) {
@@ -273,6 +275,9 @@ class BantuanController extends Controller {
                 'href' => '/assets/route/admin/core/css/editor.css'
             ),
             array(
+                'href' => '/assets/main/css/pagination.css'
+            ),
+            array(
                 'href' => '/assets/route/admin/pages/css/selengkapnya.css'
             )
         );
@@ -308,12 +313,72 @@ class BantuanController extends Controller {
                 'src' => '/vendors/quill/js/image-resize.js'
             ),
             array(
+                'src' => '/assets/main/js/pagination.js'
+            ),
+            array(
 				'type' => 'text/javascript',
                 'src' => '/assets/route/admin/pages/js/selengkapnya.js'
 			)
         );
         // Token for fetch
         $this->data[Config::get('session/token_name')] = Token::generate();
+
+        if (Cookie::exists('deskripsi-selengkapnya')) {
+            $cookieValue = json_decode(base64_decode(Cookie::get('deskripsi-selengkapnya')));
+            $this->_bantuan->setLimit($cookieValue->limit);
+            if (isset($cookieValue->search)) {
+                $this->_bantuan->setSearch($cookieValue->search);
+            }
+            $this->_bantuan->setHalaman($cookieValue->active_page, 'deskripsi');
+            $active_page = $cookieValue->active_page;
+        } else {
+            $this->_bantuan->setLimit(8);
+            $this->_bantuan->setHalaman(1, 'deskripsi');
+            $active_page = 1;
+        }
+
+        $this->_bantuan->setDirection('DESC');
+        $this->_bantuan->setOrder('d.create_at');
+
+        $data = array();
+
+        $this->_bantuan->readDeskripsiList();
+        
+        if ($this->_bantuan->affected()) {
+            $data = $this->_bantuan->data();
+        }
+
+        if (!isset($data['data'])) {
+            $data['data'] = array();
+        }
+
+        if (!isset($data['total_record'])) {
+            $data['total_record'] = $this->_bantuan->data()['total_record'];
+        }
+
+        $data['pages'] = ceil($data['total_record']/$this->_bantuan->getLimit());
+        $data['limit'] = $this->_bantuan->getLimit();
+        if ($this->_bantuan->getSearch() !== null) {
+            $data['search'] = $this->_bantuan->getSearch();
+        }
+
+        $this->data['deskripsi'] = $data;
+
+        if ($data['pages'] > 0) {
+            $cookieValue = array(
+                'active_page' => Sanitize::toInt2($active_page),
+                'pages' => $data['pages'], 
+                'limit' => $data['limit']
+            );
+            if (isset($data['search'])) {
+                $cookieValue = array_merge($cookieValue, array('search' => $data['search']));
+            }
+            Cookie::put('deskripsi-selengkapnya', base64_encode(json_encode($cookieValue)), 3600, DS . $this->getRealUri());
+        } else {
+            if (Cookie::exists('deskripsi-selengkapnya')) {
+                Cookie::delete('deskripsi-selengkapnya');
+            }
+        }
     }
 
     public function kategori($params = array()) {
@@ -381,8 +446,10 @@ class BantuanController extends Controller {
                     }
                     Redirect::to('admin/bantuan/berjalan/' . $params[0] . '/' . $kategori_param . '/' . $halaman);
                 }
-                if ($this->_bantuan->countData("bantuan b LEFT JOIN kategori k USING(id_kategori)",array("k.nama = ? AND b.blokir IS NULL AND LOWER(b.status) = LOWER('D')",Sanitize::escape2($params[1]))) != false) {
+                if ($params[1] != 'tanpa kategori') {
                     $this->data['record'] = $this->_bantuan->countData("bantuan b LEFT JOIN kategori k USING(id_kategori)",array("k.nama = ? AND b.blokir IS NULL AND LOWER(b.status) = LOWER('D')",Sanitize::escape2($params[1])))->jumlah_record;
+                } else if ($params[1] == 'tanpa kategori') {
+                    $this->data['record'] = $this->_bantuan->countData("bantuan b LEFT JOIN kategori k USING(id_kategori)","k.nama IS NULL AND b.blokir IS NULL AND LOWER(b.status) = LOWER('D')")->jumlah_record;
                 } else {
                     $this->data['record'] = 0;
                 }

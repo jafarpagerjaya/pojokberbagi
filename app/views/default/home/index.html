@@ -35,7 +35,7 @@
                             <div class="hero-content d-grid d-lg-block wow fadeInUp" data-wow-delay="<?= $time.'s'; ?>">
                                 <div class="info-content overflow-hidden">
                                     <h1 class="d-flex d-lg-block gap-1 flex-wrap flex-md-nowrap">
-                                        <?php 
+                                        <!-- <?php 
                                             if (!is_null($banner->nama_kategori)) {
                                                 $nama_kategori = $banner->nama_kategori;
                                                 $nama_kategori = explode(' ', $nama_kategori);
@@ -47,7 +47,7 @@
                                             if (!is_null($banner->layanan)) {
                                                 echo '<div>'. $banner->layanan .'</div>';
                                             }
-                                        ?>
+                                        ?> -->
                                         <div class="text-orange">
                                             <?= Output::decodeEscape($banner->nama_bantuan); ?>
                                         </div>
@@ -226,7 +226,7 @@
             <div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay="<?= $delay_card.'s'; ?>"
                 data-id-bantuan="<?= $list_bantuan->id_bantuan; ?>">
                 <!-- Start Single Service -->
-                <div class="p-4 single-service animation">
+                <a class="p-4 single-service animation d-block" href="<?= '/bantuan/detil/'. $list_bantuan->id_bantuan; ?>">
                     <div
                         class="app-image img-wrapper rounded-box top overflow-hidden d-flex justify-content-center align-items-center position-relative mb-3">
                         <img src="<?= $list_bantuan->path_gambar_medium; ?>"
@@ -254,7 +254,7 @@
                             </p>
                         </div>
                         <div class="col-auto text-end">
-                            <small>
+                            <small class="text-black-50">
                                 <?= $list_bantuan->sisa_waktu; ?>
                             </small>
                         </div>
@@ -264,10 +264,7 @@
                             aria-valuenow="<?= $list_bantuan->persentase_donasi_disalurkan; ?>" <?='style="width: ' .
                             $list_bantuan->persentase_donasi_disalurkan .'%"'; ?>></div>
                     </div>
-                    <a href="<?= '/bantuan/detil/'. $list_bantuan->id_bantuan; ?>" class="mt-3"
-                        <?=(isset($list_bantuan->warna) ? 'style="color:' . $list_bantuan->warna .'"' : '') ?>>Lihat
-                        lebih lanjut <i class="lni lni-arrow-right"></i></a>
-                </div>
+                </a>
                 <!-- End Single Service -->
             </div>
             <?php 

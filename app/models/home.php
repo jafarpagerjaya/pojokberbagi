@@ -216,6 +216,9 @@ class HomeModel {
                     $bStart = 1;
                 }
                 $bEnd = $result->jumlah_record - $param1 + 1;
+                if ($bEnd <= 0) {
+                    $bEnd = $param2;
+                }
                 $param1 = $bStart;
                 $param2 = $bEnd;
             }

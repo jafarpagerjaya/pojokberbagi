@@ -140,12 +140,12 @@ class BantuanModel extends HomeModel {
     public function getJumlahDataBantuan($status = null) {
         $params = array();
         if (!is_null($status)) {
-            $sql = "SELECT kategori.nama, SUM(CASE WHEN bantuan.status = ? THEN 1 ELSE 0 END) jumlah_kategori FROM kategori LEFT JOIN bantuan USING(id_kategori) LEFT JOIN sektor USING(id_sektor) GROUP BY kategori.nama";
+            $sql = "SELECT IFNULL(kategori.nama, 'Tanpa Kategori') nama, SUM(CASE WHEN bantuan.status = ? THEN 1 ELSE 0 END) jumlah_kategori FROM kategori RIGHT JOIN bantuan USING(id_kategori) LEFT JOIN sektor USING(id_sektor) GROUP BY kategori.nama";
             $params = array(
                 'bantuan.status' => Sanitize::escape2($status)
             );
         } else {
-            $sql = "SELECT k.nama, IFNULL(COUNT(b.id_kategori),0) jumlah_kategori FROM kategori k LEFT JOIN bantuan b ON(k.id_kategori = b.id_kategori) GROUP BY k.id_kategori";
+            $sql = "SELECT IFNULL(k.nama, 'Tanpa Kategori') nama, COUNT(IFNULL(b.id_kategori, 0)) jumlah_kategori FROM kategori k RIGHT JOIN bantuan b ON(k.id_kategori = b.id_kategori) GROUP BY k.id_kategori";
         }
         $data = $this->db->query($sql, $params);
         // $data = $this->db->query('SELECT k.nama, COUNT(b.id_bantuan) jumlah_kategori_berjalan FROM kategori k JOIN jenis j ON(k.id_kategori=j.id_kategori) JOIN bantuan b ON(j.id_jenis=b.id_jenis) WHERE UPPER(b.status) = "D" GROUP BY k.nama');
@@ -199,8 +199,12 @@ class BantuanModel extends HomeModel {
         $kategori_filter = "";
         $search_fields = "";
         if (!is_null($kategori)) {
-            $kategori_filter = "WHERE LOWER(k.nama) = LOWER(?)";
-            array_push($values, Sanitize::escape2($kategori));
+            if ($kategori == 'tanpa kategori') {
+                $kategori_filter = "WHERE k.nama IS NULL";
+            } else {
+                $kategori_filter = "WHERE LOWER(k.nama) = LOWER(?)";
+                array_push($values, Sanitize::escape2($kategori));
+            }
         }
         if (!is_null($this->getSearch())) {
             $search_fields = "CONCAT( 
@@ -215,7 +219,7 @@ class BantuanModel extends HomeModel {
         $sql = "
         WITH cte_b AS (
            SELECT id_bantuan 
-           FROM bantuan b JOIN kategori k USING(id_kategori) 
+           FROM bantuan b LEFT JOIN kategori k USING(id_kategori) 
            {$kategori_filter}
            ORDER BY b.action_at DESC LIMIT {$this->getOffset()}, {$this->getLimit()}
         ) SELECT COUNT(DISTINCT(d.id_donatur)) jumlah_donatur, formatTanggal(b.create_at) bantuan_create_at, b.status status_bantuan, k.warna, k.nama nama_kategori, s.nama nama_sektor, cte_b.id_bantuan, IFNULL(SUM(d.jumlah_donasi),0) total_donasi, IFNULL(total_penggunaan_donasi,0) total_penggunaan_donasi, IFNULL(total_pelaksanaan,0) total_pelaksanaan, IFNULL(sekian_kali_pelaksanaan,0) sekian_kali_pelaksanaan, IFNULL((SUM(d.jumlah_donasi) - total_penggunaan_donasi),0) saldo_donasi, b.nama nama_bantuan, blokir, IFNULL(FORMAT(jumlah_target, 0, 'id_ID'),'Tanpa batas') jumlah_target, satuan_target,
@@ -246,11 +250,14 @@ class BantuanModel extends HomeModel {
         ";
 
         if (!is_null($kategori)) {
-            $record = $this->countData("bantuan LEFT JOIN kategori USING(id_kategori)", array("LOWER(kategori.nama) = ?", $kategori));
+            if ($kategori == 'tanpa kategori') {
+                $record = $this->countData("bantuan LEFT JOIN kategori USING(id_kategori)", "LOWER(kategori.nama) IS NULL");
+            } else {
+                $record = $this->countData("bantuan LEFT JOIN kategori USING(id_kategori)", array("LOWER(kategori.nama) = ?", $kategori));
+            }
             $data['record'] = $record->jumlah_record;
         }
 
-        // Debug::pr($sql);die();
         $this->db->query($sql, $values);
         $data['data'] = $this->db->results();
         $this->data = $data;
@@ -258,10 +265,17 @@ class BantuanModel extends HomeModel {
     }
 
     public function dataBantuanKategori($nama_kategori, $status_bantuan = 'D') {
+        if ($nama_kategori != 'tanpa kategori') {
+            $params = array($nama_kategori, $status_bantuan);
+            $filters = "LOWER(k.nama) = LOWER(?)";
+        } else {
+            $params = array($status_bantuan);
+            $filters = "k.nama IS NULL";
+        }
         $sql = "WITH cte_b AS (
             SELECT id_bantuan 
-            FROM bantuan b JOIN kategori k USING(id_kategori) 
-            WHERE LOWER(k.nama) = LOWER(?) AND LOWER(b.status) = LOWER(?)
+            FROM bantuan b LEFT JOIN kategori k USING(id_kategori) 
+            WHERE {$filters} AND LOWER(b.status) = LOWER(?)
             ORDER BY b.action_at DESC LIMIT {$this->getOffset()}, {$this->getLimit()}
             ) SELECT cte_b.id_bantuan, IFNULL(SUM(d.jumlah_donasi),0) total_donasi, IFNULL(total_penggunaan_donasi,0) total_penggunaan_donasi, IFNULL(total_pelaksanaan,0) total_pelaksanaan, IFNULL(sekian_kali_pelaksanaan,0) sekian_kali_pelaksanaan, IFNULL((SUM(d.jumlah_donasi) - total_penggunaan_donasi),0) saldo_donasi, b.nama nama_bantuan, blokir, jumlah_target, satuan_target,
           IF(b.jumlah_target IS NULL, 
@@ -286,7 +300,7 @@ class BantuanModel extends HomeModel {
           WHERE d.bayar = 1 AND d.id_donasi IS NOT NULL OR d.id_donasi IS NULL
           GROUP BY cte_b.id_bantuan";
 
-        $data = $this->db->query($sql, array($nama_kategori, $status_bantuan));
+        $data = $this->db->query($sql, $params);
         if ($data->count()) {
             $this->data = $data->results();
             return $this->data;
@@ -560,7 +574,7 @@ class BantuanModel extends HomeModel {
         $innerArrayFilter = implode(' ', $innerArrayFilter);
 
         $sql = "WITH bil AS (
-            SELECT id_bantuan, bantuan.nama nama_bantuan, jumlah_target, id_pemohon, id_sektor, id_kategori, id_gambar_medium, id_gambar_wide, tanggal_akhir
+            SELECT id_bantuan, bantuan.nama nama_bantuan, jumlah_target, id_pemohon, id_sektor, id_kategori, id_gambar_medium, id_gambar_wide, tanggal_akhir, prioritas, action_at
             FROM bantuan {$kategoriTable}
             WHERE blokir IS NULL {$innerArrayFilter} AND (tanggal_akhir IS NULL OR TIMESTAMPDIFF(DAY,NOW(), CONCAT(tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) >= 0)
             ORDER BY prioritas {$this->getDirection()}, action_at {$this->getDirection()}, id_bantuan ASC
@@ -599,7 +613,8 @@ class BantuanModel extends HomeModel {
                 ) pls
                 GROUP BY pls.id_bantuan
           ) ddibpl ON (ddibpl.id_bantuan = bil.id_bantuan)
-          GROUP BY bil.id_bantuan";
+          GROUP BY bil.id_bantuan
+          ORDER BY prioritas {$this->getDirection()}, action_at {$this->getDirection()}, id_bantuan ASC";
         
         $this->db->query($sql, $values);
 
@@ -747,5 +762,39 @@ class BantuanModel extends HomeModel {
             return true;
         }
         return false;
+    }
+
+    public function readDeskripsiList() {
+        $fields = "d.id_deskripsi, d.id_bantuan, b.nama nama_bantuan, d.judul, IFNULL(formatTanggalFull(d.create_at),'') create_at, d.isi";
+        $tables = "deskripsi d LEFT JOIN bantuan b ON(d.id_bantuan = b.id_bantuan)";
+        // Where bisa di set jika perlu;
+        $where = null;
+        $data['data'] = array();
+        if ($this->getSearch() != null) {
+            // OFSET
+            $search = "CONCAT(IFNULL(b.nama,''), IFNULL(d.judul,''), IFNULL(formatTanggalFull(d.create_at),''), IFNULL(d.isi,'')) LIKE '%{$this->getSearch()}%'";
+            $result = $this->countData($tables, $where, $search);
+            $sql = "SELECT {$fields} FROM {$tables} WHERE {$search} ORDER BY {$this->getOrder()} {$this->getDirection()}, d.id_deskripsi {$this->getDirection()} LIMIT {$this->getHalaman()[0]},{$this->getLimit()}";
+            $params = array();
+        } else {
+            // SEEK
+            $result = $this->countData($tables, $where);
+            $sql = "SELECT {$fields} FROM {$tables} WHERE d.id_deskripsi BETWEEN ? AND ? ORDER BY {$this->getOrder()} {$this->getDirection()}";
+            $params = array(
+                'between_start' => $this->getHalaman()[0],
+                'between_end' => $this->getHalaman()[1]
+            );
+        }
+
+        $data['total_record'] = $result->jumlah_record;
+        
+        $this->db->query($sql, $params);
+
+        if ($this->db->count()) {
+            $data['data'] = $this->db->results();
+        }
+
+        $this->data = $data;
+        return true;
     }
 }

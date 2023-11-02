@@ -185,6 +185,7 @@ img::after {
     display: flex;
     justify-content: center;
     align-items: center;
+    color: var(--bs-secondary);
 }
 
 /* Akhir Utilitas, Reset & Root */

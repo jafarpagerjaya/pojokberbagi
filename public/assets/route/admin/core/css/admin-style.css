@@ -58,6 +58,12 @@ table.table thead tr>td:last-child {
 
 
 /* Table absolute first with responsive scroll */
+.main-content.backdrop table.table-responsive.table-absolute-first thead th:first-child,
+.main-content.backdrop table.table-responsive.table-absolute-first tfoot th:first-child,
+.main-content.backdrop table.table-responsive.table-absolute-first tbody td:first-child {
+    z-index: -1;
+}
+
 table.table-absolute-first tr[style] th:first-child,
 table.table-absolute-first tr[style] td:first-child {
     white-space: normal;

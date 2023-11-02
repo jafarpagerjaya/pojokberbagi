@@ -1,23 +1,23 @@
-div.animation [data-animation-name],
-div.animation .opacity {
+.animation [data-animation-name],
+.animation .opacity {
     transition-duration: 0.3s;
     transition-property: all;
     transition-timing-function: ease-out;
 }
 
-div.animation:hover>.app-image.img-wrapper img[data-animation-name="zoom-in"] {
+.animation:hover>.app-image.img-wrapper img[data-animation-name="zoom-in"] {
     transform: scale(1.1);
 }
 
-div.animation>.app-image.img-wrapper img[data-animation-name="zoom-out"] {
+.animation>.app-image.img-wrapper img[data-animation-name="zoom-out"] {
     transform: scale(1.1);
 }
 
-div.animation:hover>.app-image.img-wrapper img[data-animation-name="zoom-out"] {
+.animation:hover>.app-image.img-wrapper img[data-animation-name="zoom-out"] {
     transform: scale(1);
 }
 
-div.animation:hover>.app-image.img-wrapper img.opacity {
+.animation:hover>.app-image.img-wrapper img.opacity {
     opacity: 0.9;
 }
 

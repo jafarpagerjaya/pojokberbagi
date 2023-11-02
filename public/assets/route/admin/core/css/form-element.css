@@ -27,8 +27,37 @@ input[maxlength]~span.input-char-left {
     bottom: 1.6rem;
 }
 
+.modal textarea[maxlength]~span.input-char-left,
+.modal input[maxlength]~span.input-char-left {
+    bottom: 1rem;
+    transition: bottom .15s ease-in-out;
+}
+
+.modal input[maxlength].is-invalid.form-control~span.input-char-left {
+    right: 2.05rem;
+    transition: right 0s ease-in-out;
+}
+
+.modal textarea[maxlength].is-invalid.form-control {
+    background-position-y: 1rem;
+    background-position-x: calc(100% - 1.5rem);
+    padding-right: 1.5rem !important;
+}
+
+.modal input[maxlength]:not(:placeholder-shown)~span.input-char-left {
+    bottom: 1.5rem;
+}
+
+.modal textarea[maxlength]:not(:placeholder-shown)~span.input-char-left {
+    bottom: .25rem;
+}
+
 input[type="text"]:focus {
     box-shadow: 0 0 0 0.2rem rgb(94 114 228 / 25%) !important;
+}
+
+.form-control.is-invalid:focus {
+    box-shadow: 0 0 0 0.2rem rgba(220,53,69,.25) !important;
 }
 
 .form-group.error .form-control-label,

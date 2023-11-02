@@ -15,7 +15,11 @@ class Ui {
             }
         }
 
-        $batas_halaman = ceil($dataRecord/$limit); 
+        if ($dataRecord == 0) {
+            return false;
+        }
+
+        $batas_halaman = ceil($dataRecord/$limit);
 
         $jumlah_halaman = $batas_halaman;
 

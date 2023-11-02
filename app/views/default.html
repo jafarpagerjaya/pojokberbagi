@@ -32,13 +32,13 @@
     <!-- <link rel="stylesheet" href="/assets/route/default/core/css/tiny-slider.css"> -->
     <!-- <link rel="stylesheet" href="/assets/route/default/core/css/glightbox.min.css"> -->
     <link rel="stylesheet" href="/assets/route/default/core/css/main.css?v=040523">
-    <link rel="stylesheet" href="/assets/route/default/core/css/default.css?v=040523">
+    <link rel="stylesheet" href="/assets/route/default/core/css/default.css?v=301023">
     <?= $this->getLinkRel('controller'); ?>
     <?= $this->getLinkRel('action'); ?>
 </head>
 
 <body<?= (isset($this->data['uri']) ? ' data-uri="'. $this->data['uri'] .'"' : '') ?>
-    <?= (isset($this->data[Config::get('session/token_name')]) ? ' data-token="'. $this->data[Config::get('session/token_name')] .'"' : '') ?>>
+    <?= (isset($this->data[Config::get('session/token_name')]) ? ' data-token="'. $this->data[Config::get('session/token_name')] .'"' : '') ?> data-mobile="on">
     <!-- Preloader -->
     <div class="preloader">
         <div class="preloader-inner">

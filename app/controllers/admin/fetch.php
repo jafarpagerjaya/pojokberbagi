@@ -311,6 +311,11 @@ class FetchController extends Controller {
                     }
                 }
             break;
+
+            case 'deskripsi':
+                // deskripsi Params
+            break;
+
             default:
                 $this->_result['feedback'] = array(
                     'message' => 'Unrecognize params '. $params[0]
@@ -344,6 +349,16 @@ class FetchController extends Controller {
 
         // prepare method read name
         $action = $params[0] . 'Read';
+
+        // check method is exists
+        if (!method_exists($this, $action)) {
+            $this->_result['feedback'] = array(
+                'message' => 'Unrecognize method '. $params[0]
+            );
+            $this->result();
+            return false;
+        }
+
         // call method read
         $this->$action($decoded);
 
@@ -664,10 +679,31 @@ class FetchController extends Controller {
                 return false;
             }
         }
-        
+
+        $this->model->getData('b.nama nama_bantuan, FormatTanggalFull(d.create_at) create_at, COUNT(*) total_record','deskripsi d JOIN bantuan b USING(id_bantuan)', array('d.id_deskripsi','=',$new_id_deskripsi_selengkapnya));
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Failed to get data deskripsi bantuan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $newDeskripsi = $this->model->getResult();
+        $pages = ceil($newDeskripsi->total_record/$this->model->getLimit());
+
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(
-            'message' => 'Berhasil menambahkan data selengkapnya (<span class="font-weight-bold" data-id-target="'. $new_id_deskripsi_selengkapnya .'">#' . $decoded['judul'] . '</span>)'
+            'message' => 'Berhasil menambahkan data selengkapnya (<span class="font-weight-bold" data-id-target="'. $new_id_deskripsi_selengkapnya .'">#' . $decoded['judul'] . '</span>)',
+            'data' => array(
+                'id_deskripsi' => $new_id_deskripsi_selengkapnya,
+                'judul' => $decoded['judul'],
+                'create_at' => $newDeskripsi->create_at,
+                'nama_bantuan' => $newDeskripsi->nama_bantuan
+            ),
+            'fields' => array(
+                'pages' => $pages
+            )
         );
         $this->result();
         return false;
@@ -2238,6 +2274,69 @@ class FetchController extends Controller {
 
         $this->result();
         Session::delete('toast');
+        return false;
+    }
+
+    // Daftar Seluruh Deskripsi Selengkapnya
+    private function deskripsiListRead($decoded) {
+        $decoded = Sanitize::thisArray($decoded['fields']);
+
+        if (!isset($decoded['limit'])) {
+            $decoded['limit'] = 1;
+        }
+
+        if (!isset($decoded['active_page'])) {
+            $decoded['active_page'] = 1;
+        }
+
+        $this->model('Bantuan');
+
+        if (isset($decoded['search'])) {
+            $this->model->setSearch($decoded['search']);
+        }
+
+        $data = array();
+
+        $this->model->setLimit($decoded['limit']);
+        $this->model->setDirection('DESC');
+        $this->model->setHalaman($decoded['active_page'], 'deskripsi');
+        $this->model->setOrder('d.create_at');
+        $this->model->readDeskripsiList();
+        
+        if ($this->model->affected()) {
+            $data = $this->model->data();
+        }
+
+        if (!isset($data['data'])) {
+            $data['data'] = array();
+        }
+
+        if (!isset($data['total_record'])) {
+            $data['total_record'] = $this->model->data()['total_record'];
+        }
+
+        $pages = ceil($data['total_record']/$decoded['limit']);
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => $data['data'],
+            'fields' => array(
+                'active_page' => $decoded['active_page'],
+                'pages' => $pages,
+                'total_record' => $data['total_record'],
+                'limit' => $this->model->getLimit()
+            )
+        );
+
+        if (isset($decoded['search'])) {
+            $this->_result['feedback']['fields']['search'] = $this->model->getSearch();
+        }
+
+        $this->result();
+
+        if ($this->_result['error'] == false) {
+            Session::delete('toast');
+        }
         return false;
     }
 

@@ -231,8 +231,11 @@ let tableAblsoluteFirstScroll = function() {
         tAL.forEach(table => {
             table.querySelectorAll('tbody tr>*:not(:first-child').forEach(element => {
                 element.addEventListener('mousewheel', function(e) {
-                    e.preventDefault();
-                    table.scrollLeft += e.deltaY;
+                    console.log();
+                    if ((table.scrollLeft + e.deltaY > e.deltaY && e.deltaY < 0) || (Math.round(table.scrollLeft + table.clientWidth) != element.parentElement.clientWidth && e.deltaY > 0)) {
+                        e.preventDefault();
+                        table.scrollLeft += e.deltaY;
+                    }
                 });
             });
         });

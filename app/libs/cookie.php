@@ -20,7 +20,7 @@ class Cookie {
 		}
 	}
 
-	public static function delete($name) {
-		self::put($name, '', time() - 1);
+	public static function delete($name, $path = '/') {
+		self::put($name, '', time() - 1, $path);
 	}
 }

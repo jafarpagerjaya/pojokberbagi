@@ -1086,7 +1086,7 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN
                     -- SQL
                     EXECUTE stmt USING @id_pelaksanaan, @id_kebutuhan, @id_donasi, @nominal_kebutuhan, @nominal_penggunaan_donasi, @saldo_kebutuhan, @saldo_donasi, @keterangan;
                     IF ROW_COUNT() = 0 THEN
-                        SELECT CONCAT("Failed to insert data!") MESSAGE_TEXT;
+                        SELECT CONCAT("Failed to insert data! KalkulasiAnggaranPelaksanaanDonasi") MESSAGE_TEXT;
                         -- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Failed to insert data!';
                         DEALLOCATE PREPARE stmt;
                         CLOSE list_rab;
@@ -1265,7 +1265,7 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp(IN in_id_pelaksanaan INT
                     -- SQL
                     EXECUTE stmt USING @id_pelaksanaan, @id_kebutuhan, @id_donasi, @nominal_kebutuhan, @nominal_penggunaan_donasi, @saldo_kebutuhan, @saldo_donasi, @keterangan;
                     IF ROW_COUNT() = 0 THEN
-                        SELECT CONCAT("Failed to insert data!") MESSAGE_TEXT;
+                        SELECT CONCAT("Failed to insert data! KalkulasiAnggaranPelaksanaanDonasiTemp") MESSAGE_TEXT;
                         -- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Failed to insert data!';
                         DEALLOCATE PREPARE stmt;
                         CLOSE list_rab;
@@ -3478,13 +3478,13 @@ UPDATE channel_account,
 SET channel_account.saldo = s.saldo WHERE channel_account.nama = s.nama;
 -- VERSI TABEL DTPA SUDAH ADA
 -- UPDATE channel_account, 
--- 	 (SELECT SUM(sd.saldo_donasi) saldo, sd.id_ca, sd.nama FROM 
---         (
---         (SELECT MIN(dtpa.saldo) saldo_donasi, cp.id_ca, ca.nama FROM channel_account ca JOIN channel_payment cp USING(id_ca) JOIN donasi d ON(d.id_cp = cp.id_cp) JOIN anggaran_pelaksanaan_donasi a USING(id_donasi) JOIN detil_transaksi_penarikan_anggaran dtpa USING(id_apd) WHERE d.bayar = 1 GROUP BY cp.id_ca, a.id_donasi HAVING saldo_donasi)
---         UNION
---         (SELECT SUM(d.jumlah_donasi) saldo_donasi, cp.id_ca, ca.nama FROM channel_account ca JOIN channel_payment cp USING(id_ca) JOIN donasi d ON(d.id_cp = cp.id_cp) LEFT JOIN anggaran_pelaksanaan_donasi a USING(id_donasi) LEFT JOIN detil_transaksi_penarikan_anggaran dtpa USING(id_apd) WHERE d.bayar = 1 AND dtpa.id_apd IS NULL GROUP BY cp.id_ca, dtpa.id_dtpa)
---         ) sd
---         GROUP BY sd.id_ca, sd.nama;
+	--  (SELECT SUM(sd.saldo_donasi) saldo, sd.id_ca, sd.nama FROM 
+    --     (
+    --     (SELECT MIN(dtpa.saldo) saldo_donasi, cp.id_ca, ca.nama FROM channel_account ca JOIN channel_payment cp USING(id_ca) JOIN donasi d ON(d.id_cp = cp.id_cp) JOIN anggaran_pelaksanaan_donasi a USING(id_donasi) JOIN detil_transaksi_penarikan_anggaran dtpa USING(id_apd) WHERE d.bayar = 1 GROUP BY cp.id_ca, a.id_donasi HAVING saldo_donasi)
+    --     UNION
+    --     (SELECT SUM(d.jumlah_donasi) saldo_donasi, cp.id_ca, ca.nama FROM channel_account ca JOIN channel_payment cp USING(id_ca) JOIN donasi d ON(d.id_cp = cp.id_cp) LEFT JOIN anggaran_pelaksanaan_donasi a USING(id_donasi) LEFT JOIN detil_transaksi_penarikan_anggaran dtpa USING(id_apd) WHERE d.bayar = 1 AND dtpa.id_apd IS NULL GROUP BY cp.id_ca, dtpa.id_dtpa)
+    --     ) sd
+    --     GROUP BY sd.id_ca, sd.nama;
 --     ) s
 -- SET channel_account.saldo = s.saldo WHERE channel_account.nama = s.nama;
 
@@ -4514,7 +4514,7 @@ UPDATE penarikan SET status = '1', id_petugas = @id_petugas WHERE id_pencairan =
 --                     -- SQL
 --                     EXECUTE stmt USING @id_pelaksanaan, @id_kebutuhan, @id_donasi, @nominal_kebutuhan, @nominal_penggunaan_donasi, @saldo_kebutuhan, @saldo_donasi, @keterangan;
 --                     IF ROW_COUNT() = 0 THEN
---                         SELECT CONCAT("Failed to insert data!") MESSAGE_TEXT;
+--                         SELECT CONCAT("Failed to insert data! KalkulasiAnggaranPelaksanaanDonasi") MESSAGE_TEXT;
 --                         -- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Failed to insert data!';
 --                         DEALLOCATE PREPARE stmt;
 --                         CLOSE list_rab;
@@ -4693,7 +4693,7 @@ UPDATE penarikan SET status = '1', id_petugas = @id_petugas WHERE id_pencairan =
 --                     -- SQL
 --                     EXECUTE stmt USING @id_pelaksanaan, @id_kebutuhan, @id_donasi, @nominal_kebutuhan, @nominal_penggunaan_donasi, @saldo_kebutuhan, @saldo_donasi, @keterangan;
 --                     IF ROW_COUNT() = 0 THEN
---                         SELECT CONCAT("Failed to insert data!") MESSAGE_TEXT;
+--                         SELECT CONCAT("Failed to insert data! KalkulasiAnggaranPelaksanaanDonasiTemp") MESSAGE_TEXT;
 --                         -- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Failed to insert data!';
 --                         DEALLOCATE PREPARE stmt;
 --                         CLOSE list_rab;
