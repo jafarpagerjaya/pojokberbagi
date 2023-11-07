@@ -19,6 +19,20 @@ class HomeModel {
         return (isset($table) && is_array($fields)) ? true : false;
     }
 
+    public function prepareStmt($sql) {
+        if (!$this->db->prepared($sql))  {
+            throw new Exception("Error Processing Prepared " . $sql);
+        }
+        return true;
+    }
+
+    public function executeStmt($params = array()) {
+        if (!$this->db->executePrepared($params))  {
+            throw new Exception("Error Processing execute Prepared STMT");
+        }
+        return true;
+    }
+
     public function create($table, $fields = array()) {
         if ($this->checkParams($table, $fields)) {
             if (!$this->db->insert($table, $fields))  {

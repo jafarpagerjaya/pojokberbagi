@@ -82,3 +82,12 @@ b, strong {
 .ql-editor * {
     line-height: 2;
 }
+
+.modal#modalKonfirmasiResetDeskripsi a.badge-primary {
+    color: var(--danger) !important;
+}
+
+.modal#modalKonfirmasiResetDeskripsi a.badge-primary:hover,
+.modal#modalKonfirmasiResetDeskripsi a.badge-primary:focus {
+    color: #fff !important;
+}

@@ -37,6 +37,32 @@ class Database {
 		return $this->query($sql);
 	}	
 
+	public function prepared($sql) {
+		$this->_query = $this->_pdo->prepare($sql);
+		return $this;
+	}
+
+	public function executePrepared($params = array()) {
+		$this->_error = false;
+		$pos = 1;
+		if (count(is_countable($params) ? $params : [])) {
+			foreach ($params as $param) {
+				$param = ($param != '' ? $param : NULL);
+				$this->_query->bindValue($pos, $param);
+				$pos++;
+			}
+		}
+
+		if ($this->_query->execute()) {
+			$this->_results = $this->_query->fetchAll(PDO::FETCH_OBJ);
+			$this->_count = $this->_query->rowCount();
+		} else {
+			$this->_error = true;
+		}
+
+		return $this;
+	}
+
 	final public function query($sql, $params = array()) {
 		$this->_error = false;
 		if ($this->_query = $this->_pdo->prepare($sql)) {
@@ -66,13 +92,13 @@ class Database {
 
 	private function filter($where = array()) {
 		$filter = array();
-		$operators = array('=', '>', '<', '>=', '<=', '!=','IS','IN','LIKE','LIKEL','LIKEU');
+		$operators = array('=', '>', '<', '>=', '<=', '!=','IS','IN','NOT IN','LIKE','LIKEL','LIKEU');
 
 		$field    = $where[0];
 		$operator = $where[1];
 
 		if (in_array($operator, $operators)) {
-			if ($operator != 'IN') {
+			if ($operator != 'IN' AND $operator != 'NOT IN') {
 				$filter = array(
 					"{$field} {$operator} ?",
 					1
@@ -85,7 +111,6 @@ class Database {
 					);
 				}
 				else if ($operator == 'LIKEL') {
-					Debug::prd('lol');
 					$filter = array(
 						"{$field} {$operator} LOWER(CONCAT('%',?,'%'))",
 						1

@@ -1,10 +1,49 @@
 let qEditor = editor('#editor'),
-    relatedTarget;
-$('#modalBuatSelengkapnya').on('hidden.bs.modal', function() {
+    relatedModal,
+    relatedCard;
+$('#modalFormDeskripsiSelengkapnya').on('hidden.bs.modal', function(e) {
     $(this).find('input.form-control').val('');
     qEditor.deleteText(0, qEditor.getLength());
+    e.target.querySelector('input#input-id-bantuan').removeAttribute('readonly');
+    objectDeskripsi = {};
 }).on('show.bs.modal', function(e) {
-    relatedTarget = e.relatedTarget.closest('.card');
+    relatedModal = e.relatedTarget.closest('.card');
+    if (e.relatedTarget.getAttribute('data-type') == 'update') {
+        if (e.relatedTarget.closest('tr') == null) {
+            let currentDate = new Date(),
+                timestamp = currentDate.getTime(); 
+
+            let invalid = {
+                error: true,
+                data_toast: 'invalid-show-modal-feedback',
+                feedback: {
+                    message: 'TR not found'
+                }
+            };
+
+            invalid.id = invalid.data_toast +'-'+ timestamp;
+            
+            createNewToast(document.querySelector('[aria-live="polite"]'), invalid.id, invalid.data_toast, invalid);
+            $('#'+ invalid.id +'.toast[data-toast="'+ invalid.data_toast +'"]').toast({
+                'delay': 10000
+            }).toast('show');
+
+            e.preventDefault();
+            return false;
+        }
+        let data = {
+            'id_deskripsi': e.relatedTarget.closest('tr').getAttribute('data-id-deskripsi'),
+            'token': body.getAttribute('data-token')
+        };
+
+        objectDeskripsi.id_deskripsi = data.id_deskripsi;
+        
+        // fetchGetDeskripsiSelengkapnya
+        fetchData('/admin/fetch/get/deskripsi-selengkapnya', data, e.target, 'get-deskripsi');
+        objectDeskripsi.mode = 'update';
+    } else {
+        objectDeskripsi.mode = 'create';
+    }
 });
 
 let qEList = document.querySelectorAll('.ql-editor');
@@ -94,19 +133,55 @@ let clickFunction = function(e) {
     }
    
     // e.target.classList.add('disabled');
+    let id_bantuan;
+    switch (objectDeskripsi.mode.toLowerCase()) {
+        case 'create':
+            id_bantuan = root.querySelector('[name="id_bantuan"]').value;
+        break;
+
+        case 'update':
+            id_bantuan = objectDeskripsi.id_bantuan;
+        break;
+
+        default:
+            let currentDate = new Date(),
+                timestamp = currentDate.getTime(),
+                invalid = {
+                error: true,
+                data_toast: 'invalid-show-modal-feedback',
+                feedback: {
+                    message: 'TR id-deskripsi not found'
+                }
+            };
+
+            invalid.id = invalid.data_toast +'-'+ timestamp;
+            
+            createNewToast(document.querySelector('[aria-live="polite"]'), invalid.id, invalid.data_toast, invalid);
+            $('#'+ invalid.id +'.toast[data-toast="'+ invalid.data_toast +'"]').toast({
+                'delay': 10000
+            }).toast('show');
+
+            e.preventDefault();
+            // return false;
+        break;
+    }
 
     let data = {
         deskripsi: {
-            id_bantuan: root.querySelector('[name="id_bantuan"]').value,
+            id_bantuan: id_bantuan,
             judul: root.querySelector('[name="judul"]').value,
             isi: Delta
         },
         token: document.querySelector('body').getAttribute('data-token')
     };
 
+    if (objectDeskripsi.id_deskripsi != null) {
+        data.deskripsi.id_deskripsi = objectDeskripsi.id_deskripsi;
+    }
+
     // console.log(data);
-    // fetchCreateDeskripsiSelengkapnya
-    fetchData('/admin/fetch/create/bantuan/deskripsi-selengkapnya', data, root, 'create-deskripsi-selengkapnya');
+    // fetchCreateDeskripsiSelengkapnya OR fetchUpdateDeskripsiSelengkapnya
+    fetchData('/admin/fetch/'+ objectDeskripsi.mode +'/bantuan/deskripsi-selengkapnya', data, root, objectDeskripsi.mode +'-deskripsi-selengkapnya');
     // $('#'+root.id).modal('hide');
 };
 
@@ -134,17 +209,89 @@ let fetchData = function (url, data, root, f) {
         });
 
         switch (f) {
+            case 'update-deskripsi-selengkapnya':
+                fetchUpdateDeskripsiSelengkapnya(root, response);
+                break;
             case 'create-deskripsi-selengkapnya':
                 fetchCreateDeskripsiSelengkapnya(root, response);
                 break;
             case 'read-deskripsi-selengkapnya':
                 fetchReadDeskripsiSelengkapnya(root, response, data);
                 break;
+            case 'get-deskripsi':
+                fetchGetDeskripsiSelengkapnya(root, response);
+                break;
+            case 'reset-deskripsi':
+                fetchResetDeskripsi(root, response);
+                break;
             default:
                 break;
         }
 
     })
+};
+
+let fetchResetDeskripsi = function(root, response) {
+    createNewToast(document.querySelector('[aria-live="polite"]'), response.toast.id, response.toast.data_toast, response.toast);
+    if (response.error) {
+        $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast({
+            'delay': 10000
+        }).toast('show');
+        return false;
+    }
+
+    $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast('show');
+    if (relatedCard.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]') != null) {
+        relatedCard.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"] td>div').insertAdjacentHTML('afterend','<span class="small badge badge-warning text-black-50 text-capitalize">Kosong</span>');
+        relatedCard.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]').classList.add('highlight');
+        setTimeout(()=> {
+            relatedCard.querySelector('tbody>tr.highlight').classList.remove('highlight');
+        }, 3000);
+    }
+    $(root).modal('hide');
+};
+
+let objectDeskripsi = {};
+let fetchGetDeskripsiSelengkapnya = function(root, response) {
+    if (response.error) {
+        createNewToast(document.querySelector('[aria-live="polite"]'), response.toast.id, response.toast.data_toast, response.toast);
+        $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast({
+            'delay': 10000
+        }).toast('show');
+        return false;
+    }
+    root.querySelector('input#input-id-bantuan').value = response.feedback.data.id_bantuan;
+    objectDeskripsi.id_bantuan = response.feedback.data.id_bantuan;
+    root.querySelector('input#input-id-bantuan').setAttribute('readonly','readonly');
+    root.querySelector('input#input-judul').value = response.feedback.data.judul;
+    if (response.feedback.data.isi != '') {
+        qEditor.setContents(JSON.parse(response.feedback.data.isi));
+    }
+};
+
+let fetchUpdateDeskripsiSelengkapnya = function(root, response) {
+    createNewToast(document.querySelector('[aria-live="polite"]'), response.toast.id, response.toast.data_toast, response.toast);
+    if (response.false) {
+        $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast({
+            'delay': 10000
+        }).toast('show');
+        return false;
+    } else {
+        setTimeout(() => {
+            $('#'+root.id).modal('hide');
+            setTimeout(() => {
+                if (relatedModal.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]') != null) {
+                    relatedModal.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]').classList.add('highlight');
+                    setTimeout(()=> {
+                        if (relatedModal.querySelector('tbody>tr.highlight') != null) {
+                            relatedModal.querySelector('tbody>tr.highlight').classList.remove('highlight');
+                        }
+                    }, 3000);
+                }
+            },100);
+        },0);
+    }
+    $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast('show');
 };
 
 let fetchCreateDeskripsiSelengkapnya = function(root, response) {
@@ -164,28 +311,32 @@ let fetchCreateDeskripsiSelengkapnya = function(root, response) {
         return false;
     }
 
-    if (relatedTarget.querySelector('.card-footer ul.pagination .page-link.page-item.active') != null) {
-        relatedTarget.querySelector('.card-footer ul.pagination .page-link.page-item.active').click();
+    if (relatedModal.querySelector('.card-footer ul.pagination .page-link.page-item.active') != null) {
+        relatedModal.querySelector('.card-footer ul.pagination .page-link.page-item.active').click();
     } else {
-        relatedTarget.querySelector('thead tr').insertAdjacentHTML('beforeend', '<th scope="col" class="sort" data-sort="judul">Judul</th><th scope="col" class="fit"></th>');
-        relatedTarget.querySelector('tfoot tr').insertAdjacentHTML('beforeend', '<th scope="col" class="sort" data-sort="judul">Judul</th><th scope="col" class="fit"></th>');
-        relatedTarget.querySelector('tbody').innerHTML = '';
-        const tr = '<tr data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"><th scope="row" class="fit"><div class="d-flex flex-column"><a href="'+ (response.feedback.data.id_bantuan == null ? '#' : '/admin/bantuan/data/' + response.feedback.data.id_bantuan) +'" class="font-weight-bolder"><span>'+ response.feedback.data.nama_bantuan +'</span></a><span class="mb-0">'+ response.feedback.data.create_at +'</span></div></th><td><span>'+ response.feedback.data.judul +'</span></td><td class="text-right"><div class="dropdown"><span><a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></a></span><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow"><a class="dropdown-item font-weight-bold" href="#">Lihat Isi</a><a class="dropdown-item font-weight-bold text-warning" href="#">Ubah Isi</a><a class="dropdown-item font-weight-bold text-danger" href="#">Reset</a></div></div></td></tr>';
-        relatedTarget.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
-        controlPaginationButton(0, $(relatedTarget.querySelector('.pagination')), response.feedback.fields.pages);
+        relatedModal.querySelector('thead tr').insertAdjacentHTML('beforeend', '<th scope="col" class="sort" data-sort="judul">Judul</th><th scope="col" class="fit"></th>');
+        relatedModal.querySelector('tfoot tr').insertAdjacentHTML('beforeend', '<th scope="col" class="sort" data-sort="judul">Judul</th><th scope="col" class="fit"></th>');
+        relatedModal.querySelector('tbody').innerHTML = '';
+        const tr = '<tr data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"><th scope="row" class="fit"><div class="d-flex flex-column"><a href="'+ (response.feedback.data.id_bantuan == null ? '#' : '/admin/bantuan/data/' + response.feedback.data.id_bantuan) +'" class="font-weight-bolder"><span>'+ response.feedback.data.nama_bantuan +'</span></a><span class="mb-0">'+ response.feedback.data.create_at +'</span></div></th><td><div><span>'+ response.feedback.data.judul +'</span></div>'+ (response.feedback.data.isi_length != null ? '':'<span class="small badge badge-warning text-black-50 text-capitalize">Kosong</span>') +'</td><td class="text-right"><div class="dropdown"><a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow"><a class="dropdown-item font-weight-bold" href="/bantuan/detil/'+ response.feedback.data.id_bantuan +'/#deskripsi-selengkapnya-area">Lihat Isi</a><a class="dropdown-item font-weight-bold text-warning" href="#" data-toggle="modal" data-target="#modalFormDeskripsiSelengkapnya" data-type="update">Ubah Isi</a>'+ (response.feedback.data.id_bantuan == null ? '':'<a class="dropdown-item font-weight-bold text-danger" href="#" data-toggle="modal" data-target="#modalKonfirmasiAksiDeskripsi" data-type="reset">Reset</a>') +'</div></div></td></tr>';
+        relatedModal.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
+        controlPaginationButton(0, $(relatedModal.querySelector('.pagination')), response.feedback.fields.pages);
     }
 
-    setTimeout(() => {
-        $('#'+root.id).modal('hide');
+    if (!response.error) {
         setTimeout(() => {
-            if (relatedTarget.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]') != null) {
-                relatedTarget.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]').classList.add('highlight');
-                setTimeout(()=> {
-                    relatedTarget.querySelector('tbody>tr.highlight').classList.remove('highlight');
-                }, 3000);
-            }
-        },100);
-    },0);
+            $('#'+root.id).modal('hide');
+            setTimeout(() => {
+                if (relatedModal.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]') != null) {
+                    relatedModal.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]').classList.add('highlight');
+                    setTimeout(()=> {
+                        if (relatedModal.querySelector('tbody>tr.highlight') != null) {
+                            relatedModal.querySelector('tbody>tr.highlight').classList.remove('highlight');
+                        }
+                    }, 3000);
+                }
+            },100);
+        },0);
+    }
     $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast('show');
     // root.querySelector('.disabled').classList.remove('disabled');
 };
@@ -245,7 +396,7 @@ let fetchReadDeskripsiSelengkapnya = function(root, response, data) {
         root.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
     } else {
         data.forEach(elment => { 
-            let tr = '<tr data-id-deskripsi="'+ elment.id_deskripsi +'"><th scope="row" class="fit"><div class="d-flex flex-column"><a href="'+ (elment.id_bantuan == null ? '#' : '/admin/bantuan/data/' + elment.id_bantuan) +'" class="font-weight-bolder"><span>'+ elment.nama_bantuan +'</span></a><span class="mb-0">'+ elment.create_at +'</span></div></th><td><span>'+ elment.judul +'</span></td><td class="text-right"><div class="dropdown"><span><a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></a></span><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow"><a class="dropdown-item font-weight-bold" href="#">Lihat Isi</a><a class="dropdown-item font-weight-bold text-warning" href="#">Ubah Isi</a><a class="dropdown-item font-weight-bold text-danger" href="#">Reset</a></div></div></td></tr>';
+            let tr = '<tr data-id-deskripsi="'+ elment.id_deskripsi +'"><th scope="row" class="fit"><div class="d-flex flex-column"><a href="'+ (elment.id_bantuan == null ? '#' : '/admin/bantuan/data/' + elment.id_bantuan) +'" class="font-weight-bolder"><span>'+ elment.nama_bantuan +'</span></a><span class="mb-0">'+ elment.create_at +'</span></div></th><td><div><span>'+ elment.judul +'</span></div>'+ (elment.isi_length != null ? '':'<span class="small badge badge-warning text-black-50 text-capitalize">Kosong</span>') +'</td><td class="text-right"><div class="dropdown"><a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow"><a class="dropdown-item font-weight-bold" href="/bantuan/detil/'+ elment.id_bantuan +'/#deskripsi-selengkapnya-area">Lihat Isi</a><a class="dropdown-item font-weight-bold text-warning" href="#" data-toggle="modal" data-target="#modalFormDeskripsiSelengkapnya" data-type="update">Ubah Isi</a>'+ (elment.id_bantuan == null ? '':'<a class="dropdown-item font-weight-bold text-danger" href="#" data-toggle="modal" data-target="#modalKonfirmasiAksiDeskripsi" data-type="reset">Reset</a>') +'</div></div></td></tr>';
             root.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
         });
     }
@@ -261,7 +412,7 @@ let fetchReadDeskripsiSelengkapnya = function(root, response, data) {
     updateCookie('deskripsi-selengkapnya', btoa(JSON.stringify(cookieValue)), window.location.pathname, expiry);
 
     root.querySelector('table').classList.remove('load');
-}
+};
 
 let fetchRead = function(selectorElment) {
     let data = {
@@ -315,7 +466,8 @@ let clickPageLink = function(e) {
 
 let oldPage;
 let clickPagination = function(e) {
-    e.target.closest('.card').querySelector('table').classList.add('load');
+    relatedCard = e.target.closest('.card');
+    relatedCard.querySelector('table').classList.add('load');
     if (oldPage == e.target.getAttribute('data-id')) {
         if (!delayTimer) {
             clickPageLink(e);
@@ -323,7 +475,9 @@ let clickPagination = function(e) {
         clearTimeout(delayTimer);
         delayTimer = setTimeout(() => {
             delayTimer = undefined;
-            e.target.closest('.card').querySelector('table').classList.remove('load');
+            if (relatedCard.querySelector('table.load')) {
+                relatedCard.querySelector('table').classList.remove('load');
+            }
         }, 1000);
     } else {
         clickPageLink(e);
@@ -390,4 +544,64 @@ let searchFunction = function(e) {
 
 document.querySelectorAll('input[name="search"]').forEach(input => {
     input.addEventListener('keyup', searchFunction);
+});
+
+$('#modalKonfirmasiAksiDeskripsi').on('show.bs.modal', function(e) {
+    let tr = e.relatedTarget.closest('tr');
+    if (tr != null && tr.getAttribute('data-id-deskripsi') != null) {
+        objectDeskripsi.id_deskripsi = tr.getAttribute('data-id-deskripsi');
+    } else {
+        let currentDate = new Date(),
+            timestamp = currentDate.getTime(); 
+
+        let invalid = {
+            error: true,
+            data_toast: 'invalid-show-modal-feedback',
+            feedback: {
+                message: 'TR id-deskripsi not found'
+            }
+        };
+
+        invalid.id = invalid.data_toast +'-'+ timestamp;
+        
+        createNewToast(document.querySelector('[aria-live="polite"]'), invalid.id, invalid.data_toast, invalid);
+        $('#'+ invalid.id +'.toast[data-toast="'+ invalid.data_toast +'"]').toast({
+            'delay': 10000
+        }).toast('show');
+
+        e.preventDefault();
+        return false;
+    }
+
+    relatedModal = e.target.closest('.modal');
+    relatedCard = e.relatedTarget.closest('.card');
+
+    let nama_bantuan, id_bantuan;
+    if (e.relatedTarget.getAttribute('data-type') == 'reset') {
+        if (tr.querySelector('a>span') != null) {
+            nama_bantuan = tr.querySelector('a>span').innerText;
+            id_bantuan = tr.querySelector('a').getAttribute('href').split('/').at(-1);
+        }
+        e.target.querySelector('a').innerText = nama_bantuan;
+        e.target.querySelector('a').setAttribute('href', '/bantuan/detil/'+id_bantuan+'/#deskripsi-selengkapnya-area');
+        document.querySelector('#modalKonfirmasiAksiDeskripsi p>span').innerText = e.relatedTarget.getAttribute('data-type');
+    } else {
+        document.querySelector('#modalKonfirmasiAksiDeskripsi p>span').innerText = 'ng' + e.relatedTarget.getAttribute('data-type');
+    }
+
+    document.querySelector('#modalKonfirmasiAksiDeskripsi p>span').setAttribute('data-type', e.relatedTarget.getAttribute('data-type'));
+}).on('hidden.bs.modal', function(e) {
+    objectDeskripsi = {};
+    relatedModal = {};
+});
+
+let submitAction = document.querySelector('#modalKonfirmasiAksiDeskripsi [type="submit"]');
+submitAction.addEventListener('click', function(e) {
+    let data = {
+        'token': body.getAttribute('data-token'),
+        'id_deskripsi': objectDeskripsi.id_deskripsi
+    };
+
+    // fetchResetDeskripsi
+    fetchData('/admin/fetch/'+ e.target.closest('.modal').querySelector('p>span').getAttribute('data-type') +'/deskripsi', data, relatedModal, 'reset-deskripsi');
 });

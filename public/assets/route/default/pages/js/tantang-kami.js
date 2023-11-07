@@ -19,7 +19,6 @@ function windowrReSize() {
 }
 
 function stickyNavbarAbout() {
-    console.log(1);
     header_navbar_height = header_navbar.offsetHeight;
     if (window.pageYOffset == 0) {
         header_navbar.style.removeProperty('transition-duration');
@@ -46,6 +45,7 @@ function stickyNavbarAbout() {
             element.classList.remove('active');
             let targetSpy = element.getAttribute('href'),
                 spyElement = document.querySelector(targetSpy);
+                console.log(window.pageYOffset, spyElement.offsetTop, spyElement.offsetHeight);
             if ((window.pageYOffset >= spyElement.offsetTop) && (window.pageYOffset < spyElement.offsetHeight + spyElement.offsetTop)) {
                 element.classList.add('active');
             }
@@ -66,3 +66,13 @@ window.onresize = windowrReSize;
 
 window.onscroll = stickyNavbarAbout;
 
+const lottiePlayer = document.getElementsByTagName("dotlottie-player"),
+    hoverTrigger = document.getElementById("lottie-controller").closest('.col');
+
+hoverTrigger.addEventListener('mouseover', function(event) {
+    lottiePlayer[0].play();
+});
+
+hoverTrigger.addEventListener('mouseout', function(event) {
+    lottiePlayer[0].pause();
+});

@@ -765,7 +765,7 @@ class BantuanModel extends HomeModel {
     }
 
     public function readDeskripsiList() {
-        $fields = "d.id_deskripsi, d.id_bantuan, b.nama nama_bantuan, d.judul, IFNULL(formatTanggalFull(d.create_at),'') create_at, d.isi";
+        $fields = "d.id_deskripsi, d.id_bantuan, b.nama nama_bantuan, d.judul, IFNULL(formatTanggalFull(d.create_at),'') create_at, LENGTH(TRIM(d.isi)) isi_length";
         $tables = "deskripsi d LEFT JOIN bantuan b ON(d.id_bantuan = b.id_bantuan)";
         // Where bisa di set jika perlu;
         $where = null;

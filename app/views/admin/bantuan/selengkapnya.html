@@ -4,7 +4,7 @@
             <div class="card-header d-flex justify-content-between align-items-center border-0">
                 <h2 class="mb-0">Daftar Deskripsi Campaign</h2>
                 <div class="btn btn-primary d-flex align-items-center justify-content-center"
-                    data-toggle="modal" data-target="#modalBuatSelengkapnya">
+                    data-toggle="modal" data-target="#modalFormDeskripsiSelengkapnya">
                     <span class="d-none d-md-block">Buat Selengkapnya Baru</span>
                     <i class="d-md-none fa fa-plus m-0"></i>
                 </div>
@@ -36,21 +36,21 @@
                                     <span class="mb-0"><?= $dataDeskripsi->create_at; ?></span>
                                 </div>
                             </th>
-                            <td><?= '<span>' . $dataDeskripsi->judul . '</span>'; ?></td>
+                            <td><div class="d-block">
+                                <?= '<div><span>' . $dataDeskripsi->judul . '</span></div>' . ($dataDeskripsi->isi_length != 0 ? '':'<span class="small badge badge-warning text-black-50 text-capitalize">Kosong</span>'); ?>
+                            </div></td>
                             <td class="text-right">
                                 <div class="dropdown">
-                                    <span>
-                                        <a class="btn btn-sm btn-icon-only text-light" href="#"
+                                    <a class="btn btn-sm btn-icon-only text-light" href="#"
                                         role="button" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </a>
-                                    </span>
                                     <div
                                         class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                        <a class="dropdown-item font-weight-bold" href="#">Lihat Isi</a>
-                                        <a class="dropdown-item font-weight-bold text-warning" href="#">Ubah Isi</a>
-                                        <a class="dropdown-item font-weight-bold text-danger" href="#">Reset</a>
+                                        <a class="dropdown-item font-weight-bold" href="/bantuan/detil/<?= $dataDeskripsi->id_bantuan; ?>/#deskripsi-selengkapnya-area">Lihat Isi</a>
+                                        <a class="dropdown-item font-weight-bold text-warning" href="#" data-toggle="modal" data-target="#modalFormDeskripsiSelengkapnya" data-type="update">Ubah Isi</a>
+                                        <?= (is_null($dataDeskripsi->id_bantuan) ? '': '<a class="dropdown-item font-weight-bold text-danger" href="#" data-toggle="modal" data-target="#modalKonfirmasiAksiDeskripsi" data-type="reset">Reset</a>'); ?>
                                     </div>
                                 </div>
                             </td>
@@ -93,8 +93,8 @@
     </div>
 </div>
 
-<div class="modal in" id="modalBuatSelengkapnya" tabindex="-1" role="dialog"
-    aria-labelledby="modalBuatSelengkapnya-label" aria-hidden="true">
+<div class="modal in" id="modalFormDeskripsiSelengkapnya" tabindex="-1" role="dialog"
+    aria-labelledby="modalFormDeskripsiSelengkapnya-label" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
         <div class="modal-content justify-content-center align-items-center scaleIn">
             <div class="container p-0 py-md-3 py-lg-5 px-lg-3 px-3 px-md-0">
@@ -128,6 +128,43 @@
                         <button class="btn btn-link font-weight-bolder text-warning"
                             data-dismiss="modal">Batal</button>
                         <button class="btn btn-outline-primary" id="buat-deskripsi-selengkapnya" type="submit">Simpan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" tabindex="-2" id="modalKonfirmasiAksiDeskripsi" role="dialog"
+    aria-labelledby="modalKonfirmasiAksiDeskripsiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-danger modal-dialog-centered fullscreen">
+        <div class="modal-content bg-gradient-danger d-flex justify-content-center">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalKonfirmasiAksiDeskripsiLabel">Konfirmasi Perubahan
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="py-3 text-center">
+                                <i class="ni ni-bell-55 ni-3x"></i>
+                                <h4 class="heading mt-4">Anda harus baca ini!</h4>
+                                <p class="font-weight-lighter mb-0">Apakah anda yakin me<span data-type="reset">reset</span> data deskripsi selengkapnya</p>
+                                <p>Campaign <a
+                                    target="_blank"
+                                    class="font-weight-bolder text-underline badge badge-primary p-2"
+                                    id="nama-bantuan" href="#">nama_bantuan</a></p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-link text-white mr-auto"
+                                data-dismiss="modal">Tidak</button>
+                            <button type="submit" class="btn btn-secondary font-weight-bolder text-danger">Ya</button>
+                        </div>
                     </div>
                 </div>
             </div>

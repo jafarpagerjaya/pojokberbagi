@@ -35,6 +35,6 @@ class Output {
     }
 
     public static function decodeEscape($string) {
-        return html_entity_decode($string, ENT_QUOTES, "UTF-8");
+        return html_entity_decode($string ?? '', ENT_QUOTES, "UTF-8");
     }
 }

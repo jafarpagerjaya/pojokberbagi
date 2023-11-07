@@ -140,6 +140,7 @@ table.load a {
     pointer-events: none !important;
 }
 
+table.load span,
 table.load a i {
     color: transparent !important;
 }

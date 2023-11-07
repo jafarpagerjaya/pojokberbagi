@@ -20,6 +20,11 @@ class TentangKamiController extends Controller {
 
         $this->script_action = array(
             array(
+                'source' => 'trushworty',
+                'src' => 'https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs',
+                'type' => 'module'
+            ),
+            array(
                 'src' => '/assets/route/default/pages/js/tantang-kami.js'
             )
         );
