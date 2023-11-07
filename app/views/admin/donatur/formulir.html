@@ -14,17 +14,17 @@
                             <div class="form-group">
                                 <label class="form-control-label" for="input-nama-donatur">Nama Donatur</label>
                                 <input type="text" id="input-nama-donatur" class="form-control" placeholder="Contoh Suci" name="nama" value="<?= isset($data_error_feedback['nama']['value']) ? $data_error_feedback['nama']['value'] : ''; ?>">
-                                <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['nama']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['nama']['feedback']) ?></div>
+                                <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['nama']) ? ' d-block' : '') ?>"><?= (isset($data_error_feedback['nama']['feedback']) ? $data_error_feedback['nama']['feedback'] : ''); ?></div>
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label" for="input-kontak-donatur">Kontak</label>
                                 <input type="text" id="input-kontak-donatur" class="form-control" placeholder="Contoh 085322661186" name="kontak" value="<?= isset($data_error_feedback['kontak']['value']) ? $data_error_feedback['kontak']['value'] : ''; ?>">
-                                <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['kontak']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['kontak']['feedback']) ?></div>
+                                <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['kontak']) ? ' d-block' : '') ?>"><?= (isset($data_error_feedback['kontak']['feedback']) ? $data_error_feedback['kontak']['feedback'] : ''); ?></div>
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label" for="input-email-donatur">Email</label>
-                                <input type="email" id="input-email-donatur" class="form-control" placeholder="Contoh Suci" name="email" value="<?= isset($data_error_feedback['email']['value']) ? $data_error_feedback['email']['value'] : ''; ?>">
-                                <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['email']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['email']['feedback']) ?></div>
+                                <input type="email" id="input-email-donatur" class="form-control" placeholder="contoh@pojokberbagi.id" name="email" value="<?= isset($data_error_feedback['email']['value']) ? $data_error_feedback['email']['value'] : ''; ?>">
+                                <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['email']) ? ' d-block' : '') ?>"><?= (isset($data_error_feedback['email']['feedback']) ? $data_error_feedback['email']['feedback'] : ''); ?></div>
                             </div>
                         </div>
                     </div>

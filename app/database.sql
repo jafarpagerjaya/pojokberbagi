@@ -576,6 +576,19 @@ CREATE TABLE donasi (
 
 -- bayar donasi 0 = pembayaran belum dilakukan, 1 = pembayaran berhasil;
 
+DROP TRIGGER BeforeInsertDonasi;
+DELIMITER $$
+CREATE TRIGGER BeforeInsertDonasi
+BEFORE INSERT ON donasi FOR EACH ROW
+    BEGIN
+    DECLARE t_bantuan_blokir TINYINT UNSIGNED;
+    SELECT blokir FROM bantuan WHERE id_bantuan = NEW.id_bantuan INTO t_bantuan_blokir;
+    IF t_bantuan_blokir = '1' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Failed to insert data: status campaign sedang diblokir!';
+    END IF;
+    END$$
+DELIMITER ;
+
 DROP TRIGGER DONASI_CHECK_INSERT;
 DELIMITER $$
 CREATE TRIGGER DONASI_CHECK_INSERT

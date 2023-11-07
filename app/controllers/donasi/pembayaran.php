@@ -74,7 +74,8 @@ class PembayaranController extends Controller {
             Redirect::to('donasi/buat/baru/' . $params[0]);
         }
 
-        $data = $this->model->getData('id_donatur, samaran, kontak','donatur', array('LOWER(email)','=', strtolower(trim(Input::get('email')))));
+        $this->model->getData('id_donatur, samaran, kontak','donatur', array('LOWER(email)','=', strtolower(trim(Input::get('email')))));
+        $data = $this->model->getResult();
         if (!$data) {
             // Block Yang kemungkinan bisa di hapus karena kontak pasti beda
             // Check data email dan kontak sebelum create donatur
@@ -136,6 +137,7 @@ class PembayaranController extends Controller {
             Redirect::to('donasi/buat/baru/' . $params[0]);
         }
 
+        $dataCP = $this->model->getResult();
         $jenis_payment = $dataCP->jenis_payment;
 
         // Jika input alias tidak dicentang
@@ -143,14 +145,14 @@ class PembayaranController extends Controller {
             $samaran = ucwords(strtolower(trim(Input::get('nama'))));
         }
 
-        $dataDonasi['alias'] = $samaran;
+        $dataDonasi['alias'] = Sanitize::escape2($samaran);
 
         // Jika donatur mengisi kontak
         if (strlen(Input::get('kontak')) > 0) {
-            $kontak = Sanitize::toInt(trim(Input::get('kontak')));
+            $kontak = Sanitize::toInt2(Input::get('kontak'));
         }
         
-        if (!is_null($kontak)) {
+        if (isset($kontak)) {
             $dataDonasi['kontak'] = $kontak;
         }
 
@@ -230,6 +232,7 @@ class PembayaranController extends Controller {
         // }
 
         $bantuan = $this->model->getData('id_bantuan, nama, nama_penerima, tanggal_akhir', 'bantuan', array('id_bantuan', '=', $donasi->id_bantuan));
+        
         $this->data['bantuan'] = $bantuan;
         if (!is_null($bantuan->tanggal_akhir)) {
             $maxPembayaran = date('Y-m-d', strtotime($bantuan->tanggal_akhir));

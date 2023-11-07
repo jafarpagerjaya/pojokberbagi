@@ -71,10 +71,16 @@ class Controller {
 		} else {
 			$cookie_value = Sanitize::thisArray(json_decode(base64_decode(Cookie::get(Config::get('client/cookie_name'))), true));
 
+			if (!isset($cookie_value['client_ip'])) {
+				$cookie_value['client_ip'] = '0.0.0.0';
+			}
+			if (!isset($cookie_value['device_id'])) {
+				$cookie_value['device_id'] = 'NULL';
+			}
 			$cekPengunjung = $db->query("SELECT COUNT(id_pengunjung) cek FROM pengunjung WHERE ip_address = ? AND device_id = ? AND client_key = ? AND modified_at >= NOW() - INTERVAL 1 YEAR", 
 			array(
-				Sanitize::escape(trim($cookie_value['client_ip'])), 
-				Sanitize::escape(trim($cookie_value['device_id'])),
+				$cookie_value['client_ip'], 
+				$cookie_value['device_id'],
 				Cookie::get(Config::get('client/cookie_name'))
 			));
 			

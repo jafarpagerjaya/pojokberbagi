@@ -1379,7 +1379,7 @@ class FetchController extends Controller {
         $decoded['jumlah_donasi'] = Sanitize::toInt2($decoded['jumlah_donasi']);
         $this->model('Donasi');
 
-        $dataFindId = $this->model->query("SELECT (SELECT count(id_bantuan) FROM bantuan WHERE id_bantuan = ?) bantuan_count, (SELECT count(id_cp) FROM channel_payment WHERE id_cp = ?) cp_count, (SELECT count(id_donatur) FROM donatur WHERE id_donatur = ?) donatur_count", array('id_bantuan' => $decoded['id_bantuan'], 'id_cp' => $decoded['id_cp'], 'id_donatur' => $decoded['id_donatur']));
+        $this->model->query("SELECT (SELECT count(id_bantuan) FROM bantuan WHERE id_bantuan = ?) bantuan_count, (SELECT count(id_cp) FROM channel_payment WHERE id_cp = ?) cp_count, (SELECT count(id_donatur) FROM donatur WHERE id_donatur = ?) donatur_count", array('id_bantuan' => $decoded['id_bantuan'], 'id_cp' => $decoded['id_cp'], 'id_donatur' => $decoded['id_donatur']));
 
         if (!$this->model->getResult()->bantuan_count) {
             $this->_result['feedback'] = array(
@@ -1423,18 +1423,25 @@ class FetchController extends Controller {
 
         // create donasi
         $decoded['bayar'] = 1;
-        $create = $this->model->create('donasi', $decoded);
-        if (!$create) {
+        try {
+            $create = $this->model->create('donasi', $decoded);
+            if (!$create) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Failed to create new donation'
+                );
+            } else {
+                $id_donasi = $this->model->lastIID();
+                $this->_result['error'] = false;
+                $this->_result['feedback'] = array(
+                    'message' => 'Donasi <span class="font-weight-bold text-orange">' . (isset($decoded['alias']) ? $decoded['alias'] : $dataDonatur->nama_donatur) . '</span> untuk <span class="font-weight-bold" data-id-target="'. $id_donasi .'">' . $dataBantuan->nama_bantuan . '</span> sejumlah <span class="font-weight-bold" style="display: inline-block;">Rp. '. Output::tSparator($decoded['jumlah_donasi']) .'</span> ('. Utility::keteranganJenisChannelPayment($dataCP->jenis_cp) .' - '. $dataCP->nama_cp .') telah ditambahkan'
+                );
+                $this->_result['feedback']['id_bantuan'] = $id_donasi;
+            }
+        } catch (\Throwable $th) {
+            $pesan = explode(':',$th->getMessage());
             $this->_result['feedback'] = array(
-                'message' => 'Failed to create new donation'
+                'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
             );
-        } else {
-            $id_donasi = $this->model->lastIID();
-            $this->_result['error'] = false;
-            $this->_result['feedback'] = array(
-                'message' => 'Donasi <span class="font-weight-bold text-orange">' . (isset($decoded['alias']) ? $decoded['alias'] : $dataDonatur->nama_donatur) . '</span> untuk <span class="font-weight-bold" data-id-target="'. $id_donasi .'">' . $dataBantuan->nama_bantuan . '</span> sejumlah <span class="font-weight-bold" style="display: inline-block;">Rp. '. Output::tSparator($decoded['jumlah_donasi']) .'</span> ('. Utility::keteranganJenisChannelPayment($dataCP->jenis_cp) .' - '. $dataCP->nama_cp .') telah ditambahkan'
-            );
-            $this->_result['feedback']['id_bantuan'] = $id_donasi;
         }
         
         $this->result();
@@ -2347,6 +2354,14 @@ class FetchController extends Controller {
         $this->model('Auth');
         $this->_auth = $this->model;
         $this->_auth->getData('p.id_pegawai','pegawai p JOIN admin a USING(id_pegawai)',array('a.id_akun','=',$this->_auth->data()->id_akun));
+        if (!$this->_auth->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Akun anda belum punya izin sahkan kwitansi'
+            );
+            $this->result();
+            return false;
+        }
+        
         $id_pegawai = Sanitize::escape2($this->_auth->data()->id_pegawai);
         $decoded = Sanitize::thisArray($decoded);
         $this->model('Donasi');
@@ -3511,13 +3526,15 @@ class FetchController extends Controller {
         $this->model('Donasi');
         $this->model->getDataTagihanDonasiDonatur($decoded['id_donasi']);
         
-        if ($this->model->affected()) {
-            $data = $this->model->data();
+        if (!$this->model->affected()) {
+            $this->_result['feedback']['message'] = 'Terjadi kesalahan saat mengambil data tagihan donasi donatur';
+            $this->result();
+            return false;
         }
 
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(
-            'data' => $data
+            'data' => $this->model->data()
         );
 
         $this->result();

@@ -101,7 +101,7 @@ class BuatController extends Controller {
                 $data = $this->_home->getData('nama, email, kontak, samaran', 'donatur', array('id_akun','=', $this->data['akun']->id_akun));
             }
             if ($data) {
-                $this->data['donatur'] = $data;
+                $this->data['donatur'] = $this->_home->getResult();
             }
         }
 
