@@ -285,7 +285,7 @@ class View {
 					if (!empty($crossorigin)) {
 						$script .= ' crossorigin="' . $crossorigin . '"';
 					}
-					echo $script . '></m>';
+					echo $script . '></script>';
 				}
 			}
 		}
