@@ -75,16 +75,12 @@
     font-size: .55rem;
 }
 
-#deskripsi-selengkapnya-area #sharer {
-    grid-auto-flow: column;
-}
-
 #deskripsi-selengkapnya-area .btns > span:first-child {
     font-size: .95em !important;
 }
 
 #deskripsi-selengkapnya-area #sharer i {
-    font-size: 1.25em;
+    font-size: 2em;
 }
 
 #selengkapnya p:not(:first-child) {
@@ -302,11 +298,11 @@ h6 {
     }
 
     #deskripsi-selengkapnya-area .btns > span:first-child {
-        font-size: 1.1em !important;
+        font-size: 1.15em !important;
     }
 
-    #deskripsi-selengkapnya-area #sharer i {
-        font-size: 1.5em;
+    #deskripsi-selengkapnya-area #sharer {
+        grid-auto-flow: column;
     }
 }
 
@@ -354,8 +350,12 @@ h6 {
         font-size: 1.5rem;
     }
 
+    #deskripsi-selengkapnya-area #sharer {
+        gap: 0.5em !important;
+    }
+
     #deskripsi-selengkapnya-area .btns > span:first-child {
-        font-size: 1.35em !important;
+        font-size: 1.2em !important;
     }
 
     #deskripsi-selengkapnya-area #sharer i {
