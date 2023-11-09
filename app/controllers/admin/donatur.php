@@ -118,6 +118,28 @@ class DonaturController extends Controller {
     }
 
     public function formulir($params = null) {
+        $this->rel_action = array(
+            array(
+                'href' => '/assets/route/admin/core/css/form-element.css'
+            ),
+            array(
+                'href' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+            )
+        );
+        $this->script_action = array(
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/core/js/form-function.js'
+			),
+            array(
+                'source' => 'trushworty',
+                'src' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+            ),
+            array(
+                'src' => '/assets/route/admin/pages/js/donatur.js'
+            )
+        );
+        
         $this->data['token'] = Token::generate();
         if (count(is_countable($params) ? $params : [])) {
             $this->formUpdate($params[0]);
@@ -126,7 +148,7 @@ class DonaturController extends Controller {
     }
 
     public function formUpdate($id_donatur) {
-        $data = $this->_donatur->getData('id_donatur,nama,kontak,email','donatur',array('id_donatur','=',$id_donatur));
+        $data = $this->_donatur->getData('id_donatur,nama,kontak,email,jenis_kelamin','donatur',array('id_donatur','=',$id_donatur));
         if ($data) {
             $this->data['data_donatur'] = $this->_donatur->getResult();
         }
@@ -159,17 +181,25 @@ class DonaturController extends Controller {
                         )
                     ), array('id_donatur','!=', Input::get('id_donatur')));
                     if (!$validate->passed()) {
+                        $validate->setValueFeedback('jenis_kelamin');
                         Session::put('error_feedback', $validate->getValueFeedback());
                         Redirect::to('admin/donatur/formulir/'.$params[0]);      
                     } else {
+                        $jenis_kelamin = strtoupper(Sanitize::escape2(Input::get('jenis_kelamin')));
+                        if (!empty($jenis_kelamin)) {
+                            if ($jenis_kelamin != 'L' && $jenis_kelamin != 'P') {
+                                $jenis_kelamin = null;
+                            }
+                        }
                         $this->_donatur->update('donatur', array(
-                            'nama' => Sanitize::escape(trim(Input::get('nama'))),
-                            'kontak' => Sanitize::escape(trim(Input::get('kontak'))),
-                            'email' => Sanitize::escape(trim(Input::get('email')))
-                            ), array('id_donatur','=', Sanitize::escape(Input::get('id_donatur')))
+                            'nama' => Sanitize::escape2(Input::get('nama')),
+                            'kontak' => Sanitize::escape2(Input::get('kontak')),
+                            'email' => Sanitize::escape2(Input::get('email')),
+                            'jenis_kelamin' => $jenis_kelamin
+                            ), array('id_donatur','=', Sanitize::escape2(Input::get('id_donatur')))
                         );
                         if ($this->_donatur->affected()) {
-                            $this->_donatur->hasAccount(Sanitize::escape(Input::get('id_donatur')));
+                            $this->_donatur->hasAccount(Sanitize::escape2(Input::get('id_donatur')));
                             if ($this->_donatur->data()->account_found != 0) {
                                 $id_akun = $this->_donatur->data()->id_akun;
                                 if ($this->_donatur->isEmployee($id_akun)) {
@@ -177,7 +207,8 @@ class DonaturController extends Controller {
                                     $this->_donatur->update('pegawai', array(
                                         'nama' => Sanitize::escape2(Input::get('nama')),
                                         'kontak' => Sanitize::escape2(Input::get('kontak')),
-                                        'email' => Sanitize::escape2(Input::get('email'))
+                                        'email' => Sanitize::escape2(Input::get('email')),
+                                        'jenis_kelamin' => $jenis_kelamin
                                     ), array(
                                         'id_pegawai','=', Sanitize::escape2($id_pegawai)
                                     ));
@@ -225,10 +256,17 @@ class DonaturController extends Controller {
                     Session::put('error_feedback', $validate->getValueFeedback());
                     Redirect::to('admin/donatur/formulir');
                 } else {
+                    $jenis_kelamin = strtoupper(Sanitize::escape2(Input::get('jenis_kelamin')));
+                    if (!empty($jenis_kelamin)) {
+                        if ($jenis_kelamin != 'L' && $jenis_kelamin != 'P') {
+                            $jenis_kelamin = null;
+                        }
+                    }
                     $hasil = $this->_donatur->create('donatur', array(
                         'nama' => ucwords(trim(Input::get('nama'))),
                         'kontak' => Sanitize::toInt(trim(Input::get('kontak'))),
-                        'email' => strtolower(trim(Input::get('email')))
+                        'email' => strtolower(trim(Input::get('email'))),
+                        'jenis_kelamin' => $jenis_kelamin
                     ));
                     if ($hasil) {
                         Session::flash('success','Berhasil Tambah Data');

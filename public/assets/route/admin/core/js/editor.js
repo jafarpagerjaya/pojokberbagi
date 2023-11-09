@@ -54,5 +54,12 @@ let editor = function(el, options = defaultOptions) {
         e.target.closest('.ql').classList.remove('focused');
     });
 
+    quill.container.querySelector('.ql-editor').addEventListener('scroll', function(e) {
+        let imgSizer = getSiblings(e.target).filter(e => e.classList == 0);
+        if (imgSizer.length) {
+            quill.container.querySelector('.ql-editor').click();
+        }
+    })
+
     return quill;
 };

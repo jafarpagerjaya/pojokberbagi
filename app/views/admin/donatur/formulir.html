@@ -26,6 +26,15 @@
                                 <input type="email" id="input-email-donatur" class="form-control" placeholder="contoh@pojokberbagi.id" name="email" value="<?= isset($data_error_feedback['email']['value']) ? $data_error_feedback['email']['value'] : ''; ?>">
                                 <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['email']) ? ' d-block' : '') ?>"><?= (isset($data_error_feedback['email']['feedback']) ? $data_error_feedback['email']['feedback'] : ''); ?></div>
                             </div>
+                            <div class="form-group">
+                                <label class="form-control-label" for="input-jenis-kelamin-donatur">Jenis Kelamin</label>
+                                <select class="form-control" name="jenis_kelamin" id="input-jenis-kelamin-donatur">
+                                    <option disabled selected></option>
+                                    <option value="P">Perempuan</option>
+                                    <option value="L">Laki-laki</option>
+                                    <option value='0'>Tidak Yakin</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <input name="token" type="hidden" value="<?= $data['token']; ?>">

@@ -2,7 +2,45 @@
 class View {
 	protected $data,
 			  $path,
-			  $title;
+			  $title,
+			  $meta = array(
+				array(
+					'name' => 'description',
+					'content' => 'Tempat bagi gerakan kebaikan (social movement) dan kemanusiaan.'
+				),
+				array(
+					'property' => 'og:title',
+					'content' => 'Pojok Berbagi Indonesia'
+				),
+				array(
+					'property' => 'og:url',
+					'content' => 'https://pojokberbagi.id'
+				),
+				array(
+					'property' => 'og:description',
+					'content' => 'Tempat bagi gerakan kebaikan (social movement) dan kemanusiaan.'
+				),
+				array(
+					'property' => 'og:image',
+					'content' => 'https://pojokberbagi.id/assets/images/img-1-1000x600.jpg'
+				),
+				array(
+					'property' => 'og:image:width',
+					'content' => '300'
+				),
+				array(
+					'property' => 'og:image:height',
+					'content' => '169'
+				),
+				array(
+					'property' => 'og:image:alt',
+					'content' => 'img-1-1000x600.jpg'
+				),
+				array(
+					'property' => 'og:type',
+					'content' => 'website'
+				)
+			  );
 	
 	private $_router,
 			$_route,
@@ -12,6 +50,49 @@ class View {
 
 	private function getTitle() {
 		return !empty($this->title) ? $this->title .' · ' : '';
+	}
+
+	private function getMeta() {
+		if (count(is_countable($this->meta) ? $this->meta : []) > 0) {
+			foreach ($this->meta as $meta_index => $meta_index_value) {
+				$property = '';
+				$content = '';
+				$name = '';
+				if (is_array($meta_index_value)) {
+					foreach ($meta_index_value as $meta_property => $meta_value) {
+						switch($meta_property) {
+							case 'property':
+								$property = $meta_value;
+							break;
+							case 'content':
+								$content = $meta_value;
+							break;
+							case 'name':
+								$name = $meta_value;
+							break;
+							default:
+							die('Key Item ' . $meta_value . ' Are Not Recognized');
+							break;
+						}
+					}
+
+					$meta = '<meta';
+					
+					if (!empty($property)) {
+						$meta .= ' property="' . $property . '"';
+					}
+					if (!empty($content)) {
+						$meta .= ' content="' . $content . '"';
+					}
+					if (!empty($name)) {
+						$meta .= ' name="' . $name . '"';
+					}
+					echo $meta . '>';
+				} else {
+					echo $meta_index_value;
+				}
+			}
+		}
 	}
 	
 	protected function getDefaultPath() {
@@ -204,7 +285,7 @@ class View {
 					if (!empty($crossorigin)) {
 						$script .= ' crossorigin="' . $crossorigin . '"';
 					}
-					echo $script . '></script>';
+					echo $script . '></m>';
 				}
 			}
 		}
@@ -294,6 +375,9 @@ class View {
 		$this->script_action = $controller->getRelScript('script_action');
 		if (isset($controller->title)) {
 			$this->title = $controller->title;
+		}
+		if (isset($controller->meta)) {
+			$this->meta = $controller->meta;
 		}
 		// $this->_router = App::getRouter();
 		

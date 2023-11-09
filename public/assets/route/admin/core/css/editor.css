@@ -73,6 +73,7 @@
 
 .ql-container.ql-snow {
     height: auto !important;
+    overflow: hidden;
 }
 
 .ql-container.ql-snow p {

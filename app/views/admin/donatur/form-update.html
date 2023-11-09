@@ -14,17 +14,25 @@
                             <div class="form-group">
                                 <label class="form-control-label" for="input-nama-donatur">Nama Donatur</label>
                                 <input type="text" id="input-nama-donatur" class="form-control" placeholder="Contoh Suci" name="nama" value="<?= isset($data_error_feedback['nama']['value']) ? $data_error_feedback['nama']['value'] :  $data['data_donatur']->nama; ?>">
-                                <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['nama']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['nama']['feedback']) ?></div>
+                                <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['nama']) ? ' d-block' : '') ?>"><?= (isset($data_error_feedback['nama']['feedback']) ? $data_error_feedback['nama']['feedback'] : ''); ?></div>
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label" for="input-kontak-donatur">Kontak</label>
                                 <input type="text" id="input-kontak-donatur" class="form-control" placeholder="Contoh 085322661186" name="kontak" value="<?= isset($data_error_feedback['kontak']['value']) ? $data_error_feedback['kontak']['value'] : $data['data_donatur']->kontak; ?>">
-                                <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['kontak']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['kontak']['feedback']) ?></div>
+                                <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['kontak']) ? ' d-block' : '') ?>"><?= (isset($data_error_feedback['kontak']['feedback']) ? $data_error_feedback['kontak']['feedback'] : ''); ?></div>
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label" for="input-email-donatur">Email</label>
                                 <input type="email" id="input-email-donatur" class="form-control" placeholder="Contoh Suci" name="email" value="<?= isset($data_error_feedback['email']['value']) ? $data_error_feedback['email']['value'] :  $data['data_donatur']->email; ?>">
-                                <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['email']) ? ' d-block' : '') ?>"><?= ($data_error_feedback['email']['feedback']) ?></div>
+                                <div class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['email']) ? ' d-block' : '') ?>"><?= (isset($data_error_feedback['email']['feedback']) ? $data_error_feedback['email']['feedback'] : ''); ?></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-control-label" for="input-jenis-kelamin-donatur">Jenis Kelamin</label>
+                                <select class="form-control" name="jenis_kelamin" id="input-jenis-kelamin-donatur">
+                                    <option value="P" <?= isset($data_error_feedback['jenis_kelamin']['value']) ? (strtoupper($data_error_feedback['jenis_kelamin']['value']) == 'P' ? 'selected':'') :  (strtoupper($data['data_donatur']->jenis_kelamin) == 'P' ? 'selected' : ''); ?>>Perempuan</option>
+                                    <option value="L" <?= isset($data_error_feedback['jenis_kelamin']['value']) ? (strtoupper($data_error_feedback['jenis_kelamin']['value']) == 'L' ? 'selected':'') :  (strtoupper($data['data_donatur']->jenis_kelamin) == 'L' ? 'selected' : ''); ?>>Laki-laki</option>
+                                    <option value='0' <?= isset($data_error_feedback['jenis_kelamin']['value']) ? ($data_error_feedback['jenis_kelamin']['value'] == null ? 'selected':'') :  ($data['data_donatur']->jenis_kelamin == null ? 'selected' : ''); ?>>Tidak Yakin</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -32,7 +40,7 @@
                     <input name="token" type="hidden" value="<?= $data['token']; ?>">
                 </div>
                 <div class="card-footer">
-                    <button class="btn btn-secondary" type="reset">Hapus</button>
+                    <button class="btn btn-secondary" type="reset">Reset</button>
                     <button class="btn btn-icon btn-primary" type="submit">
                         <span class="btn-inner--icon"><i class="ni ni-check-bold"></i></span>
                         <span class="btn-inner--text">Simpan</span>

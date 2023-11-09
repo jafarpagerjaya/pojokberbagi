@@ -49,7 +49,7 @@ class BantuanController extends Controller {
     public function detil($params) {
         if (count(is_countable($params) ? $params : [])) {
             // Token for fetch
-        $this->data[Config::get('session/token_name')] = Token::generate();
+            $this->data[Config::get('session/token_name')] = Token::generate();
 
             $this->rel_action = array(
                 array(
@@ -89,6 +89,46 @@ class BantuanController extends Controller {
             if ($this->_bantuan->affected()) {
                 $this->data['detil_bantuan'] = $this->_bantuan->data();
             }
+
+            // Meta
+            $this->meta = array(
+				array(
+					'name' => 'description',
+					'content' => 'Tempat bagi gerakan kebaikan (social movement) dan kemanusiaan.'
+				),
+				array(
+					'property' => 'og:title',
+					'content' => 'Pojok Berbagi Indonesia'
+				),
+				array(
+					'property' => 'og:url',
+					'content' => $this->getMetaUri()
+				),
+				array(
+					'property' => 'og:description',
+					'content' => $this->data['detil_bantuan']->deskripsi
+				),
+				array(
+					'property' => 'og:image',
+					'content' => Config::getHTTPHost() . $this->data['detil_bantuan']->path_gambar_medium
+				),
+				array(
+					'property' => 'og:image:width',
+					'content' => '300'
+				),
+				array(
+					'property' => 'og:image:height',
+					'content' => '169'
+				),
+				array(
+					'property' => 'og:image:alt',
+					'content' => $this->data['detil_bantuan']->nama_gambar_medium
+				),
+				array(
+					'property' => 'og:type',
+					'content' => 'website'
+				)
+            );
 
             $this->_bantuan->getData('judul, FormatTanggal(create_at) create_at', 'deskripsi', array('id_bantuan','=',$params[0]));
             if ($this->_bantuan->affected()) {

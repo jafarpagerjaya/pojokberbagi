@@ -386,6 +386,24 @@ class Controller {
 		return $this->getPath();
 	}
 
+	protected function getMetaUri() {
+		$path = array(
+			Config::getHTTPHost()
+		);
+		
+		if (App::getRouter()->getLanguages() != 'id') {
+			array_push($path, App::getRouter()->getLanguages());
+		}
+
+		if (App::getRouter()->getRoute() != 'default') {
+			array_push($path, App::getRouter()->getRoute());
+		}
+
+		$path = array_merge($path, array(App::getRouter()->getController(), App::getRouter()->getAction(), App::getRouter()->getParams()[0]));
+
+		return implode('/', $path);
+	}
+
 	private function getPath($params = null, $js_path = null) {
 		if (is_null($js_path)) {
 			$path = array(

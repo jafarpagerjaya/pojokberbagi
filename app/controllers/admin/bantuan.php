@@ -162,7 +162,7 @@ class BantuanController extends Controller {
 
             $this->_bantuan->update('bantuan',array('blokir'=> $setBlokir), array('id_bantuan','=',$params[0]));
             if ($this->_bantuan->affected()) {
-                Session::flash('success','Berhasil ' . $mode . ' bantuan [' . $data->id_bantuan . ']');
+                Session::flash('success','Berhasil ' . $mode . ' bantuan <b>#' . $params[0] . '</b>');
             } else {
                 Session::flash('error','Tidak bisa blok saat ini');
             }
@@ -299,6 +299,10 @@ class BantuanController extends Controller {
                 'type' => 'text/javascript',
                 'src' => 'https://cdn.quilljs.com/1.3.7/quill.js',
                 'source' => 'trushworty'
+            ),
+            array(
+                'type' => 'text/javascript',
+                'src' => '/assets/main/js/function-libs.js'
             ),
             array(
 				'type' => 'text/javascript',
