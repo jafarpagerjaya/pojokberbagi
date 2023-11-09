@@ -22,7 +22,7 @@ class View {
 				),
 				array(
 					'property' => 'og:image',
-					'content' => 'https://pojokberbagi.id/assets/images/img-1-1000x600.jpg'
+					'content' => 'https://pojokberbagi.id/assets/images/pilihan-terbaik.jpg'
 				),
 				array(
 					'property' => 'og:image:width',
