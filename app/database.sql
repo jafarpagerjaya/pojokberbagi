@@ -46,7 +46,8 @@ BEFORE UPDATE ON gambar
 FOR EACH ROW
   SET NEW.gembok = IF(NEW.gembok = 1, NEW.gembok, NULL);
 
-INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES('default','/assets/images/default.png','avatar','1'),
+INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES
+('default','/assets/images/default.png','avatar','1'),
 ('female-avatar','/assets/images/female-avatar.jpg','avatar','1'),
 ('male-avatar','/assets/images/male-avatar.jpg','avatar','1'),
 ('bank-bjb','/assets/images/partners/bjb.png','partner','1'),
@@ -66,7 +67,8 @@ INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES('default','/assets/im
 ('GoPay','/assets/images/partners/gopay.png','partner',1),
 ('Dana','/assets/images/partners/dana.png','partner',1),
 ('Qris','/assets/images/partners/qris.png','partner',1),
-('jafar-signature','/uploads/images/signature/jafar-signature.png','signature','1');
+('jafar-signature','/uploads/images/signature/jafar-signature.png','signature','1'),
+('bank-mandiri','/assets/images/partners/mandiri.png','partner','1');
 
 CREATE TABLE pegawai (
     id_pegawai SMALLINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -453,7 +455,8 @@ INSERT INTO penyelenggara_jasa_pembayaran(nama, kode) VALUES
 ('PT Bank Jabar Dan Banten', '110'),
 ('PT Bank Syariah Indonesia', '451'),
 ('PT Espay Debit Indonesia Koe', 'DAN'),
-('PT Dompet Anak Bangsa', 'GOP');
+('PT Dompet Anak Bangsa', 'GOP'),
+('PT Bank Mandiri (Persero), Tbk','008');
 -- ('PT OVO', 'OVO');
 
 CREATE TABLE channel_account (
@@ -478,7 +481,8 @@ INSERT INTO channel_account(nama, nomor, atas_nama, jenis) VALUES
 ('Bank BSI', '7400525255', 'POJOK BERBAGI INDONESIA', 'RB'),
 ('Dana', '081233311113', 'Pojok Berbagi', 'EW'),
 ('GoPay', '081233311113', 'Pojok Berbagi', 'EW'),
-('Ovo', '081233311113', 'Pojok Berbagi', 'EW');
+('Ovo', '081233311113', 'Pojok Berbagi', 'EW'),
+('Bank Mandiri', '1320080829998', 'POJOK BERBAGI INDONESIA', 'RB');
 
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE kode = '002') WHERE nama LIKE '%BRI%';
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE kode = '110') WHERE nama LIKE '%BJB%';
@@ -486,6 +490,7 @@ UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pemba
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE nama = 'PT Espay Debit Indonesia Koe') WHERE nama LIKE '%Dana%';
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE nama = 'PT Dompet Anak Bangsa') WHERE nama LIKE '%GoPay%';
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE nama = 'OVO') WHERE nama LIKE '%OVO%';
+UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE kode = '008') WHERE nama LIKE '%Mandiri%';
 
 CREATE TABLE channel_payment (
     id_cp TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -513,7 +518,8 @@ INSERT INTO channel_payment(nama, kode, nomor, jenis, atas_nama, id_gambar) VALU
 ('Bank BRI','002','107001000272300','TB','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bri%" AND label = 'partner')),
 ('GoPay','GOP','081233311113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'gopay')),
 ('Dana','DAN','081233311113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'dana')),
-('Bank BRI','002','ID1022148253464','QR','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'qris'));
+('Bank BRI','002','ID1022148253464','QR','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'qris')),
+('Bank Mandiri','008','1320080829998','TB','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%mandiri%" AND label = 'partner'));
 
 UPDATE channel_payment cp, channel_account ca LEFT JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp) SET cp.id_ca = ca.id_ca WHERE cp.nama LIKE CONCAT('%',ca.nama,'%');
 

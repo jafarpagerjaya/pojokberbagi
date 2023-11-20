@@ -127,7 +127,7 @@
         <div class="row gap-y-5" id="cp-list">
             <!-- Channel Payment Col Card -->
             <div class="col-12 col-md-6 col-lg-12 card">
-                <div class="card-header rounded py-3">
+                <div class="rounded p-3">
                     <div class="row justify-content-between align-items-center">
                         <div class="col-auto">
                             <b>Saldo</b>
@@ -143,7 +143,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-12 card">
-                <div class="card-header rounded py-3">
+                <div class="rounded p-3">
                     <div class="row justify-content-between align-items-center">
                         <div class="col-auto">
                             <b>Saldo</b>
@@ -159,7 +159,23 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-12 card">
-                <div class="card-header rounded py-3">
+                <div class="rounded p-3">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-auto">
+                            <b>Saldo</b>
+                            <span class="text-muted">
+                                <?= Output::tSparator($this->data['saldo_bantuan']->saldo_mandiri); ?>
+                            </span>
+                        </div>
+                        <div class="col-3">
+                            <img src="<?= $this->data['saldo_bantuan']->path_gambar_mandiri; ?>" alt="Mandiri"
+                                class="img-fluid saldo">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-12 card">
+                <div class="rounded p-3">
                     <div class="row justify-content-between align-items-center">
                         <div class="col-auto">
                             <b>Saldo</b>
@@ -175,7 +191,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-12 card">
-                <div class="card-header rounded py-3">
+                <div class="rounded p-3">
                     <div class="row justify-content-between align-items-center">
                         <div class="col-auto">
                             <b>Saldo</b>
@@ -193,7 +209,7 @@
             <div class="col-12 col-md-6 col-lg-12 card bg-transparent">
                 <div class="row flex-column">
                     <div class="col">
-                        <div class="card-header rounded py-3">
+                        <div class="bg-white rounded p-3">
                             <div class="row justify-content-between align-items-center">
                                 <div class="col-auto">
                                     <b>Saldo</b>
@@ -209,7 +225,7 @@
                         </div>
                     </div>
                     <div class="col">
-                        <div class="card-header rounded py-3">
+                        <div class="bg-white rounded p-3">
                             <div class="row justify-content-between align-items-center">
                                 <div class="col-auto">
                                     <b>Saldo</b>

@@ -1,11 +1,21 @@
-.card img[alt="bank-bjb"],
-.card img[alt="bank-bsi"],
-.card img[alt="bank-bri"],
-.card img[alt="qris"],
-.card img[alt="BJB"],
-.card img[alt="BSI"],
-.card img[alt="BRI"] {
+#cp-list .card img[alt="bank-bjb"],
+#cp-list .card img[alt="bank-bsi"],
+#cp-list .card img[alt="bank-bri"],
+#cp-list .card img[alt="qris"],
+#cp-list .card img[alt="BJB"],
+#cp-list .card img[alt="BSI"],
+#cp-list .card img[alt="BRI"],
+#cp-list .card img[alt="Mandiri"] {
     margin-top: -0.5rem;
+}
+
+#cp-list .card img[alt="Gopay"],
+#cp-list .card img[alt="Dana"] {
+    margin-top: -0.25rem;
+}
+
+#cp-list .card .col-3 {
+    max-height: 25px;
 }
 
 .card table .media img[alt="bank-bjb"],
@@ -14,7 +24,8 @@
 .card table .media img[alt="qris"],
 .card table .media img[alt="BJB"],
 .card table .media img[alt="BSI"],
-.card table .media img[alt="BRI"] {
+.card table .media img[alt="BRI"],
+.card table .media img[alt="Mandiri"] {
     margin-top: -0.3rem;
 }
 
