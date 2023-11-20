@@ -231,7 +231,8 @@ class PembayaranController extends Controller {
         //     Redirect::to('donasi/pembayaran/dibatalkan/' . $params[1]);
         // }
 
-        $bantuan = $this->model->getData('id_bantuan, nama, nama_penerima, tanggal_akhir', 'bantuan', array('id_bantuan', '=', $donasi->id_bantuan));
+        $this->model->getData('id_bantuan, nama, nama_penerima, tanggal_akhir', 'bantuan', array('id_bantuan', '=', $donasi->id_bantuan));
+        $bantuan = $this->model->getResult();
         
         $this->data['bantuan'] = $bantuan;
         if (!is_null($bantuan->tanggal_akhir)) {
