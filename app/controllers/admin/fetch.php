@@ -1377,6 +1377,13 @@ class FetchController extends Controller {
         $waktu_bayar = new DateTime(date('Y-m-d H:i:s', strtotime($decoded['waktu_bayar'])));
         $decoded['waktu_bayar'] = $waktu_bayar->format('Y-m-d H:i:s');
         $decoded['jumlah_donasi'] = Sanitize::toInt2($decoded['jumlah_donasi']);
+
+        $this->model('Auth');
+        $hasil = $this->model->getData('adm.id_pegawai','akun JOIN admin adm USING(id_akun) JOIN pegawai p USING(id_pegawai)',array('id_akun','=', $this->model->data()->id_akun));
+        if ($hasil) {
+            $decoded['id_pegawai'] = $this->model->data()->id_pegawai;
+        }
+
         $this->model('Donasi');
 
         $this->model->query("SELECT (SELECT count(id_bantuan) FROM bantuan WHERE id_bantuan = ?) bantuan_count, (SELECT count(id_cp) FROM channel_payment WHERE id_cp = ?) cp_count, (SELECT count(id_donatur) FROM donatur WHERE id_donatur = ?) donatur_count", array('id_bantuan' => $decoded['id_bantuan'], 'id_cp' => $decoded['id_cp'], 'id_donatur' => $decoded['id_donatur']));
@@ -1436,6 +1443,7 @@ class FetchController extends Controller {
                     'message' => 'Donasi <span class="font-weight-bold text-orange">' . (isset($decoded['alias']) ? $decoded['alias'] : $dataDonatur->nama_donatur) . '</span> untuk <span class="font-weight-bold" data-id-target="'. $id_donasi .'">' . $dataBantuan->nama_bantuan . '</span> sejumlah <span class="font-weight-bold" style="display: inline-block;">Rp. '. Output::tSparator($decoded['jumlah_donasi']) .'</span> ('. Utility::keteranganJenisChannelPayment($dataCP->jenis_cp) .' - '. $dataCP->nama_cp .') telah ditambahkan'
                 );
                 $this->_result['feedback']['id_bantuan'] = $id_donasi;
+                $this->model->update('kwitansi', array('id_pengesah' => $decoded['id_pegawai']), array('id_donasi' => $id_donasi));
             }
         } catch (\Throwable $th) {
             $pesan = explode(':',$th->getMessage());
@@ -2367,7 +2375,7 @@ class FetchController extends Controller {
         $this->model('Donasi');
         $currentDate = new DateTime();
         $waktu_sekarang = $currentDate->format('Y-m-d H:i:s');
-        $this->model->update('kwitansi', array('waktu_cetak' => $waktu_sekarang, 'id_pengesah' => $id_pegawai), array('id_kwitansi','=',$decoded['id_kwitansi']));
+        $this->model->update('kwitansi', array('waktu_cetak' => $waktu_sekarang, 'id_pencetak' => $id_pegawai), array('id_kwitansi','=',$decoded['id_kwitansi']));
         if ($this->model->affected()) {
             $this->_result['error'] = false;
             $this->_result['feedback'] = array(
@@ -2591,6 +2599,12 @@ class FetchController extends Controller {
         $waktu_bayar = new DateTime(date('Y-m-d', strtotime($decoded['waktu_bayar'])));
         $decoded['waktu_bayar'] = $waktu_bayar->format('Y-m-d H:i:s');
 
+        $this->model('Auth');
+        $hasil = $this->model->getData('adm.id_pegawai','akun JOIN admin adm USING(id_akun) JOIN pegawai p USING(id_pegawai)',array('id_akun','=', $this->model->data()->id_akun));
+        if ($hasil) {
+            $decoded['id_pegawai'] = $this->model->data()->id_pegawai;
+        }
+
         $this->model('Donasi');
         $this->model->update('donasi', array(
             'bayar' => '1',
@@ -2604,6 +2618,8 @@ class FetchController extends Controller {
             $this->result();
             return false;
         }
+
+        $this->model->update('kwitansi', array('id_pengesah' => $decoded['id_pegawai']), array('id_donasi' => $decoded['id_donasi']));
 
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(

@@ -11,8 +11,7 @@
     --green-box : #21ba45;
 }
 
-body,
-body *:not(i) {
+body {
     font-family: "Nunito", Roboto, sans-serif !important;
 }
 
@@ -25,6 +24,12 @@ h6 {
     font-family: inherit !important;
 }
 
+i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .button.donasi,
 .button.button-outline-green:hover,
 .btn.donasi,
@@ -33,11 +38,20 @@ h6 {
     color: #fff;
 }
 
+.btn-outline-orange-reverse,
 .button.donasi:hover,
 .button.button-outline-orange:hover,
 .btn.donasi:hover,
 .btn.btn-outline-orange:hover {
     background-color: var(--orange);
+    color: #fff;
+}
+
+.button.donasi:hover,
+.button.button-outline-green-box:hover,
+.btn.donasi:hover,
+.btn.btn-outline-green-box:hover {
+    background-color: var(--green-box);
     color: #fff;
 }
 
@@ -49,6 +63,7 @@ h6 {
     transition: all .3s ease-in-out !important;
 }
 
+.btn-outline-orange-reverse:hover,
 .button.button-outline-orange,
 .btn.btn-outline-orange {
     background-color: white;
@@ -185,7 +200,6 @@ img::after {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--bs-secondary);
 }
 
 /* Akhir Utilitas, Reset & Root */
@@ -271,11 +285,11 @@ textarea {
 
 /* Medsos icon */
 .kontak a.medsos-icon i,
-.share a.medsos-icon i {
+.share a.medsos-icon:not([class*="outline"]) i {
     transition: color 0.3s ease-in-out;
 }
 
-.kontak a.medsos-icon i[class*="instagram"],
+.kontak a.medsos-icon:not([class*="outline"]) i[class*="instagram"],
 .share a.medsos-icon i[class*="instagram"] {
     background: #fdf497;
     background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
@@ -283,17 +297,17 @@ textarea {
     background-clip: text;
 }
 
-.share a.medsos-icon:hover i[class*="instagram"],
+.share a.medsos-icon:not([class*="outline"]):hover i[class*="instagram"],
 .kontak a.medsos-icon:hover i[class*="instagram"] {
     color: transparent !important;
 }
 
-.share a.medsos-icon:hover i[class*="twitter"],
+.share a.medsos-icon:not([class*="outline"]):hover i[class*="twitter"],
 .kontak a.medsos-icon:hover i[class*="twitter"] {
     color: var(--bs-info) !important;
 }
 
-.share a.medsos-icon:hover i[class*="whatsapp"],
+.share a.medsos-icon:not([class*="outline"]):hover i[class*="whatsapp"],
 .kontak a.medsos-icon:hover i[class*="whatsapp"] {
     color: #4FCE5D !important;
 }
@@ -304,6 +318,70 @@ textarea {
 }
 
 /* Akhir Footer */
+
+/* Love animation */
+.heart-animation {
+    position: relative;
+    height: calc(1.325rem + .9vw);
+    width: calc(1.325rem + .9vw);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.heart-animation::before {
+    content: '';
+    position: absolute;
+    background-image: url('/assets/images/web_heart_animation.png');
+    background-repeat: no-repeat;
+    background-size: 2900%;
+    background-position: left;
+    height: 100px;
+    width: 100px;
+    margin: 0 auto;
+    cursor: pointer;
+    pointer-events: none;
+}
+
+.animate.heart-animation::before {
+    animation: heart-burst .8s steps(28) forwards;
+}
+
+@keyframes heart-burst {
+    0% {
+        background-position: left
+    }
+    100% {
+        background-position: right
+    }
+}
+
+.heart-animation:not(.animate)::before {
+    animation: heart-pop .8s steps(28) backwards;
+}
+
+@keyframes heart-pop {
+    0% {
+        width: 100px;
+        height: 100px;
+    }
+    25% {
+        width: 125px;
+        height: 125px;
+    }
+    50% {
+        width: 90px;
+        height: 90px;
+    }
+    75% {
+        width: 105px;
+        height: 105px;
+    }
+    100% {
+        width: 100px;
+        height: 100px;
+    }
+}
 
 @media (min-width: 375px) {
 

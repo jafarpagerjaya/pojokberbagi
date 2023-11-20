@@ -44,12 +44,14 @@ class Sanitize {
 
 	public static function thisArray($array = array(), $method = 'escape2') {
 		$result = array();
-		foreach($array as $key => $value) {
-			if (is_array($value)) {
-                // do something
-                $result[$key] = self::thisArray($value, $method);
-            } else {
-				$result[$key] = self::$method($value);	
+		if (is_array($array)) {
+			foreach($array as $key => $value) {
+				if (is_array($value)) {
+					// do something
+					$result[$key] = self::thisArray($value, $method);
+				} else {
+					$result[$key] = self::$method($value);	
+				}
 			}
 		}
 		return $result;

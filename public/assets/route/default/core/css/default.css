@@ -21,6 +21,15 @@
     opacity: 0.9;
 }
 
+/* Toast */
+div[aria-live="polite"] {
+    z-index: 1050;
+}
+
+.d-flex>.toast {
+    flex-basis: auto;
+}
+
 /* Header */
 .header {
     height: 64px;

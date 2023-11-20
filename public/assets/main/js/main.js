@@ -1,32 +1,3 @@
-// Diulangn dengan fungsi resize
-let footerSetter = function() {
-    let wh = $( window ).height(),
-    kurangHeight = wh - $('footer').offset().top - $('footer').height() - parseInt($('footer').css('padding-bottom')),
-    mc = $('#main-content'),
-    mcHeight = mc.height();
-    
-    if (kurangHeight > 0) {
-        mc.css('min-height', (mcHeight + kurangHeight)+'px');
-    } else {
-        mc.css('min-height', wh - (mc.offset().top + $('footer').height()))
-    }
-};
-
-footerSetter();
-
-let resizeTimeout;
-$(window).resize(function () {
-    clearTimeout(resizeTimeout)
-    resizeTimeout = setTimeout(function () {
-        footerSetter();
-    }, 50);
-});
-
-// New
-$("#notifikasi").modal({backdrop: "static"});
-// Old
-$("#notif-modal").modal({backdrop: "static"});
-
 const signoutButton = document.querySelectorAll('a[href="/auth/signout"]');
 
 signoutButton.forEach((el)=>{

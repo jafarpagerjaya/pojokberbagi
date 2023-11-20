@@ -75,14 +75,6 @@
     font-size: .55rem;
 }
 
-#deskripsi-selengkapnya-area .btns > span:first-child {
-    font-size: .95em !important;
-}
-
-#deskripsi-selengkapnya-area #sharer i {
-    font-size: 2em;
-}
-
 #selengkapnya p:not(:first-child) {
     margin-top: 1em;
 }
@@ -113,11 +105,14 @@ h6 {
     font-size: 13px;
 }
 
+#donatur-area #title,
 #deskripsi-selengkapnya-area #title {
     position: relative;
     overflow: hidden;
 }
 
+#donatur-area #title::before,
+#donatur-area #title::after,
 #deskripsi-selengkapnya-area #title::before,
 #deskripsi-selengkapnya-area #title::after {
     position: absolute;
@@ -141,6 +136,7 @@ h6 {
     left: 75%;
 }
 
+#donatur-area #title > *,
 #deskripsi-selengkapnya-area #title > * {
     z-index: 1;
 }
@@ -171,6 +167,134 @@ h6 {
     padding: 0px;
 }
 
+#deskripsi-selengkapnya-area .empty {
+    background-image: url('/assets/svg/empty.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    width: 100px;
+    height: 100px;
+}
+
+#donatur-area #title::before {
+    background-color: #f8f9fa;
+    border-top-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+    right: -.5em;
+    bottom: -.5em;
+}
+
+#donatur-area #title::after {
+    background-color: var(--orange);
+    border-bottom-right-radius: inherit;
+    top: calc(-100% + .5em);
+    right: 75%;
+}
+
+#donatur-area #title>span.node {
+    position: absolute;
+    right: -.5em;
+    top: .5em;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background-color: #f8f9fa;
+    border-top-left-radius: 10px;
+}
+
+#donatur-area #title>span.node::before {
+    width: 100%;
+    height: 100%;
+    content: '';
+    background-color: #f8f9fa;
+    position: absolute;
+    bottom: .5em;
+    right: -.5em;
+    border-top-left-radius: 5px;
+}
+
+.avatar {
+    --avatar: 35px;
+    width: var(--avatar);
+    height: var(--avatar);
+    min-width: var(--avatar);
+    max-width: var(--avatar);
+    min-height: var(--avatar);
+    max-height: var(--avatar);
+}
+
+.avatar img::after {
+    font-size: .55em;
+}
+
+#donatur-area>div:not(#title) {
+    flex-direction: column;
+}
+
+#donatur-area>div:not(#title) .avatar {
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#donatur-area>div:not(#title) .avatar img[src="/assets/images/default.png"] {
+    background-color: var(--bs-white);
+}
+
+#donatur-area>div:not(#title) .liked {
+    font-size: xx-small;
+}
+
+#donatur-area>div:not(#title):nth-child(even) {
+    border: 1px solid var(--orange);
+}
+
+#donatur-area>div:not(#title):nth-child(odd) {
+    background-color: #eeeff0 !important;
+    border: 1px solid #eeeff0;
+}
+
+#donatur-area>div:not(#title):nth-child(odd) .media .avatar {
+    margin-left: auto;
+}
+
+#donatur-area>div:not(#title):nth-child(odd) .media .media-body {
+    text-align: right;
+}
+
+#modalShareBtn i {
+    margin-left: 1px;
+}
+
+[aria-live="polite"].position-fixed {
+    right: auto;
+    left: 1em;
+}
+
+@media (max-width: 426px) {
+    .sticky-btn {
+        position: fixed;
+        width: calc(100% - 56px + 57px);
+        z-index: 1;
+        bottom: 0px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        padding-right: 69px;
+        gap: 14px !important;
+        background-color: #fff;
+        border-top: 1px solid var(--bs-light);
+        box-shadow: 0px -20px 50px 0px rgba(0, 0, 0, 0.05)
+    }
+    .sticky-btn > a:not([data-bs-toggle="modal"]) {
+        font-size: 1.15rem !important;
+    }
+
+    .sticky-btn > a[data-bs-toggle="modal"] {
+        font-size: 0.65em !important;
+    }
+}
+
 @media (min-width: 320px) {
 
     #detil-banner-area .app-image.img-wrapper {
@@ -199,6 +323,10 @@ h6 {
     #commit-bantuan-area p {
         font-size: .75rem;
     }
+
+    .avatar {
+        --avatar: 40px;
+    }
 }
 
 @media (min-width: 376px) {
@@ -224,6 +352,10 @@ h6 {
     #selengkapnya p,
     #commit-bantuan-area p {
         font-size: .8rem;
+    }
+
+    .avatar {
+        --avatar: 50px;
     }
 }
 
@@ -289,7 +421,7 @@ h6 {
     }
 
     #commit-bantuan-area .logo {
-        --avatar-wh: 125px;
+        --avatar-wh: 115px;
     }
 
     #commit-bantuan-area img::after {
@@ -297,12 +429,12 @@ h6 {
         padding: 0px 5px;
     }
 
-    #deskripsi-selengkapnya-area .btns > span:first-child {
-        font-size: 1.15em !important;
+    .avatar {
+        --avatar: 55px;
     }
 
-    #deskripsi-selengkapnya-area #sharer {
-        grid-auto-flow: column;
+    .avatar.border.rounded {
+        border-radius: .5rem !important;
     }
 }
 
@@ -350,16 +482,12 @@ h6 {
         font-size: 1.5rem;
     }
 
-    #deskripsi-selengkapnya-area #sharer {
-        gap: 0.5em !important;
+    .avatar {
+        --avatar: 60px;
     }
 
-    #deskripsi-selengkapnya-area .btns > span:first-child {
-        font-size: 1.2em !important;
-    }
-
-    #deskripsi-selengkapnya-area #sharer i {
-        font-size: 2em;
+    .avatar.border.rounded {
+        border-radius: 1rem !important;
     }
 }
 

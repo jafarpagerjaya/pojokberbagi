@@ -103,6 +103,7 @@ class BantuanModel extends HomeModel {
                     (
                     SELECT bil.id_bantuan, IFNULL(SUM(apd.nominal_penggunaan_donasi),0) total_penggunaan_donasi
                     FROM bil JOIN donasi d ON(d.id_bantuan = bil.id_bantuan) LEFT JOIN anggaran_pelaksanaan_donasi apd ON(d.id_donasi = apd.id_donasi)
+                    WHERE d.bayar = 1
                     GROUP BY bil.id_bantuan
                     )
             ) bil_tpdb ON (bil_tpdb.id_bantuan = bil.id_bantuan)
@@ -113,6 +114,7 @@ class BantuanModel extends HomeModel {
                     ) pls
                     GROUP BY pls.id_bantuan
             ) ddibpl ON (ddibpl.id_bantuan = bil.id_bantuan)
+            WHERE d.bayar = 1
             GROUP BY bil.id_bantuan
           ORDER BY {$this->_order} {$this->getDirection()}", array(
             'between_start' => $this->_between['start'],
@@ -586,7 +588,7 @@ class BantuanModel extends HomeModel {
           ) persentase_donasi_disalurkan,
           IFNULL(FORMAT(SUM(d.jumlah_donasi),0,'id_ID'),0) total_donasi,
           bil.id_bantuan, bil.nama_bantuan, bil.id_sektor, 
-          IF(bil.tanggal_akhir IS NULL, 'Unlimited', CASE WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) < 0 THEN 'Sudah lewat' WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) = 0 THEN 'Terakhir hari ini' ELSE TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) END ) sisa_waktu,
+          IF(bil.tanggal_akhir IS NULL, 'Unlimited', CASE WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) < 0 THEN 'Sudah lewat' WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) = 0 THEN 'Terakhir hari ini' ELSE CONCAT(TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))),' hari') END ) sisa_waktu,
           IF(k.warna IS NULL, '#727272', k.warna) warna,
           IF(pmh.nama IS NULL, '/assets/images/brand/pojok-berbagi-transparent.png', gp.path_gambar) path_gambar_pengaju,
           IF(pmh.nama IS NULL, 'Pojok Berbagi Indonesia', pmh.nama) pengaju_bantuan,
@@ -603,6 +605,7 @@ class BantuanModel extends HomeModel {
                   (
                  SELECT bil.id_bantuan, IFNULL(SUM(apd.nominal_penggunaan_donasi),0) total_penggunaan_donasi
                  FROM bil JOIN donasi d ON(d.id_bantuan = bil.id_bantuan) LEFT JOIN anggaran_pelaksanaan_donasi apd ON(d.id_donasi = apd.id_donasi)
+                 WHERE d.bayar = 1
                  GROUP BY bil.id_bantuan
                 )
           ) bil_tpdb ON (bil_tpdb.id_bantuan = bil.id_bantuan)
@@ -613,6 +616,7 @@ class BantuanModel extends HomeModel {
                 ) pls
                 GROUP BY pls.id_bantuan
           ) ddibpl ON (ddibpl.id_bantuan = bil.id_bantuan)
+          WHERE d.bayar = 1
           GROUP BY bil.id_bantuan
           ORDER BY prioritas {$this->getDirection()}, action_at {$this->getDirection()}, id_bantuan ASC";
         

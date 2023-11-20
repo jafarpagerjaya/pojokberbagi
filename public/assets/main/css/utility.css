@@ -8,6 +8,42 @@
     gap: var(--gap-x);
 }
 
+.gap-x-1 {
+    column-gap: .25em;
+}
+
+.gap-x-2 {
+    column-gap: .5em;
+}
+
+.gap-x-3 {
+    column-gap: 1em;
+}
+
+.gap-x-4 {
+    column-gap: 1.5em;
+}
+
+.gap-x-5 {
+    column-gap: 2em;
+}
+
+.gap-y-2 {
+    row-gap: .5em;
+}
+
+.gap-y-3 {
+    row-gap: 1em;
+}
+
+.gap-y-4 {
+    row-gap: 1.5em;
+}
+
+.gap-y-5 {
+    row-gap: 2em;
+}
+
 .border-dashed {
     border-style: dashed;
 }
@@ -147,6 +183,23 @@
 
 [type="submit"].disabled {
     cursor: wait !important;
+}
+
+.hidden-area-utility {
+    max-height: 60vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.hidden-area-utility::before {
+    z-index: 1;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent, #fff);
 }
 
 @media (min-width: 425px) {

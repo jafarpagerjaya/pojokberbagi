@@ -8,6 +8,14 @@ class FetchController extends Controller {
         }
     }
 
+    public function index() {
+        $this->_result['feedback'] = array(
+            'message' => 'Fetch ke Method index ?, mohon periksa kembali tujuan fetchnya, sudah ada atau belum'
+        );
+        $this->result();
+        return false;
+    }
+
     private function checkToken($token) {
         if (!Token::check($token)) {
             $this->_result['feedback'] = array(
@@ -37,7 +45,331 @@ class FetchController extends Controller {
 
     private function result() {
         $this->_result[Config::get('session/token_name')] = Token::generate();
+        $toast = array(
+            'error' => $this->_result['error'],
+            'data_toast' => 'feedback',
+            'id' => Hash::unique()
+        );
+
+        if (isset($this->_result['feedback'])) {
+            $toast['feedback'] = $this->_result['feedback'];
+        }
+
+        $this->_result['toast'] = $toast;
+        if (isset($toast['feedback'])) {
+            if (array_key_exists('message', $toast['feedback'])) {
+                if (!$this->_result['error']) {
+                    Session::put('toast', $toast);
+                }
+            }
+        }
         echo json_encode($this->_result);
+    }
+
+    public function delete($params) {
+        if (count(is_countable($params) ? $params : []) == 0) {
+            $this->_result['feedback'] = array(
+                'message' => 'Number of params not found'
+            );
+            $this->result();
+            return false;
+        }
+
+        // Check Content Type and decode JSON to array
+        $decoded = $this->contentTypeJsonDecoded($_SERVER["CONTENT_TYPE"]);
+
+        // Check Token
+        if (!$this->checkToken($decoded['token'])) { return false; }
+
+        switch ($params[0]) {
+            case 'amin':
+                // aminDelete Params
+            break;
+            
+            default:
+                $this->_result['feedback'] = array(
+                    'message' => 'Unrecognize params '. $params[0]
+                );
+                $this->result();
+                return false;
+            break;
+        }
+
+        // prepare method Delete name
+        $action = $params[0] . 'Delete';
+        // call method Delete
+        $this->$action($decoded);
+
+        return false;
+    }
+
+    private function aminDelete($decoded) {
+        $decoded = Sanitize::thisArray($decoded['fields']);
+
+        if (!isset($decoded['id_donasi'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id donasi tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!isset($decoded['id_bantuan'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id bantuan tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $decoded['id_donasi'] = base64_decode(strrev($decoded['id_donasi']));
+
+        $this->model('Auth');
+        $this->_auth = $this->model('Auth');
+
+        $this->model('Donasi');
+        $this->model->query("SELECT COUNT(*) count FROM donasi WHERE id_bantuan = ? AND id_donasi = ?", array('id_bantuan' => $decoded['id_bantuan'], 'id_donasi' => $decoded['id_donasi']));
+        if ($this->model->getResult()->count == 0) {
+            $this->_result['feedback']['message'] = 'Donasi bantuan tidak ditemukan';
+            $this->result();
+            return false;
+        }
+
+        if ($this->_auth->isSignIn()) {
+            $decoded['id_akun'] = $this->_auth->data()->id_akun;   
+        }
+
+        if (Cookie::exists(Config::get('client/cookie_name'))) {
+			$cookie_value = Sanitize::thisArray(json_decode(base64_decode(Cookie::get(Config::get('client/cookie_name'))), true));
+            $decoded['id_pengunjung'] = $cookie_value['id_pengunjung'];
+        } else {
+            $this->_result['error'] = false;
+            $this->_result['feedback'] = array(
+                'message' => 'Cookie not exists check local storage',
+                'lsc' => true,
+                'uri' => base64_encode('/bantuan/detil/' . $decoded['id_bantuan'])
+            );
+            $this->result();
+            return false;
+        }
+
+        unset($decoded['id_bantuan']);
+
+        try {
+            $filter = '';
+            try {
+                $xCol = 1;
+                foreach ($decoded as $key => $value) {
+                    $filter .= "{$key} = ?";
+                    if ($xCol < count(is_countable($decoded) ? $decoded : [])) {
+                        $filter .= " AND ";
+                    }
+                    $xCol++;
+                }
+
+                if (!isset($decoded['id_akun'])) {
+                    $filter .= " AND id_akun IS NULL";
+                }
+                
+                $sql = "SELECT COUNT(*) count FROM amin WHERE {$filter}";
+                $this->model->query($sql, $decoded);
+            } catch (\Throwable $th) {
+                $pesan = explode(':',$th->getMessage());
+                $this->_result['feedback'] = array(
+                    'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
+                );
+                $this->result();
+                return false;
+            }
+
+            if ($this->model->getResult()->count == 0) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Failed to delete loved donasi, loved donasi belum ada'
+                );
+                $this->result();
+                return false;
+            }
+
+            $this->model->query("DELETE FROM amin WHERE {$filter}", $decoded);
+        } catch (\Throwable $th) {
+            $pesan = explode(':',$th->getMessage());
+            $this->_result['feedback'] = array(
+                'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Failed to create loved donasi'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->model->query("SELECT COUNT(*) liked FROM amin WHERE id_donasi = ?", array($decoded['id_donasi']));
+        $this->_result['feedback'] = array(
+            'data' => array(
+                'liked' => $this->model->getResult()->liked
+            )
+        );
+        $this->_result['error'] = false;
+        $this->result();
+        return false;
+    }
+
+    public function create($params) {
+        if (count(is_countable($params) ? $params : []) == 0) {
+            $this->_result['feedback'] = array(
+                'message' => 'Number of params not found'
+            );
+            $this->result();
+            return false;
+        }
+
+        // Check Content Type and decode JSON to array
+        $decoded = $this->contentTypeJsonDecoded($_SERVER["CONTENT_TYPE"]);
+
+        // Check Token
+        if (!$this->checkToken($decoded['token'])) { return false; }
+
+        switch ($params[0]) {
+            case 'amin':
+                // aminCreate Params
+            break;
+            
+            default:
+                $this->_result['feedback'] = array(
+                    'message' => 'Unrecognize params '. $params[0]
+                );
+                $this->result();
+                return false;
+            break;
+        }
+
+        // prepare method Create name
+        $action = $params[0] . 'Create';
+        // call method Create
+        $this->$action($decoded);
+
+        return false;
+    }
+
+    private function aminCreate($decoded) {
+        $decoded = Sanitize::thisArray($decoded['fields']);
+
+        if (!isset($decoded['id_donasi'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id donasi tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!isset($decoded['id_bantuan'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id bantuan tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $decoded['id_donasi'] = base64_decode(strrev($decoded['id_donasi']));
+
+        $this->model('Auth');
+        $this->_auth = $this->model('Auth');
+
+        $this->model('Donasi');
+        $this->model->query("SELECT COUNT(*) count FROM donasi WHERE id_bantuan = ? AND id_donasi = ?", array('id_bantuan' => $decoded['id_bantuan'], 'id_donasi' => $decoded['id_donasi']));
+        if ($this->model->getResult()->count == 0) {
+            $this->_result['feedback']['message'] = 'Donasi bantuan tidak ditemukan';
+            $this->result();
+            return false;
+        }
+        
+        if ($this->_auth->isSignIn()) {
+            $decoded['id_akun'] = $this->_auth->data()->id_akun;   
+        }
+
+        if (Cookie::exists(Config::get('client/cookie_name'))) {
+			$cookie_value = Sanitize::thisArray(json_decode(base64_decode(Cookie::get(Config::get('client/cookie_name'))), true));
+            $decoded['id_pengunjung'] = $cookie_value['id_pengunjung'];
+        } else {
+            $this->_result['error'] = false;
+            $this->_result['feedback'] = array(
+                'message' => 'Cookie not exists check local storage',
+                'lsc' => true,
+                'uri' => base64_encode('/bantuan/detil/' . $decoded['id_bantuan'])
+            );
+            $this->result();
+            return false;
+        }
+
+        unset($decoded['id_bantuan']);
+
+        try {
+            try {
+                $filter = '';
+                $xCol = 1;
+                foreach ($decoded as $key => $value) {
+                    $filter .= "{$key} = ?";
+                    if ($xCol < count(is_countable($decoded) ? $decoded : [])) {
+                        $filter .= " AND ";
+                    }
+                    $xCol++;
+                }
+
+                if (!isset($decoded['id_akun'])) {
+                    $filter .= " AND id_akun IS NULL";
+                }
+                
+                $sql = "SELECT COUNT(*) count FROM amin WHERE {$filter}";
+                $this->model->query($sql, $decoded);
+            } catch (\Throwable $th) {
+                $pesan = explode(':',$th->getMessage());
+                $this->_result['feedback'] = array(
+                    'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
+                );
+                $this->result();
+                return false;
+            }
+
+            if ($this->model->getResult()->count > 0) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Failed to create loved donasi, loved donasi sudah ada'
+                );
+                $this->result();
+                return false;
+            }
+
+            $this->model->create('amin', $decoded);
+        } catch (\Throwable $th) {
+            $pesan = explode(':',$th->getMessage());
+            $this->_result['feedback'] = array(
+                'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Failed to create loved donasi'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->model->query("SELECT COUNT(*) liked FROM amin WHERE id_donasi = ?", array($decoded['id_donasi']));
+        $this->_result['feedback'] = array(
+            'data' => array(
+                'liked' => $this->model->getResult()->liked
+            )
+        );
+        $this->_result['error'] = false;
+        $this->result();
+        return false;
     }
 
     public function read($params) {
@@ -98,9 +430,9 @@ class FetchController extends Controller {
             $params[0] .= ucfirst($params[1]);
         }
 
-        // prepare method create name
+        // prepare method Read name
         $action = $params[0] . 'Read';
-        // call method create
+        // call method Read
         $this->$action($decoded);
 
         return false;

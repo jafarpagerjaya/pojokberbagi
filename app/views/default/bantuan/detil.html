@@ -86,7 +86,7 @@
         </div>
         <div class="row g-0 gap-3 gap-md-4 bg-white position-relative pt-2 pt-lg-3" id="commit-bantuan-area"
             data-start-delay-wow="1.2">
-            <div class="col justify-content-center d-flex flex-column wow fadeInUp bg-light rounded-box align-items-center py-4"
+            <div class="col col-md-4 col-lg justify-content-center d-flex flex-column wow fadeInUp bg-light rounded-box align-items-center py-4"
                 data-wow-delay="1.2s">
                 <div class="logo d-flex align-items-center justify-content-center border-1 rounded-box bg-white overflow-hidden border border-light shadow-none text-center">
                     <img class="img-fluid" src="<?= $data['detil_bantuan']->path_gambar_logo_pengaju_bantuan; ?>"
@@ -97,11 +97,15 @@
                 </h6>
             </div>
             <div class="col order-first order-md-last wow fadeInUp" data-wow-delay="1.4s">
-                <div class="row">
+                <div class="row gap-4">
                     <?php if (strtoupper($data['detil_bantuan']->status) == 'D') { ?>
-                    <div class="col-12">
+                    <div class="col-12 d-flex gap-3">
                         <a href="<?= '/donasi/buat/baru/'. $data['detil_bantuan']->id_bantuan; ?>"
-                            class="btn button donasi btn-lg w-100 shadow-none mb-5">Donasi Sekarang</a>
+                            class="btn button donasi btn-lg w-100 shadow-none d-grid align-items-center justify-items-center">Donasi Sekarang</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalShareBtn" class="btn d-flex fw-bold flex-column-reverse fs-6 button button-outline-orange">
+                            Bagikan
+                            <i class="lni lni-share fs-6"></i>
+                        </a>
                     </div>
                     <?php } ?>
                     <div class="col-12">
@@ -117,37 +121,88 @@
         </div>
         
         <div class="row g-0 gap-3 gap-md-4 bg-white position-relative pt-2 pt-lg-3 ql-container ql-disabled mt-2 wow fadeInUp" id="deskripsi-selengkapnya-area" data-wow-delay="1.4s">
-            <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center justify-content-between gap-3" id="title">
+            <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center <?= (isset($data['deskripsi']) ? 'justify-content-between':'justify-content-center'); ?> gap-3" id="title">
                 <div class="desc align-self-end">
                     <?php 
                         if (isset($data['deskripsi'])) {
                             echo '<p class="date">'. $data['deskripsi']->create_at .'</p><h4>'. $data['deskripsi']->judul .'</h4>';
                         } else { 
                     ?>
+                        <div class="empty mx-auto"></div>
                         <h4>Belum ada deskripsi selengkapnya</h4>
                     <?php
                         }
                     ?>
                 </div>
-                <div class="btns">
-                    <span class="m-0 fw-bolder fs-5">Bagikan</span>
-                    <div class="d-grid gap-1 align-items-center justify-content-end share" id="sharer">
-                        <a target="_blank" href="https://twitter.com/pojok_berbagi" class="medsos-icon"><i class="lni lni-twitter-filled text-secondary"></i></a>
-                        <a target="_blank" href="https://bit.ly/pojok-berbagi-indonesia"class="medsos-icon"><i class="lni lni-whatsapp text-secondary"></i></a>
+                <span class="node"></span>
+            </div>
+            <?php if (isset($data['deskripsi'])) { ?>
+            <div class="col-12 p-md-3 rounded-box">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 px-md-0 hidden-area-utility" id="selengkapnya">
                     </div>
+                </div>
+            </div>
+            <?php } ?>
+        </div>
+
+        <div id="donatur-area" class="row g-0 gap-3 gap-md-4 bg-white position-relative pt-2 pt-lg-3 ql-container ql-disabled mt-2 wow fadeInUp" data-wow-delay="1.6s">
+            <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center justify-content-between" id="title">
+                <div class="desc align-self-end">
+                    <h4>Donatur</h4>
                 </div>
                 <span class="node"></span>
             </div>
-            <div class="col-12 p-md-3 rounded-box">
-                <div class="row justify-content-center">
-                    <?php if (isset($data['deskripsi'])) { ?>
-                    <div class="col-lg-8 px-md-0" id="selengkapnya">
+            <?php if (isset($data['list_donatur'])) { 
+                foreach($data['list_donatur'] as $key => $donatur) {
+                    ?>
+                    <div class="donatur col-12 bg-light rounded-box p-3 d-flex justify-content-between gap-2" data-id-donasi="<?= strrev(base64_encode($donatur->id_donasi) ?? ''); ?>">
+                        <div class="media d-flex gap-3 flex-column">
+                            <div class="avatar border rounded">
+                                <img src="<?= $donatur->path_avatar; ?>" alt="<?= $donatur->nama_avatar; ?>" class="avatar">
+                            </div>
+                            <div class="media-body">
+                                <h5 class="mt-0"><?= $donatur->nama_donatur; ?></h5>
+                                <p class="desc"><?= $donatur->doa; ?></p>
+                            </div>
+                        </div>
+                        <div class="row w-100 g-0 align-items-end">
+                            <div class="col">
+                                <p class="text-black-50 text-decoration-underline">Donasi</p>
+                                <span class="fw-bold"><?= $donatur->jumlah_donasi; ?></span>
+                            </div>
+                            <div class="col d-flex justify-content-end align-items-center">
+                                <div class="d-flex flex-column align-items-center gap-1">
+                                    <span class="heart-animation<?= ($donatur->checked ? ' animate' : ''); ?>" <?= ($donatur->checked ? 'checked="true"' : ''); ?>></span>
+                                    <span class="liked text-orange"><?= $donatur->liked; ?> Disukai</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <?php } else { ?>
-                    
-                    <?php } ?>
-                </div>
-            </div>
+            <?php }
+            } ?>
         </div>
     </div>
+</div>
+
+<div class="modal" tabindex="-1" id="modalShareBtn">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-box">
+            <div class="modal-header">
+            <h5 class="modal-title">Bagikan Lewat</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex gap-2 share">
+            <a type="button" class="btn btn-outline-green-box rounded-box p-2 medsos-icon">
+                <i class="bi bi-whatsapp fs-4"></i>
+            </a>
+            <a type="button" class="btn btn-outline-dark rounded-box p-2 medsos-icon">
+                <i class="bi bi-twitter-x fs-4"></i>
+            </a>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div aria-live="polite" aria-atomic="true" class="position-fixed d-flex justify-content-end flex-column align-items-end gap-2">
 </div>

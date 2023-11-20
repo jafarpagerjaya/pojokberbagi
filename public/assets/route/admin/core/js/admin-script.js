@@ -243,3 +243,139 @@ let tableAblsoluteFirstScroll = function() {
 };
 
 tableAblsoluteFirstScroll();
+
+// Toast Maker
+let createNewToast = function(toastParentEl, toastId = null, dataToast = 'feedback', toast = null) {
+    if (toastParentEl == null) {
+        console.log('Object Toast Parent Cannot be Found');
+        return false;
+    }
+
+    let bgBox = 'bg-default',
+        titleBox = 'Pemberitahuan',
+        message = 'data.feedback.message';
+        
+    if (toast != null) {
+        if (toast.error) {
+            bgBox = 'bg-danger';
+            titleBox = 'Peringatan!';
+        } else {
+            bgBox = 'bg-success';
+            titleBox = 'Informasi';
+        }
+
+        message = toast.feedback.message;
+    };
+
+    const toastAtributes = {
+        'role':'alert',
+        'aria-live':'assertive',
+        'aria-atomic':'true',
+        'data-toast':dataToast,
+        'data-delay':5000
+    };
+
+    if (toastId != null) {
+        toastAtributes.id = toastId;
+    }
+
+    const toastContainer = document.createElement('div');
+    toastContainer.classList.add('toast', 'w-100', 'fade', 'hide' , 'bg-white');
+    setMultipleAttributesonElement(toastContainer, toastAtributes);
+
+    const toastHeader = document.createElement('div');
+    toastHeader.classList.add('toast-header', 'd-flex', 'gap-x-2', 'justify-content-center', 'align-items-center');
+    toastContainer.appendChild(toastHeader);
+
+    const toastBox = document.createElement('div');
+    toastBox.classList.add('small-box', 'rounded', 'p-2', 'ailgn-items-center', bgBox);
+    toastHeader.appendChild(toastBox);
+
+    const toastTitle = document.createElement('strong');
+    toastTitle.classList.add('mr-auto');
+    const toastTitleText = document.createTextNode(titleBox);
+    toastTitle.appendChild(toastTitleText);
+    toastHeader.appendChild(toastTitle);
+
+    const toastTimePassed = document.createElement('small');
+    toastTimePassed.classList.add('text-muted', 'time-passed');
+    const toastTimePassedText = document.createTextNode('Baru saja');
+    toastTimePassed.appendChild(toastTimePassedText);
+    toastHeader.appendChild(toastTimePassed);
+
+    const toastDismissAtributes = {
+        'type':'button',
+        'class':'close',
+        'data-dismiss':'toast',
+        'aria-label':'Close'
+    };
+
+    const toastDismiss = document.createElement('button');
+    setMultipleAttributesonElement(toastDismiss, toastDismissAtributes);
+    toastHeader.appendChild(toastDismiss);
+
+    const toastBtnSpanAtributes = {
+        'aria-hidden':'true',
+        'type':'button'
+    };
+
+    const toastSpanBtn = document.createElement('span');
+    setMultipleAttributesonElement(toastSpanBtn, toastBtnSpanAtributes);
+    toastSpanBtn.innerHTML = '&times;';
+    toastDismiss.appendChild(toastSpanBtn);
+    
+    const toastBody = document.createElement('div');
+    toastBody.classList.add('toast-body');
+    toastBody.innerHTML = message;
+    toastContainer.appendChild(toastBody);
+
+    toastParentEl.appendChild(toastContainer);
+
+    setTimeout(() => {
+        $((toast.id == null ? '':'#'+ toast.id) +'.toast[data-toast="'+ toast.data_toast +'"]').on('hidden.bs.toast', function () {
+            let dataToast;
+            if (this.getAttribute('id') == null) {
+                dataToast = toast.data_toast;
+            } else {
+                dataToast = toast.id;
+            }
+
+            stopPassed(dataToast);
+            $(this).remove();
+        }).on('shown.bs.toast', function() {
+            setTimeout(()=> {
+                let toastEl = document.getElementById(toast.id);
+                toastPassed(toastEl.querySelector('.time-passed'));
+            }, 0);
+        });
+    },0);
+};
+
+// Diulangn dengan fungsi resize
+let footerSetter = function() {
+    let wh = $( window ).height(),
+    kurangHeight = wh - $('footer').offset().top - $('footer').height() - parseInt($('footer').css('padding-bottom')),
+    mc = $('#main-content'),
+    mcHeight = mc.height();
+    
+    if (kurangHeight > 0) {
+        mc.css('min-height', (mcHeight + kurangHeight)+'px');
+    } else {
+        mc.css('min-height', wh - (mc.offset().top + $('footer').height()))
+    }
+};
+
+footerSetter();
+
+let resizeTimeout;
+$(window).resize(function () {
+    clearTimeout(resizeTimeout)
+    resizeTimeout = setTimeout(function () {
+        footerSetter();
+    }, 50);
+});
+
+// New
+$("#notifikasi").modal({backdrop: "static"});
+// Old
+$("#notif-modal").modal({backdrop: "static"});

@@ -136,7 +136,7 @@ class DonasiController extends Controller {
         $this->model->setDirection('DESC');
         $table = 'donasi';
         $this->model->setHalaman(1, $table);
-        $this->model->setOrder('d.create_at');
+        $this->model->setOrder('d.waktu_bayar');
         $this->model->getListDonasi();
 
         $this->data['list_donasi'] = $this->model->data();

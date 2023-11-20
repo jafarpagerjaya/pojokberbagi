@@ -232,12 +232,12 @@ class DonasiModel extends HomeModel {
             // OFSET
             $search = "CONCAT(IFNULL(b.nama,''), IFNULL(k.nama,''), IFNULL(s.nama,''), IFNULL(formatTanggalFull(d.create_at),''), IFNULL(IF(d.bayar = 1, 'sudah diverivikasi','belum diverivikasi'),''), IFNULL(formatTanggalFull(d.waktu_bayar),''), CAST(IFNULL(FORMAT(d.jumlah_donasi,0,'id_ID'),'') AS CHAR CHARACTER SET utf8), IFNULL(cp.nama,''), IFNULL(CASE WHEN UPPER(cp.jenis) = 'TB' THEN 'Transfer Bank' WHEN UPPER(cp.jenis) = 'QR' THEN 'Qris' WHEN UPPER(cp.jenis) = 'VA' THEN 'Virtual Account' WHEN UPPER(cp.jenis) = 'GM' THEN 'Gerai Mart' WHEN UPPER(cp.jenis) = 'EW' THEN 'E-Wallet' WHEN UPPER(cp.jenis) = 'GI' THEN 'Giro' WHEN UPPER(cp.jenis) = 'TN' THEN 'Tunai' ELSE '' END,'')) LIKE '%{$this->getSearch()}%'";
             $result = $this->countData($tables, $where, $search);
-            $sql = "SELECT {$fields} FROM {$tables} WHERE {$search} ORDER BY {$this->getOrder()} {$this->getDirection()}, d.id_donasi {$this->getDirection()} LIMIT {$this->getHalaman()[0]},{$this->getLimit()}";
+            $sql = "SELECT {$fields} FROM {$tables} WHERE {$search} ORDER BY d.id_donasi {$this->getDirection()}, {$this->getOrder()} {$this->getDirection()} LIMIT {$this->getHalaman()[0]},{$this->getLimit()}";
             $params = array();
         } else {
             // SEEK
             $result = $this->countData($tables, $where);
-            $sql = "SELECT {$fields} FROM {$tables} WHERE d.id_donasi BETWEEN ? AND ? ORDER BY {$this->getOrder()} {$this->getDirection()}";
+            $sql = "SELECT {$fields} FROM {$tables} WHERE d.id_donasi BETWEEN ? AND ? ORDER BY d.id_donasi {$this->getDirection()}, {$this->getOrder()} {$this->getDirection()}";
             $params = array(
                 'between_start' => $this->getHalaman()[0],
                 'between_end' => $this->getHalaman()[1]

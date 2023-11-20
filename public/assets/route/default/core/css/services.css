@@ -236,6 +236,12 @@
     width: 100%;
 }
 
+.single-service>.row>.col-auto>small::before {
+    content: "\ebdb";
+    font: bold normal normal 0.725em/1 'lineicons';
+    vertical-align: baseline;
+}
+
 @media (min-width: 320px) {
 
     /* List Service */
