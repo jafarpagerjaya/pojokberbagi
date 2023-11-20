@@ -24,7 +24,7 @@ h6 {
     font-family: inherit !important;
 }
 
-i {
+i.bi {
     display: flex;
     align-items: center;
     justify-content: center;

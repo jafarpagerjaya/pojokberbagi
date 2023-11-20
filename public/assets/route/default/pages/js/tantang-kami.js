@@ -45,7 +45,7 @@ function stickyNavbarAbout() {
             element.classList.remove('active');
             let targetSpy = element.getAttribute('href'),
                 spyElement = document.querySelector(targetSpy);
-                console.log(window.pageYOffset, spyElement.offsetTop, spyElement.offsetHeight);
+                // console.log(window.pageYOffset, spyElement.offsetTop, spyElement.offsetHeight);
             if ((window.pageYOffset >= spyElement.offsetTop) && (window.pageYOffset < spyElement.offsetHeight + spyElement.offsetTop)) {
                 element.classList.add('active');
             }
