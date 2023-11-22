@@ -49,3 +49,5 @@ if (document.querySelectorAll('.hidden-area-utility').length) {
         });
     });
 }
+
+const reverseString = str => [...str].reverse().join('');

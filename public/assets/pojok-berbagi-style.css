@@ -168,6 +168,10 @@ i.bi {
 
 /* Handling style for broken img */
 
+.load .avatar {
+    border: 0px;
+}
+
 img {
     position: relative;
     display: flex;
@@ -188,6 +192,13 @@ img::before {
     align-items: center;
 }
 
+.load img,
+.load img::before {
+    background: linear-gradient(-90deg, #eee, #ddd, #ddd, #eee);
+    background-size: 400% 400%;
+    animation: gradient-load 1s ease infinite;
+}
+
 img::after {
     position: absolute;
     content: attr(alt);
@@ -200,6 +211,10 @@ img::after {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.load img::after {
+    content: '';
 }
 
 /* Akhir Utilitas, Reset & Root */
@@ -347,6 +362,10 @@ textarea {
     animation: heart-burst .8s steps(28) forwards;
 }
 
+.modal:not(.shown) .animate.heart-animation::before {
+    animation: heart-burst 0s steps(28) forwards;
+}
+
 @keyframes heart-burst {
     0% {
         background-position: left
@@ -358,6 +377,14 @@ textarea {
 
 .heart-animation:not(.animate)::before {
     animation: heart-pop .8s steps(28) backwards;
+}
+
+.modal:not(.shown) .heart-animation:not(.animate)::before {
+    animation: heart-pop 0s steps(28) backwards;
+}
+
+.load .heart-animation::before {
+    background-image: none;
 }
 
 @keyframes heart-pop {

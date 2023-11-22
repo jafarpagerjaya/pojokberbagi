@@ -151,6 +151,7 @@
                 <div class="desc align-self-end">
                     <h4>Donatur</h4>
                 </div>
+                <a data-bs-target="#modalListDonatur" data-bs-toggle="modal" href="javascript:void(0);" class="text-decoration-underline">Seluruh Donatur <i class="lni lni-chevron-right"></i></a>
                 <span class="node"></span>
             </div>
             <?php if (isset($data['list_donatur'])) { 
@@ -162,8 +163,8 @@
                                 <img src="<?= $donatur->path_avatar; ?>" alt="<?= $donatur->nama_avatar; ?>" class="avatar">
                             </div>
                             <div class="media-body">
-                                <h5 class="mt-0"><?= $donatur->nama_donatur; ?></h5>
-                                <p class="desc"><?= $donatur->doa; ?></p>
+                                <h5 class="mt-0"><?= '<span>' . $donatur->nama_donatur . '</span>'; ?></h5>
+                                <?= (!empty($donatur->doa) ? '<p class="desc">'. $donatur->doa .'</p>' : ''); ?>
                             </div>
                         </div>
                         <div class="row w-100 g-0 align-items-end">
@@ -200,6 +201,27 @@
                 <i class="bi bi-twitter-x fs-4"></i>
             </a>
         </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" id="modalListDonatur">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center border-0">
+                <div class="row m-0 justify-content-center w-100">
+                    <div class="col-12 col-lg-6 d-flex justify-content-between align-items-center">
+                        <h5 class="modal-title">Daftar Donatur</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body border-top">
+                <div class="row m-0 justify-content-center w-100">
+                    <div class="px-0 col-12 col-lg-6 d-flex justify-content-between align-items-center flex-column gap-y-4" id="content">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

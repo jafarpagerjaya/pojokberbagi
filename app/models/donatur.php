@@ -154,4 +154,77 @@ class DonaturModel extends HomeModel {
         }
         return false;
     }
+
+    public function getListDonaturOnBantuanDetil($params = array()) {
+        if (!isset($params['offset'])) {
+            $params['offset'] = $this->getOffset();
+        }
+
+        $this->setOffset($params['offset']);
+
+        if (!isset($params['limit'])) {
+            $params['limit'] = $this->getLimit();
+        }
+
+        $this->setLimit($params['limit']);
+
+        $values = array(
+            $params['id_bantuan']
+        );
+
+        if ($params['signin']) {
+            $sql = "WITH cte AS (
+                SELECT id_donasi FROM donasi WHERE id_bantuan = ? AND bayar = 1 ORDER BY waktu_bayar DESC LIMIT {$params['offset']}, {$params['limit']}
+            ) SELECT dn.id_donasi, dn.id_donatur, IFNULL(dn.alias, dt.nama) nama_donatur, FORMAT(dn.jumlah_donasi,0,'id_ID') jumlah_donasi, dn.doa, COUNT(a.id_donasi) liked, CONCAT('avatar ',dt.nama) nama_avatar, IFNULL(gd.path_gambar,IF(dt.jenis_kelamin IS NULL,'/assets/images/default.png',IF(dt.jenis_kelamin = 'P','/assets/images/female-avatar.jpg','/assets/images/male-avatar.jpg'))) path_avatar, IF(aa.id_donasi IS NOT NULL,1,0) checked
+            FROM cte JOIN donasi dn USING(id_donasi) JOIN donatur dt USING(id_donatur) LEFT JOIN akun ak USING(id_akun) LEFT JOIN gambar gd USING(id_gambar)
+            LEFT JOIN amin a ON(a.id_donasi = cte.id_donasi) LEFT JOIN (
+                SELECT id_donasi FROM amin WHERE id_akun = ?
+            ) aa ON(cte.id_donasi = aa.id_donasi)
+            GROUP BY cte.id_donasi
+            ORDER BY dn.waktu_bayar DESC";
+            array_push($values, $params['id_akun']);
+        } else {
+            if (Cookie::exists(Config::get('client/cookie_name'))) {
+                $cookie_value = Sanitize::thisArray(json_decode(base64_decode(Cookie::get(Config::get('client/cookie_name')) ?? ''), true));
+            }
+
+            if (isset($cookie_value['id_pengunjung'])) {
+                $sql = "WITH cte AS (
+                    SELECT id_donasi FROM donasi WHERE id_bantuan = ? AND bayar = 1 ORDER BY waktu_bayar DESC LIMIT {$params['offset']}, {$params['limit']}
+                ) SELECT dn.id_donasi, dn.id_donatur, IFNULL(dn.alias, dt.nama) nama_donatur, FORMAT(dn.jumlah_donasi,0,'id_ID') jumlah_donasi, dn.doa, COUNT(a.id_donasi) liked, CONCAT('avatar ',dt.nama) nama_avatar, IFNULL(gd.path_gambar,IF(dt.jenis_kelamin IS NULL,'/assets/images/default.png',IF(dt.jenis_kelamin = 'P','/assets/images/female-avatar.jpg','/assets/images/male-avatar.jpg'))) path_avatar, IF(aa.id_donasi IS NOT NULL,1,0) checked
+                FROM cte JOIN donasi dn USING(id_donasi) JOIN donatur dt USING(id_donatur) LEFT JOIN akun ak USING(id_akun) LEFT JOIN gambar gd USING(id_gambar)
+                LEFT JOIN amin a ON(a.id_donasi = cte.id_donasi) LEFT JOIN (
+                    SELECT id_donasi FROM amin WHERE id_akun IS NULL AND id_pengunjung = ?
+                ) aa ON(cte.id_donasi = aa.id_donasi)
+                GROUP BY cte.id_donasi
+                ORDER BY dn.waktu_bayar DESC";
+                array_push($values, $cookie_value['id_pengunjung']);
+            } else {
+                $sql = "WITH cte AS (
+                    SELECT id_donasi FROM donasi WHERE id_bantuan = ? AND bayar = 1 ORDER BY waktu_bayar DESC LIMIT {$params['offset']}, {$params['limit']}
+                ) SELECT dn.id_donasi, dn.id_donatur, IFNULL(dn.alias, dt.nama) nama_donatur, FORMAT(dn.jumlah_donasi,0,'id_ID') jumlah_donasi, dn.doa, COUNT(a.id_donasi) liked, CONCAT('avatar ',dt.nama) nama_avatar, IFNULL(gd.path_gambar,IF(dt.jenis_kelamin IS NULL,'/assets/images/default.png',IF(dt.jenis_kelamin = 'P','/assets/images/female-avatar.jpg','/assets/images/male-avatar.jpg'))) path_avatar, 0 checked
+                FROM cte JOIN donasi dn USING(id_donasi) JOIN donatur dt USING(id_donatur) LEFT JOIN akun ak USING(id_akun) LEFT JOIN gambar gd USING(id_gambar)
+                LEFT JOIN amin a ON(a.id_donasi = cte.id_donasi)
+                GROUP BY cte.id_donasi
+                ORDER BY dn.waktu_bayar DESC";
+            }
+        }
+
+        $this->db->query($sql, $values);
+        if (!$this->db->count()) {
+            return false;
+        }
+
+        $this->data->offset = $this->getOffset() + $this->getLimit();
+        $this->data->limit = $this->getLimit();
+        $this->data->list_donatur = $this->db->results();
+
+        $this->db->query("SELECT COUNT(*) jumlah_record FROM donasi WHERE id_bantuan = ? AND bayar = 1", array('id_bantuan' => $params['id_bantuan']));
+        if (!$this->db->count()) {
+            return false;
+        }
+
+        $this->data->jumlah_record = $this->db->result()->jumlah_record;
+        return true;
+    }
 }

@@ -154,7 +154,7 @@ class BantuanController extends Controller {
 
             if ($this->_auth->isSignIn()) {
                 $sql = "WITH cte AS (
-                    SELECT id_donasi FROM donasi WHERE id_bantuan = ? AND bayar = 1 ORDER BY waktu_bayar DESC
+                    SELECT id_donasi FROM donasi WHERE id_bantuan = ? AND bayar = 1 ORDER BY waktu_bayar DESC LIMIT 3
                 ) SELECT dn.id_donasi, dn.id_donatur, IFNULL(dn.alias, dt.nama) nama_donatur, FORMAT(dn.jumlah_donasi,0,'id_ID') jumlah_donasi, dn.doa, COUNT(a.id_donasi) liked, CONCAT('avatar ',dt.nama) nama_avatar, IFNULL(gd.path_gambar,IF(dt.jenis_kelamin IS NULL,'/assets/images/default.png',IF(dt.jenis_kelamin = 'P','/assets/images/female-avatar.jpg','/assets/images/male-avatar.jpg'))) path_avatar, IF(aa.id_donasi IS NOT NULL,1,0) checked
                 FROM cte JOIN donasi dn USING(id_donasi) JOIN donatur dt USING(id_donatur) LEFT JOIN akun ak USING(id_akun) LEFT JOIN gambar gd USING(id_gambar)
                 LEFT JOIN amin a ON(a.id_donasi = cte.id_donasi) LEFT JOIN (
@@ -170,7 +170,7 @@ class BantuanController extends Controller {
 
                 if (isset($cookie_value['id_pengunjung'])) {
                     $sql = "WITH cte AS (
-                        SELECT id_donasi FROM donasi WHERE id_bantuan = ? AND bayar = 1 ORDER BY waktu_bayar DESC
+                        SELECT id_donasi FROM donasi WHERE id_bantuan = ? AND bayar = 1 ORDER BY waktu_bayar DESC LIMIT 3
                     ) SELECT dn.id_donasi, dn.id_donatur, IFNULL(dn.alias, dt.nama) nama_donatur, FORMAT(dn.jumlah_donasi,0,'id_ID') jumlah_donasi, dn.doa, COUNT(a.id_donasi) liked, CONCAT('avatar ',dt.nama) nama_avatar, IFNULL(gd.path_gambar,IF(dt.jenis_kelamin IS NULL,'/assets/images/default.png',IF(dt.jenis_kelamin = 'P','/assets/images/female-avatar.jpg','/assets/images/male-avatar.jpg'))) path_avatar, IF(aa.id_donasi IS NOT NULL,1,0) checked
                     FROM cte JOIN donasi dn USING(id_donasi) JOIN donatur dt USING(id_donatur) LEFT JOIN akun ak USING(id_akun) LEFT JOIN gambar gd USING(id_gambar)
                     LEFT JOIN amin a ON(a.id_donasi = cte.id_donasi) LEFT JOIN (
@@ -181,7 +181,7 @@ class BantuanController extends Controller {
                     array_push($values, $cookie_value['id_pengunjung']);
                 } else {
                     $sql = "WITH cte AS (
-                        SELECT id_donasi FROM donasi WHERE id_bantuan = ? AND bayar = 1 ORDER BY waktu_bayar DESC
+                        SELECT id_donasi FROM donasi WHERE id_bantuan = ? AND bayar = 1 ORDER BY waktu_bayar DESC LIMIT 3
                     ) SELECT dn.id_donasi, dn.id_donatur, IFNULL(dn.alias, dt.nama) nama_donatur, FORMAT(dn.jumlah_donasi,0,'id_ID') jumlah_donasi, dn.doa, COUNT(a.id_donasi) liked, CONCAT('avatar ',dt.nama) nama_avatar, IFNULL(gd.path_gambar,IF(dt.jenis_kelamin IS NULL,'/assets/images/default.png',IF(dt.jenis_kelamin = 'P','/assets/images/female-avatar.jpg','/assets/images/male-avatar.jpg'))) path_avatar, 0 checked
                     FROM cte JOIN donasi dn USING(id_donasi) JOIN donatur dt USING(id_donatur) LEFT JOIN akun ak USING(id_akun) LEFT JOIN gambar gd USING(id_gambar)
                     LEFT JOIN amin a ON(a.id_donasi = cte.id_donasi)

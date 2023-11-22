@@ -107,6 +107,46 @@ header.header+* {
 
 /* Akhir Footer */
 
+/* load animation modal */
+.modal.load *:not(span) {
+    border-radius: inherit;
+}
+
+.modal.load a[role="button"],
+.modal.load *:not(span) span {
+    color: transparent;
+    background: linear-gradient(-90deg, #eee, #ddd, #ddd, #eee);
+    background-size: 400% 400%;
+    animation: gradient-load 1s ease infinite;
+    border-radius: 5px;
+}
+
+.modal.load i[class*="bg"] {
+    background: transparent !important;
+}
+
+.modal.load a {
+    cursor: none !important;
+    pointer-events: none !important;
+}
+
+.modal.load span,
+.modal.load a i {
+    color: transparent !important;
+}
+
+@keyframes gradient-load {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
 @media (min-width: 767px) and (max-width: 768px) {
     .header .navbar-collapse {
         position: absolute;

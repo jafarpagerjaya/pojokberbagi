@@ -479,6 +479,15 @@ img[alt*="bri"] {
     color: #fb6340 !important;
 }
 
+/* Customeze Checkbox */
+.radio-box .inputGroup input:checked+label>h4 {
+    color: var(--green-box);
+}
+
+.radio-box .inputGroup:hover input:not(:checked)+label>h4 {
+    color: var(--orange);
+}
+
 @media (min-width: 768px) {
     #modalBuatRencana .rounded.col-12.mx-3.mx-md-0 {
         flex-basis: 0;

@@ -146,7 +146,7 @@ class FetchController extends Controller {
             $this->_result['error'] = false;
             $this->_result['feedback'] = array(
                 'message' => 'Cookie not exists check local storage',
-                'lsc' => true,
+                'local_storage_client' => true,
                 'uri' => base64_encode('/bantuan/detil/' . $decoded['id_bantuan'])
             );
             $this->result();
@@ -299,7 +299,7 @@ class FetchController extends Controller {
             $this->_result['error'] = false;
             $this->_result['feedback'] = array(
                 'message' => 'Cookie not exists check local storage',
-                'lsc' => true,
+                'local_storage_client' => true,
                 'uri' => base64_encode('/bantuan/detil/' . $decoded['id_bantuan'])
             );
             $this->result();
@@ -391,6 +391,10 @@ class FetchController extends Controller {
             case 'bantuan':
                 // bantuan Params
             break;
+
+            case 'detil-bantuan':
+                $params[0] = 'detilBantuan';
+            break;
             
             default:
                 $this->_result['feedback'] = array(
@@ -417,6 +421,10 @@ class FetchController extends Controller {
                 case 'deskripsi':
                     // deskripsi Params
                 break;
+
+                case 'donatur':
+                    // donatur Params
+                break;
                 
                 default:
                     $this->_result['feedback'] = array(
@@ -435,6 +443,53 @@ class FetchController extends Controller {
         // call method Read
         $this->$action($decoded);
 
+        return false;
+    }
+
+    private function detilBantuanDonaturRead($decoded) {
+        $decoded = Sanitize::thisArray($decoded['fields']);
+        
+        if (!isset($decoded['id_bantuan'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id bantuan wajib dilampirkan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->model('Auth');
+        if ($this->model->isSignIn()) {
+            $decoded['id_akun'] = $this->model->data()->id_akun;
+        }
+
+        $decoded['signin'] = $this->model->isSignIn();
+
+        $this->model('Donatur');
+        $this->model->countData('bantuan', ['id_bantuan = ?', array('id_bantuan' => $decoded['id_bantuan'])]);
+        if ($this->model->getResult()->jumlah_record == 0) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id bantuan not found'
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!$this->model->getListDonaturOnBantuanDetil($decoded)) {
+            $this->_result['feedback'] = array(
+                'message' => 'Failed to get list donatur'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => $this->model->data()
+        );
+
+        // Debug::pr($this->model->data());
+
+        $this->result();
         return false;
     }
 
