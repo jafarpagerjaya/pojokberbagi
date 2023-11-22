@@ -487,8 +487,6 @@ class FetchController extends Controller {
             'data' => $this->model->data()
         );
 
-        // Debug::pr($this->model->data());
-
         $this->result();
         return false;
     }

@@ -152,6 +152,7 @@ class BantuanController extends Controller {
     public function blok($params = array()) {
         if (count(is_countable($params) ? $params : [])) {
             $data = $this->_bantuan->getData('blokir, id_bantuan','bantuan',array('id_bantuan','=',$params[0]));
+            $data = $this->_bantuan->getResult();
             if (is_null($data->blokir)) {
                 $setBlokir = 1;
                 $mode = 'blokir';
@@ -596,6 +597,8 @@ class BantuanController extends Controller {
             ));
             Redirect::to('admin/bantuan');
         }
+
+        $data = $this->model->getResult();
 
         $this->model->update('bantuan', array(
             'status' => 'S'
