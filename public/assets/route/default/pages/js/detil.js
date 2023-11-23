@@ -43,6 +43,7 @@ buttonCollapse.forEach(elemButton => {
             click = e.which;
             setTimeout(() => {
                 click = false;
+                stickyBtnOffsetTopYStart = sticky_btn.offsetTop + sticky_btn_height + sticky_btn_area.offsetTop;
             }, 350);
         }
     });
@@ -281,6 +282,7 @@ function stickyBtn(e) {
     let windowScrollY = window.scrollY,
         windowScrollNavbarBottom = windowScrollY + header_navbar_height;
         stickyBtnOffsetTopY = sticky_btn.offsetTop + sticky_btn_height + sticky_btn_area.offsetTop;
+        console.log(windowScrollY, windowScrollNavbarBottom, stickyBtnOffsetTopY);
     if (windowScrollNavbarBottom >= stickyBtnOffsetTopY || windowScrollNavbarBottom >= stickyBtnOffsetTopYStart) {
         if (!sticky_btn_area.classList.contains('sticky-btn')) {
             sticky_btn_area.classList.add('sticky-btn');
