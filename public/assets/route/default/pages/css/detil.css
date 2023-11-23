@@ -361,7 +361,7 @@ h6 {
     .sticky-btn {
         position: fixed;
         width: calc(100% - 56px + 57px);
-        z-index: 1;
+        z-index: 2;
         bottom: 0px;
         padding-top: 12px;
         padding-bottom: 12px;
@@ -385,6 +385,10 @@ h6 {
     #detil-banner-area .app-image.img-wrapper {
         max-height: 166.5px;
         min-height: 166.5px;
+    }
+
+    a[data-bs-target="#modalShareBtn"] span {
+        display: none;
     }
 }
 
@@ -411,6 +415,10 @@ h6 {
 
     .avatar {
         --avatar: 40px;
+    }
+
+    a[data-bs-target="#modalShareBtn"] span {
+        display: block;
     }
 }
 

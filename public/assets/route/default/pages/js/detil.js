@@ -288,7 +288,7 @@ function stickyBtn(e) {
     } else {
         sticky_btn_area.classList.remove('sticky-btn');
     }
-    console.log(windowScrollNavbarBottom, stickyBtnOffsetTopY, windowScrollY);
+    // console.log(windowScrollNavbarBottom, stickyBtnOffsetTopY, windowScrollY);
 }
 
 
@@ -359,7 +359,9 @@ modalDonaturList.addEventListener('shown.bs.modal', function (e) {
     }, 800);
 
     let box = e.target.querySelector('.modal-body');
-    if (box.clientHeight < this.clientHeight - e.target.querySelector('.modal-header').offsetHeight) {
+    console.log(box.clientHeight, this.clientHeight, e.target.querySelector('.modal-header').offsetHeight, this.clientHeight - e.target.querySelector('.modal-header').offsetHeight);
+    if (box.clientHeight >= this.clientHeight - e.target.querySelector('.modal-header').offsetHeight && this.clientWidth > 991) {
+        // sementara nanti dihilangkan jika scroll sudah tanpa take width
         e.target.querySelector('.modal-header .row .col-lg-6').setAttribute('style', 'margin-right: 1rem !important; width: calc(50% - 1em) !important;');
     }
 });
