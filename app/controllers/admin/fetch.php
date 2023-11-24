@@ -1381,7 +1381,7 @@ class FetchController extends Controller {
         $this->model('Auth');
         $hasil = $this->model->getData('adm.id_pegawai','akun JOIN admin adm USING(id_akun) JOIN pegawai p USING(id_pegawai)',array('id_akun','=', $this->model->data()->id_akun));
         if ($hasil) {
-            $decoded['id_pegawai'] = $this->model->data()->id_pegawai;
+            $id_pegawai = $this->model->data()->id_pegawai;
         }
 
         $this->model('Donasi');
@@ -1438,20 +1438,32 @@ class FetchController extends Controller {
                 );
             } else {
                 $id_donasi = $this->model->lastIID();
-                $this->_result['error'] = false;
+                try {
+                    $this->model->query('UPDATE kwitansi SET id_pengesah = ? WHERE id_donasi = ?', array('id_pengesah' => $id_pegawai, 'id_donasi' => $id_donasi));
+                } catch (\Throwable $th) {
+                    $pesan = explode(':',$th->getMessage());
+                    $this->_result['feedback'] = array(
+                        'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
+                    );
+                    $this->result();
+                    return false;
+                }
+                
                 $this->_result['feedback'] = array(
                     'message' => 'Donasi <span class="font-weight-bold text-orange">' . (isset($decoded['alias']) ? $decoded['alias'] : $dataDonatur->nama_donatur) . '</span> untuk <span class="font-weight-bold" data-id-target="'. $id_donasi .'">' . $dataBantuan->nama_bantuan . '</span> sejumlah <span class="font-weight-bold" style="display: inline-block;">Rp. '. Output::tSparator($decoded['jumlah_donasi']) .'</span> ('. Utility::keteranganJenisChannelPayment($dataCP->jenis_cp) .' - '. $dataCP->nama_cp .') telah ditambahkan'
                 );
                 $this->_result['feedback']['id_bantuan'] = $id_donasi;
-                $this->model->update('kwitansi', array('id_pengesah' => $decoded['id_pegawai']), array('id_donasi' => $id_donasi));
             }
         } catch (\Throwable $th) {
             $pesan = explode(':',$th->getMessage());
             $this->_result['feedback'] = array(
                 'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
             );
+            $this->result();
+            return false;
         }
         
+        $this->_result['error'] = false;
         $this->result();
         return false;
     }

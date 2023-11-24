@@ -147,11 +147,17 @@
         </div>
 
         <div id="donatur-area" class="row g-0 gap-3 gap-md-4 bg-white position-relative pt-2 pt-lg-3 ql-container ql-disabled mt-2 wow fadeInUp" data-wow-delay="1.6s">
-            <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center justify-content-between" id="title">
+            <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center <?= (!isset($data['list_donatur']) ? 'justify-content-center flex-column' : 'justify-content-between'); ?>" id="title">
+                <?php
+                    if (!isset($data['list_donatur'])) {
+                        echo '<div class="empty mx-auto"></div><h4>Belum ada donatur</h4>';
+                    } else {
+                ?>
                 <div class="desc align-self-end">
                     <h4>Donatur</h4>
                 </div>
                 <a data-bs-target="#modalListDonatur" data-bs-toggle="modal" href="javascript:void(0);" class="text-decoration-underline">Seluruh Donatur <i class="lni lni-chevron-right"></i></a>
+                <?php } ?>
                 <span class="node"></span>
             </div>
             <?php if (isset($data['list_donatur'])) { 

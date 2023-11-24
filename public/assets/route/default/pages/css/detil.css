@@ -167,6 +167,7 @@ h6 {
     padding: 0px;
 }
 
+#donatur-area .empty,
 #deskripsi-selengkapnya-area .empty {
     background-image: url('/assets/svg/empty.svg');
     background-position: center;
@@ -174,6 +175,15 @@ h6 {
     background-size: 100%;
     width: 100px;
     height: 100px;
+}
+
+#deskripsi-selengkapnya-area .empty {
+    background-image: url('/assets/svg/empty.svg');
+}
+
+#donatur-area .empty {
+    background-size: 90%;
+    background-image: url('/assets/svg/sad.svg');
 }
 
 #donatur-area #title::before {
