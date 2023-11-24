@@ -91,7 +91,9 @@ CREATE TABLE pegawai (
 
 INSERT INTO pegawai(nama,jenis_kelamin,tanggal_lahir,email,kontak,alamat) VALUES
 ('SYSROOT',NULL,DATE_FORMAT(NOW(), '%Y-%m-%d'),'pojokberbagi.id@gmail.com',NULL,'Kantor'),
-('JAFAR PAGER JAYA','L','1992-08-07','jafarpager@gmail.com','085322661186','BUMI HARAPAN BLOK DD 8 NO 10', (SELECT id_gambar FROM gambar WHERE label = 'signature' AND nama = 'jafar-signature'));
+('JAFAR PAGER JAYA','L','1992-08-07','jafarpager@gmail.com','085322661186','BUMI HARAPAN BLOK DD 8 NO 10', (SELECT id_gambar FROM gambar WHERE label = 'signature' AND nama = 'jafar-signature')),
+('TAUFIK ISKANDAR DINATA .K', 'L','1985-07-31','taufik454@gmail.com','081320185886','Kp. Sadang No.5 RT.004/008 Kelurahan Margahayu, Bandung'),
+('DINDA MAULINDA','P','1998-07-09','maulinda.dinda98@gmail.com','0895389564902','Kopo Permai 1 Blok A No.14 Sukamenak, Margahayu, Kab. Bandung');
 
 UPDATE pegawai SET id_jabatan = 1 WHERE nama = 'SYSROOT' AND email = 'pojokberbagi.id@gmail.com';
 

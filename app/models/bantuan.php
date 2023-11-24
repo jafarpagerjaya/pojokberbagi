@@ -583,10 +583,10 @@ class BantuanModel extends HomeModel {
             LIMIT {$this->getOffset()}, {$this->getLimit()}
         ) SELECT 
           IF(bil.jumlah_target IS NULL, 
-              TRUNCATE((IFNULL(bil_tpdb.total_penggunaan_donasi,0)/IFNULL(SUM(d.jumlah_donasi),0))*100,2), 
+              TRUNCATE((IFNULL(bil_tpdb.total_penggunaan_donasi,0)/IFNULL(SUM(IF(d.bayar = 1,d.jumlah_donasi,0)),0))*100,2), 
               IF(ddibpl.total_pelaksanaan IS NULL, 0, TRUNCATE((IFNULL(ddibpl.total_pelaksanaan,0)/bil.jumlah_target)*100,2))
           ) persentase_donasi_disalurkan,
-          IFNULL(FORMAT(SUM(d.jumlah_donasi),0,'id_ID'),0) total_donasi,
+          IFNULL(FORMAT(SUM(IF(d.bayar = 1,d.jumlah_donasi,0)),0,'id_ID'),0) total_donasi,
           bil.id_bantuan, bil.nama_bantuan, bil.id_sektor, 
           IF(bil.tanggal_akhir IS NULL, 'Unlimited', CASE WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) < 0 THEN 'Sudah lewat' WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) = 0 THEN 'Terakhir hari ini' ELSE CONCAT(TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))),' hari') END ) sisa_waktu,
           IF(k.warna IS NULL, '#727272', k.warna) warna,
@@ -616,7 +616,6 @@ class BantuanModel extends HomeModel {
                 ) pls
                 GROUP BY pls.id_bantuan
           ) ddibpl ON (ddibpl.id_bantuan = bil.id_bantuan)
-          WHERE d.bayar = 1
           GROUP BY bil.id_bantuan
           ORDER BY prioritas {$this->getDirection()}, action_at {$this->getDirection()}, id_bantuan ASC";
         
