@@ -2618,20 +2618,45 @@ class FetchController extends Controller {
         }
 
         $this->model('Donasi');
-        $this->model->update('donasi', array(
-            'bayar' => '1',
-            'waktu_bayar' => $decoded['waktu_bayar']
-        ), array('id_donasi','=',$decoded['id_donasi']));
-
-        if (!$this->model->affected()) {
+        try {
+            $this->model->update('donasi', array(
+                'bayar' => '1',
+                'waktu_bayar' => $decoded['waktu_bayar']
+            ), array('id_donasi','=',$decoded['id_donasi']));
+            try {
+                $this->model->query("UPDATE kwitansi SET id_pengesah = ? WHERE id_donasi = ?", array('id_pengesah' => $decoded['id_pegawai'], 'id_donasi' => $decoded['id_donasi']));
+            } catch (\Throwable $th) {
+                $pesan = explode(':',$th->getMessage());
+                $this->_result['feedback'] = array(
+                    'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
+                );
+                $this->result();
+                return false;
+            }
+        } catch (\Throwable $th) {
+            $pesan = explode(':',$th->getMessage());
             $this->_result['feedback'] = array(
-                'message' => 'Gagal melakukan verivikasi donasi'
+                'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
             );
             $this->result();
             return false;
         }
 
-        $this->model->update('kwitansi', array('id_pengesah' => $decoded['id_pegawai']), array('id_donasi' => $decoded['id_donasi']));
+        // if (!$this->model->affected()) {
+        //     $this->_result['feedback'] = array(
+        //         'message' => 'Gagal melakukan verivikasi donasi'
+        //     );
+        //     $this->result();
+        //     return false;
+        // }
+
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Gagal melakukan update pengesah kwitansi'
+            );
+            $this->result();
+            return false;
+        }
 
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(

@@ -213,17 +213,29 @@ verivikasiBtn.on('click', function (e) {
 
     if (dataVerivikasi.waktu_bayar == 'Invalid Date') {
         // tampilkan pesan waktu bayar wajib diisi
-        $('.toast[data-toast="donasi"] .time-passed').text('Baru Saja');
-        $('.toast[data-toast="donasi"] .toast-body').html('<b>Waktu bayar</b> donasi wajib diisi');
-        $('.toast[data-toast="donasi"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
-        $('.toast[data-toast="donasi"] .toast-header strong').text('Peringatan!');
-        $('.toast[data-toast="donasi"]').toast({autohide: false}).toast('show');
-        toastPassed(document.querySelector('.toast[data-toast="donasi"] .time-passed'));
+        let currentDate = new Date(),
+            timestamp = currentDate.getTime(); 
+
+        let invalid = {
+            error: true,
+            data_toast: 'invalid-donasi',
+            feedback: {
+                message: '<b>Waktu bayar</b> donasi wajib diisi'
+            }
+        };
+
+        invalid.id = invalid.data_toast +'-'+ timestamp;
+        
+        createNewToast(document.querySelector('[aria-live="polite"]'), invalid.id, invalid.data_toast, invalid);
+        $('#'+ invalid.id +'.toast[data-toast="'+ invalid.data_toast +'"]').toast({
+            autohide: false
+        }).toast('show');
+
         e.preventDefault();
         return false;
     }
 
-    console.log(dataVerivikasi);
+    // console.log(dataVerivikasi);
 
     dataVerivikasi.token = body.getAttribute('data-token');
 

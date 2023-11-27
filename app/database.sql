@@ -618,39 +618,94 @@ DELIMITER $$
 CREATE TRIGGER DONASI_CHECK_UPDATE
 BEFORE UPDATE ON donasi FOR EACH ROW
     LabelTBUDonasi:BEGIN
-    DECLARE kwitansi_count TINYINT DEFAULT 0;
-    DECLARE count_pelaksanaan TINYINT;
-    SET kwitansi_count = (SELECT COUNT(id_kwitansi) FROM kwitansi WHERE id_donasi = OLD.id_donasi);
+    DECLARE count_pelaksanaan TINYINT UNSIGNED;
+    DECLARE c_pinbuk SMALLINT UNSIGNED;
+    DECLARE t_pengunaan_donasi, t_saldo BIGINT UNSIGNED;
     SELECT IFNULL(COUNT(DISTINCT(apd.id_pelaksanaan)), 0) INTO count_pelaksanaan FROM donasi d JOIN anggaran_pelaksanaan_donasi apd USING(id_donasi) WHERE apd.id_donasi = OLD.id_donasi;
-        IF OLD.bayar = '1' AND NEW.bayar = '0' THEN
-            SET NEW.waktu_bayar = NULL;
-            IF (kwitansi_count = 1) THEN
-                UPDATE kwitansi SET create_at = NULL WHERE id_donasi = OLD.id_donasi;
-            END IF;
-            IF count_pelaksanaan = 0 THEN
-                UPDATE channel_account SET saldo = saldo - OLD.jumlah_donasi WHERE id_ca = (SELECT id_ca FROM channel_payment WHERE id_cp = OLD.id_cp);
-            ELSE
-                IF NEW.jumlah_donasi != OLD.jumlah_donasi THEN
-                    SET NEW.jumlah_donasi = OLD.jumlah_donasi;
-                END IF;
-            END IF;
-        ELSEIF OLD.bayar = '0' AND NEW.bayar = '1' THEN
-            IF (kwitansi_count = 0) THEN
-                INSERT INTO kwitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,OLD.id_donasi);
-            ELSE 
-                UPDATE kwitansi SET create_at = NOW() WHERE id_donasi = OLD.id_donasi;
-            END IF;
-            IF count_pelaksanaan = 0 THEN
-                UPDATE channel_account SET saldo = saldo + NEW.jumlah_donasi WHERE id_ca = (SELECT id_ca FROM channel_payment WHERE id_cp = NEW.id_cp);
-            ELSE
-                IF NEW.jumlah_donasi != OLD.jumlah_donasi THEN
-                    SET NEW.jumlah_donasi = OLD.jumlah_donasi;
-                END IF;
-            END IF;
-        ELSE
-            LEAVE LabelTBUDonasi;
+
+    IF count_pelaksanaan > 0 THEN
+        SELECT SUM(nominal_penggunaan_donasi) FROM anggaran_pelaksanaan_donasi WHERE id_donasi = OLD.id_donasi INTO t_pengunaan_donasi;
+        IF NEW.jumlah_donasi < t_pengunaan_donasi THEN
+            SET @message_text = CONCAT_WS(' ','Donasi tidak bisa diubah jumlahnya karena sudah teranggarkan sejumlah', FORMAT(SUM(t_pengunaan_donasi),0,'id_ID'));
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @message_text;
         END IF;
+    END IF;
+
+    SELECT ca.saldo FROM channel_payment cp JOIN channel_account ca USING(id_ca) WHERE cp.id_cp = OLD.id_cp INTO t_saldo;
+    IF (NEW.jumlah_donasi - t_pengunaan_donasi) < t_saldo THEN
+        SET @message_text = CONCAT_WS(' ','Donasi tidak bisa diubah jumlahnya saldo CA tidak mencukupi. [BeforeUpdate]');
+        SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT = @message_text;
+    END IF;
+
+    IF OLD.bayar = '1' AND NEW.bayar = '0' THEN
+        SELECT COUNT(DISTINCT(id_donasi)) id_donasi FROM detil_pinbuk JOIN pinbuk WHERE status != 'OK' AND id_donasi = OLD.id_donasi INTO c_pinbuk;
+        IF c_pinbuk > 0 THEN
+            SET @message_text = CONCAT_WS(' ','Donasi tidak bisa dicencel karena tergabung dalam tahap pinbuk yang belum selesai. [BeforeUpdate]');
+            SIGNAL SQLSTATE '45002' SET MESSAGE_TEXT = @message_text;
+        END IF;
+
+        SET NEW.waktu_bayar = NULL;  
+    ELSEIF OLD.bayar = '0' AND NEW.bayar = '1' THEN
+        SET NEW.waktu_bayar = NOW();
+    ELSE
+        LEAVE LabelTBUDonasi;
+    END IF;
     END$$
+DELIMITER ;
+
+DROP TRIGGER AfterUpdateDonasi;
+DELIMITER $$
+CREATE TRIGGER AfterUpdateDonasi
+AFTER UPDATE ON donasi FOR EACH ROW
+LabelTAUDonasi:BEGIN
+    DECLARE kwitansi_count, c_id_ca, t_id_ca, t_old_id_ca TINYINT UNSIGNED DEFAULT 0;
+    DECLARE t_pengunaan_donasi BIGINT UNSIGNED;
+
+    SELECT COUNT(id_kwitansi) FROM kwitansi WHERE id_donasi = NEW.id_donasi INTO kwitansi_count;
+
+    IF OLD.bayar = '1' AND NEW.bayar = '0' THEN
+        IF (kwitansi_count = 1) THEN
+            UPDATE kwitansi SET create_at = NULL WHERE id_donasi = NEW.id_donasi;
+        END IF;
+
+        UPDATE channel_account ca JOIN virtual_ca_donasi v USING(id_ca) SET ca.saldo = ca.saldo - v.saldo WHERE v.id_donasi = NEW.id_donasi;
+        UPDATE virtual_ca_donasi SET saldo = 0 WHERE id_donasi = NEW.id_donasi;
+    ELSEIF OLD.bayar = '0' AND NEW.bayar = '1' THEN
+        IF (kwitansi_count = 1) THEN
+            UPDATE kwitansi SET create_at = NOW() WHERE id_donasi = NEW.id_donasi;
+        END IF;
+
+        SELECT IFNULL(SUM(nominal_penggunaan_donasi),0) FROM anggaran_pelaksanaan_donasi WHERE id_donasi = NEW.id_donasi INTO t_pengunaan_donasi;
+        SELECT id_ca FROM channel_payment WHERE id_cp = NEW.id_cp INTO t_id_ca;
+        SELECT COUNT(id_ca) FROM virtual_ca_donasi WHERE id_donasi = NEW.id_donasi AND id_ca = t_id_ca INTO c_id_ca;
+        IF c_id_ca = 0 THEN
+            INSERT INTO virtual_ca_donasi(saldo,id_donasi,id_ca) VALUES(NEW.jumlah_donasi - t_pengunaan_donasi, NEW.id_donasi, t_id_ca);
+        ELSE
+            UPDATE virtual_ca_donasi SET saldo = NEW.jumlah_donasi - t_pengunaan_donasi WHERE id_donasi = NEW.id_donasi AND id_ca = t_id_ca;
+        END IF;
+
+        UPDATE channel_account SET saldo = saldo + NEW.jumlah_donasi - t_pengunaan_donasi WHERE id_ca = t_id_ca;
+    ELSE
+        IF NEW.bayar = '1' THEN
+            SELECT IFNULL(SUM(nominal_penggunaan_donasi),0) FROM anggaran_pelaksanaan_donasi WHERE id_donasi = NEW.id_donasi INTO t_pengunaan_donasi;
+            SELECT id_ca FROM channel_payment WHERE id_cp = NEW.id_cp INTO t_id_ca;
+            SELECT id_ca FROM channel_payment WHERE id_cp = OLD.id_cp INTO t_old_id_ca;
+            SELECT COUNT(id_ca) FROM virtual_ca_donasi WHERE id_donasi = NEW.id_donasi AND id_ca = t_id_ca INTO c_id_ca;
+
+            UPDATE virtual_ca_donasi SET saldo = 0 WHERE id_donasi = NEW.id_donasi AND id_ca = t_old_id_ca;
+
+            IF c_id_ca = 0 THEN
+                INSERT INTO virtual_ca_donasi(saldo,id_donasi,id_ca) VALUES(NEW.jumlah_donasi - t_pengunaan_donasi, NEW.id_donasi, t_id_ca);
+            ELSE
+                UPDATE virtual_ca_donasi SET saldo = NEW.jumlah_donasi - t_pengunaan_donasi WHERE id_donasi = NEW.id_donasi AND id_ca = t_id_ca;
+            END IF;
+
+            UPDATE channel_account SET saldo = saldo - (OLD.jumlah_donasi - t_pengunaan_donasi) WHERE id_ca = t_old_id_ca;
+            UPDATE channel_account SET saldo = saldo + (NEW.jumlah_donasi - t_pengunaan_donasi) WHERE id_ca = t_id_ca;
+        END IF;
+        LEAVE LabelTAUDonasi;
+    END IF;
+END$$
 DELIMITER ;
 
 CREATE TABLE kwitansi (
@@ -3287,13 +3342,13 @@ UPDATE channel_account,
 SET channel_account.saldo = s.saldo WHERE channel_account.nama = s.nama;
 -- VERSI TABEL DTPA SUDAH ADA
 -- UPDATE channel_account, 
-	--  (SELECT SUM(sd.saldo_donasi) saldo, sd.id_ca, sd.nama FROM 
-    --     (
-    --     (SELECT MIN(dtpa.saldo) saldo_donasi, cp.id_ca, ca.nama FROM channel_account ca JOIN channel_payment cp USING(id_ca) JOIN donasi d ON(d.id_cp = cp.id_cp) JOIN anggaran_pelaksanaan_donasi a USING(id_donasi) JOIN detil_transaksi_penarikan_anggaran dtpa USING(id_apd) WHERE d.bayar = 1 GROUP BY cp.id_ca, a.id_donasi HAVING saldo_donasi)
-    --     UNION
-    --     (SELECT SUM(d.jumlah_donasi) saldo_donasi, cp.id_ca, ca.nama FROM channel_account ca JOIN channel_payment cp USING(id_ca) JOIN donasi d ON(d.id_cp = cp.id_cp) LEFT JOIN anggaran_pelaksanaan_donasi a USING(id_donasi) LEFT JOIN detil_transaksi_penarikan_anggaran dtpa USING(id_apd) WHERE d.bayar = 1 AND dtpa.id_apd IS NULL GROUP BY cp.id_ca, dtpa.id_dtpa)
-    --     ) sd
-    --     GROUP BY sd.id_ca, sd.nama;
+-- 	 (SELECT SUM(sd.saldo_donasi) saldo, sd.id_ca, sd.nama FROM 
+--         (
+--         (SELECT MIN(dtpa.saldo) saldo_donasi, cp.id_ca, ca.nama FROM channel_account ca JOIN channel_payment cp USING(id_ca) JOIN donasi d ON(d.id_cp = cp.id_cp) JOIN anggaran_pelaksanaan_donasi a USING(id_donasi) JOIN detil_transaksi_penarikan_anggaran dtpa USING(id_apd) WHERE d.bayar = 1 GROUP BY cp.id_ca, a.id_donasi HAVING saldo_donasi)
+--         UNION
+--         (SELECT SUM(d.jumlah_donasi) saldo_donasi, cp.id_ca, ca.nama FROM channel_account ca JOIN channel_payment cp USING(id_ca) JOIN donasi d ON(d.id_cp = cp.id_cp) LEFT JOIN anggaran_pelaksanaan_donasi a USING(id_donasi) LEFT JOIN detil_transaksi_penarikan_anggaran dtpa USING(id_apd) WHERE d.bayar = 1 AND dtpa.id_apd IS NULL GROUP BY cp.id_ca, dtpa.id_dtpa)
+--         ) sd
+--         GROUP BY sd.id_ca, sd.nama;
 --     ) s
 -- SET channel_account.saldo = s.saldo WHERE channel_account.nama = s.nama;
 
