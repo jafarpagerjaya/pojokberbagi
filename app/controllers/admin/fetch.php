@@ -2623,12 +2623,10 @@ class FetchController extends Controller {
                 'bayar' => '1',
                 'waktu_bayar' => $decoded['waktu_bayar']
             ), array('id_donasi','=',$decoded['id_donasi']));
-            try {
-                $this->model->query("UPDATE kwitansi SET id_pengesah = ? WHERE id_donasi = ?", array('id_pengesah' => $decoded['id_pegawai'], 'id_donasi' => $decoded['id_donasi']));
-            } catch (\Throwable $th) {
-                $pesan = explode(':',$th->getMessage());
+
+            if (!$this->model->affected()) {
                 $this->_result['feedback'] = array(
-                    'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
+                    'message' => 'Gagal melakukan verivikasi donasi'
                 );
                 $this->result();
                 return false;
@@ -2642,20 +2640,40 @@ class FetchController extends Controller {
             return false;
         }
 
-        // if (!$this->model->affected()) {
-        //     $this->_result['feedback'] = array(
-        //         'message' => 'Gagal melakukan verivikasi donasi'
-        //     );
-        //     $this->result();
-        //     return false;
-        // }
-
-        if (!$this->model->affected()) {
+        try {
+            $this->model->query("UPDATE kwitansi SET id_pengesah = ? WHERE id_donasi = ?", array('id_pengesah' => $decoded['id_pegawai'], 'id_donasi' => $decoded['id_donasi']));
+            
+            if (!$this->model->affected()) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Gagal melakukan update pengesah kwitansi'
+                );
+                $this->result();
+                return false;
+            }
+        } catch (\Throwable $th) {
+            $pesan = explode(':',$th->getMessage());
             $this->_result['feedback'] = array(
-                'message' => 'Gagal melakukan update pengesah kwitansi'
+                'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
             );
             $this->result();
             return false;
+        }
+
+        $this->model->getData('COALESCE(d.kontak, d2.kontak) kontak, COALESCE(d.alias, d2.samaran, d2.nama) nama, b.nama nama_bantuan','donasi d JOIN donatur d2 USING(id_donatur) JOIN bantuan b USING(id_bantuan)', array('d.id_donasi','=',$decoded['id_donasi']));
+        
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Failed to get data donatur before send Notif WA'
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!is_null($this->model->getResult()->kontak)) {
+            // Kirim Notifikasi WA VIA fonnte
+            $text_pesan = 'Hi, '. Sanitize::escape2($this->model->getResult()->nama) .' donasimu telah kami terima, makasih ya kamu berpartisipasi di program *' . Sanitize::escape2($this->model->getResult()->nama_bantuan) . '*. Gunakan akun berbagi di https://pojokberbagi.id untuk melihat perkembangan dari donasimu.';
+            $response = Fonnte::send(Sanitize::toInt2($this->model->getResult()->kontak), $text_pesan);
+            $this->_result['wa-api'] = $response;
         }
 
         $this->_result['error'] = false;
@@ -2663,14 +2681,6 @@ class FetchController extends Controller {
             'message' => 'Donasi berhasil diverivikasi secara manual',
             'data' => array('id_donasi' => $decoded['id_donasi'])
         );
-
-        $this->model->getData('COALESCE(d.kontak, d2.kontak) kontak, COALESCE(d.alias, d2.samaran, d2.nama) nama, b.nama nama_bantuan','donasi d JOIN donatur d2 USING(id_donatur) JOIN bantuan b USING(id_bantuan)', array('d.id_donasi','=',$decoded['id_donasi']));
-        if (!is_null($this->model->getResult()->kontak)) {
-            // Kirim Notifikasi WA VIA fonnte
-            $text_pesan = 'Hi, '. Sanitize::escape2($this->model->getResult()->nama) .' donasimu telah kami terima, makasih ya kamu berpartisipasi di program *' . Sanitize::escape2($this->model->getResult()->nama_bantuan) . '*. Gunakan akun berbagi di https://pojokberbagi.id untuk melihat perkembangan dari donasimu.';
-            $response = Fonnte::send(Sanitize::toInt2($this->model->getResult()->kontak), $text_pesan);
-            $this->_result['wa-api'] = $response;
-        }
 
         $this->result();
         Session::delete('toast');

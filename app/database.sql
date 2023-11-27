@@ -665,7 +665,7 @@ LabelTAUDonasi:BEGIN
 
     IF OLD.bayar = '1' AND NEW.bayar = '0' THEN
         IF (kwitansi_count = 1) THEN
-            UPDATE kwitansi SET create_at = NULL WHERE id_donasi = NEW.id_donasi;
+            UPDATE kwitansi SET create_at = NULL, id_pengesah = NULL WHERE id_donasi = NEW.id_donasi;
         END IF;
 
         UPDATE channel_account ca JOIN virtual_ca_donasi v USING(id_ca) SET ca.saldo = ca.saldo - v.saldo WHERE v.id_donasi = NEW.id_donasi;
@@ -673,6 +673,8 @@ LabelTAUDonasi:BEGIN
     ELSEIF OLD.bayar = '0' AND NEW.bayar = '1' THEN
         IF (kwitansi_count = 1) THEN
             UPDATE kwitansi SET create_at = NOW() WHERE id_donasi = NEW.id_donasi;
+        ELSE
+            INSERT INTO kwitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,NEW.id_donasi);
         END IF;
 
         SELECT IFNULL(SUM(nominal_penggunaan_donasi),0) FROM anggaran_pelaksanaan_donasi WHERE id_donasi = NEW.id_donasi INTO t_pengunaan_donasi;

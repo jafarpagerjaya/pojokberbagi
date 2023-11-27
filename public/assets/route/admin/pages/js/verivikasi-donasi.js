@@ -27,6 +27,8 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
                 $(this).closest('.box').prepend('<div class="px-2 mb-3 d-flex justify-content-center align-items-center gap-3"><span class="font-weight-bolder text-muted">' + $(this).datepicker('getFormattedDate') + '</span><a href="#" class="font-weight-bolder text-orange small" id="ganti-tanggal">Ganti Tanggal</a></div>');
             }
 
+            $('#'+ toastLocal.id +'.toast[data-toast="'+ toastLocal.data_toast +'"]').toast('hide');
+
             $(this).closest('.box').find('#date-type-text').text('Waktu');
             $(this).closest('.box').find('.timepicker').show();
             if (!modal.find('.timepicker > .bootstrap-datetimepicker-widget').length) {
@@ -113,11 +115,12 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
     })
     .then(response => response.json())
     .then(function(result) {
+        
         if (result.error) {
-            $('.toast[data-toast="donasi"] .time-passed').text('Baru Saja');
-            $('.toast[data-toast="donasi"] .toast-body').html(result.feedback.message);
-            $('.toast[data-toast="donasi"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
-            $('.toast[data-toast="donasi"] .toast-header strong').text('Peringatan!');
+            createNewToast(document.querySelector('[aria-live="polite"]'), result.toast.id, result.toast.data_toast, result.toast);
+            $('#'+ invalid.id +'.toast[data-toast="'+ invalid.data_toast +'"]').toast({
+                delay: 10000
+            }).toast('show');
             console.log('there is some error in server side');
             $('.toast').toast('show');
             return false;
@@ -198,8 +201,10 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
         checkDoa.prop('checked', false)
     }
 
-    stopPassed($('.toast[data-toast="donasi"]').data('toast'));
+    stopPassed($('.toast[data-toast="feedback"]').data('toast'));
     $('.toast').toast("dispose");
+
+    document.getElementById('datepicker').parentElement.classList.remove('border','border-warning');
 }).on('hidden.bs.modal', function() {
     if ($(this).find('#pesan-doa').length) {
         modal.find('#pesan-doa .box>.px-2>p').text('');
@@ -208,6 +213,7 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
 
 const verivikasiBtn = $('#modalValidasiDonasi').find('button[type="submit"]');
 
+let toastLocal;
 verivikasiBtn.on('click', function (e) {
     dataVerivikasi.waktu_bayar = new Date(dataVerivikasi.payment_date + ' ' + dataVerivikasi.payment_time);
 
@@ -228,9 +234,12 @@ verivikasiBtn.on('click', function (e) {
         
         createNewToast(document.querySelector('[aria-live="polite"]'), invalid.id, invalid.data_toast, invalid);
         $('#'+ invalid.id +'.toast[data-toast="'+ invalid.data_toast +'"]').toast({
-            autohide: false
+            delay: 10000
         }).toast('show');
 
+        toastLocal = invalid;
+
+        document.getElementById('datepicker').parentElement.classList.add('border','border-warning');
         e.preventDefault();
         return false;
     }
@@ -252,14 +261,11 @@ verivikasiBtn.on('click', function (e) {
     })
     .then(response => response.json())
     .then(function(result) {
+        createNewToast(document.querySelector('[aria-live="polite"]'), result.toast.id, result.toast.data_toast, result.toast);
         if (result.error) {
-            $('.toast[data-toast="donasi"] .time-passed').text('Baru Saja');
-            $('.toast[data-toast="donasi"] .toast-body').html(result.feedback.message);
-            $('.toast[data-toast="donasi"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
-            $('.toast[data-toast="donasi"] .toast-header strong').text('Peringatan!');
-            console.log('there is some error in server side');
-            $('.toast[data-toast="donasi"]').toast({autohide: false}).toast('show');
-            toastPassed(document.querySelector('.toast[data-toast="donasi"] .time-passed'));
+            $('#'+ result.toast.id +'.toast[data-toast="'+ result.toast.data_toast +'"]').toast({
+                autohide: false
+            }).toast('show');
             return false;
         }
 
@@ -287,10 +293,6 @@ verivikasiBtn.on('click', function (e) {
 
         modal.modal('hide');
 
-        $('.toast[data-toast="donasi"] .time-passed').text('Baru Saja');
-        $('.toast[data-toast="donasi"] .toast-body').html(result.feedback.message);
-        $('.toast[data-toast="donasi"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
-        $('.toast[data-toast="donasi"] .toast-header strong').text('Informasi');
-        $('.toast[data-toast="donasi"]').toast('show');
+        $('#'+ result.toast.id +'.toast[data-toast="'+ result.toast.data_toast +'"]').toast('show');
     });
 });
