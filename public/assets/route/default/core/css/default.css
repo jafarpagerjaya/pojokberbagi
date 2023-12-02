@@ -21,6 +21,10 @@
     opacity: 0.9;
 }
 
+.ql-editor span {
+    display: inline !important;
+}
+
 /* Toast */
 div[aria-live="polite"] {
     z-index: 1050;
