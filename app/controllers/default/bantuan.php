@@ -64,6 +64,9 @@ class BantuanController extends Controller {
                     'href' => '/assets/main/css/utility.css'
                 ),
                 array(
+                    'href' => '/assets/main/css/timeline.css'
+                ),
+                array(
                     'href' => '/assets/route/default/pages/css/detil.css'
                 )
             );

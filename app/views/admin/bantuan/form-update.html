@@ -56,7 +56,7 @@
                                                     <label class="form-control-label" for="input-nama-program">Judul
                                                         Bantuan</label>
                                                     <input spellcheck="false" type="text" id="input-nama-program"
-                                                        class="form-control" placeholder="Nama Bantuan" name="nama"
+                                                        class="form-control" placeholder="Nama Campaign" name="nama"
                                                         data-required="true" <?=(isset($this->data['bantuan']->nama) ? '
                                                     value="'. $this->data['bantuan']->nama .'"' : '') ?> maxlength="50">
                                                 </div>
@@ -66,7 +66,7 @@
                                                     <label class="form-control-label"
                                                         for="input-penerima-program">Penerima Bantuan</label>
                                                     <input spellcheck="false" type="text" id="input-penerima-program"
-                                                        class="form-control" placeholder="Nama Penerima"
+                                                        class="form-control" placeholder="Nama penerima / Kelompok / Entitas"
                                                         name="nama_penerima"
                                                         <?=(isset($this->data['bantuan']->nama_penerima) ?
                                                     'data-required="true" value="'.
@@ -107,7 +107,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-12 buttons">
                                         <button type="reset" class="btn btn-link text-danger m-0">Reset</button>
                                         <button type="button" class="btn btn-outline-primary next"
                                             data-target="v-pills-tahap-2-tab">Selanjutnya</button>
@@ -132,7 +132,7 @@
                                                         id="charLeft">0/255</small>
                                                 </div>
                                                 <textarea spellcheck="false" minlength="50" maxlength="255"
-                                                    data-required="true" class="form-control textarea"
+                                                    data-required="true" class="form-control textarea w-100"
                                                     aria-label="With textarea" name="deskripsi"
                                                     placeholder="Ketik disini..."><?= (isset($this->data['bantuan']->deskripsi) ? $this->data['bantuan']->deskripsi : '') ?></textarea>
                                             </div>
@@ -215,7 +215,7 @@
                                             Output::tSparator($this->data['bantuan']->total_rab) .'"' : '') ?>>
                                         </div>
                                     </div>
-                                    <div class="col-12 d-flex justify-content-start">
+                                    <div class="col-12 d-flex justify-content-start buttons">
                                         <button type="button" class="btn btn-link text-warning m-0"
                                             data-target="v-pills-tahap-2-tab">Kembali Ke Tahap 2</button>
                                         <button type="button" class="btn btn-outline-primary next"

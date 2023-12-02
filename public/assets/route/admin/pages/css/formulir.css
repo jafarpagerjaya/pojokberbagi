@@ -235,6 +235,36 @@ span.selection {
     height: 15px;
 }
 
+textarea[maxlength]~span.input-char-left {
+    bottom: 1em;
+    right: 1.5em;
+}
+
+#deskripsi {
+    flex-direction: column;
+}
+
+#deskripsi textarea[maxlength]~span.input-char-left {
+    z-index: 3;
+}
+
+.form-control.is-invalid, .was-validated .form-control:invalid {
+    transition-duration: 0s !important;
+}
+
+@media (max-width: 360px) {
+    button {
+        font-size: .75em !important;
+    }
+    button.btn-link {
+        padding: 0px;
+    }
+
+    .buttons {
+        gap: 1em;
+    }
+}
+
 @media (min-width: 360px) {
     .card .step h6 {
         font-size: .75rem;
@@ -265,6 +295,42 @@ span.selection {
     }
 }
 
+@media (max-width: 767px) {
+    .form-group {
+        margin-bottom: 0px !important;
+    }
+
+    #deskripsi {
+        gap: 1em;
+    }
+
+    #deskripsi label {
+        padding: 0px;
+        border: 0px;
+    }
+
+    #deskripsi textarea {
+        border-radius: 5px;
+    }
+
+    .form-group.error #deskripsi,
+    .form-label-group.focused .input-group#deskripsi, .form-group.focused .input-group#deskripsi {
+        box-shadow: none !important;
+    }
+    .form-label-group.focused .input-group textarea, .form-group.focused .input-group textarea {
+        box-shadow: 0 0 0 0.2rem rgb(94 114 228 / 25%);
+    }
+
+    #deskripsi #charLeft {
+        display: none;
+    }
+
+    .buttons.justify-content-start {
+        width: 100%;
+        justify-content: space-between !important;
+    }
+}
+
 @media (min-width: 768px) {
     .steps.translateX {
         transform: translateX(0px);
@@ -286,6 +352,14 @@ span.selection {
     .steps {
         row-gap: 1em;
     }
+
+    #deskripsi {
+        flex-direction: row;
+    }
+
+    #deskripsi textarea[maxlength]~span.input-char-left {
+        display: none;
+    }
 }
 
 @media (min-width: 992px) {
@@ -303,9 +377,6 @@ span.selection {
 
     .card-body>.row .tab-pane .buttons {
         justify-content: flex-start;
-        position: absolute;
-        bottom: 1em;
-        right: 0em;
     }
 
     /* select2 */

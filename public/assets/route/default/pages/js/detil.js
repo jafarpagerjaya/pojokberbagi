@@ -301,6 +301,7 @@ setTimeout(()=>{
 
 let lastKnownScrollPosition = 0;
 let ticking = false;
+let scrollingDoc = false;
 
 function doStickyBtn(scrollPos) {
     // Do something with the scroll position
@@ -327,11 +328,34 @@ document.addEventListener("scroll", (event) => {
     window.requestAnimationFrame(() => {
       doStickyBtn(lastKnownScrollPosition);
       ticking = false;
+      if (scrollingDoc == false) {
+        scrollingDoc = true;
+      }
     });
 
     ticking = true;
   }
 });
+
+let popUpScrollLast = function(event) {
+    if (scrollingDoc) {
+        if (!pop.shown) {
+            pop.start(event);
+        }
+    }
+}
+
+let popUpScrollFirst = function(event) {
+    if (scrollingDoc) {
+        if (!pop.shown) {
+            pop.pause(event);
+        }
+    }
+}
+
+document.addEventListener("scroll", debounceIgnoreLast(popUpScrollFirst, 2000));
+
+document.addEventListener("scroll", debounceIgnoreFirst(popUpScrollLast, 2000));
 
 
 const shareModal = new bootstrap.Modal(document.getElementById('modalShareBtn'));
@@ -638,4 +662,50 @@ modalDonaturList.querySelector('.modal-body').addEventListener('scroll', functio
     }
 }, {
     passive: true
+});
+
+const modalPopPenawaran = document.getElementById('modalPopUpPenawaran');
+const myPenawaran = new bootstrap.Modal(modalPopPenawaran);
+
+class popUpPenawaran {
+    constructor(duration_end) {
+        this.i = 0;
+        this.current_duration = 0;
+        this.duration_end = duration_end,
+        this.shown = false;
+    }
+
+    start = function(event) {
+        if (this.current_duration >= this.duration_end) {
+            this.pause(event);
+            myPenawaran.show();
+            pop.shown = true;
+            return false;
+        }
+
+        this.current_duration++;
+        this.i = setTimeout(() => {
+            // console.log('start');
+            this.start(event);
+        }, 1000);
+    };
+
+    pause = function(event) {
+        // console.log('pause');
+        clearTimeout(this.i);
+    };
+};
+
+const pop = new popUpPenawaran(20);
+
+document.addEventListener( 'visibilitychange' , function(e) {
+    if (scrollingDoc) {
+        if (!document.hidden) {
+            if (pop.current_duration < pop.duration_end) {
+                pop.start(e);
+            }
+        } else {
+            pop.pause(e);
+        }
+    }
 });

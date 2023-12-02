@@ -106,7 +106,8 @@ h6 {
 }
 
 #donatur-area #title,
-#deskripsi-selengkapnya-area #title {
+#deskripsi-selengkapnya-area #title,
+#update-terkini-area #title {
     position: relative;
     overflow: hidden;
 }
@@ -114,11 +115,50 @@ h6 {
 #donatur-area #title::before,
 #donatur-area #title::after,
 #deskripsi-selengkapnya-area #title::before,
-#deskripsi-selengkapnya-area #title::after {
+#deskripsi-selengkapnya-area #title::after,
+#update-terkini-area #title::before,
+#update-terkini-area #title::after {
     position: absolute;
     width: 100%;
     height: 100%;
     content: '';
+}
+
+#update-terkini-area #title::before {
+    background-color: #f8f9fa;
+    border-top-right-radius: inherit;
+    border-bottom-left-radius: inherit;
+    right: -.5em;
+    top: -.5em;
+}
+
+#update-terkini-area #title::after {
+    background-color: var(--orange);
+    border-top-right-radius: inherit;
+    bottom: calc(-100% + .5em);
+    right: 75%;
+}
+
+#update-terkini-area #title>span.node {
+    position: absolute;
+    right: -.5em;
+    bottom: .5em;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background-color: #f8f9fa;
+    border-bottom-left-radius: 10px;
+}
+
+#update-terkini-area #title>span.node::before {
+    width: 100%;
+    height: 100%;
+    content: '';
+    background-color: #f8f9fa;
+    position: absolute;
+    top: .5em;
+    right: -.5em;
+    border-bottom-left-radius: 5px;
 }
 
 #deskripsi-selengkapnya-area #title::before {
@@ -137,7 +177,8 @@ h6 {
 }
 
 #donatur-area #title > *,
-#deskripsi-selengkapnya-area #title > * {
+#deskripsi-selengkapnya-area #title > *,
+#update-terkini-area #title > * {
     z-index: 1;
 }
 

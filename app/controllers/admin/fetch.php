@@ -2671,7 +2671,7 @@ class FetchController extends Controller {
 
         if (!is_null($this->model->getResult()->kontak)) {
             // Kirim Notifikasi WA VIA fonnte
-            $text_pesan = 'Hi, '. Sanitize::escape2($this->model->getResult()->nama) .' donasimu telah kami terima, makasih ya kamu berpartisipasi di program *' . Sanitize::escape2($this->model->getResult()->nama_bantuan) . '*. Gunakan akun berbagi di https://pojokberbagi.id untuk melihat perkembangan dari donasimu.';
+            $text_pesan = 'Hi, *'. Sanitize::escape2($this->model->getResult()->nama) .'* donasimu telah kami terima, makasih ya kamu berpartisipasi di program *' . Sanitize::escape2($this->model->getResult()->nama_bantuan) . '*. Gunakan akun berbagi di https://pojokberbagi.id untuk melihat perkembangan dari donasimu atau scan QR yang ada di kwitansimu';
             $response = Fonnte::send(Sanitize::toInt2($this->model->getResult()->kontak), $text_pesan);
             $this->_result['wa-api'] = $response;
         }

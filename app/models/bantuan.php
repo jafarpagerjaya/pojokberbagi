@@ -319,6 +319,7 @@ class BantuanModel extends HomeModel {
            ORDER BY d.id_donasi
        ) 
        SELECT 
+           IF(b.jumlah_target IS NULL, COALESCE(ctx.total_donasi_disalurkan,0), SUM(pl.jumlah_pelaksanaan)) donasi_disalurkan,
            ctx.total_donasi, COALESCE(ctx.total_donasi_disalurkan,0) total_donasi_disalurkan, (ctx.total_donasi - COALESCE(ctx.total_donasi_disalurkan,0)) saldo_donasi, ctx.id_bantuan, ctx.sekian_kali_pelaksanaan, SUM(pl.jumlah_pelaksanaan) jumlah_pelaksanaan, b.id_pemohon, 
            IF(pmh.nama IS NULL, 'Pojok Berbagi Indonesia', pmh.nama) pengaju_bantuan,
            IF(b.id_pemohon IS NULL, '/assets/images/brand/pojok-berbagi-transparent.png', gpmh.path_gambar) path_gambar_logo_pengaju_bantuan,

@@ -53,7 +53,7 @@
                     <i class="lni lni-grow"></i>
                 </div>
                 <div class="box-info d-flex flex-column">
-                    <h6 class="mb-0" data-count-up-value="<?= $data['detil_bantuan']->total_donasi_disalurkan ?>">0</h6>
+                    <h6 class="mb-0" data-count-up-value="<?= $data['detil_bantuan']->donasi_disalurkan; ?>">0</h6>
                     <p><small class="text-muted">
                             <?= (isset($data['detil_bantuan']->jenis_penyaluran) ? $data['detil_bantuan']->jenis_penyaluran : 'Donasi') ?>
                             Tersalurkan
@@ -146,7 +146,35 @@
             <?php } ?>
         </div>
 
-        <div id="donatur-area" class="row g-0 gap-3 gap-md-4 bg-white position-relative pt-2 pt-lg-3 ql-container ql-disabled mt-2 wow fadeInUp" data-wow-delay="1.6s">
+        <!-- <div class="row g-0 gap-3 gap-md-4 pt-2 pt-lg-3 mt-2 wow fadeInUp" data-wow-delay="1.6s" id="update-terkini-area">
+            <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center justify-content-between" id="title">
+                <div class="desc align-self-end">
+                    <h4>Update Terkini</h4>
+                </div>
+                <span class="node"></span>
+            </div>
+            <div class="col-12 bg-light rounded-box p-3">
+                <div class="row m-0 timeline gap-3">
+                    <div class="col-12 timeline-item px-0">
+                        <div class="row m-0">
+                            <div class="col-12 col-lg-2">
+                                <div class="time small fw-bold">
+                                    28 November 2023
+                                </div>
+                                <div class="badge bg-green-box">
+                                    Pelaksanaan
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-10 content">
+                                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Architecto modi, ipsum ratione enim voluptatum animi laboriosam quaerat? Ad quos esse voluptatem accusamus ipsum, quod quae.</p>
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        
+        <div id="donatur-area" class="row g-0 gap-3 gap-md-4 bg-white position-relative pt-2 pt-lg-3 ql-container ql-disabled mt-2 wow fadeInUp" data-wow-delay="1.8s">
             <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center <?= (!isset($data['list_donatur']) ? 'justify-content-center flex-column' : 'justify-content-between'); ?>" id="title">
                 <?php
                     if (!isset($data['list_donatur'])) {
@@ -227,6 +255,38 @@
                     <div class="px-0 col-12 col-lg-6 d-flex justify-content-between align-items-center flex-column gap-y-4" id="content">
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" tabindex="-1" id="modalPopUpPenawaran">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-box overflow-hidden">
+            <div class="modal-header justify-content-center border-0 services d-flex flex-column gap-3">
+                <img src="<?= $data['detil_bantuan']->path_gambar_medium; ?>" alt="<?= 'Gambar '. $data['detil_bantuan']->nama_gambar_medium; ?>" class="img-fluid opacity rounded-box" data-animation-name="zoom-in">
+                <div class="row align-items-end w-100 bg-white rounded-box p-3 m-0 gap-2">
+                    <div class="col px-0">
+                        <h6>Terkumpul</h6>
+                        <p class="text-muted">
+                            <?= 'Rp. ' . Output::tSparator($data['detil_bantuan']->total_donasi); ?>                            
+                        </p>
+                    </div>
+                    <div class="col-auto text-end px-0">
+                        <small>
+                            <?= $data['detil_bantuan']->sisa_waktu; ?>                            
+                        </small>
+                    </div>
+                    <div class="col-12 px-0">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?= $data['detil_bantuan']->persentase_pelaksanaan; ?>" <?= ' style="width:' . $data['detil_bantuan']->persentase_pelaksanaan. '"' ; ?>></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body justify-content-between d-flex">
+                <button class="btn btn-light border fw-bold" data-bs-dismiss="modal">Nanti Aja</button>
+                <a href="<?= '/donasi/buat/baru/'. $data['detil_bantuan']->id_bantuan; ?>" class="btn donasi fw-bold">Donasi Sekarang</a>
             </div>
         </div>
     </div>

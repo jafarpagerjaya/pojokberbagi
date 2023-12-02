@@ -134,10 +134,10 @@
                                         <div class="media align-items-center">
                                             <a href="<?= '/admin/bantuan/data/' . $data_bantuan->id_bantuan; ?>" data-id="<?= $data_bantuan->id_bantuan; ?>"
                                                 class="d-flex flex-row">
-                                                <div class="name mb-0 text-sm">
+                                                <div class="name mb-0 text-sm d-none">
                                                     <?= $data_bantuan->id_bantuan; ?>
                                                 </div>
-                                                <div class="ml-1" <?=(isset($data_bantuan->warna) ? ' style="color: '.
+                                                <div class="m-0" <?=(isset($data_bantuan->warna) ? ' style="color: '.
                                                     $data_bantuan->warna .'"' : ''); ?>>
                                                     <?= Output::decodeEscape($data_bantuan->nama_bantuan); ?>
                                                 </div>
