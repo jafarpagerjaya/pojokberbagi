@@ -3566,9 +3566,13 @@ class FetchController extends Controller {
 
         $this->model('Donasi');
         $this->model->getKwitansiByIdDonasi($decoded['id_donasi']);
-        if ($this->model->affected()) {
-            $data = $this->model->data();
+        if (!$this->model->affected()) {
+            $this->_result['feedback']['message'] = 'Terjadi kesalahan saat mengambil data kwitansi donatur';
+            $this->result();
+            return false;
         }
+
+        $data = $this->model->data();
 
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(
