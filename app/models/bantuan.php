@@ -392,7 +392,7 @@ class BantuanModel extends HomeModel {
         LEFT JOIN gambar gcp ON(gcp.id_gambar = cp.id_gambar)
         LEFT JOIN akun a USING(id_akun)
         LEFT JOIN gambar ga ON(ga.id_gambar = a.id_gambar)
-        ORDER BY d.waktu_bayar {$this->getDirection()}, d.id_donasi {$this->getDirection()} LIMIT {$this->getLimit()}";
+        ORDER BY d.id_donasi {$this->getDirection()}, d.waktu_bayar {$this->getDirection()} LIMIT {$this->getLimit()}";
         
 		if (!$this->db->query($sql, array(
             'bayar' => $this->getStatus(),
