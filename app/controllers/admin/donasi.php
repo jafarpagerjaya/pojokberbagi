@@ -65,7 +65,7 @@ class DonasiController extends Controller {
                 'href' => '/assets/route/admin/pages/css/verivikasi-donasi.css'
             ),
             array(
-                'href' => '/assets/main/css/kwitansi.css'
+                'href' => '/assets/main/css/kuitansi.css'
             )
         );
         $this->script_action = array(
@@ -103,7 +103,7 @@ class DonasiController extends Controller {
                 'source' => 'trushworty'
             ),
             array(
-                'src' => '/assets/route/admin/pages/js/kwitansi-donasi.js'
+                'src' => '/assets/route/admin/pages/js/kuitansi-donasi.js'
             )
         );
         $this->model('Donasi');

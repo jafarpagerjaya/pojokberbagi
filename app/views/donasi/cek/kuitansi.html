@@ -18,7 +18,7 @@
                                 <div class="px-1">
                                     <h4 class="text-orange fw-bold">Informasi Donasi</h4>
                                     <p>Donasi untuk program <b id="nama-bantuan">
-                                            <?= $data['resume_kwitansi']->nama_bantuan; ?>
+                                            <?= $data['resume_kuitansi']->nama_bantuan; ?>
                                         </b> telah kami
                                         terima.
                                     </p>
@@ -26,8 +26,8 @@
                             </div>
                             <div class="col-12 col-md-6 d-flex justify-content-end flex-column align-items-md-end">
                                 <div class="px-1">
-                                    Nomor Kwitansi <span class="fw-bold" id="nomor-kwitansi">
-                                        <?= $data['resume_kwitansi']->id_kwitansi; ?>
+                                    Nomor Kuitansi <span class="fw-bold" id="nomor-kuitansi">
+                                        <?= $data['resume_kuitansi']->id_kuitansi; ?>
                                     </span>
                                 </div>
                             </div>
@@ -42,13 +42,13 @@
                                 <div class="wrapper py-2">
                                     <ol class="c-stepper">
                                         <?php 
-                                            if (!is_null($data['timeline_kwitansi']->siap_donasi)) {
+                                            if (!is_null($data['timeline_kuitansi']->siap_donasi)) {
                                         ?>
                                         <li class="c-stepper__item">
                                             <div class="d-flex flex-column gap-2">
                                                 <h6 class="c-stepper__title">Siap berdonasi</h6>
                                                 <p>
-                                                    <?= $data['timeline_kwitansi']->siap_donasi; ?>
+                                                    <?= $data['timeline_kuitansi']->siap_donasi; ?>
                                                 </p>
                                             </div>
                                         </li>
@@ -56,13 +56,13 @@
                                             }
                                         ?>
                                         <?php 
-                                            if (!is_null($data['timeline_kwitansi']->waktu_bayar)) {
+                                            if (!is_null($data['timeline_kuitansi']->waktu_bayar)) {
                                         ?>
                                         <li class="c-stepper__item">
                                             <div class="d-flex flex-column gap-2">
                                                 <h6 class="c-stepper__title">Donasi diterima</h6>
                                                 <p>
-                                                    <?= $data['timeline_kwitansi']->waktu_bayar; ?>
+                                                    <?= $data['timeline_kuitansi']->waktu_bayar; ?>
                                                 </p>
                                             </div>
                                         </li>
@@ -70,13 +70,13 @@
                                             }
                                         ?>
                                         <?php 
-                                            if (!is_null($data['timeline_kwitansi']->kwitansi_diterbitkan)) {
+                                            if (!is_null($data['timeline_kuitansi']->kuitansi_diterbitkan)) {
                                         ?>
                                         <li class="c-stepper__item">
                                             <div class="d-flex flex-column gap-2">
-                                                <h6 class="c-stepper__title">Kwitansi diterbitkan</h6>
+                                                <h6 class="c-stepper__title">Kuitansi diterbitkan</h6>
                                                 <p>
-                                                    <?= $data['timeline_kwitansi']->kwitansi_diterbitkan; ?>
+                                                    <?= $data['timeline_kuitansi']->kuitansi_diterbitkan; ?>
                                                 </p>
                                             </div>
                                         </li>
@@ -84,13 +84,13 @@
                                             }
                                         ?>
                                         <?php 
-                                            if (!is_null($data['timeline_kwitansi']->waktu_cetak)) {
+                                            if (!is_null($data['timeline_kuitansi']->waktu_cetak)) {
                                         ?>
                                         <li class="c-stepper__item">
                                             <div class="d-flex flex-column gap-2">
-                                                <h6 class="c-stepper__title">Kwitansi dicetak</h6>
+                                                <h6 class="c-stepper__title">Kuitansi dicetak</h6>
                                                 <p>
-                                                    <?= $data['timeline_kwitansi']->waktu_cetak; ?>
+                                                    <?= $data['timeline_kuitansi']->waktu_cetak; ?>
                                                 </p>
                                             </div>
                                         </li>
@@ -108,7 +108,7 @@
                             <div class="px-1">
                                 <h6 class="fw-bold">Nominal Donasi</h6>
                                 <h6 class="text-black-50">Rp. <span id="jumlah-donasi">
-                                        <?= $data['resume_kwitansi']->jumlah_donasi; ?>
+                                        <?= $data['resume_kuitansi']->jumlah_donasi; ?>
                                     </span></h6>
                             </div>
                             <div class="px-1">
@@ -118,12 +118,12 @@
                                             Payment Method
                                         </h6>
                                         <p class="mb-0" id="jenis-cp">
-                                            <?= Utility::keteranganJenisChannelPayment($data['resume_kwitansi']->jenis_cp); ?>
+                                            <?= Utility::keteranganJenisChannelPayment($data['resume_kuitansi']->jenis_cp); ?>
                                         </p>
                                     </div>
                                     <div class="col-auto">
-                                        <img src="<?= $data['resume_kwitansi']->path_gambar_cp; ?>"
-                                            alt="<?= $data['resume_kwitansi']->nama_cp; ?>" class="img-fluid"
+                                        <img src="<?= $data['resume_kuitansi']->path_gambar_cp; ?>"
+                                            alt="<?= $data['resume_kuitansi']->nama_cp; ?>" class="img-fluid"
                                             id="gambar-cp">
                                     </div>
                                 </div>

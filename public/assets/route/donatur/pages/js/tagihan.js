@@ -65,7 +65,7 @@ let fetchData = function(url, data, root) {
                         if (element.bayar == '1') {
                             badge_class = 'badge-success';
                             badge_text = 'Sudah Bayar';
-                            listAction = '<a class="dropdown-item" data-id="'+ element.id_donasi +'" href="javascript():;" data-toggle="modal" data-target="#modalKwitansiDonasi">Kwitansi</a>';
+                            listAction = '<a class="dropdown-item" data-id="'+ element.id_donasi +'" href="javascript():;" data-toggle="modal" data-target="#modalKuitansiDonasi">Kuitansi</a>';
                         } else {
                             badge_class = 'badge-warning';
                             badge_text = 'Belum Bayar';

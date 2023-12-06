@@ -52,7 +52,7 @@ class TagihanController extends Controller {
                 'href' => '/assets/main/css/inputGroup.css'
 			),
             array(
-                'href' => '/assets/main/css/kwitansi.css'
+                'href' => '/assets/main/css/kuitansi.css'
             )
         );
 
@@ -68,7 +68,7 @@ class TagihanController extends Controller {
                 'source' => 'trushworty'
             ),
             array(
-                'src' => '/assets/route/donatur/core/js/kwitansi.js'
+                'src' => '/assets/route/donatur/core/js/kuitansi.js'
             ),
             array(
                 'src' => '/assets/route/donatur/core/js/donatur.js'

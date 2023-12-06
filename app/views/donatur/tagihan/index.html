@@ -181,7 +181,7 @@
                                                     Data</a> -->
                                                 <a class="dropdown-item" data-id="<?= $data_paid->id_donasi ?>"
                                                     href="javascript():;" data-toggle="modal"
-                                                    data-target="#modalKwitansiDonasi">Kwitansi</a>
+                                                    data-target="#modalKuitansiDonasi">Kuitansi</a>
                                                 <?php } ?>
                                             </div>
                                         </div>
@@ -319,32 +319,32 @@
         </div>
     </div>
 </div>
-<div class="modal in bg-white" id="modalKwitansiDonasi" tabindex="-1" role="dialog"
-    aria-labelledby="modalKwitansiDonasi-label" aria-hidden="true">
+<div class="modal in bg-white" id="modalKuitansiDonasi" tabindex="-1" role="dialog"
+    aria-labelledby="modalKuitansiDonasi-label" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
         <div class="modal-content justify-content-center align-items-center scaleIn">
             <div class="container">
-                <div class="row align-items-center" id="kwitansi">
+                <div class="row align-items-center" id="kuitansi">
                     <div class="col-12">
                         <div class="card bg-secondary border border-secondary rounded-box shadow-lg"
-                            id="kwitansi-section">
+                            id="kuitansi-section">
                             <div
                                 class="border-0 card-header bg-transparent justify-content-between d-flex align-items-center">
-                                <h1 class="display-4 mb-0 text-orange font-weight-bolder">Kwitansi Donasi</h1>
+                                <h1 class="display-4 mb-0 text-orange font-weight-bolder">Kuitansi Donasi</h1>
                                 <div class="item">
                                     <img src="/assets/images/brand/pojok-berbagi-transparent.png" alt="Pojok Berbagi"
                                         class="img-fluid">
                                 </div>
                             </div>
                             <div class="card-body d-flex flex-column gap-y-4">
-                                <div class="box rounded-box bg-orange text-white" id="kwitansi-note">
+                                <div class="box rounded-box bg-orange text-white" id="kuitansi-note">
                                     <div class="px-2">
                                         <div class="row">
                                             <div class="col-6">
-                                                <b>Nomor Kwitansi
-                                                    <div class="text-white-50" id="id-kwitansi">1000</div>
+                                                <b>Nomor Kuitansi
+                                                    <div class="text-white-50" id="id-kuitansi">1000</div>
                                                     <small class="text-white">
-                                                        Dibuat <span id="create-kwitansi-at">CKA</span>
+                                                        Dibuat <span id="create-kuitansi-at">CKA</span>
                                                     </small>
                                                 </b>
                                             </div>
@@ -469,7 +469,7 @@
                                 </div>
                                 <div class="col-auto">
                                     <button id="print-button" class="btn btn-outline-orange">Cetak
-                                        Kwitansi</button>
+                                        Kuitansi</button>
                                 </div>
                             </div>
                         </div>

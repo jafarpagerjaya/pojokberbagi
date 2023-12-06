@@ -726,8 +726,8 @@ class Ui {
                                                                                 <td align="left" style="font-size:0px;padding:15px 15px 15px 15px;word-break:break-word;">
                                                                                     <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;text-align:left;color:#000000;">
                                                                                         <p style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;"><strong>Sekertariat Lembaga</strong></p>
-                                                                                        <p style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;">Graha Berbagi Jl. Kuningan Raya No 86 Kel. Antapani Kidul, Kec. Antapani, Kota Bandung Prov. Jawa Barat.&nbsp;</p>
-                                                                                        <p style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;">Kontak WA <span style="color: #169179;"><strong>0812-1333-3111.</strong></span></p>
+                                                                                        <p style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;">'. HQ_ADDRESS .'&nbsp;</p>
+                                                                                        <p style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;">Kontak WA <span style="color: #169179;"><strong>'. KONTAK_WA .'</strong></span></p>
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
@@ -982,11 +982,11 @@ class Ui {
                             <tr>
                                 <td style="padding: 1.5em; text-align: center">
                                     <small>
-                                        <span>
-                                            Jl. Kuningan Raya No. 86, Kel. Antapani Kidul, Kec. Antapani, Kota Bandung, Provinsi Jawa Barat.
+                                        <span>                                            
+                                            '. strip_tags((string) HQ_ADDRESS) .'
                                         </span>
                                         <div style="color: lightslategrey; display: flex; gap: 0.5rem; justify-content: center;">
-                                            <span>Telepon 022 21210292 - WA 0821 1113 3331</span>
+                                            <span>Telepon 022 21210292 - WA '. strip_tags((string) KONTAK_WA) .'</span>
                                         </div>
                                     </small>
                                 </td>
@@ -1054,11 +1054,11 @@ class Ui {
                             <tr>
                                 <td style="padding: 1.5em; text-align: center">
                                     <small>
-                                        <span>
-                                            Jl. Kuningan Raya No. 86, Kel. Antapani Kidul, Kec. Antapani, Kota Bandung, Provinsi Jawa Barat.
+                                        <span>                                            
+                                            '. strip_tags((string) HQ_ADDRESS) .'
                                         </span>
                                         <div style="color: lightslategrey; display: flex; gap: 0.5rem; justify-content: center;">
-                                            <span>Telepon 022 21210292 - WA 0821 1113 3331</span>
+                                            <span>Telepon 022 21210292 - WA '. strip_tags((string) KONTAK_WA) .'</span>
                                         </div>
                                     </small>
                                 </td>
@@ -1126,11 +1126,171 @@ class Ui {
                     <tr>
                         <td style="padding: 1.5em; text-align: center">
                             <small>
-                                <span>
-                                    Jl. Kuningan Raya No. 86, Kel. Antapani Kidul, Kec. Antapani, Kota Bandung, Provinsi Jawa Barat.
+                                <span>                                    
+                                    '. strip_tags((string) HQ_ADDRESS) .'
                                 </span>
                                 <div style="color: lightslategrey; display: flex; gap: 0.5rem; justify-content: center;">
-                                    <span>Telepon 022 21210292 - WA 0821 1113 3331</span>
+                                    <span>Telepon 022 21210292 - WA '. strip_tags((string) KONTAK_WA) .'</span>
+                                </div>
+                            </small>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            </html>';
+        }
+    }
+
+    public static function emailNotifDonasiDiterima($data = array()) {
+        if (isset($data)) {
+            return '<!doctype html>
+            <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Kaitkan Akun</title>
+                <style>
+                    @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap");
+                    * {
+                        font-family: "Nunito", sans-serif;
+                        --orange: #FE5000;
+                        --green: #97D700;
+                        --green-box : #21ba45;
+                    }
+                    a:hover {
+                        opacity: .9;
+                    }
+                    table table td {
+                        padding: .25em 0px;
+                    }
+                    #notice {
+                        flex-direction: column;
+                    }
+                    .item {
+                        width: 100%;
+                    }
+            
+                    table table tr>td:nth-child(2) {
+                        padding: 0 .5em;
+                    }
+            
+                    #notice .item:last-child {
+                        justify-content: center;
+                    }
+            
+                    #cert {
+                        background-image: url("'. Config::getHTTPHost() .'/assets/svg/certificate.svg");
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        background-size: 83%;
+                        width: 100px;
+                        height: 100px;
+                        margin-top: 1em;
+                        margin-left: auto;
+                        margin-right: 0;
+                        flex: none;
+                    }
+            
+                    #box::after {
+                        position: absolute;
+                        content: "";
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        height: 1.5em;
+                        background-color: var(--orange);
+                        color: white;
+                    }
+            
+                    @media screen and (min-width: 499px) {
+                        #notice {
+                            flex-direction: row;
+                        }
+            
+                        #notice .item:first-child {
+                            width: 65%;
+                        }
+            
+                        #notice .item:last-child {
+                            width: 35%;
+                            justify-content: end;
+                        }
+                    }
+                </style>
+            </head>
+            <body style="width: 100%;">
+                <table style="max-width: 700px; margin: auto;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="https://pojokberbagi.id/assets/images/brand/pojok-berbagi-transparent.png" alt="Pojok berbagi" style="max-width: 100px; margin: 1em auto;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="padding: 1.5em; border-radius: 20px; background-color: aliceblue; position: relative; overflow: hidden;" id="box">
+                                <p>
+                                    Hallo kak <b>'. strip_tags((string) $data["nama_donatur"]) .'</b>, 
+                                </p>
+                                <strong>
+                                    Donasimu telah kami terima, terima kasih telah mempercayakan donasimu kepada kami.
+                                </strong>
+                                <p style="color: #FE5000; font-weight: 600;">
+                                    Berikut ini adalah rincian donasimu :
+                                </p>
+                                <div style="background-color: #ddddddd6; padding: 1em 1.25em; border-radius: 10px;">
+                                    <table style="width: 100%; font-size: .9rem; color: dimgray;">
+                                        <tbody>
+                                            <tr>
+                                                <td>Nama Program</td><td>:</td><td><strong>'. strip_tags((string) $data["nama_bantuan"]) .'</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Jumlah Donasi</td><td>:</td><td><strong style="color: var(--green-box);">Rp. '. strip_tags((string) $data["jumlah_donasi"]) .'</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Metode Pembayaran</td><td>:</td><td><strong style="display: flex; align-items: center; justify-content: start; gap: .5em;"><div><img src="'. strip_tags((string) $data["path_gambar_ca"]) .'" alt="'. strip_tags((string) $data["nama_ca"]) .'" style="width: 40px; max-width: 40px;"></div><div>'. strip_tags((string) $data["nama_ca"]) .'</div></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Waktu pembayaran</td><td>:</td><td><strong>'. strip_tags((string) $data["waktu_bayar"]) .'</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="notice" style="background-color: #ddddddd6; padding: 1em 1.25em; border-radius: 10px; margin-top: 1em; display: flex; gap: 1em;">
+                                    <div class="item">
+                                        <small style="color: dimgray;">
+                                            Anda dapat mengecek perkembangan dari donasimu dengan mengscan <strong>kode QR</strong> yang ada di kuitansi elektronik yang kami kirimkan atau dengan menekan tombol berikut
+                                        </small>
+                                    </div>
+                                    <div class="item" style="display: flex; align-items: center;">
+                                        <a href="' . strip_tags((string) $data["link_check_donasi"]) . '" style="padding: 1em; background-color: var(--orange); color: white; font-weight: bold; border-radius: 10px;">Cek Perkembangan</a>
+                                    </div>
+                                </div>
+                                <div style="display: flex;">
+                                    <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                                        <p>No Kuitansi : <a href="'. strip_tags((string) $data["link_kuitansi"]) .'" style="color: var(--orange); font-weight: bold; text-decoration: none;">#'. strip_tags((string) $data["id_kuitansi"]) .'</a></p>
+                                        <div style="display: flex; flex-direction: row; gap: 1em;">
+                                            <div style="display: flex; flex-direction: column; border: solid 1px var(--orange); border-bottom: 0px; padding: .75em 1em; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                                                <p style="font-size: .75rem; margin: 0px;">Jumlah Donatur</p>
+                                                <span style="font-weight: bold;">'. strip_tags((string) $data["total_donatur"]) .'</span>
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; border: solid 1px var(--orange); border-bottom: 0px; padding: .75em 1em; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                                                <p style="font-size: .75rem; margin: 0px;">Dana Terkumpul</p>
+                                                <span style="font-weight: bold;">'. strip_tags((string) $data["total_donasi"]) .'</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="cert">
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 1.5em; text-align: center">
+                            <small>
+                                <span>'. strip_tags((string) HQ_ADDRESS) .'</span>
+                                <div style="color: lightslategrey; display: flex; gap: 0.5rem; justify-content: center;">
+                                    <span>WA '. strip_tags((string) KONTAK_WA) .'</span>
                                 </div>
                             </small>
                         </td>

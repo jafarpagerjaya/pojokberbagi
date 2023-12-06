@@ -20,10 +20,10 @@ class CekController extends Controller {
         if (count(is_countable($params) ? $params : [])) {
             $params = implode('/', $params);
         }
-        Redirect::to('donasi/cek/kwitansi'. (!is_null($params) ? '/'. $params : ''));
+        Redirect::to('donasi/cek/kuitansi'. (!is_null($params) ? '/'. $params : ''));
     }
 
-    public function kwitansi($params) {
+    public function kuitansi($params) {
         if (!count(is_countable($params) ? $params : [])) {
             Redirect::to('home');
         }
@@ -33,36 +33,36 @@ class CekController extends Controller {
                 'href' => '/assets/main/css/stepper.css'
             ),
             array(
-                'href' => '/assets/route/donasi/pages/css/kwitansi.css'
+                'href' => '/assets/route/donasi/pages/css/kuitansi.css'
             )
         );
 
         $this->script_action = array(
             array(
-                'src' => '/assets/route/donasi/pages/js/kwitansi.js'
+                'src' => '/assets/route/donasi/pages/js/kuitansi.js'
             )
         );
 
-        $id_kwitansi = Sanitize::escape2($params[0]);
+        $id_kuitansi = Sanitize::escape2($params[0]);
         $this->model('Donasi');
-        $resumeKwitansi = $this->model->getResumeKwitansiDonasi($id_kwitansi);
-        if (!$resumeKwitansi) {
+        $resumeKuitansi = $this->model->getResumeKuitansiDonasi($id_kuitansi);
+        if (!$resumeKuitansi) {
             Session::flash('notifikasi', array(
-                'pesan' => 'Nomor kwitansi <b>'. $data_bantuan->nama .'</b> tidak ditemukan',
+                'pesan' => 'Nomor kuitansi <b>'. $data_bantuan->nama .'</b> tidak ditemukan',
                 'state' => 'warning'
             ));
             Redirect::to('home');
         }
-        $this->data['resume_kwitansi'] = $resumeKwitansi;
+        $this->data['resume_kuitansi'] = $resumeKuitansi;
 
-        $timeLineKwitansi = $this->model->getTimeLineDonationByIdKwitansi($id_kwitansi);
-        if (!$timeLineKwitansi) {
+        $timeLineKuitansi = $this->model->getTimeLineDonationByIdKuitansi($id_kuitansi);
+        if (!$timeLineKuitansi) {
             Session::flash('notifikasi', array(
-                'pesan' => 'Terjadi kesalahan data nomor kwitansi disisi server',
+                'pesan' => 'Terjadi kesalahan data nomor kuitansi disisi server',
                 'state' => 'danger'
             ));
             Redirect::to('home');
         }
-        $this->data['timeline_kwitansi'] = $timeLineKwitansi;
+        $this->data['timeline_kuitansi'] = $timeLineKuitansi;
     }
 }

@@ -20,8 +20,8 @@ class FetchController extends Controller {
         }
 
         switch ($params[0]) {
-            case 'kwitansi':
-                // kwitansiGet Params
+            case 'kuitansi':
+                // kuitansiGet Params
             break;
             
             default:
@@ -59,8 +59,8 @@ class FetchController extends Controller {
                 // paymentMethodUpdate
                 $params[0] = 'paymentMethod';
             break;
-            case 'kwitansi':
-                // kwitansiUpdate
+            case 'kuitansi':
+                // kuitansiUpdate
             break;
             
             default:
@@ -156,9 +156,9 @@ class FetchController extends Controller {
     }
 
     // Method Get
-    private function kwitansiGet($decoded) {
+    private function kuitansiGet($decoded) {
         $this->model('Donasi');
-        $this->model->getKwitansiByIdDonasi($decoded['id_donasi']);
+        $this->model->getKuitansiByIdDonasi($decoded['id_donasi']);
         if ($this->model->affected()) {
             $data = $this->model->data();
         }
@@ -288,19 +288,19 @@ class FetchController extends Controller {
         return false;
     }
 
-    private function kwitansiUpdate($decoded) {
+    private function kuitansiUpdate($decoded) {
         $this->model('Donasi');
         $currentDate = new DateTime();
         $waktu_sekarang = $currentDate->format('Y-m-d H:i:s');
-        $this->model->update('kwitansi', array('waktu_cetak' => $waktu_sekarang), array('id_kwitansi','=',$decoded['id_kwitansi']));
+        $this->model->update('kuitansi', array('waktu_cetak' => $waktu_sekarang), array('id_kuitansi','=',$decoded['id_kuitansi']));
         if ($this->model->affected()) {
             $this->_result['error'] = false;
             $this->_result['feedback'] = array(
-                'message' => 'Kwitansi <span class="font-weight-bolder">#' . $decoded['id_kwitansi'] . '</span> dicetak pada <span class="font-weight-bold">' . $waktu_sekarang . '</span>'
+                'message' => 'Kuitansi <span class="font-weight-bolder">#' . $decoded['id_kuitansi'] . '</span> dicetak pada <span class="font-weight-bold">' . $waktu_sekarang . '</span>'
             );
         } else {
             $this->_result['feedback'] = array(
-                'message' => 'Failed to Update waktu cetak kwitansi'
+                'message' => 'Failed to Update waktu cetak kuitansi'
             );
         }
 

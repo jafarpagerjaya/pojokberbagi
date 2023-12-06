@@ -463,7 +463,7 @@ $('#input-donatur-donasi').select2({
 }).on('select2:open', function() {
     if (dataDonatur.search != undefined) {
         let input = $('#select2-'+ $(this).attr('id') +'-results').parents('span.select2-dropdown').find('input.select2-search__field');
-        input.val(dataBantuan.search);
+        input.val(dataDonatur.search);
     }
     // console.log(dataDonatur);
     if (!dataDonatur.load_more) {

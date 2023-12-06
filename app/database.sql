@@ -606,7 +606,7 @@ AFTER INSERT ON donasi FOR EACH ROW
     DECLARE t_id_ca TINYINT UNSIGNED;
     IF NEW.bayar = '1' AND NEW.waktu_bayar IS NOT NULL THEN
         SELECT id_ca FROM channel_payment WHERE id_cp = NEW.id_cp INTO t_id_ca;
-        INSERT INTO kwitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,NEW.id_donasi);
+        INSERT INTO kuitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,NEW.id_donasi);
         INSERT INTO virtual_ca_donasi(saldo,id_donasi,id_ca) VALUES(NEW.jumlah_donasi, NEW.id_donasi, t_id_ca);
         UPDATE channel_account SET saldo = saldo + NEW.jumlah_donasi WHERE id_ca = t_id_ca;
     END IF;
@@ -658,23 +658,23 @@ DELIMITER $$
 CREATE TRIGGER AfterUpdateDonasi
 AFTER UPDATE ON donasi FOR EACH ROW
 LabelTAUDonasi:BEGIN
-    DECLARE kwitansi_count, c_id_ca, t_id_ca, t_old_id_ca TINYINT UNSIGNED DEFAULT 0;
+    DECLARE kuitansi_count, c_id_ca, t_id_ca, t_old_id_ca TINYINT UNSIGNED DEFAULT 0;
     DECLARE t_pengunaan_donasi BIGINT UNSIGNED;
 
-    SELECT COUNT(id_kwitansi) FROM kwitansi WHERE id_donasi = NEW.id_donasi INTO kwitansi_count;
+    SELECT COUNT(id_kuitansi) FROM kuitansi WHERE id_donasi = NEW.id_donasi INTO kuitansi_count;
 
     IF OLD.bayar = '1' AND NEW.bayar = '0' THEN
-        IF (kwitansi_count = 1) THEN
-            UPDATE kwitansi SET create_at = NULL, id_pengesah = NULL WHERE id_donasi = NEW.id_donasi;
+        IF (kuitansi_count = 1) THEN
+            UPDATE kuitansi SET create_at = NULL, id_pengesah = NULL WHERE id_donasi = NEW.id_donasi;
         END IF;
 
         UPDATE channel_account ca JOIN virtual_ca_donasi v USING(id_ca) SET ca.saldo = ca.saldo - v.saldo WHERE v.id_donasi = NEW.id_donasi;
         UPDATE virtual_ca_donasi SET saldo = 0 WHERE id_donasi = NEW.id_donasi;
     ELSEIF OLD.bayar = '0' AND NEW.bayar = '1' THEN
-        IF (kwitansi_count = 1) THEN
-            UPDATE kwitansi SET create_at = NOW() WHERE id_donasi = NEW.id_donasi;
+        IF (kuitansi_count = 1) THEN
+            UPDATE kuitansi SET create_at = NOW() WHERE id_donasi = NEW.id_donasi;
         ELSE
-            INSERT INTO kwitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,NEW.id_donasi);
+            INSERT INTO kuitansi(create_at,id_donasi) VALUES(NEW.waktu_bayar,NEW.id_donasi);
         END IF;
 
         SELECT IFNULL(SUM(nominal_penggunaan_donasi),0) FROM anggaran_pelaksanaan_donasi WHERE id_donasi = NEW.id_donasi INTO t_pengunaan_donasi;
@@ -710,8 +710,8 @@ LabelTAUDonasi:BEGIN
 END$$
 DELIMITER ;
 
-CREATE TABLE kwitansi (
-    id_kwitansi BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE kuitansi (
+    id_kuitansi BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     waktu_cetak TIMESTAMP NULL,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id_donasi BIGINT UNSIGNED,
@@ -722,7 +722,7 @@ CREATE TABLE kwitansi (
     CONSTRAINT F_ID_PENGESAH_KWITANSI_ODN FOREIGN KEY(id_pencetak) REFERENCES pegawai(id_pegawai) ON DELETE RESTRICT ON UPDATE CASCADE
 )ENGINE=INNODB;
 
-ALTER TABLE kwitansi AUTO_INCREMENT = 1001;
+ALTER TABLE kuitansi AUTO_INCREMENT = 1001;
 
 CREATE TABLE permohonan_rencana (
     id_permohonan_rencana INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -1711,7 +1711,7 @@ CREATE TABLE pengadaan(
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT F_ID_PENARIKAN_PENGADAAN_ODC FOREIGN KEY(id_penarikan) REFERENCES penarikan(id_penarikan) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT F_ID_PENGESAH_PENGADAAN_ODR FOREIGN KEY(id_pengesah) REFERENCES pegawai(id_pegawai) ON DELETE RESTRICT NULL ON UPDATE CASCADE
+    CONSTRAINT F_ID_PENGESAH_PENGADAAN_ODR FOREIGN KEY(id_pengesah) REFERENCES pegawai(id_pegawai) ON DELETE RESTRICT ON UPDATE CASCADE
 )ENGINE=INNODB;
 
 CREATE TABLE petugas_pengadaan(
@@ -3384,7 +3384,7 @@ SET channel_account.saldo = s.saldo WHERE channel_account.nama = s.nama;
 
 -- UPDATE INI UNTUK MENYESUAIKAN VCA dengan donasi
 -- UPDATE virtual_ca_donasi v, 
--- (SELECT d.id_donasi, d.jumlah_donasi, d.create_at FROM donasi d JOIN kwitansi k USING(id_donasi) WHERE d.bayar = 1 AND k.id_donasi = d.id_donasi) d 
+-- (SELECT d.id_donasi, d.jumlah_donasi, d.create_at FROM donasi d JOIN kuitansi k USING(id_donasi) WHERE d.bayar = 1 AND k.id_donasi = d.id_donasi) d 
 -- SET v.saldo = d.jumlah_donasi
 -- WHERE v.id_donasi = d.id_donasi;
 

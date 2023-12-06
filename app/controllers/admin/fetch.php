@@ -207,8 +207,8 @@ class FetchController extends Controller {
                     }
                 }
             break;
-            case 'kwitansi':
-                // kwitansiUpdate
+            case 'kuitansi':
+                // kuitansiUpdate
             break;
             case 'rab':
                 // rabUpdate
@@ -429,8 +429,8 @@ class FetchController extends Controller {
         if (!$this->checkToken($decoded['token'])) { return false; }
 
         switch ($params[0]) {
-            case 'kwitansi':
-                // kwitansi Params
+            case 'kuitansi':
+                // kuitansi Params
             break;
 
             case 'donasi':
@@ -1412,24 +1412,31 @@ class FetchController extends Controller {
             return false;
         }
 
-        $this->model->getData('nama nama_bantuan, min_donasi','bantuan',array('id_bantuan','=',$decoded['id_bantuan']));
+        $this->model->getData('b.nama nama_bantuan, b.min_donasi, SUM(d.jumlah_donasi) total_donasi, COUNT(DISTINCT(d.id_donatur)) total_donatur','bantuan b JOIN donasi d USING(id_bantuan)',array('d.id_bantuan', '=', $decoded['id_bantuan']),'AND', array('d.bayar', '=', '1'));
         $dataBantuan = $this->model->getResult();
-        if ($dataBantuan->min_donasi > $decoded['jumlah_donasi']) {
-            $this->_result['feedback'] = array(
-                'message' => 'Jumlah donasi <span class="font-weight-bold">'. ucwords(strtolower($dataBantuan->nama_bantuan ?? '')) .'</span> minimal '. Output::tSparator($dataBantuan->min_donasi)
-            );
-            $this->result();
-            return false;
+        if (!is_null($dataBantuan->min_donasi)) {
+            if ($dataBantuan->min_donasi > $decoded['jumlah_donasi']) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Jumlah donasi <span class="font-weight-bold">'. ucwords(strtolower($dataBantuan->nama_bantuan ?? '')) .'</span> minimal '. Output::tSparator($dataBantuan->min_donasi)
+                );
+                $this->result();
+                return false;
+            }
         }
 
-        $this->model->getData('nama nama_donatur','donatur',array('id_donatur','=',$decoded['id_donatur']));
+        $this->model->getData('nama nama_donatur, email email_donatur','donatur',array('id_donatur','=',$decoded['id_donatur']));
         $dataDonatur = $this->model->getResult();
 
-        $this->model->getData('nama nama_cp, jenis jenis_cp','channel_payment',array('id_cp','=',$decoded['id_cp']));
+        $this->model->getData('cp.nama nama_cp, cp.jenis jenis_cp, ca.nama nama_ca, gcp.path_gambar','channel_payment cp LEFT JOIN channel_account ca USING(id_ca) LEFT JOIN gambar gcp USING(id_gambar)',array('cp.id_cp','=',$decoded['id_cp']));
         $dataCP = $this->model->getResult();
 
         // create donasi
         $decoded['bayar'] = 1;
+        if (isset($decoded['notifikasi'])) {
+            $notifikasi = 1;
+            unset($decoded['notifikasi']);
+        }
+
         try {
             $create = $this->model->create('donasi', $decoded);
             if (!$create) {
@@ -1439,7 +1446,7 @@ class FetchController extends Controller {
             } else {
                 $id_donasi = $this->model->lastIID();
                 try {
-                    $this->model->query('UPDATE kwitansi SET id_pengesah = ? WHERE id_donasi = ?', array('id_pengesah' => $id_pegawai, 'id_donasi' => $id_donasi));
+                    $this->model->query('UPDATE kuitansi SET id_pengesah = ? WHERE id_donasi = ?', array('id_pengesah' => $id_pegawai, 'id_donasi' => $id_donasi));
                 } catch (\Throwable $th) {
                     $pesan = explode(':',$th->getMessage());
                     $this->_result['feedback'] = array(
@@ -1461,6 +1468,51 @@ class FetchController extends Controller {
             );
             $this->result();
             return false;
+        }
+
+        if (isset($notifikasi) && isset($decoded['bayar']) && !is_null($dataDonatur->email_donatur)) {
+            $this->model->query("SELECT id_kuitansi FROM kuitansi WHERE id_donasi = ?", array('id_donasi' => $id_donasi));
+            if (!$this->model->affected()) {
+                $this->_result['feedback'] = array(
+                    'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
+                );
+                $this->result();
+                return false;
+            }
+
+            $dataKuitansi = $this->model->getResult();
+
+            $dataDonasiDiterima = array(
+                'nama_donatur' => $dataDonatur->nama_donatur,
+                'nama_bantuan' => $dataBantuan->nama_bantuan,
+                'jumlah_donasi' => Output::tSparator($decoded['jumlah_donasi']),
+                'path_gambar_ca' => 'https://pojokberbagi.id/' . $dataCP->path_gambar,
+                'nama_ca' => $dataCP->nama_ca,
+                'waktu_bayar' => $decoded['waktu_bayar'],
+                'link_check_donasi' => Config::getHTTPHost() . '/donasi/cek/kuitansi/' . $dataKuitansi->id_kuitansi,
+                'id_kuitansi' => $dataKuitansi->id_kuitansi,
+                'total_donatur' => Output::tSparator($dataBantuan->total_donatur),
+                'total_donasi' => Output::tSparator($dataBantuan->total_donasi)
+            );
+
+            // Kirim email
+            $subject = "[Info Donasi] Pojok Berbagi";
+            $headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: No-Replay <no-replay@pojokberbagi.id>' . "\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $pesan = wordwrap(Ui::emailNotifDonasiDiterima($dataDonasiDiterima), 70, "\r\n");
+
+            if (mail($dataDonatur->email_donatur, $subject, $pesan, $headers)) {
+                $this->model->update('donasi', array(
+                    'notifikasi' => '1'
+                ), array('id_donasi','=', $id_donasi));
+            } else {
+                $this->_result['feedback'] = array(
+                    'message' => 'Email ' . $dataDonatur->email_donatur . ' tidak valid, donatur ini tidak akan mendapatkan notifikasi info pembayaran via email'
+                );
+                $this->result();
+                return false;
+            }
         }
         
         $this->_result['error'] = false;
@@ -2370,13 +2422,13 @@ class FetchController extends Controller {
         return false;
     }
 
-    private function kwitansiUpdate($decoded) {
+    private function kuitansiUpdate($decoded) {
         $this->model('Auth');
         $this->_auth = $this->model;
         $this->_auth->getData('p.id_pegawai','pegawai p JOIN admin a USING(id_pegawai)',array('a.id_akun','=',$this->_auth->data()->id_akun));
         if (!$this->_auth->affected()) {
             $this->_result['feedback'] = array(
-                'message' => 'Akun anda belum punya izin sahkan kwitansi'
+                'message' => 'Akun anda belum punya izin sahkan kuitansi'
             );
             $this->result();
             return false;
@@ -2387,15 +2439,15 @@ class FetchController extends Controller {
         $this->model('Donasi');
         $currentDate = new DateTime();
         $waktu_sekarang = $currentDate->format('Y-m-d H:i:s');
-        $this->model->update('kwitansi', array('waktu_cetak' => $waktu_sekarang, 'id_pencetak' => $id_pegawai), array('id_kwitansi','=',$decoded['id_kwitansi']));
+        $this->model->update('kuitansi', array('waktu_cetak' => $waktu_sekarang, 'id_pencetak' => $id_pegawai), array('id_kuitansi','=',$decoded['id_kuitansi']));
         if ($this->model->affected()) {
             $this->_result['error'] = false;
             $this->_result['feedback'] = array(
-                'message' => 'Kwitansi <span class="font-weight-bolder">#' . $decoded['id_kwitansi'] . '</span> dicetak pada <span class="font-weight-bold">' . $waktu_sekarang . '</span>'
+                'message' => 'Kuitansi <span class="font-weight-bolder">#' . $decoded['id_kuitansi'] . '</span> dicetak pada <span class="font-weight-bold">' . $waktu_sekarang . '</span>'
             );
         } else {
             $this->_result['feedback'] = array(
-                'message' => 'Failed to Update waktu cetak kwitansi'
+                'message' => 'Failed to Update waktu cetak kuitansi'
             );
         }
 
@@ -2641,11 +2693,11 @@ class FetchController extends Controller {
         }
 
         try {
-            $this->model->query("UPDATE kwitansi SET id_pengesah = ? WHERE id_donasi = ?", array('id_pengesah' => $decoded['id_pegawai'], 'id_donasi' => $decoded['id_donasi']));
+            $this->model->query("UPDATE kuitansi SET id_pengesah = ? WHERE id_donasi = ?", array('id_pengesah' => $decoded['id_pegawai'], 'id_donasi' => $decoded['id_donasi']));
             
             if (!$this->model->affected()) {
                 $this->_result['feedback'] = array(
-                    'message' => 'Gagal melakukan update pengesah kwitansi'
+                    'message' => 'Gagal melakukan update pengesah kuitansi'
                 );
                 $this->result();
                 return false;
@@ -2671,7 +2723,7 @@ class FetchController extends Controller {
 
         if (!is_null($this->model->getResult()->kontak)) {
             // Kirim Notifikasi WA VIA fonnte
-            $text_pesan = 'Hi, *'. Sanitize::escape2($this->model->getResult()->nama) .'* donasimu telah kami terima, makasih ya kamu berpartisipasi di program *' . Sanitize::escape2($this->model->getResult()->nama_bantuan) . '*. Gunakan akun berbagi di https://pojokberbagi.id untuk melihat perkembangan dari donasimu atau scan QR yang ada di kwitansimu';
+            $text_pesan = 'Hi, *'. Sanitize::escape2($this->model->getResult()->nama) .'* donasimu telah kami terima, makasih ya kamu berpartisipasi di program *' . Sanitize::escape2($this->model->getResult()->nama_bantuan) . '*. Gunakan akun berbagi di https://pojokberbagi.id untuk melihat perkembangan dari donasimu atau scan QR yang ada di kuitansimu';
             $response = Fonnte::send(Sanitize::toInt2($this->model->getResult()->kontak), $text_pesan);
             $this->_result['wa-api'] = $response;
         }
@@ -3561,13 +3613,13 @@ class FetchController extends Controller {
         return false;
     }
 
-    private function kwitansiGet($decoded) {
+    private function kuitansiGet($decoded) {
         $decoded = Sanitize::thisArray($decoded);
 
         $this->model('Donasi');
-        $this->model->getKwitansiByIdDonasi($decoded['id_donasi']);
+        $this->model->getKuitansiByIdDonasi($decoded['id_donasi']);
         if (!$this->model->affected()) {
-            $this->_result['feedback']['message'] = 'Terjadi kesalahan saat mengambil data kwitansi donatur';
+            $this->_result['feedback']['message'] = 'Terjadi kesalahan saat mengambil data kuitansi donatur';
             $this->result();
             return false;
         }

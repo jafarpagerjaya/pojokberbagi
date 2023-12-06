@@ -1,8 +1,8 @@
-#kwitansi {
+#kuitansi {
     min-height: 100vh;
 }
 
-#kwitansi .card {
+#kuitansi .card {
     background-image: url("/assets/images/brand/pojok-berbagi-white.png");
     /* background-blend-mode: luminosity; */
     /* background-image: url(/assets/images/brand/pojok-berbagi-transparent.png); */
@@ -10,44 +10,44 @@
     background-position: center;
 }
 
-#kwitansi #id-kwitansi::before {
+#kuitansi #id-kuitansi::before {
     content: '#';
 }
 
-#kwitansi img:not(.signature) {
+#kuitansi img:not(.signature) {
     width: 60px;
 }
 
-#kwitansi img#img-cp {
+#kuitansi img#img-cp {
     margin-bottom: 2px;
 }
 
-#kwitansi #kwitansi-note {
+#kuitansi #kuitansi-note {
     background-image: url("/assets/images/brand/pattern-to-trasparent.png");
     background-repeat: no-repeat;
     background-position: center;
     background-blend-mode: luminosity;
 }
 
-#kwitansi #qs {
+#kuitansi #qs {
     font-size: small;
 }
 
-#kwitansi #signature {
+#kuitansi #signature {
     background-image: url("/assets/images/brand/patern-pojok-berbagi-horizontal.png");
 }
 
-#kwitansi #alias::after {
+#kuitansi #alias::after {
     content: 'Pojok Berbagi';
 }
 
 @media print {
 
-    #kwitansi {
+    #kuitansi {
         align-items: flex-start !important;
     }
 
-    #kwitansi-section,
+    #kuitansi-section,
     .card-footer:last-child {
         border-radius: 20px !important;
         box-shadow: none !important;
@@ -65,7 +65,7 @@
 
     body > *:not(#panel),
     body #panel > *:not(:last-child),
-    body #panel #main-content > *:not(#modalKwitansiDonasi) {
+    body #panel #main-content > *:not(#modalKuitansiDonasi) {
         display: none !important;
     }
 }
