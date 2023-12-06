@@ -1267,7 +1267,7 @@ class Ui {
                                 </div>
                                 <div style="display: flex;">
                                     <div style="display: flex; flex-direction: column; justify-content: space-between;">
-                                        <p>No Kuitansi : <a href="'. strip_tags((string) $data["link_kuitansi"]) .'" style="color: var(--orange); font-weight: bold; text-decoration: none;">#'. strip_tags((string) $data["id_kuitansi"]) .'</a></p>
+                                        <p>No Kuitansi : <a href="'. (isset($data["link_kuitansi"]) ? strip_tags((string) $data["link_kuitansi"]) : '') .'" style="color: var(--orange); font-weight: bold; text-decoration: none;">#'. strip_tags((string) $data["id_kuitansi"]) .'</a></p>
                                         <div style="display: flex; flex-direction: row; gap: 1em;">
                                             <div style="display: flex; flex-direction: column; border: solid 1px var(--orange); border-bottom: 0px; padding: .75em 1em; border-top-left-radius: 10px; border-top-right-radius: 10px;">
                                                 <p style="font-size: .75rem; margin: 0px;">Jumlah Donatur</p>
