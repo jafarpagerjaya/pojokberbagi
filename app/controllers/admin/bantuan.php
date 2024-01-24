@@ -82,7 +82,9 @@ class BantuanController extends Controller {
         $this->data['limit'] = $this->_bantuan->getLimit();
         // $this->_bantuan->setDirection('ASC');
         $this->_bantuan->setDataBetween($this->data['halaman']);
+        $this->_bantuan->setOrder('bil.id_bantuan');
         $this->_bantuan->newDataSeek();
+
         $this->data['bantuan'] = $this->_bantuan->data();
         
         if ($this->_bantuan->countData('bantuan') != false) {
@@ -130,6 +132,7 @@ class BantuanController extends Controller {
 
 
             $this->_bantuan->setDataBetween($params[0]);
+            $this->_bantuan->setOrder('bil.id_bantuan');
             $this->_bantuan->newDataSeek();
             $dataBantuan = $this->_bantuan->data();
             if ($dataBantuan) {
@@ -255,6 +258,94 @@ class BantuanController extends Controller {
         }
     }
 
+    public function informasi($params = array()) {
+        $this->rel_action = array(
+            array(
+                'href' => 'https://cdn.quilljs.com/1.3.6/quill.snow.css'
+            ),
+            array(
+                'href' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+            ),
+            array(
+                'href' => '/assets/main/css/utility.css'
+            ),
+            array(
+                'href' => '/assets/main/css/pagination.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/editor.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/form-element.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/pages/css/informasi.css'
+            )
+        );
+
+        $this->script_action = array(
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/main/js/token.js'
+			),
+            array(
+                'src' => '/assets/main/js/pagination.js'
+            ),
+            array(
+                'type' => 'text/javascript',
+                'src' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+                'source' => 'trushworty'
+            ),  
+            array(
+                'type' => 'text/javascript',
+                'src' => 'https://cdn.quilljs.com/1.3.7/quill.js',
+                'source' => 'trushworty'
+            ),
+            array(
+                'type' => 'text/javascript',
+                'src' => '/assets/main/js/utility.js'
+            ),
+            array(
+                'type' => 'text/javascript',
+                'src' => '/assets/main/js/function-libs.js'
+            ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/core/js/editor.js'
+			),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/vendors/quill/js/image-drop.js'
+            ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/vendors/quill/js/image-resize.js'
+            ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/vendors/quill/js/image-compress.js'
+            ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/core/js/form-function.js'
+			),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/pages/js/informasi.js'
+			)
+        );    
+
+        // Token for fetch
+        $this->data[Config::get('session/token_name')] = Token::generate();
+
+        $this->model('Bantuan');
+        $this->model->setHalaman(1, 'informasi');
+        $this->model->readInformasiBantuan();
+        $this->data['list_informasi'] = $this->model->data();
+
+        // Debug::prd($this->data['list_informasi']);
+    }
+
     public function selengkapnya($params = array()) {
         $this->rel_action = array(
             array(
@@ -307,8 +398,8 @@ class BantuanController extends Controller {
             ),
             array(
 				'type' => 'text/javascript',
-                'src' => '/assets/route/admin/core/js/editor.js'
-			),
+                'src' => '/vendors/quill/js/image-compress.js'
+            ),
             array(
 				'type' => 'text/javascript',
                 'src' => '/vendors/quill/js/image-drop.js'
@@ -317,6 +408,10 @@ class BantuanController extends Controller {
 				'type' => 'text/javascript',
                 'src' => '/vendors/quill/js/image-resize.js'
             ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/core/js/editor.js'
+			),
             array(
                 'src' => '/assets/main/js/pagination.js'
             ),
@@ -530,7 +625,7 @@ class BantuanController extends Controller {
         $dataSaldo = $this->_bantuan->getSaldoBantuan($params[0]);
         $this->data['saldo_bantuan'] = $dataSaldo;
 
-        $this->_bantuan->setLimit(3);
+        $this->_bantuan->setLimit(6);
         $this->_bantuan->setStatus(1);
         $this->_bantuan->setDirection('DESC');
         // $this->_bantuan->setOffsetByHalaman(1);

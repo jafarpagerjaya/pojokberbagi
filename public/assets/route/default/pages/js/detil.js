@@ -185,9 +185,9 @@ counterUpProgress(progressBar, counterSpeed);
 const c_id_bantuan = window.location.pathname.split('/').at(3);
 
 let data = {
-        id_bantuan: c_id_bantuan,
-        token: document.querySelector('body').getAttribute('data-token')
-    };
+    id_bantuan: c_id_bantuan,
+    token: body.getAttribute('data-token')
+};
 
 fetch('/default/fetch/read/bantuan/deskripsi', {
     method: "POST",
@@ -228,47 +228,88 @@ fetch('/default/fetch/read/bantuan/deskripsi', {
             'autohide': true
         }).toast('show');
     }
+
+    data = {};
 });
 
+if (document.querySelector('.timeline') != null) {
+    document.querySelectorAll('.timeline-item').forEach(tl => {
+        const quill = new Quill(tl.querySelector('.editor-read'), {
+            modules: {
+                toolbar: false
+            },
+            readOnly: true
+        });
+
+        // render the content
+        quill.setContents(JSON.parse(tl.querySelector('.editor-read').innerText));
+
+        setTimeout(() => {
+            if (tl.querySelector('.editor-read').clientHeight >= 200) {
+                tl.querySelector('.editor-read').classList.add('hidden-area-utility','light');
+            } else {
+                if (tl.querySelector('a[data-bs-target="#modalDetilUpdate"]') != null) {
+                    tl.querySelector('a[data-bs-target="#modalDetilUpdate"]').remove();
+                }
+            }
+        }, 0);
+    });
+}
 
 // Get all share buttons
 const shareButtons = document.querySelectorAll('.share a.medsos-icon');
 
 // Add click event listener to each button
 shareButtons.forEach(button => {
-   button.addEventListener('click', () => {
-      // Get the URL of the current page
-      const url = window.location.href;
+   button.addEventListener('click', (e) => {
+        let uTarget = window.location.href;
+        // Get the target url by related modal
+        if (relatedModal != null) {
+            if (objectInformasi.id_informasi == relatedModal.getAttribute('data-id-informasi')) {
+                uTarget = uTarget + '/informasi/' + objectInformasi.id_informasi;
+            }
+        }
+        // Get the URL of the current page
+        const url = uTarget;
 
-      // Get the social media platform from the button's class name
-      const platform = button.children[0].classList[1];
+        console.log(url);
 
-      // Set the URL to share based on the social media platform
-      let shareUrl;
-      
-      switch (platform) {
-        //  case 'facebook':
-        //  shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-        //  break;
-         case 'bi-twitter-x':
-         shareUrl = `https://twitter.com/share?url=${encodeURIComponent(url)}`;
-         break;
-        //  case 'linkedin':
-        //  shareUrl = `https://www.linkedin.com/shareArticle?url=${encodeURIComponent(url)}`;
-        //  break;
-         case 'bi-whatsapp':
-         shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(url)}`;
-         break;
-      }
+        // Get the social media platform from the button's class name
+        const platform = button.children[0].classList[1];
+
+        // Set the URL to share based on the social media platform
+        let shareUrl;
+        
+        switch (platform) {
+            //  case 'facebook':
+            //  shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+            //  break;
+            case 'bi-twitter-x':
+            shareUrl = `https://twitter.com/share?url=${encodeURIComponent(url)}`;
+            break;
+            //  case 'linkedin':
+            //  shareUrl = `https://www.linkedin.com/shareArticle?url=${encodeURIComponent(url)}`;
+            //  break;
+            case 'bi-whatsapp':
+            shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(url)}`;
+            break;
+        }
 
     //   Open a new window to share the URL
       window.open(shareUrl, '_blank');
    });
 });
 
+let sticky_ba_el;
+if (document.querySelector('.btn.button.donasi') != null) {
+    sticky_ba_el = document.querySelector('.btn.button.donasi').parentElement;
+} else {
+    sticky_ba_el = document.querySelector('#commit-bantuan-area>.col:last-child').parentElement;
+}
+
 const header_navbar = document.querySelector(".navbar-area"),
-    sticky_btn_area = document.querySelector('.btn.button.donasi').parentElement,
-    sticky_btn = document.querySelector('.btn.button.donasi').closest('#commit-bantuan-area');
+    sticky_btn_area = sticky_ba_el,
+    sticky_btn = sticky_ba_el.closest('#commit-bantuan-area');
 let sticky_btn_height = sticky_btn_area.offsetHeight,
     header_navbar_height = header_navbar.offsetHeight,
     stickyBtnOffsetTopY,
@@ -282,7 +323,7 @@ function stickyBtn(e) {
     let windowScrollY = window.scrollY,
         windowScrollNavbarBottom = windowScrollY + header_navbar_height;
         stickyBtnOffsetTopY = sticky_btn.offsetTop + sticky_btn_height + sticky_btn_area.offsetTop;
-        console.log(windowScrollY, windowScrollNavbarBottom, stickyBtnOffsetTopY);
+        // console.log(windowScrollY, windowScrollNavbarBottom, stickyBtnOffsetTopY);
     if (windowScrollNavbarBottom >= stickyBtnOffsetTopY || windowScrollNavbarBottom >= stickyBtnOffsetTopYStart) {
         if (!sticky_btn_area.classList.contains('sticky-btn')) {
             sticky_btn_area.classList.add('sticky-btn');
@@ -297,7 +338,7 @@ function stickyBtn(e) {
 setTimeout(()=>{
     stickyBtnOffsetTopYStart = sticky_btn.offsetTop + sticky_btn_height + sticky_btn_area.offsetTop;
     stickyBtn();
-},50);
+}, 50);
 
 let lastKnownScrollPosition = 0;
 let ticking = false;
@@ -357,8 +398,18 @@ document.addEventListener("scroll", debounceIgnoreLast(popUpScrollFirst, 2000));
 
 document.addEventListener("scroll", debounceIgnoreFirst(popUpScrollLast, 2000));
 
+const modalShare = document.getElementById('modalShareBtn');
+const myShareModal = new bootstrap.Modal(modalShare);
 
-const shareModal = new bootstrap.Modal(document.getElementById('modalShareBtn'));
+let relatedModal;
+
+modalShare.addEventListener('hidden.bs.modal', function (e) {
+    if (document.getElementById('modalDetilUpdate').classList.contains('show')) {
+        document.querySelector('body').classList.add('modal-open');
+    } else if (document.getElementById('modalListDonatur').classList.contains('show')) {
+        document.querySelector('body').classList.add('modal-open');
+    }
+});
 
 const modalDonaturList = document.getElementById('modalListDonatur');
 const myModal = new bootstrap.Modal(modalDonaturList);
@@ -459,6 +510,13 @@ let fetchData = function (url, data, root, f) {
             break;
             case 'read-donatur-list-default':
                 fetchReadDonaturDefault(root, response);
+            break;
+            case 'get-informasi-berita':
+                objectInformasi.id_informasi = data.fields.id_informasi;
+                fetchGetInformasiBerita(root, response);
+            break;
+            case 'read-informasi':
+                fetchReadInformasi(root, response);
             break;
             default:
             break;
@@ -603,6 +661,147 @@ let fetchReadDonaturDefault = function(target, response) {
     }, 800);
 };
 
+let fetchReadInformasi = function(modal, response) {
+    if (modal.querySelector('#content') == null) {
+        let currentDate = new Date(),
+            timestamp = currentDate.getTime(); 
+
+        let invalid = {
+            error: true,
+            data_toast: 'invalid-element-feedback',
+            feedback: {
+                message: 'Element #content tidak ditemukan'
+            }
+        };
+
+        invalid.id = invalid.data_toast +'-'+ timestamp;
+        
+        createNewToast(document.querySelector('[aria-live="polite"]'), invalid.id, invalid.data_toast, invalid);
+        $('#'+ invalid.id +'.toast[data-toast="'+ invalid.data_toast +'"]').toast({
+            'delay': 10000
+        }).toast('show');
+        return false;
+    }
+
+    objectInformasi = response.feedback;
+
+    if (objectInformasi.offset == 0) {
+        modal.querySelectorAll('.timeline .timeline-item').forEach(ele => {
+            ele.remove();
+        });
+    } else {
+        if (modal.querySelector('.timeline .timeline-item.load') != null) {
+            modal.querySelector('.timeline .timeline-item.load').remove();
+        }
+        if (modal.querySelector('#content.loader-animation') != null) {
+            hideLoader(modal.querySelector('#content'));
+        }
+        if (modal.querySelector('#content .timeline-item.next') != null) {
+            modal.querySelector('#content .timeline-item.next').classList.remove('next');
+        }
+    }
+
+    const data = response.feedback.data;
+    
+    if (modal.classList.contains('modal')) {
+        modal.classList.add('load');
+    }
+
+    // show recent newest list
+    if (response.feedback.newest_data != null) {
+        response.feedback.newest_data.forEach(row => { 
+            let timelineEl = '<div class="col-12 timeline-item px-0" data-id-informasi="' + reverseString(btoa(row.id_informasi)) + '"><div class="row m-0 w-100"><div class="col-12 col-lg-2"><div class="time small fw-bold"><a role="button" href="javascript:void(0);" class="text-secondary" data-bs-toggle="modal" data-bs-target="#modalListUpdate" data-filter="date" data-date-value="'+ row.tanggal_publikasi +'"><p><span>' + row.waktu_publikasi + '</span></p></a></div><a role="button" href="javascript:void(0);" data-label-value="'+ row.label +'" data-bs-toggle="modal" data-bs-target="#modalListUpdate" data-filter="label" class="text-capitalize badge' + (typeof labelInformasi(row.label) == 'object' ? ' ' + labelInformasi(row.label).class : '') + '">' + (labelInformasi(row.label).text != null ? labelInformasi(row.label).text : '') + '</a></span></div><div class="col-12 col-lg content flex-column d-flex"><b><span>' + row.judul + '</span></b><div class="editor-read">' + row.isi + '</div><div><a role="button" href="javascript:void(0);" class="text-decoration-underline" data-bs-target="#modalDetilUpdate">Lebih detil <i class="lni lni-chevron-right"></i></a></div></div></div></div>';
+            modal.querySelector('#content').insertAdjacentHTML('afterbegin', timelineEl);
+
+            const quill = new Quill(modal.querySelector('[data-id-informasi="'+ reverseString(btoa(row.id_informasi)) +'"] .editor-read'), {
+                modules: {
+                    toolbar: false
+                },
+                readOnly: true
+            });
+
+            quill.setContents(JSON.parse(modal.querySelector('[data-id-informasi="'+ reverseString(btoa(row.id_informasi)) +'"] .editor-read').innerText));
+        });
+    }
+
+    // remove recent showed list
+    if (response.feedback.removed_id != null) {
+        response.feedback.removed_id = Object.values(response.feedback.removed_id);
+        response.feedback.removed_id.forEach(id => {
+            modal.querySelector('[data-id-informasi="' + reverseString(btoa(id)) + '"]').remove();
+        });
+    }
+
+    data.forEach(row => {
+        let timelineEl = '<div class="col-12 timeline-item px-0" data-id-informasi="' + reverseString(btoa(row.id_informasi)) + '"><div class="row m-0 w-100"><div class="col-12 col-lg-2"><div class="time small fw-bold"><a role="button" href="javascript:void(0);" class="text-secondary" data-bs-toggle="modal" data-bs-target="#modalListUpdate" data-filter="date" data-date-value="'+ row.tanggal_publikasi +'"><p><span>' + row.waktu_publikasi + '</span></p></a></div><a role="button" href="javascript:void(0);" data-label-value="'+ row.label +'" data-bs-toggle="modal" data-bs-target="#modalListUpdate" data-filter="label" class="text-capitalize badge' + (typeof labelInformasi(row.label) == 'object' ? ' ' + labelInformasi(row.label).class : '') + '">' + (labelInformasi(row.label).text != null ? labelInformasi(row.label).text : '') + '</a></span></div><div class="col-12 col-lg content flex-column d-flex"><b><span>' + row.judul + '</span></b><div class="editor-read">' + row.isi + '</div><div><a role="button" href="javascript:void(0);" class="text-decoration-underline" data-bs-target="#modalDetilUpdate">Lebih detil <i class="lni lni-chevron-right"></i></a></div></div></div></div>';
+        modal.querySelector('#content').insertAdjacentHTML('beforeend', timelineEl);
+
+        const quill = new Quill(modal.querySelector('[data-id-informasi="'+ reverseString(btoa(row.id_informasi)) +'"] .editor-read'), {
+            modules: {
+                toolbar: false
+            },
+            readOnly: true
+        });
+
+        // render the content
+        quill.setContents(JSON.parse(modal.querySelector('[data-id-informasi="'+ reverseString(btoa(row.id_informasi)) +'"] .editor-read').innerText));
+
+        setTimeout(() => {
+            if (modal.querySelector('.editor-read').clientHeight >= 200) {
+                modal.querySelector('.editor-read').classList.add('hidden-area-utility','light');
+            } else {
+                if (modal.querySelector('a[data-bs-target="#modalDetilUpdate"]') != null) {
+                    modal.querySelector('a[data-bs-target="#modalDetilUpdate"]').remove();
+                }
+            }
+        }, 0);
+    });
+
+    if (objectInformasi.total_record != modal.querySelectorAll('#content .timeline-item').length) {
+        modal.querySelector('#content .timeline-item:last-of-type').classList.add('next');
+    }
+
+    if (modal.classList.contains('modal')) {
+        setTimeout(() => {
+            modal.classList.remove('load');
+        }, 500);
+    }
+};
+
+let objectInformasi = {};
+let fetchGetInformasiBerita = function(modal, response) {
+    const data = response.feedback.data;
+    modal.setAttribute('data-id-informasi', objectInformasi.id_informasi);
+    modal.querySelector('.modal-title').innerText = data.judul;
+    if (typeof labelInformasi(data.label) != 'boolean') {
+        if (modal.querySelector('.badge') == null) {
+            let badge = '<span class="badge '+ labelInformasi(data.label).class +' pt-1 text-capitalize">'+ labelInformasi(data.label).text +'</span>';
+            modal.querySelector('.modal-title').insertAdjacentHTML('afterend', badge);
+        }
+    }
+
+    if (data.id_author != null) {
+        let flexAvatar = '<div class="d-flex align-items-center gap-x-3"><div class="avatar rounded-circle bg-transparent border overflow-hidden" data-id-author="'+ data.id_author +'"><img src="'+ data.path_author +'" alt="'+ data.nama_author +'" class="img-fluid"></div><div class="media-body"><div class="name mb-0 text-black-50 font-weight-bold"><span>'+ data.tanggal_posting +'</span></div><div class="small text-black-50 font-weight-bolder"><span>'+ data.nama_author +'</span></div></div></div>';
+        modal.querySelector('.modal-body').insertAdjacentHTML('afterbegin', flexAvatar);
+    }
+
+    if (modal.querySelector('.modal-body #content') == null) {
+        const div = document.createElement('div');
+        div.setAttribute('id','content');
+        modal.querySelector('.modal-body').appendChild(div);
+    }
+
+    const quill = new Quill(modal.querySelector('.modal-body #content'), {
+        modules: {
+            toolbar: false
+        },
+        readOnly: true
+    });
+
+    // render the content
+    quill.setContents(JSON.parse(new DOMParser().parseFromString(data.isi, "text/html").querySelector('body').innerText));
+};
+
 const hasMoreData = (offset, total) => {
     return offset < total;
 };
@@ -667,6 +866,16 @@ modalDonaturList.querySelector('.modal-body').addEventListener('scroll', functio
 const modalPopPenawaran = document.getElementById('modalPopUpPenawaran');
 const myPenawaran = new bootstrap.Modal(modalPopPenawaran);
 
+modalPopPenawaran.addEventListener('hidden.bs.modal', function(e) {
+    if (document.getElementById('modalDetilUpdate').classList.contains('show')) {
+        document.querySelector('body').classList.add('modal-open');
+    } else if (document.getElementById('modalListDonatur').classList.contains('show')) {
+        document.querySelector('body').classList.add('modal-open');
+    } else if (document.getElementById('modalShareBtn').classList.contains('show')) {
+        document.querySelector('body').classList.add('modal-open');
+    }
+});
+
 class popUpPenawaran {
     constructor(duration_end) {
         this.i = 0;
@@ -708,4 +917,130 @@ document.addEventListener( 'visibilitychange' , function(e) {
             pop.pause(e);
         }
     }
+});
+
+const modalUpdateList = document.getElementById('modalListUpdate');
+// const myModalUpdateList = new bootstrap.Modal(modalUpdateList);
+
+modalUpdateList.addEventListener('show.bs.modal', function (e) {
+    // console.log(e.relatedTarget);
+    let data_filter = e.relatedTarget.getAttribute('data-filter');
+
+    e.target.querySelector('#data-filter').innerHTML = '<p class="fw-light small">'+ e.relatedTarget.innerText +'</p>';
+
+    let data = {
+        token: body.getAttribute('data-token'),
+        filter_by: data_filter,
+        filter_value: e.relatedTarget.getAttribute('data-' + data_filter + '-value'),
+        id_bantuan: c_id_bantuan
+    };
+
+    if (e.relatedTarget.closest('.timeline-item') != null) {
+        data.id_informasi = e.relatedTarget.closest('.timeline-item').getAttribute('data-id-informasi');
+    }
+
+    // fetchReadInformasi
+    fetchData('/default/fetch/read/informasi/list', data, e.target, 'read-informasi');
+});
+
+modalUpdateList.addEventListener('hide.bs.modal', function (e) {
+    e.target.querySelector('#data-filter').innerHTML = '';
+    e.target.querySelector('#content').innerHTML = '';
+    relatedTarget = {};
+    objectInformasi = {};
+});
+
+modalUpdateList.querySelector('.modal-body').addEventListener('scroll', function(e) {
+    const {
+        scrollTop,
+        scrollHeight,
+        clientHeight
+    } = e.target;
+
+    if (scrollTop + clientHeight >= scrollHeight - 5 &&
+        hasMoreData(objectInformasi.offset, objectInformasi.total_record)) {
+        
+        if (e.target.querySelector('#content').classList.contains('loader-animation')) {
+            return false;
+        }
+
+        showLoader(e.target.querySelector('#content'));
+    
+        let data = objectInformasi;
+        data.token = body.getAttribute('data-token');
+        data.id_bantuan = c_id_bantuan;
+
+        const elTimelineItem = '<div class="load col-12 timeline-item px-0" data-id-informasi="' + 'reverseString(btoa(row.id_informasi))' + '"><div class="row m-0 w-100"><div class="col-12 col-lg-2"><div class="time small fw-bold"><a role="button" href="javascript:void(0);" class="text-secondary" data-bs-toggle="modal" data-bs-target="#modalListUpdate" data-filter="date" data-date-value="'+ 'row.tanggal_publikasi' +'"><p><span>' + 'row.waktu_publikasi' + '</span></p></a></div><a role="button" href="javascript:void(0);" data-label-value="'+ 'row.label' +'" data-bs-toggle="modal" data-bs-target="#modalListUpdate" data-filter="label" class="text-capitalize badge' + 'labelInformasi(row.label).class' + '">' + 'labelInformasi(row.label).text' + '</a></span></div><div class="col-12 col-lg content flex-column d-flex"><b><span>' + 'row.judul' + '</span></b><span><div class="editor-read">' + 'row.isi' + '</div></span><div><a role="button" href="javascript:void(0);" class="text-decoration-underline" data-bs-target="#modalDetilUpdate">Lebih detil <i class="lni lni-chevron-right"></i></a></div></div></div></div>';
+        e.target.querySelector('#content').insertAdjacentHTML('beforeend', elTimelineItem);
+
+        // console.log(data);
+        
+        setTimeout(() => {
+            // fetchReadInformasi()
+            fetchData('/default/fetch/read/informasi/list', data, e.target, 'read-informasi');
+        }, 1500);
+    }
+}, {
+    passive: true
+});
+
+let relatedTarget = {};
+modalUpdateList.addEventListener('click', function(e) {
+    if (e.target.tagName != 'A') {
+        return false;
+    }
+
+    if (e.target.getAttribute('data-bs-target') != '#modalDetilUpdate') {
+        e.preventDefault();
+        return false;
+    }
+
+    relatedTarget = e.target;
+    myModalDetilUpdate.show();
+});
+
+const modalDetilUpdate = document.getElementById('modalDetilUpdate');
+const myModalDetilUpdate = new bootstrap.Modal(modalDetilUpdate);
+
+if (document.querySelector('#modalDetilUpdate #content').innerText.trim().length > 0) {
+
+    const quill = new Quill(modalDetilUpdate.querySelector('#content'), {
+        modules: {
+            toolbar: false
+        },
+        readOnly: true
+    });
+
+    // render the content
+    quill.setContents(JSON.parse(quill.container.innerText));
+    myModalDetilUpdate.show();
+}
+
+modalDetilUpdate.addEventListener('show.bs.modal', function (e) {
+    if (e.relatedTarget != null) {
+        relatedTarget = e.relatedTarget;
+    }
+
+    const data = {
+        token: body.getAttribute('data-token'),
+        fields: {
+            id_informasi: relatedTarget.closest('.timeline-item').getAttribute('data-id-informasi')
+        }
+    }
+    // fetchGetInformasiBerita
+    relatedModal = e.target;
+    fetchData('/default/fetch/get/informasi', data, e.target, 'get-informasi-berita');
+});
+
+modalDetilUpdate.addEventListener('hide.bs.modal', function (e) {
+    objectInformasi = {};
+    relatedModal = null;
+    e.target.removeAttribute('data-id-informasi');
+    e.target.querySelector('.modal-title').innerHTML = '';
+    e.target.querySelector('.modal-header .badge').remove();
+    e.target.querySelector('.modal-body').innerHTML = '';
+});
+
+modalDetilUpdate.querySelector('button[data-bs-target="#modalShareBtn"]').addEventListener('click', function(e) {
+    myShareModal.show();
 });

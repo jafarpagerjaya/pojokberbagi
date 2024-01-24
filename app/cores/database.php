@@ -86,7 +86,7 @@ class Database {
 		return $this;
 	}
 
-	public function lastInsertId(){
+	final public function lastInsertId(){
         return $this->_pdo->lastInsertId();
     }
 
@@ -213,6 +213,38 @@ class Database {
 	}
 
 	// Multiple insert Jd PR
+	final public function insertMultiple($table, $rows = array()) {
+		if (count(is_countable($rows) ? $rows : []) > 0) {
+			$keys = array_keys(current($rows));
+			$values = '';
+			$yRow = 1;
+			foreach ($rows as $row => $record) {
+				$values .= "(";
+				$xCol = 1;
+				if (is_array($record)) {
+					foreach ($record as $fields => $field) {
+						$values .= "?";
+
+						if ($xCol < count(is_countable($record) ? $record : [])) {
+							$values .= ", ";
+						}
+						$xCol++;
+					}
+				}
+				$values .= ")";
+
+				if ($yRow < count(is_countable($rows) ? $rows : [])) {
+					$values .= ", ";
+				}
+				$yRow++;
+			}
+			$sql = "INSERT INTO {$table}(" . implode(", ", $keys) . ") VALUES {$values}";
+			if (!$this->query($sql, Config::array_flatten($rows))->error()) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	final public function update($table, $fields, $where) {
 		if (count(is_countable($fields) ? $fields : [])) {

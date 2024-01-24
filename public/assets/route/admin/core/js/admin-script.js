@@ -351,6 +351,49 @@ let createNewToast = function(toastParentEl, toastId = null, dataToast = 'feedba
     },0);
 };
 
+let timeAgoRuns = function(target, targetValue, key = '', interval = 60000, targetParent = null, targetParentData = null) {
+    const spanDMVList = document.querySelectorAll(target);
+    let dmvObj = {},
+        i = 0;
+
+    spanDMVList.forEach(el => {
+        dmvObj[key + i] = {
+            modified_at: el.getAttribute(targetValue)
+        };
+
+        if (targetParent != null && targetParentData != null) {
+            dmvObj[key + i].id = el.closest(targetParent).getAttribute(targetParentData);
+        }
+
+        i++;
+    });
+
+    let oTime = new Date(),
+        secondsLeft = (60 - oTime.getSeconds()) * 1000;
+
+    spanDMVList.forEach(ele => {
+        for (const property in dmvObj) {
+            if (ele.closest(targetParent).getAttribute(targetParentData) == dmvObj[property].id) {
+                ele.innerHTML = (timePassed(new Date(dmvObj[property].modified_at)) == 'sekarang' || timePassed(new Date(dmvObj[property].modified_at)) == '1 detik yang lalu' ? 'beberapa saat yang lalu':timePassed(new Date(dmvObj[property].modified_at)));
+            }
+        }
+    });
+
+    setTimeout(() => {
+        let timeInterval = setInterval(() => {
+            spanDMVList.forEach(ele => {
+                for (const property in dmvObj) {
+                    if (ele.closest(targetParent).getAttribute(targetParentData) == dmvObj[property].id) {
+                        ele.innerHTML = timePassed(new Date(dmvObj[property].modified_at));
+                    }
+                }
+            });
+        }, interval);
+
+        timeIntervalList[targetValue] = timeInterval;
+    }, secondsLeft);
+};
+
 // Diulangn dengan fungsi resize
 let footerSetter = function() {
     let wh = $( window ).height(),

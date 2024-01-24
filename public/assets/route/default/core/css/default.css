@@ -151,6 +151,12 @@ header.header+* {
     }
 }
 
+@media (max-width: 768px) {
+    .footer {
+        padding-bottom: 80px;
+    }
+}
+
 @media (min-width: 767px) and (max-width: 768px) {
     .header .navbar-collapse {
         position: absolute;

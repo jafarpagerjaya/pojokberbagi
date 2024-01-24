@@ -1,0 +1,328 @@
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center m-0 gap-3">
+            <div class="px-0 col-12 col-md">
+                <h3 class="mb-0"><i class="fas fa-th-list"></i> Daftar Berita</h3>
+            </div>
+            <div class="px-0 col-12 col-md justify-content-between justify-content-md-end">
+                <div class="row align-items-center gap-x-3 m-0">
+                    <div class="px-0 col">
+                        <div class="form-label-group">
+                            <input type="text" id="input-search"
+                                class="form-control px-3" name="search"
+                                placeholder="Cari ..." autocomplete="off"
+                                maxlength="50">
+                            <label for="input-search"
+                                class="form-control-label"></label>
+                        </div>
+                    </div>
+                    <div class="px-0 col-auto">
+                        <button class="btn btn-primary font-weight-bolder m-0" data-toggle="modal" data-target="#modalFormInformasi" data-value="create"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover" id="list-informasi">
+            <thead class="thead-light">
+                <th>Campaign</th>
+                <th>Judul</th>
+                <th class="fit">Author</th>
+                <th class="fit">Editor</th>
+                <th class="fit"></th>
+            </thead>
+            <tbody<?= (isset($this->data['list_informasi']['limit']) ? ' data-limit="'. $this->data['list_informasi']['limit'] .'"' : '') ?>>
+                <?php if (count(is_countable($data['list_informasi']['data']) ? $data['list_informasi']['data'] : []) > 0) {
+                    foreach($data['list_informasi']['data'] as $row => $dataInformasi) {
+                 ?>
+                <tr data-id-informasi="<?= strrev(base64_encode($dataInformasi->id_informasi)); ?>">
+                    <td><a href="#" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span><?= $dataInformasi->nama_bantuan; ?></span></a></td>
+                    <td>
+                        <p class="font-weight-bold mb-0"><span><?= $dataInformasi->judul; ?></span></p>
+                        <div class="row justify-content-between">
+                            <div class="col-auto"><span class="badge badge-primary font-weight-bolder"><?= $dataInformasi->label; ?></span></div>
+                            <div class="col-auto">
+                                <span><i class="far fa-clock small"></i></span>
+                                <small><span data-modified-value="<?= $dataInformasi->modified_at; ?>"><?= $dataInformasi->time_ago; ?></span></small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="media align-items-center gap-x-3">
+                            <div class="media-body">
+                                <div class="name mb-0 text-black-50 font-weight-bold">
+                                    <span><?= $dataInformasi->jabatan_author; ?></span>
+                                </div>
+                                <div class="small text-black-50 font-weight-bolder">
+                                    <span><?= $dataInformasi->nama_author; ?></span>
+                                </div>
+                            </div>
+                        <div class="avatar rounded bg-transparent border overflow-hidden"
+                                data-id-author="<?= strrev(base64_encode($dataInformasi->id_author ?? '')); ?>">
+                                <img src="<?= $dataInformasi->path_author; ?>" alt="<?= $dataInformasi->nama_author; ?>" class="img-fluid">
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="media align-items-center gap-x-3">
+                            <div class="avatar rounded bg-transparent border overflow-hidden"
+                                data-id-editor="<?= strrev(base64_encode($dataInformasi->id_editor ?? '')); ?>">
+                                <img src="<?= $dataInformasi->path_editor; ?>" alt="<?= $dataInformasi->nama_editor; ?>" class="img-fluid">
+                            </div>
+                            <?php if (isset($dataInformasi->id_editor)) { ?>
+                                <div class="media-body">
+                                    <div class="name mb-0 text-black-50 font-weight-bold">
+                                        <span><?= $dataInformasi->jabatan_editor; ?></span>
+                                    </div>
+                                    <div class="small text-black-50 font-weight-bolder">
+                                        <span><?= $dataInformasi->nama_editor; ?></span>
+                                    </div>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <a class="btn btn-sm btn-icon-only text-light mr-0" href="#"
+                                role="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false"
+                                aria-label="Drop Down Action Record">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </a>
+                            <div
+                                class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" data-value="<?= base64_decode(strrev($dataInformasi->id_informasi)); ?>">
+                                <a class="dropdown-item" href="#">Non-akifkan Berita</a>
+                                <a class="dropdown-item" href="#" data-toggle="modal"
+                                data-target="#modalFormInformasi" data-type="update">Ubah Berita</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <?php
+                    }
+                } else { ?>
+                <tr>
+                    <td colspan="5"><span>Data deskripsi tidak ditemukan ...</span></td>
+                </tr>
+                <?php } ?>
+                <!-- <tr>
+                    <td><a href="#" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span>Geberr</span></a></td>
+                    <td>
+                        <p class="font-weight-bold mb-0"><span>Semangat Baru</span></p>
+                        <div class="row justify-content-between">
+                            <div class="col-auto"><span class="badge badge-primary font-weight-bolder">Informasi</span></div>
+                            <div class="col-auto">
+                                <span><i class="far fa-clock small"></i></span>
+                                <small><span>1 jam yang lalu</span></small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="media align-items-center">
+                            <div class="media-body">
+                                <div class="name mb-0 text-black-50 font-weight-bold">
+                                    <span>Staff. Program</span>
+                                </div>
+                                <div class="small text-black-50 font-weight-bolder">
+                                    <span>Rudi Salam</span>
+                                </div>
+                            </div>
+                        <div class="avatar rounded ml-3 bg-transparent border overflow-hidden"
+                                data-id-pegawai="2">
+                                <img src="/male-avatar.jpg" alt="Rudi" class="img-fluid">
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="media align-items-center">
+                            <div class="avatar rounded mr-3 bg-transparent border overflow-hidden"
+                                data-id-pegawai="1">
+                                <img src="/female-avatar.jpg" alt="Mira" class="img-fluid">
+                            </div>
+                            <div class="media-body">
+                                <div class="name mb-0 text-black-50 font-weight-bold">
+                                    <span>SVP. Program</span>
+                                </div>
+                                <div class="small text-black-50 font-weight-bolder">
+                                    <span>Mira</span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <a class="btn btn-sm btn-icon-only text-light mr-0" href="#"
+                                role="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false"
+                                aria-label="Drop Down Action Record">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </a>
+                            <div
+                                class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                <a class="dropdown-item" href="#">Non-akifkan Berita</a>
+                                <a class="dropdown-item" href="#" data-toggle="modal"
+                                data-target="#modalFormInformasi">Ubah Berita</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><a href="#" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span>Geberr</span></a></td>
+                    <td>
+                        <p class="font-weight-bold mb-0"><span>Semangat Lama</span></p>
+                        <div class="row align-items-center justify-content-between">
+                            <div class="col-auto"><span class="badge badge-success font-weight-bolder">Pelaksanaan</span></div>
+                            <div class="col-auto">
+                                <span><i class="far fa-clock small"></i></span>
+                                <small><span>21 jam yang lalu</span></small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="media align-items-center">
+                            <div class="media-body">
+                                <div class="name mb-0 text-black-50 font-weight-bold">
+                                    <span>Staff. Program</span>
+                                </div>
+                                <div class="small text-black-50 font-weight-bolder">
+                                    <span>Rudi Salam</span>
+                                </div>
+                            </div>
+                            <div class="avatar rounded ml-3 bg-transparent border overflow-hidden"
+                                data-id-pegawai="2">
+                                <img src="/male-avatar.jpg" alt="Rudi" class="img-fluid">
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="media align-items-center">
+                            <div class="avatar rounded mr-3 bg-transparent border overflow-hidden"
+                                data-id-pegawai="1">
+                                <img src="/female-avatar.jpg" alt="Mira" class="img-fluid">
+                            </div>
+                            <div class="media-body">
+                                <div class="name mb-0 text-black-50 font-weight-bold">
+                                    <span>SVP. Program</span>
+                                </div>
+                                <div class="small text-black-50 font-weight-bolder">
+                                    <span>Mira</span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <a class="btn btn-sm btn-icon-only text-light mr-0" href="#"
+                                role="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false"
+                                aria-label="Drop Down Action Record">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </a>
+                            <div
+                                class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                <a class="dropdown-item" href="#">Non-akifkan Berita</a>
+                                <a class="dropdown-item" href="#" data-toggle="modal"
+                                data-target="#modalFormInformasi">Ubah Berita</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr> -->
+            </tbody>
+            <tfoot class="tfoot-light">
+                <th>Campaign</th>
+                <th>Judul</th>
+                <th class="fit">Author</th>
+                <th>Editor</th>
+                <th class="fit"></th>
+            </tfoot>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="row m-0 gap-3">
+            <div class="col p-0 d-flex flex-column text-black-50" id="lebel">
+                <small>Menampilkan <span id="jumlah-data" class="text-orange"><?= count($data['list_informasi']['data']) ?></span> dari <span id="total-data"><?= $data['list_informasi']['total_record']; ?></span> baris data</small>
+                <?= (isset($data['list_informasi']['search']) ? '<small id="hasil-penelusuran"><span class="text-orange">'. count($data['list_informasi']['data']) .' data</span> pencarian ditemukan</small>' : ''); ?>
+            </div>
+            <div class="col px-0">
+                <ul class="pagination justify-content-end mb-0" data-pages="<?= $data['list_informasi']['pages']; ?>">
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal in" id="modalFormInformasi" tabindex="-1" role="dialog" aria-labelledby="modalFormInformasi-label"
+aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
+        <div class="modal-content">
+            <div class="modal-header border px-4">
+                <div class="row justify-content-center w-100 m-0">
+                    <div class="col-12 col-md-10 col-lg-8 col-xl-6 align-items-center justify-content-between d-flex">
+                        <h5 class="modal-title" id="modalFormInformasiLebel">Form <span class="text-primary text-capitalize"></span> Berita</h5>
+                        <button type="button" class="btn btn-outline-orange-reverse px-3 py-2" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">Tutup</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body bg-light-opacity px-4">
+                <div class="row justify-content-center w-100 m-0">
+                    <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+                        <div class="row my-4">
+                            <div class="col">
+                                <div class="form-label-group">
+                                    <input type="text" name="judul" id="judul-berita" class="form-control" 
+                                    placeholder="Judul Berita" 
+                                    autocomplete="off"
+                                    maxlength="50">
+                                    <label for="judul-berita" class="form-control-label">Judul Berita</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row my-4">
+                            <div class="col">
+                                <div class="form-group position-relative mb-0">
+                                    <span class="font-weight-bolder position-absolute mt-3">
+                                        <label for="jenis-label"
+                                            class="form-control-label m-0">Label Berita</label>
+                                    </span>
+                                    <select class="custom-select" id="jenis-label"
+                                        name="label" required>
+                                        <option value="0" disabled selected hidden>Pilih salah satu</option>
+                                        <option value="I">Informasi</option>
+                                        <option value="PL">Pelaksanaan</option>
+                                        <option value="PN">Pencairan</option>
+                                        <option value="PD">Pengadaan</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row my-4" id="wyswyg-area">
+                            <div class="col">
+                                <div class="rounded ql">
+                                    <div id="editor">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col"></div>
+                        </div>
+                        <div class="row justify-content-center w-100 m-0">
+                            <div class="col px-0 align-items-center justify-content-between d-flex">
+                                <button type="clear" class="btn btn-link">Kosongkan</button>
+                                <button type="submit" class="btn btn-primary ml-auto shadow-none font-weight-bolder">Simpan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div aria-live="polite" aria-atomic="true"
+    class="position-fixed d-flex justify-content-end flex-column align-items-end">
+</div>

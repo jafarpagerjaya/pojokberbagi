@@ -1,0 +1,181 @@
+.form-label-group input~label {
+    left: 1rem;
+}
+
+input[maxlength]~span.input-char-left {
+    right: 1rem;
+}
+
+.form-label-group input {
+    padding: 1em 1.125em;
+}
+
+.select2-selection__rendered:not(ul) {
+    padding-left: .25em !important;
+    line-height: 24px !important;
+}
+
+.select2-container--open .select2-dropdown .select2-search {
+    padding: .5em 1em;
+}
+
+.select2 label {
+    font-size: .875em !important;
+    color: #495057;
+    font-weight: bold;
+}
+
+.select2-results li {
+    padding: .5em 1em;
+}
+
+.ql-toolbar.ql-snow {
+    padding-left: 0.7rem !important;
+    padding-right: 0.7rem !important;
+}
+
+.ql-editor {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+
+table .avatar {
+    width: 38px;
+    height: 38px;
+}
+
+button[data-toggle="modal"][data-target="#modalFormInformasi"][data-value="create"] {
+    height: calc(1.5em + 1.25rem + 5px);
+}
+
+.form-control.is-invalid, .was-validated .form-control:invalid {
+    background-position: right .75rem center;
+}
+
+select.custom-select~.select2 .select2-selection__arrow {
+    right: 0;
+}
+
+.form-group span.mt-2 {
+    z-index: 1;
+    left: 1rem;
+    margin-top: 6px !important;
+}
+
+.form-group span.mt-2 > label {
+    font-weight: bold;
+}
+
+span+select~.select2.select2-container .select2-selection.select2-selection--multiple {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    padding-bottom: 8px !important;
+    overflow-x: auto;
+}
+
+.select2-selection__choice__remove span {
+    position: relative;
+    bottom: 1px;
+}
+
+span.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    margin-bottom: 0px;
+}
+
+.select2-selection__choice__display {
+    padding-right: 0px !important;
+}
+
+.select2-selection__choice__display > div {
+    font-size: 0.5rem !important;
+    height: 23px;
+}
+
+span+select~.select2.select2-container .select2-selection.select2-selection--multiple .select2-search__field {
+    font-size: .7rem;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    margin-left: -5px;
+}
+
+select.custom-select.is-invalid~.select2::after {
+    right: .75em;
+}
+
+.select2-container .select2-dropdown .select2-results .select2-results__group img[src="/assets/images/partners/bjb.png"],
+.select2-container .select2-dropdown .select2-results .select2-results__group img[src="/assets/images/partners/bri.png"] {
+    margin-left: 6.5px !important;
+    margin-right: 6.5px !important;
+    margin-top: -6px !important;
+}
+
+.select2-container .select2-dropdown .select2-results .select2-results__group img[src="/assets/images/partners/bsi.png"] {
+    margin-right: 3.5px !important;
+    margin-top: -6px !important;
+}
+
+.select2-container .select2-dropdown .select2-results .select2-results__group img[src="/assets/images/partners/mandiri.png"] {
+    margin-left: 7.5px !important;
+    margin-right: 4.5px !important;
+    margin-top: -4px !important;
+}
+
+.select2-container .select2-dropdown .select2-results .select2-results__group img[src="/assets/images/partners/dana.png"] {
+    margin-left: 7.5px !important;
+    margin-right: 6.5px !important;
+}
+
+.select2-container .select2-dropdown .select2-results .select2-results__group img[src="/assets/images/partners/dana.png"] {
+    margin-left: 7.5px !important;
+    margin-right: 6.5px !important;
+    margin-top: -1px !important;
+}
+
+select~span.select2 .badge-sm {
+    font-size: 0.5rem;
+}
+
+.ql-editor.ql-blank::before {
+    left: 1rem !important;
+}
+
+.rounded.ql.is-invalid .ql-editor.ql-blank::before {
+    background-position: right 0em center;
+}
+
+.modal .row {
+    flex-direction: column;
+    gap: 1.4em;
+}
+
+@media (max-width: 425px) {
+    #lebel {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal .modal-header,
+    .modal .modal-body,
+    .modal .modal-footer {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .modal .row {
+        gap: 0em;
+        flex-direction: row;
+    }
+
+    .modal .row.my-4 {
+        margin-top: 30px !important;
+        margin-bottom: 30px !important;
+    }
+    
+    .modal .row.my-4 .col-12.mt-lg-4 {
+        margin-top: 30px !important;
+    }
+}

@@ -80,10 +80,23 @@
     font-weight: normal !important;
 }
 
+.ql-editor img {
+    border-radius: 1em !important;
+}
+
 .ql-editor:focus {
     box-shadow: none !important;
 }
 
 b, strong {
     font-weight: 800 !important;
+}
+
+
+.ql-editor p:not(:first-child) {
+    margin-top: 1em;
+}
+
+.ql-editor * {
+    line-height: 2;
 }

@@ -37,11 +37,19 @@ let defaultOptions = {
                 color: 'white',
                 borderRadius: '.375rem'
             }
+        },
+        imageCompressor: {
+            quality: 0.9,
+            maxWidth: 1000, // default
+            maxHeight: 1000, // default
+            imageType: 'image/jpeg'
         }
     }
 };
 
 let editor = function(el, options = defaultOptions) {
+    Quill.register("modules/imageCompressor", imageCompressor);
+
     let quill = new Quill(el, options);
     
     // console.log(quill);
@@ -59,7 +67,39 @@ let editor = function(el, options = defaultOptions) {
         if (imgSizer.length) {
             quill.container.querySelector('.ql-editor').click();
         }
-    })
+    });
+
+    const regEx = /^[0-9a-zA-Z]+$/;
+    let ctlPress = false;
+    quill.container.querySelector('.ql-editor').addEventListener('keydown', function(e) {
+        if (e.key == 'Control') {
+            ctlPress = true;
+        }
+        if (this.classList.contains('ql-blank') && this.closest('.ql.is-invalid') != null) {
+            if(e.key.match(regEx) && e.key.length == 1 && !ctlPress) {
+                this.closest('.ql.is-invalid').classList.remove('is-invalid');
+            }
+        }
+    }); 
+
+    quill.container.querySelector('.ql-editor').addEventListener('keyup', function(e) {
+        if (e.key == 'Control') {
+            ctlPress = false;
+        } 
+    });
+
+    quill.container.querySelector('.ql-editor').addEventListener('paste', function(e) {
+        const paste = (e.clipboardData || window.clipboardData).getData("text");
+        console.log(!paste.trim().length);
+        if (!paste.trim().length) {
+            e.preventDefault();
+            return false;
+        }
+
+        if (this.classList.contains('ql-blank') && this.closest('.ql.is-invalid') != null) {
+            this.closest('.ql.is-invalid').classList.remove('is-invalid');
+        }
+    });
 
     return quill;
 };

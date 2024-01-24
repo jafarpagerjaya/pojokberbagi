@@ -27,7 +27,7 @@ CREATE TABLE gambar (
     id_gambar INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     nama VARCHAR(50) NOT NULL,
     path_gambar VARCHAR(255),
-    label VARCHAR(10),
+    label VARCHAR(11),
     gembok CHAR(1) DEFAULT NULL,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -934,6 +934,26 @@ BEGIN
 END$$
 DELIMITER ;
 
+DROP FUNCTION IF EXISTS timeAgo;
+DELIMITER $$
+CREATE FUNCTION timeAgo(waktu TIMESTAMP)
+    RETURNS VARCHAR(100) DETERMINISTIC
+BEGIN
+    DECLARE time_ago VARCHAR(100);
+
+    SELECT CASE 
+        WHEN timestampdiff(year, waktu, current_timestamp) > 0 THEN CONCAT_WS(' ', timestampdiff(year, waktu, current_timestamp), 'tahun yang lalu')
+        WHEN timestampdiff(day, waktu, current_timestamp) > 0 THEN CONCAT_WS(' ', timestampdiff(day, waktu, current_timestamp), 'hari yang lalu')
+        WHEN timestampdiff(hour, waktu, current_timestamp) > 0 THEN CONCAT_WS(' ', timestampdiff(hour, waktu, current_timestamp), 'jam yang lalu')
+        WHEN timestampdiff(minute, waktu, current_timestamp) > 0 THEN CONCAT_WS(' ', timestampdiff(minute, waktu, current_timestamp), 'menit yang lalu')
+        WHEN waktu > current_timestamp THEN 'yang akan datang'
+        ELSE 'beberapa saat yang lalu'
+        END
+    INTO time_ago;
+    
+    RETURN time_ago;
+END $$
+
 DROP FUNCTION IF EXISTS formatTanggalFull;
 DELIMITER $$
 CREATE FUNCTION formatTanggalFull(tanggal TIMESTAMP)
@@ -1027,12 +1047,13 @@ BEGIN
 END $$
 DELIMITER ;
 
+-- Procedur Ini Tidak boleh Langsung Diakses, Pengaksesan Wajib Lewat Procedure TotalAggaranBantuanPelaksanaan
 -- DROP PROCEDURE KalkulasiAnggaranPelaksanaanDonasi;
 DELIMITER $$
 CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN in_total_ap BIGINT, IN in_id_bantuan INT)
     BlockDonasi:BEGIN
         DECLARE t_nominal_penggunaan_donasi, t_id_rencana INT UNSIGNED;
-        DECLARE total_penggunaan_donasi BIGINT;
+        DECLARE total_penggunaan_donasi BIGINT DEFAULT 0;
         -- Menampung State Cursor
         DECLARE finished_donasi, finished_rab TINYINT DEFAULT 0;
         -- Var untuk menampung isi cursor donasi
@@ -1113,13 +1134,63 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN
             FETCH list_donasi INTO cd_id_donasi, cd_nominal_donasi, cd_saldo_donasi;
 
             IF finished_donasi = 1 THEN
-                CLOSE list_donasi;
-                SET finished_donasi = 0;
                 LEAVE ListDonasiLoop;
             END IF;
 
             BlockRAB:BEGIN
-                DECLARE list_rab CURSOR FOR SELECT rab.nominal_kebutuhan, rab.id_kebutuhan, rab.keterangan FROM rencana r JOIN rencana_anggaran_belanja rab USING(id_rencana) WHERE rab.id_rencana = t_id_rencana AND id_kebutuhan NOT IN (SELECT id_kebutuhan FROM anggaran_pelaksanaan_donasi WHERE id_pelaksanaan = in_id_pelaksanaan AND saldo_kebutuhan = 0);
+                DECLARE list_rab CURSOR FOR 
+                WITH cte AS (
+                    SELECT MIN(saldo_kebutuhan) saldo_kebutuhan, id_kebutuhan FROM anggaran_pelaksanaan_donasi WHERE id_pelaksanaan = in_id_pelaksanaan GROUP BY id_kebutuhan
+                ) 
+                SELECT r3.nominal_kebutuhan, r3.id_kebutuhan, keterangan
+                FROM
+                (
+                    ( 
+                    SELECT r1.id_rab, r1.id_kebutuhan, r1.nominal_kebutuhan
+                    FROM (
+                        SELECT rab.id_rab, rab.id_kebutuhan, IFNULL(cte.saldo_kebutuhan, rab.nominal_kebutuhan) nominal_kebutuhan FROM 
+                        rencana_anggaran_belanja rab 
+                        LEFT JOIN cte USING(id_kebutuhan)
+                        WHERE id_rencana = t_id_rencana
+                        HAVING nominal_kebutuhan > 0
+                        ORDER BY 1 ASC
+                    ) r1, (
+                        SELECT rab.id_rab, rab.id_kebutuhan, IFNULL(cte.saldo_kebutuhan, rab.nominal_kebutuhan) nominal_kebutuhan FROM 
+                        rencana_anggaran_belanja rab 
+                        LEFT JOIN cte USING(id_kebutuhan)
+                        WHERE id_rencana = t_id_rencana
+                        HAVING nominal_kebutuhan > 0
+                        ORDER BY 1 ASC
+                    ) r2
+                    WHERE r1.id_rab >= r2.id_rab
+                    GROUP BY r1.id_rab, r1.nominal_kebutuhan
+                    HAVING SUM(r2.nominal_kebutuhan) < in_total_ap
+                    ORDER BY 1 ASC
+                    ) UNION (
+                    SELECT r1.id_rab, r1.id_kebutuhan, r1.nominal_kebutuhan
+                    FROM (
+                        SELECT rab.id_rab, rab.id_kebutuhan, IFNULL(cte.saldo_kebutuhan, rab.nominal_kebutuhan) nominal_kebutuhan FROM 
+                        rencana_anggaran_belanja rab 
+                        LEFT JOIN cte USING(id_kebutuhan)
+                        WHERE id_rencana = t_id_rencana
+                        HAVING nominal_kebutuhan > 0
+                        ORDER BY 1 ASC
+                    ) r1, (
+                        SELECT rab.id_rab, rab.id_kebutuhan, IFNULL(cte.saldo_kebutuhan, rab.nominal_kebutuhan) nominal_kebutuhan FROM 
+                        rencana_anggaran_belanja rab 
+                        LEFT JOIN cte USING(id_kebutuhan)
+                        WHERE id_rencana = t_id_rencana
+                        HAVING nominal_kebutuhan > 0
+                        ORDER BY 1 ASC
+                    ) r2
+                    WHERE r1.id_rab >= r2.id_rab
+                    GROUP BY r1.id_rab, r1.nominal_kebutuhan
+                    HAVING SUM(r2.nominal_kebutuhan) >= in_total_ap
+                    ORDER BY 1 ASC
+                    LIMIT 1
+                    )
+                ) r3 LEFT JOIN rencana_anggaran_belanja rab USING(id_rab)
+                ORDER BY id_rab ASC;
 
                 -- declare NOT FOUND handler
                 DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished_rab = 1;
@@ -1129,12 +1200,13 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN
                 ListRabLoop:WHILE NOT finished_rab DO
                     FETCH list_rab INTO cr_nominal_kebutuhan, cr_id_kebutuhan, cr_keterangan;
 
-                    IF finished_rab = 1 THEN
-                        CLOSE list_rab;
-                        SET finished_rab = 0;
-                        LEAVE ListRabLoop;
+                    IF total_penggunaan_donasi = in_total_ap THEN
+                        SET finished_rab = 1;
                     END IF;
 
+                    IF finished_rab = 1 THEN
+                        LEAVE ListRabLoop;
+                    END IF;
 
                     IF ck_saldo_kebutuhan IS NULL THEN
                         SET ck_saldo_kebutuhan = cr_nominal_kebutuhan;
@@ -1143,7 +1215,7 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN
                     END IF;
 
                     IF ck_saldo_donasi IS NULL THEN
-                        SET ck_saldo_donasi = cd_nominal_donasi + cd_saldo_donasi;
+                        SET ck_saldo_donasi = cd_nominal_donasi;
                     END IF;
 
                     IF ck_saldo_donasi >= ck_saldo_kebutuhan THEN
@@ -1154,6 +1226,10 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN
                         SET t_nominal_penggunaan_donasi = ck_saldo_donasi;
                         SET ck_saldo_kebutuhan = ck_saldo_kebutuhan - ck_saldo_donasi;
                         SET ck_saldo_donasi = 0;
+                        
+                        IF cd_saldo_donasi > 0 THEN
+                            SET ck_saldo_donasi = cd_saldo_donasi;
+                        END IF;
                     END IF;
                     
 
@@ -1179,6 +1255,8 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN
                         LEAVE BlockDonasi;
                     END IF;
 
+                    SET total_penggunaan_donasi = total_penggunaan_donasi + t_nominal_penggunaan_donasi;
+
                     IF ck_saldo_kebutuhan = 0 AND ck_saldo_donasi > 0 THEN
                         SET ck_saldo_kebutuhan = NULL;
                         ITERATE ListRabLoop;
@@ -1186,22 +1264,22 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN
 
                     IF ck_saldo_donasi = 0 AND ck_saldo_kebutuhan > 0 THEN
                         SET ck_saldo_donasi = NULL;
-                        CLOSE list_rab;
-                        ITERATE ListDonasiLoop;
+                        LEAVE ListRabLoop;
                     END IF;
                     
                     IF ck_saldo_donasi = 0 AND ck_saldo_kebutuhan = 0 THEN
                         SET ck_saldo_donasi = NULL;
                         SET ck_saldo_kebutuhan = NULL;
-                        CLOSE list_rab;
-                        LEAVE BlockRAB;
-                    END IF;
-                    
+                        LEAVE ListRabLoop;
+                    END IF;    
                 END WHILE ListRabLoop;
+
+                CLOSE list_rab;
             END BlockRAB;
    
         END WHILE ListDonasiLoop;
 
+        CLOSE list_donasi;
         DEALLOCATE PREPARE stmt;
     END BlockDonasi$$
 DELIMITER ;
@@ -1292,8 +1370,6 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp(IN in_id_pelaksanaan INT
             FETCH list_donasi INTO cd_id_donasi, cd_nominal_donasi, cd_saldo_donasi;
 
             IF finished_donasi = 1 THEN
-                CLOSE list_donasi;
-                SET finished_donasi = 0;
                 LEAVE ListDonasiLoop;
             END IF;
 
@@ -1309,8 +1385,6 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp(IN in_id_pelaksanaan INT
                     FETCH list_rab INTO cr_nominal_kebutuhan, cr_id_kebutuhan, cr_keterangan;
 
                     IF finished_rab = 1 THEN
-                        CLOSE list_rab;
-                        SET finished_rab = 0;
                         LEAVE ListRabLoop;
                     END IF;
 
@@ -1322,7 +1396,7 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp(IN in_id_pelaksanaan INT
                     END IF;
 
                     IF ck_saldo_donasi IS NULL THEN
-                        SET ck_saldo_donasi = cd_nominal_donasi + cd_saldo_donasi;
+                        SET ck_saldo_donasi = cd_nominal_donasi;
                     END IF;
 
                     IF ck_saldo_donasi >= ck_saldo_kebutuhan THEN
@@ -1333,6 +1407,10 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp(IN in_id_pelaksanaan INT
                         SET t_nominal_penggunaan_donasi = ck_saldo_donasi;
                         SET ck_saldo_kebutuhan = ck_saldo_kebutuhan - ck_saldo_donasi;
                         SET ck_saldo_donasi = 0;
+                        
+                        IF cd_saldo_donasi > 0 THEN
+                            SET ck_saldo_donasi = cd_saldo_donasi;
+                        END IF;
                     END IF;
                     
 
@@ -1365,22 +1443,22 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp(IN in_id_pelaksanaan INT
 
                     IF ck_saldo_donasi = 0 AND ck_saldo_kebutuhan > 0 THEN
                         SET ck_saldo_donasi = NULL;
-                        CLOSE list_rab;
-                        ITERATE ListDonasiLoop;
+                        LEAVE ListRabLoop;
                     END IF;
                     
                     IF ck_saldo_donasi = 0 AND ck_saldo_kebutuhan = 0 THEN
                         SET ck_saldo_donasi = NULL;
                         SET ck_saldo_kebutuhan = NULL;
-                        CLOSE list_rab;
-                        LEAVE BlockRAB;
-                    END IF;
-                    
+                        LEAVE ListRabLoop;
+                    END IF;    
                 END WHILE ListRabLoop;
+
+                CLOSE list_rab;
             END BlockRAB;
    
         END WHILE ListDonasiLoop;
 
+        CLOSE list_donasi;
         DEALLOCATE PREPARE stmt;
     END BlockDonasi$$
 DELIMITER ;
@@ -1390,7 +1468,7 @@ DELIMITER $$
 CREATE PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN in_total_ap BIGINT, IN in_id_bantuan INT)
     BlockDonasi:BEGIN
         DECLARE t_nominal_penggunaan_donasi, t_id_rencana INT UNSIGNED;
-        DECLARE total_penggunaan_donasi BIGINT;
+        DECLARE total_penggunaan_donasi BIGINT DEFAULT 0;
         -- Menampung State Cursor
         DECLARE finished_donasi, finished_rab TINYINT DEFAULT 0;
         -- Var untuk menampung isi cursor donasi
@@ -1467,14 +1545,68 @@ CREATE PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, 
         ListDonasiLoop:WHILE NOT finished_donasi DO
             FETCH list_donasi INTO cd_id_donasi, cd_nominal_donasi, cd_saldo_donasi;
 
+            IF total_penggunaan_donasi = in_total_ap THEN
+                SET finished_rab = 1;
+            END IF;
+
             IF finished_donasi = 1 THEN
-                CLOSE list_donasi;
-                SET finished_donasi = 0;
                 LEAVE ListDonasiLoop;
             END IF;
 
             BlockRAB:BEGIN
-                DECLARE list_rab CURSOR FOR SELECT rab.nominal_kebutuhan, rab.id_kebutuhan, rab.keterangan FROM rencana r JOIN rencana_anggaran_belanja rab USING(id_rencana) WHERE rab.id_rencana = t_id_rencana AND id_kebutuhan NOT IN (SELECT id_kebutuhan FROM anggaran_pelaksanaan_donasi WHERE id_pelaksanaan = in_id_pelaksanaan AND saldo_kebutuhan = 0);
+                DECLARE list_rab CURSOR FOR 
+                WITH cte AS (
+                    SELECT MIN(saldo_kebutuhan) saldo_kebutuhan, id_kebutuhan FROM anggaran_pelaksanaan_donasi WHERE id_pelaksanaan = in_id_pelaksanaan GROUP BY id_kebutuhan
+                ) 
+                SELECT r3.nominal_kebutuhan, r3.id_kebutuhan, keterangan
+                FROM
+                (
+                    ( 
+                    SELECT r1.id_rab, r1.id_kebutuhan, r1.nominal_kebutuhan
+                    FROM (
+                        SELECT rab.id_rab, rab.id_kebutuhan, IFNULL(cte.saldo_kebutuhan, rab.nominal_kebutuhan) nominal_kebutuhan FROM 
+                        rencana_anggaran_belanja rab 
+                        LEFT JOIN cte USING(id_kebutuhan)
+                        WHERE id_rencana = t_id_rencana
+                        HAVING nominal_kebutuhan > 0
+                        ORDER BY 1 ASC
+                    ) r1, (
+                        SELECT rab.id_rab, rab.id_kebutuhan, IFNULL(cte.saldo_kebutuhan, rab.nominal_kebutuhan) nominal_kebutuhan FROM 
+                        rencana_anggaran_belanja rab 
+                        LEFT JOIN cte USING(id_kebutuhan)
+                        WHERE id_rencana = t_id_rencana
+                        HAVING nominal_kebutuhan > 0
+                        ORDER BY 1 ASC
+                    ) r2
+                    WHERE r1.id_rab >= r2.id_rab
+                    GROUP BY r1.id_rab, r1.nominal_kebutuhan
+                    HAVING SUM(r2.nominal_kebutuhan) < in_total_ap
+                    ORDER BY 1 ASC
+                    ) UNION (
+                    SELECT r1.id_rab, r1.id_kebutuhan, r1.nominal_kebutuhan
+                    FROM (
+                        SELECT rab.id_rab, rab.id_kebutuhan, IFNULL(cte.saldo_kebutuhan, rab.nominal_kebutuhan) nominal_kebutuhan FROM 
+                        rencana_anggaran_belanja rab 
+                        LEFT JOIN cte USING(id_kebutuhan)
+                        WHERE id_rencana = t_id_rencana
+                        HAVING nominal_kebutuhan > 0
+                        ORDER BY 1 ASC
+                    ) r1, (
+                        SELECT rab.id_rab, rab.id_kebutuhan, IFNULL(cte.saldo_kebutuhan, rab.nominal_kebutuhan) nominal_kebutuhan FROM 
+                        rencana_anggaran_belanja rab 
+                        LEFT JOIN cte USING(id_kebutuhan)
+                        WHERE id_rencana = t_id_rencana
+                        HAVING nominal_kebutuhan > 0
+                        ORDER BY 1 ASC
+                    ) r2
+                    WHERE r1.id_rab >= r2.id_rab
+                    GROUP BY r1.id_rab, r1.nominal_kebutuhan
+                    HAVING SUM(r2.nominal_kebutuhan) >= in_total_ap
+                    ORDER BY 1 ASC
+                    LIMIT 1
+                    )
+                ) r3 LEFT JOIN rencana_anggaran_belanja rab USING(id_rab)
+                ORDER BY id_rab ASC;
 
                 -- declare NOT FOUND handler
                 DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished_rab = 1;
@@ -1485,8 +1617,6 @@ CREATE PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, 
                     FETCH list_rab INTO cr_nominal_kebutuhan, cr_id_kebutuhan, cr_keterangan;
 
                     IF finished_rab = 1 THEN
-                        CLOSE list_rab;
-                        SET finished_rab = 0;
                         LEAVE ListRabLoop;
                     END IF;
 
@@ -1497,7 +1627,7 @@ CREATE PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, 
                     END IF;
 
                     IF ck_saldo_donasi IS NULL THEN
-                        SET ck_saldo_donasi = cd_nominal_donasi + cd_saldo_donasi;
+                        SET ck_saldo_donasi = cd_nominal_donasi;
                     END IF;
 
                     IF ck_saldo_donasi >= ck_saldo_kebutuhan THEN
@@ -1508,6 +1638,10 @@ CREATE PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, 
                         SET t_nominal_penggunaan_donasi = ck_saldo_donasi;
                         SET ck_saldo_kebutuhan = ck_saldo_kebutuhan - ck_saldo_donasi;
                         SET ck_saldo_donasi = 0;
+                        
+                        IF cd_saldo_donasi > 0 THEN
+                            SET ck_saldo_donasi = cd_saldo_donasi;
+                        END IF;
                     END IF;
                     
 
@@ -1530,6 +1664,8 @@ CREATE PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, 
                         LEAVE BlockDonasi;
                     END IF;
 
+                    SET total_penggunaan_donasi = total_penggunaan_donasi + t_nominal_penggunaan_donasi;
+
                     IF ck_saldo_kebutuhan = 0 AND ck_saldo_donasi > 0 THEN
                         SET ck_saldo_kebutuhan = NULL;
                         ITERATE ListRabLoop;
@@ -1537,22 +1673,22 @@ CREATE PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, 
 
                     IF ck_saldo_donasi = 0 AND ck_saldo_kebutuhan > 0 THEN
                         SET ck_saldo_donasi = NULL;
-                        CLOSE list_rab;
-                        ITERATE ListDonasiLoop;
+                        LEAVE ListRabLoop;
                     END IF;
                     
                     IF ck_saldo_donasi = 0 AND ck_saldo_kebutuhan = 0 THEN
                         SET ck_saldo_donasi = NULL;
                         SET ck_saldo_kebutuhan = NULL;
-                        CLOSE list_rab;
-                        LEAVE BlockRAB;
-                    END IF;
-                    
+                        LEAVE ListRabLoop;
+                    END IF;    
                 END WHILE ListRabLoop;
+
+                CLOSE list_rab;
             END BlockRAB;
    
         END WHILE ListDonasiLoop;
 
+        CLOSE list_donasi;
     END BlockDonasi$$
 DELIMITER ;
 
@@ -1593,6 +1729,7 @@ TABPLabel:BEGIN
     SELECT IFNULL(SUM(nominal_penggunaan_donasi), 0) FROM anggaran_pelaksanaan_donasi WHERE id_pelaksanaan = in_id_pelaksanaan INTO t_total_penggunaan_donasi;
     IF t_total_penggunaan_donasi <> t_total_ap THEN
         ROLLBACK;
+        ALTER TABLE anggaran_pelaksanaan_donasi AUTO_INCREMENT = 1;
         SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT = 'Saldo donasi tidak mencukupi RAB yang ada, hasil kalkulasi dibatalkan';
         LEAVE TABPLabel;
     END IF;
@@ -1683,7 +1820,7 @@ CREATE TABLE detil_pinbuk (
     CONSTRAINT F_ID_PINBUK_DETIL_PINBUK_ODC FOREIGN KEY(id_pinbuk) REFERENCES pinbuk(id_pinbuk) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=INNODB;
 
-CREATE TABLE penarikan(
+CREATE TABLE penarikan (
     id_penarikan INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nominal BIGINT UNSIGNED,
     status ENUM('0','1') NOT NULL DEFAULT '0',
@@ -1703,43 +1840,57 @@ CREATE TABLE penarikan(
     CONSTRAINT U_ID_GAMBAR_PENARIKAN UNIQUE(id_gambar)
 )ENGINE=INNODB;
 
-CREATE TABLE pengadaan(
+CREATE TABLE pengadaan (
     id_pengadaan INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    id_penarikan INT UNSIGNED,
     keterangan VARCHAR(255),
+    nominal BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    saldo BIGINT UNSIGNED NOT NULL DEFAULT 0,
     id_pengesah SMALLINT UNSIGNED,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT F_ID_PENARIKAN_PENGADAAN_ODC FOREIGN KEY(id_penarikan) REFERENCES penarikan(id_penarikan) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT F_ID_PENGESAH_PENGADAAN_ODR FOREIGN KEY(id_pengesah) REFERENCES pegawai(id_pegawai) ON DELETE RESTRICT ON UPDATE CASCADE
 )ENGINE=INNODB;
 
-CREATE TABLE petugas_pengadaan(
+CREATE TABLE petugas_pengadaan (
     id_petugas_pengadaan INT UNSIGNED PRIMARY KEY,
     id_pengadaan INT UNSIGNED,
     id_pegawai SMALLINT UNSIGNED,
     nama VARCHAR(50) NOT NULL,
+    status ENUM('R','D'),
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT F_ID_PENGADAAN_PETUGAS_PENGADAAN_ODC FOREIGN KEY(id_pengadaan) REFERENCES pengadaan(id_pengadaan) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT F_ID_PEGAWAI_PETUGAS_PENGADAAN_ODN FOREIGN KEY(id_pegawai) REFERENCES pegawai(id_pegawai) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT F_ID_PEGAWAI_PETUGAS_PENGADAAN_ODN FOREIGN KEY(id_pegawai) REFERENCES pegawai(id_pegawai) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT U_ID_PENGADAAN_ID_PEGAWAI_PETUGAS_PENGADAAN UNIQUE(id_pengadaan, id_pegawai)
 )ENGINE=INNODB;
 
-CREATE TABLE belanja(
+CREATE TABLE penyerahan (
+    id_penarikan INT UNSIGNED,
+    id_pengadaan INT UNSIGNED,
+    nominal BIGINT UNSIGNED NOT NULL,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT F_ID_PENARIKAN_PENYERAHAN_ODC FOREIGN KEY(id_penarikan) REFERENCES penarikan(id_penarikan) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT F_ID_PENGADAAN_PENYERAHAN_ODC FOREIGN KEY(id_pengadaan) REFERENCES pengadaan(id_pengadaan) ON DELETE CASCADE ON UPDATE CASCADE,
+)ENGINE=INNODB;
+
+CREATE TABLE belanja (
     id_belanja BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nominal BIGINT UNSIGNED,
-    saldo_penarikan BIGINT UNSIGNED,
     saldo_rab INT,
     id_petugas_pengadaan INT UNSIGNED,
     id_rab BIGINT UNSIGNED,
-    id_pengesah SMALLINT UNSIGNED,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT F_ID_PETUGAS_PENGADAAN_BELANJA_ODR FOREIGN KEY(id_petugas_pengadaan) REFERENCES petugas_pengadaan(id_petugas_pengadaan) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT F_ID_RAB_BELANJA_ODC FOREIGN KEY(id_rab) REFERENCES rencana_anggaran_belanja(id_rab) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=INNODB;
 
-CREATE TABLE list_gambar_belanja(
+CREATE TABLE list_gambar_belanja (
     id_belanja BIGINT UNSIGNED,
     id_gambar INT UNSIGNED NOT NULL,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT F_ID_BELANJA_LGB_ODR FOREIGN KEY(id_belanja) REFERENCES belanja(id_belanja) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT F_ID_GAMBAR_BELANJA_ODR FOREIGN KEY(id_gambar) REFERENCES gambar(id_gambar) ON DELETE RESTRICT ON UPDATE CASCADE
 )ENGINE=INNODB;
@@ -1786,16 +1937,76 @@ CREATE TABLE detil_transaksi_pengembalian_penarikan_anggaran(
 
 CREATE TABLE informasi (
     id_informasi INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    judul VARCHAR(50) NOT NULL,
     isi TEXT,
-    id_pencairan INT UNSIGNED,
-    id_pelaksanaan INT UNSIGNED,
-    id_belanja INT UNSIGNED,
+    label ENUM('I','PN','PD','PL'),
+    id_bantuan INT UNSIGNED,
+    id_author SMALLINT UNSIGNED,
+    id_editor SMALLINT UNSIGNED,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT F_ID_PENCAIRAN_INFORMASI_ODR FOREIGN KEY(id_pencairan) REFERENCES pencairan(id_pencairan) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT F_ID_PELAKSANAAN_INFORMASI_ODR FOREIGN KEY(id_pelaksanaan) REFERENCES pelaksanaan(id_pelaksanaan) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT F_ID_BELANJA_INFORMASI_ODR FOREIGN KEY(id_belanja) REFERENCES belanja(id_belanja) ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT F_ID_BANTUAN_INFORMASI_ODN FOREIGN KEY(id_bantuan) REFERENCES bantuan(id_bantuan) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_ID_AUTHOR_INFORMASI_ODR FOREIGN KEY(id_author) REFERENCES pegawai(id_pegawai) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT F_ID_EDITOR_INFORMASI_ODR FOREIGN KEY(id_editor) REFERENCES pegawai(id_pegawai) ON DELETE RESTRICT ON UPDATE CASCADE
 )ENGINE=INNODB;
+
+CREATE TABLE list_gambar_informasi(
+    id_informasi INT UNSIGNED,
+    id_gambar INT UNSIGNED,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT F_ID_INFORMASI_LGI_ODN FOREIGN KEY(id_informasi) REFERENCES informasi(id_informasi) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_ID_GAMBAR_LGI_ODC FOREIGN KEY(id_gambar) REFERENCES gambar(id_gambar) ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=INNODB;
+
+CREATE TABLE informasi_penarikan(
+    id_ipn INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id_informasi INT UNSIGNED,
+    id_penarikan INT UNSIGNED,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT F_ID_INFORMASI_IPN_ODC FOREIGN KEY(id_informasi) REFERENCES informasi(id_informasi) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT F_ID_PENCAIRAN_IPN_ODC FOREIGN KEY(id_penarikan) REFERENCES penarikan(id_penarikan) ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=INNODB;
+
+CREATE TABLE informasi_pengadaan(
+    id_ipd INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id_informasi INT UNSIGNED,
+    id_pengadaan INT UNSIGNED,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT F_ID_INFORMASI_IPD_ODC FOREIGN KEY(id_informasi) REFERENCES informasi(id_informasi) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT F_ID_PENGADAAN_IPD_ODC FOREIGN KEY(id_pengadaan) REFERENCES pengadaan(id_pengadaan) ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=INNODB;
+
+CREATE TABLE informasi_pelaksanaan(
+    id_ipl INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id_informasi INT UNSIGNED,
+    id_pelaksanaan INT UNSIGNED,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT F_ID_INFORMASI_IPL_ODC FOREIGN KEY(id_informasi) REFERENCES informasi(id_informasi) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT F_ID_PELAKSANAAN_IPL_ODC FOREIGN KEY(id_pelaksanaan) REFERENCES pelaksanaan(id_pelaksanaan) ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=INNODB;
+
+-- DROP TRIGGER AfterUpdateInformasi;
+DELIMITER $$
+CREATE TRIGGER AfterUpdateInformasi
+AFTER UPDATE ON informasi FOR EACH ROW
+    BEGIN
+    IF NEW.label <> OLD.label AND OLD.label <> 'I' THEN
+        IF OLD.label = 'PL' THEN
+            DELETE FROM informasi_pelaksanaan WHERE id_informasi = OLD.id_informasi;
+        ELSEIF OLD.label = 'PN' THEN
+            DELETE FROM informasi_penarikan WHERE id_informasi = OLD.id_informasi;
+        ELSEIF OLD.label = 'PD' THEN
+            DELETE FROM informasi_pengadaan WHERE id_informasi = OLD.id_informasi;
+        ELSE
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Label tidak diketahui';
+        END IF;
+    END IF;
+    END$$
+DELIMITER ;
 
 -- DROP PROCEDURE VirtualCAPenarikan;
 DELIMITER $$

@@ -53,7 +53,7 @@
                     <i class="lni lni-grow"></i>
                 </div>
                 <div class="box-info d-flex flex-column">
-                    <h6 class="mb-0" data-count-up-value="<?= $data['detil_bantuan']->donasi_disalurkan; ?>">0</h6>
+                    <h6 class="mb-0"<?= (!is_null($data['detil_bantuan']->donasi_disalurkan) ? ' data-count-up-value="'. $data['detil_bantuan']->donasi_disalurkan .'"':''); ?>>0</h6>
                     <p><small class="text-muted">
                             <?= (isset($data['detil_bantuan']->jenis_penyaluran) ? $data['detil_bantuan']->jenis_penyaluran : 'Donasi') ?>
                             Tersalurkan
@@ -128,8 +128,11 @@
                             echo '<p class="date">'. $data['deskripsi']->create_at .'</p><h4>'. $data['deskripsi']->judul .'</h4>';
                         } else { 
                     ?>
-                        <div class="empty mx-auto"></div>
-                        <h4>Belum ada deskripsi selengkapnya</h4>
+                        <center>
+                            <div class="empty mx-auto"></div>
+                            <h4>Belum ada deskripsi selengkapnya</h4>
+                            <p class="desc small p-empty mt-2">Mohon maaf, untuk sementara deskripsi progam belum ditambahkan</p>
+                        </center>
                     <?php
                         }
                     ?>
@@ -146,39 +149,62 @@
             <?php } ?>
         </div>
 
-        <!-- <div class="row g-0 gap-3 gap-md-4 pt-2 pt-lg-3 mt-2 wow fadeInUp" data-wow-delay="1.6s" id="update-terkini-area">
-            <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center justify-content-between" id="title">
-                <div class="desc align-self-end">
-                    <h4>Update Terkini</h4>
+        <div class="row g-0 gap-3 gap-md-4 pt-2 pt-lg-3 mt-2 wow fadeInUp" data-wow-delay="1.6s" id="update-terkini-area">
+            <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center <?= (isset($data['top_update_terbaru']) ? 'justify-content-between':'justify-content-center');?>" id="title">
+                <div class="desc align-items-center <?= (isset($data['top_update_terbaru']) ? 'justify-content-between' : 'justify-content-center'); ?> justify-content-center d-flex w-100">
+                    <?php if (isset($data['top_update_terbaru'])) {
+                        echo '<h4>Update Terkini</h4><a data-bs-target="#modalListUpdate" data-bs-toggle="modal" href="javascript:void(0);" class="text-decoration-underline">Seluruh Informasi <i class="lni lni-chevron-right"></i></a>';
+                    } else { ?>
+                        <center>
+                            <div class="mx-auto empty"></div><h4>Belum Ada Update Terkini</h4>
+                            <p class="desc small p-empty mt-2">Mohon maaf, untuk sementara belum ada update terbaru</p>
+                        </center>
+                    <?php } ?>
                 </div>
                 <span class="node"></span>
             </div>
-            <div class="col-12 bg-light rounded-box p-3">
-                <div class="row m-0 timeline gap-3">
-                    <div class="col-12 timeline-item px-0">
-                        <div class="row m-0">
-                            <div class="col-12 col-lg-2">
-                                <div class="time small fw-bold">
-                                    28 November 2023
+            <?php if (isset($data['top_update_terbaru'])) { ?>
+                <div class="col-12 bg-light rounded-box p-3">
+                    <div class="row m-0 timeline gap-3">
+                        <?php $iInformasi = 1; foreach($data['top_update_terbaru']['data'] as $key => $informasi) { ?>
+                        <div class="col-12 timeline-item px-0<?= (count($data['top_update_terbaru']['data']) == $iInformasi && $data['top_update_terbaru']['record'] != $iInformasi ? ' next':''); ?>" data-id-informasi="<?= strrev(base64_encode($informasi->id_informasi)); ?>">
+                            <div class="row m-0 w-100">
+                                <div class="col-12 col-lg-2">
+                                    <div class="time small fw-bold">
+                                        <a data-date-value="<?= $informasi->tanggal_publikasi; ?>" href="javascript:void();" class="text-secondary" data-bs-toggle="modal" data-bs-target="#modalListUpdate" data-filter="date">
+                                            <p>
+                                                <span>
+                                                    <?= $informasi->waktu_publikasi; ?>
+                                                </span>
+                                            </p>
+                                        </a>
+                                    </div>
+                                    <a data-label-value="<?= $informasi->label; ?>" href="javascript:void();" data-bs-toggle="modal" data-bs-target="#modalListUpdate" data-filter="label" class="text-capitalize badge<?= (is_array(Utility::labelInformasi($informasi->label)) ? ' '. Utility::labelInformasi($informasi->label)['class'] : ''); ?>">
+                                        <span><?= (isset(Utility::labelInformasi($informasi->label)['text']) ? Utility::labelInformasi($informasi->label)['text'] : ''); ?></span>
+                                    </a>
                                 </div>
-                                <div class="badge bg-green-box">
-                                    Pelaksanaan
+                                <div class="col-12 col-lg content flex-column d-flex">
+                                    <span><b><?= $informasi->judul; ?></b></span>
+                                    <div class="editor-read">
+                                        <?= $informasi->isi; ?>
+                                    </div>
+                                    <div>
+                                        <a href="javascript:void();" data-bs-toggle="modal" data-bs-target="#modalDetilUpdate" class="text-decoration-underline">Lebih detil <i class="lni lni-chevron-right"></i></a>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-lg-10 content">
-                                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Architecto modi, ipsum ratione enim voluptatum animi laboriosam quaerat? Ad quos esse voluptatem accusamus ipsum, quod quae.</p>
-                            </div>  
                         </div>
+                        <?php $iInformasi++; } ?>
                     </div>
                 </div>
-            </div>
-        </div> -->
+            <?php } ?>
+        </div>
         
-        <div id="donatur-area" class="row g-0 gap-3 gap-md-4 bg-white position-relative pt-2 pt-lg-3 ql-container ql-disabled mt-2 wow fadeInUp" data-wow-delay="1.8s">
+        <div id="donatur-area" class="row g-0 gap-3 gap-md-4 bg-white position-relative pt-2 pt-lg-3 mt-2 wow fadeInUp" data-wow-delay="1.8s">
             <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center <?= (!isset($data['list_donatur']) ? 'justify-content-center flex-column' : 'justify-content-between'); ?>" id="title">
                 <?php
                     if (!isset($data['list_donatur'])) {
-                        echo '<div class="empty mx-auto"></div><h4>Belum ada donatur</h4>';
+                        echo '<center><div class="empty mx-auto"></div><h4>Belum ada donatur</h4><p class="desc small mt-2">Daftar donasi baru akan ditampilkan disini</p></center>';
                     } else {
                 ?>
                 <div class="desc align-self-end">
@@ -220,25 +246,6 @@
     </div>
 </div>
 
-<div class="modal" tabindex="-1" id="modalShareBtn">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-box">
-            <div class="modal-header">
-            <h5 class="modal-title">Bagikan Lewat</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body d-flex gap-2 share">
-            <a type="button" class="btn btn-outline-green-box rounded-box p-2 medsos-icon">
-                <i class="bi bi-whatsapp fs-4"></i>
-            </a>
-            <a type="button" class="btn btn-outline-dark rounded-box p-2 medsos-icon">
-                <i class="bi bi-twitter-x fs-4"></i>
-            </a>
-        </div>
-        </div>
-    </div>
-</div>
-
 <div class="modal" tabindex="-1" id="modalListDonatur">
     <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable">
         <div class="modal-content">
@@ -256,6 +263,93 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" id="modalListUpdate">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center border-0">
+                <div class="row m-0 justify-content-center w-100">
+                    <div class="col-12 col-lg-8 col-xl-6 d-flex justify-content-between align-items-center px-0">
+                        <h5 class="modal-title">
+                            Update Berita
+                            <div id="data-filter"></div>
+                        </h5>
+                        <button type="button" class="btn btn-outline-orange" data-bs-dismiss="modal" aria-label="Close"><i class="lni lni-chevron-left"></i> Kembali</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body border-top">
+                <div class="row m-0 justify-content-center w-100">
+                    <div class="px-0 col-12 col-lg-8 col-xl-6">
+                        <div class="timeline d-flex gap-y-4" id="content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" id="modalDetilUpdate">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content rounded-box">
+            <div class="modal-header">
+                <div class="d-flex flex-column">
+                    <h5 class="modal-title"><?= (isset($data['modal_update_berita']) ? $data['modal_update_berita']->judul :'Judul Informasi'); ?></h5>
+                    <?= (isset($data['modal_update_berita']) ? '<span class="badge'. (' '). Utility::labelInformasi($data['modal_update_berita']->label)['class'] .' pt-1 text-capitalize">'. Utility::labelInformasi($data['modal_update_berita']->label)['text'] .'</span>' : ''); ?>
+                </div>
+                <button type="button" class="btn btn-outline-orange-reverse" data-bs-dismiss="modal" aria-label="Close">Tutup</button>
+            </div>
+            <div class="modal-body">
+                <?php if (isset($data['modal_update_berita'])) { ?>
+                <div class="d-flex align-items-center gap-x-3">
+                    <div class="avatar rounded-circle bg-transparent border overflow-hidden"
+                        data-id-author="<?= strrev(base64_encode($data['modal_update_berita']->id_author ?? '')); ?>">
+                        <img src="<?= (isset($data['modal_update_berita']->path_author) ? $data['modal_update_berita']->path_author : ''); ?>" alt="<?= (isset($data['modal_update_berita']->nama_author) ? $data['modal_update_berita']->nama_author : ''); ?>" class="img-fluid">
+                    </div>
+                    <div class="media-body">
+                        <div class="name mb-0 text-black-50 font-weight-bold">
+                            <span><?= $data['modal_update_berita']->modified_at; ?></span>
+                        </div>
+                        <div class="small text-black-50 font-weight-bolder">
+                            <span><?= $data['modal_update_berita']->nama_author; ?></span>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+                <div id="content" class="p-0">
+                    <?= (isset($data['modal_update_berita']) ? $data['modal_update_berita']->isi :''); ?>
+                </div>
+            </div>
+            <div class="modal-footer border-light justify-content-center py-4 gap-3">
+                <div class="lets-donate"></div>
+                <div class="media">
+                    <a href="<?= '/donasi/buat/baru/'. $data['detil_bantuan']->id_bantuan; ?>" class="text-danger fw-bolder text-decoration-underline">Ikutan juga berdonasi</a>
+                    <p class="desc small">Yuk kita bantu</p>
+                </div>
+                <button class="btn btn-outline-orange-reverse p-2" data-bs-target="#modalShareBtn"><i class="bi bi-share-fill fs-1" style="margin-left: -0.5px;"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" id="modalShareBtn">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-box">
+            <div class="modal-header">
+            <h5 class="modal-title">Bagikan Lewat</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex gap-2 share">
+            <a type="button" class="btn btn-outline-green-box rounded-box p-2 medsos-icon">
+                <i class="bi bi-whatsapp fs-4"></i>
+            </a>
+            <a type="button" class="btn btn-outline-dark rounded-box p-2 medsos-icon">
+                <i class="bi bi-twitter-x fs-4"></i>
+            </a>
+        </div>
         </div>
     </div>
 </div>

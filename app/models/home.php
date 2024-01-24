@@ -5,10 +5,10 @@ class HomeModel {
               $cookieName,
               $_offset = 0,
               $_limit = 10,
+              $_order = 1,
               $_order_direction = 'DESC';
 
     private $_halaman = array(1,10),
-            $_order = 1,
             $_search;
 
     public function __construct() {
@@ -43,6 +43,16 @@ class HomeModel {
         return false;
 	}
 
+    public function createMultiple($table, $rows = array()) {
+        if ($this->checkParams($table, $rows)) {
+            if (!$this->db->insertMultiple($table, $rows))  {
+                throw new Exception("Error Processing Insert Multiple " . $table);
+            }
+            return true;
+        }
+        return false;
+	}
+
 	public function delete($table, $fields = array()) {
         if ($this->checkParams($table, $fields)) {
             if (!$this->db->delete($table, $fields)) {
@@ -53,9 +63,9 @@ class HomeModel {
         return false;
 	}
 
-    public function update($table, $fields = array(), $where = array()) {
+    public function update($table, $fields = array(), $where = array(), $condition = null, $another_filter = array()) {
 		if ($this->checkParams($table, $fields) && is_array($where)) {
-            $oldData = $this->getData(implode(',', array_keys($fields)), $table, $where);
+            $oldData = $this->getData(implode(',', array_keys($fields)), $table, $where, $condition, $another_filter);
             $fields = array_diff_assoc($fields, json_decode(json_encode($oldData), true));
             if (!empty($fields)) {
                 if (!$this->db->update($table, $fields, $where)) {
@@ -118,6 +128,7 @@ class HomeModel {
             $filter = "WHERE {$where}";
             array_push($sql, $filter);
         }
+        
         if (!is_null($search)) {
             if (is_array($search)) {
                 if (is_array($search[1])) {

@@ -395,6 +395,10 @@ class FetchController extends Controller {
             case 'detil-bantuan':
                 $params[0] = 'detilBantuan';
             break;
+
+            case 'informasi':
+                // informasi Params
+            break;
             
             default:
                 $this->_result['feedback'] = array(
@@ -826,6 +830,297 @@ class FetchController extends Controller {
 
         $this->result();
 
+        return false;
+    }
+
+    private function informasiListRead($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+        if (!isset($decoded['id_bantuan'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Data id bantuan tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->model('Informasi');
+        if (isset($decoded['id_informasi'])) {
+            $id_informasi = base64_decode(strrev($decoded['id_informasi']));
+            $this->model->getData('id_bantuan','informasi', array('id_informasi','=', $id_informasi));
+            if (!$this->model->affected()) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Data informasi tidak ditemukan'
+                );
+                $this->result();
+                return false;
+            }
+
+            if ($decoded['id_bantuan'] != $this->model->getResult()->id_bantuan) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Data bantuan informasi tidak cocok'
+                );
+                $this->result();
+                return false;
+            }
+        }
+
+        $filter_by = '';
+        if (isset($decoded['filter_by'])) {
+            switch ($decoded['filter_by']) {
+                case 'date':
+                    // modified_at
+                    $filter_by = "DATE_FORMAT(i.modified_at, '%Y-%m-%d') = ? AND";
+                break;
+
+                case 'label':
+                    // label
+                    $filter_by = "i.label = ? AND";
+                break;
+                
+                default:
+                break;
+            }
+        }
+
+        if (isset($decoded['offset'])) {
+            $this->model->setOffset($decoded['offset']);
+        }
+
+        $this->model->setLimit(5);
+        $limit = $this->model->getLimit();
+
+        if (isset($decoded['list_id'])) {
+            $decoded['list_id'] = Sanitize::thisArray(json_decode(base64_decode($decoded['list_id'])));
+            // getCurrentId And Get New Id
+            $this->model->getCurrentListId($filter_by, $decoded, $decoded['list_id']);
+            if (!$this->model->affected()) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Failed to get current id informasi'
+                );
+                $this->result();
+                return false;
+            }
+
+            $currentListId = $this->model->getResults();
+
+            foreach ($currentListId as $value) {
+                $arrayList[] = $value->id_informasi;
+            }
+            $currentListId = $arrayList;
+            $list_id = $currentListId;
+
+            // compare with the last list
+            $newListId = array_diff($currentListId, $decoded['list_id']);
+            $removeData = array_diff($decoded['list_id'], $currentListId);
+
+            if (count(is_countable($newListId) ? $newListId : []) > 0) {
+                // new data founded
+                $this->model->getListInformasiById(
+                    $filter_by, 
+                    array(
+                        'filter_value' => $decoded['filter_value'], 
+                        'id_bantuan' => $decoded['id_bantuan']
+                    ), 
+                    $newListId
+                );
+    
+                if (!$this->model->affected()) {
+                    $this->_result['feedback'] = array(
+                        'message' => 'Informasi method getListInformasiById goes wrong'
+                    );
+                    $this->result();
+                    return false;
+                }
+    
+                $newestData = $this->model->getResults();
+                
+                if ($newestData) {
+                    $decoded['offset'] += sizeof($newestData);
+                    if ((count($newestData) % $limit) != 0) {
+                        $limit -= (count($newestData) % $limit);
+                        if ($limit < $this->model->getLimit() / 2) {
+                            $limit += $this->model->getLimit();
+                        }
+                    } else {
+                        $limit = $this->model->getLimit();
+                    }
+                }
+            }
+
+            if (count(is_countable($removeData) ? $removeData : [])) {
+                $decoded['offset'] -= count($removeData);
+                if (count(is_countable($newListId) ? $newListId : [])) {
+                    $limit += count($removeData);
+                } else {
+                    $limit = $this->model->getLimit();
+                }
+            }
+        }
+
+        if (isset($decoded['offset'])) {
+            $this->model->setOffset($decoded['offset']);
+        }
+
+        if (isset($limit)) {
+            $this->model->setLimit($limit);
+        }
+
+        $this->model->getListInformasi($filter_by, $decoded);
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Data '. (isset($decoded['filter_by']) ? $decoded['filter_by'] : '') . ' informasi tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $data = $this->model->data();
+
+        if (isset($newestData)) {
+            if (count(is_countable($newListId) ? $newListId : []) == 0) {
+                $decoded['list_id'] = array_map('intval', $decoded['list_id']);
+                $list_id = $decoded['list_id'];
+            } else {
+                $intersetct = array_intersect(array_column($data['data'], 'id_informasi'), $currentListId);
+                if (count(is_countable($intersetct) ? $intersetct : [])) {
+                    foreach($intersetct as $key => $value) {
+                        foreach($newestData as $listNewst => $newestRecord) {
+                            if ($newestRecord->id_bantuan == $value) {
+                                array_splice($newestData, $listNewst, 1);
+                            }
+                        }
+                    }
+                }
+                $list_id = $currentListId;
+            }
+        }
+
+        if (!isset($list_id)) {
+            $list_id = array();
+        }
+
+        $data['list_id'] = base64_encode(json_encode(array_unique(array_merge($list_id, array_column($data['data'], 'id_informasi')))));
+
+        if (!isset($data['data'])) {
+            $data['data'] = array();
+        }
+
+        if (!isset($data['record'])) {
+            $data['record'] = count($currentListId);
+        }
+
+        if (!isset($data['load_more'])) {
+            $data['load_more'] = false;
+        }
+
+        if (!isset($data['offset'])) {
+            $data['offset'] = $this->model->getOffset();
+        }
+
+        if (!isset($data['limit'])) {
+            $data['limit'] = $this->model->getLimit();
+        }
+
+        if (!isset($data['list_id'])) {
+            $data['list_id'] = base64_encode(json_encode($currentListId));
+        }
+
+        // setel ulang limit dan offset ke aturan awal yakni 6
+        if ($data['limit'] != $this->model->getLimit()) {
+            $data['offset'] += $limit - $this->model->getLimit();
+            $data['limit'] = $this->model->getLimit();
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => $data['data'],
+            'limit' => (int) $data['limit'],
+            'offset' => (int) $this->model->getOffset() + $this->model->getLimit(),
+            'filter_by' => $decoded['filter_by'],
+            'filter_value' => $decoded['filter_value'],
+            'total_record' => $data['record'],
+            'load_more' => $data['load_more'],
+            'list_id' => $data['list_id']
+        );
+
+        if (isset($newestData)) {
+            $this->_result['feedback']['newest_data'] = array_reverse($newestData);
+        }
+
+        if (isset($removeData)) {
+            if (count(is_countable($removeData) ? $removeData : [])) {
+                $this->_result['feedback']['removed_id'] = $removeData;
+            }
+        }
+
+        $this->result();
+        Session::delete('toast');
+        return false;
+    }
+
+    public function get($params) {
+        if (count(is_countable($params) ? $params : []) == 0) {
+            $this->_result['feedback'] = array(
+                'message' => 'Number of params not found'
+            );
+            $this->result();
+            return false;
+        }
+
+        // Check Content Type and decode JSON to array
+        $decoded = $this->contentTypeJsonDecoded($_SERVER["CONTENT_TYPE"]);
+
+        // Check Token
+        if (!$this->checkToken($decoded['token'])) { return false; }
+
+        switch ($params[0]) {
+            case 'informasi':
+                // informasi Params
+            break;
+            
+            default:
+                $this->_result['feedback'] = array(
+                    'message' => 'Unrecognize params '. $params[0] . ' on get'
+                );
+                $this->result();
+                return false;
+            break;
+        }
+
+        if (!isset($decoded['fields'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Fields data are empty'
+            );
+            $this->result();
+            return false;
+        }
+
+        // prepare method Get name
+        $action = $params[0] . 'Get';
+        // call method Get
+        $this->$action($decoded['fields']);
+
+        return false;
+    }
+
+    private function informasiGet($decoded) {
+        $id_informasi = base64_decode(strrev($decoded['id_informasi']));
+        $this->model('Home');
+        $this->model->getData('judul, isi, i.label, id_author, pa.nama nama_author, ga.path_gambar path_author, FormatTanggal(i.modified_at) tanggal_posting','informasi i LEFT JOIN pegawai pa ON(pa.id_pegawai = i.id_author) LEFT JOIN admin adm ON(adm.id_pegawai = pa.id_pegawai) LEFT JOIN akun a ON(a.id_akun = adm.id_akun) LEFT JOIN gambar ga ON(ga.id_gambar = a.id_gambar)', array('id_informasi', '=', $id_informasi));
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Data informasi tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => $this->model->getResult()
+        );
+
+        $this->result();
         return false;
     }
 }

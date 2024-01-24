@@ -130,7 +130,7 @@ const detectMob = function() {
 };
 
 const detectTab = function() {
-    return ( window.innerWidth <= 768 );
+    return ( window.innerWidth <= 991 );
 };
 
 function keteranganJenisChannelPayment(jenis_cp, skip) {
@@ -217,6 +217,38 @@ function statusBantuan(status) {
         badge.class = 'badge-secondary'; 
         badge.text = "Ditolak";
     }
+    return badge;
+}
+
+function labelInformasi(label) {
+    let badge = {};
+    label = label.toUpperCase();
+    switch (label) {
+        case 'I':
+            badge.class = 'bg-primary';
+            badge.text = 'Informasi';
+        break;
+
+        case 'PN':
+            badge.class = 'bg-orange';
+            badge.text = 'Penarikan';
+        break;
+
+        case 'PL':
+            badge.class = 'bg-success';
+            badge.text = 'Pelaksanaan';
+        break;
+
+        case 'PD':
+            badge.class = 'bg-yellow';
+            badge.text = 'Informasi';
+        break;
+    
+        default:
+            badge = false;
+        break;
+    }
+
     return badge;
 }
 

@@ -88,7 +88,7 @@ table.table-responsive.table-absolute-first tr:not([data-zero="true"])>th:first-
 table.table-responsive.table-absolute-first tr:not([data-zero="true"])>td:first-child {
     position: absolute;
     width: auto;
-    box-shadow: 2px 0px 0px 0px var(--lighter);
+    box-shadow: 1px 0px 2px 0px var(--lighter);
 }
 
 table.table-responsive.table-absolute-first thead tr>th:first-child,
@@ -118,12 +118,16 @@ table.table-responsive.table-absolute-first td:not(.fit):not(.auto):nth-child(2)
 }
 
 /* load animation table */
+
+.card.load *:not(span),
 table.load *:not(span) {
     border-radius: inherit;
 }
 
+.card.load a[role="button"],
+.card.load *:not(span) span:not(span span):not(.input-char-left),
 table.load a[role="button"],
-table.load *:not(span) span {
+table.load *:not(span) span:not(span span):not(.input-char-left) {
     color: transparent;
     background: linear-gradient(-90deg, #eee, #ddd, #ddd, #eee);
     background-size: 400% 400%;
@@ -131,16 +135,20 @@ table.load *:not(span) span {
     border-radius: 5px;
 }
 
+.card.load i[class*="bg"],
 table.load i[class*="bg"] {
     background: transparent !important;
 }
 
+.card.load a,
 table.load a {
     cursor: none !important;
     pointer-events: none !important;
 }
 
-table.load span,
+.card.load span:not(span span):not(.input-char-left),
+.card.load a i,
+table.load span:not(span span):not(.input-char-left),
 table.load a i {
     color: transparent !important;
 }
@@ -400,7 +408,7 @@ a[data-action]:hover {
 
 .bootstrap-datetimepicker-widget table tr>th:last-child {
     padding-right: 1.5rem !important;
-}
+} 
 
 @media (min-width: 360px) {
     .form-group label {
@@ -412,6 +420,25 @@ a[data-action]:hover {
     .form-control.is-invalid+span.select2 .selection>.select2-selection,
     .was-validated .form-control:invalid+span.select2 .selection>.select2-selection {
         transition: background-position 0s ease;
+    }
+}
+
+@media (max-width: 375px) {
+    section#main-content {
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+
+    .card {
+        border-radius: 0px;
+    }
+
+    .card-footer,
+    .card-body .table td,
+    .card-body .table th,
+    .card-header {
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 }
 
@@ -442,6 +469,30 @@ a[data-action]:hover {
     table.table-absolute-first tr[style] th,
     table.table-absolute-first tr[style] td {
         padding: 5px 1em !important;
+    }
+}
+
+@media (max-width: 991px) {
+
+    button[data-value="create"] {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: calc(1.5em + 1.25rem + 5px);
+    }
+    
+    button[data-value="create"]::after {
+        content: '\f055';
+        font-family: "Font Awesome 5 Free";
+        font-size: 1.5rem;
+        display: flex;
+        align-self: center;
+    }
+}
+
+@media (min-width: 992px) {
+    button[data-value="create"]::after {
+        content: 'Tambah';
     }
 }
 

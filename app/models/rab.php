@@ -126,7 +126,7 @@ class RabModel extends HomeModel  {
                 FROM
                 (
                     SELECT id_penarikan, id_pelaksanaan, COUNT(pg.id_pengadaan) jumlah_pengadaan, SUM(pg.nominal) total_pengadaan
-                    FROM penarikan pn JOIN cte USING(id_pelaksanaan) LEFT JOIN pengadaan pg USING(id_penarikan)
+                    FROM penarikan pn JOIN cte USING(id_pelaksanaan) LEFT JOIN penyerahan py USING(id_penarikan) LEFT JOIN pengadaan pg USING(id_pengadaan)
                     WHERE status = '1' AND id_pengadaan IS NOT NULL
                     GROUP BY id_pelaksanaan, id_penarikan
                 ) a
@@ -171,7 +171,7 @@ class RabModel extends HomeModel  {
                     FROM
                     (
                         SELECT id_penarikan, id_pelaksanaan, COUNT(pg.id_pengadaan) jumlah_pengadaan, SUM(pg.nominal) total_pengadaan
-                        FROM penarikan pn JOIN cte USING(id_pelaksanaan) LEFT JOIN pengadaan pg USING(id_penarikan)
+                        FROM penarikan pn JOIN cte USING(id_pelaksanaan) LEFT JOIN penyerahan py USING(id_penarikan) LEFT JOIN pengadaan pg USING(id_pengadaan)
                         WHERE status = '1' AND id_pengadaan IS NOT NULL
                         GROUP BY id_pelaksanaan, id_penarikan
                     ) a
@@ -217,7 +217,7 @@ class RabModel extends HomeModel  {
                 FROM
                 (
                     SELECT id_penarikan, id_pelaksanaan, COUNT(pg.id_pengadaan) jumlah_pengadaan, SUM(pg.nominal) total_pengadaan
-                    FROM penarikan pn JOIN cte USING(id_pelaksanaan) LEFT JOIN pengadaan pg USING(id_penarikan)
+                    FROM penarikan pn JOIN cte USING(id_pelaksanaan) LEFT JOIN penyerahan py USING(id_penarikan) LEFT JOIN pengadaan pg USING(id_pengadaan)
                     WHERE status = '1' AND id_pengadaan IS NOT NULL
                     GROUP BY id_pelaksanaan, id_penarikan
                 ) a

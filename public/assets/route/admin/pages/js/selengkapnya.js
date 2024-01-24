@@ -162,7 +162,7 @@ let clickFunction = function(e) {
             }).toast('show');
 
             e.preventDefault();
-            // return false;
+            return false;
         break;
     }
 
@@ -264,6 +264,7 @@ let fetchGetDeskripsiSelengkapnya = function(root, response) {
     objectDeskripsi.id_bantuan = response.feedback.data.id_bantuan;
     root.querySelector('input#input-id-bantuan').setAttribute('readonly','readonly');
     root.querySelector('input#input-judul').value = response.feedback.data.judul;
+    root.querySelector('.current-length').innerText = response.feedback.data.judul.length;
     if (response.feedback.data.isi != '') {
         qEditor.setContents(JSON.parse(response.feedback.data.isi));
     }

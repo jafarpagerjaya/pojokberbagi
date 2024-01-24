@@ -91,7 +91,7 @@ class Config {
     		$newArr = array();
     		foreach ($arr as $k => $v) {
     		    $key = array_key_exists( $k, $set) ? $set[$k] : $k;
-    		    $newArr[$key] = is_array($v) ? recursive_change_key($v, $set) : $v;
+    		    $newArr[$key] = is_array($v) ? self::recursiveChangeKey($v, $set) : $v;
     		}
     		return $newArr;
     	}
@@ -110,5 +110,25 @@ class Config {
 			}
 		}
 		return $results;
+	}
+
+	public static function array_flatten($array) {
+		$result = [];
+		foreach ($array as $element) {
+			if (is_array($element)) {
+			$result = array_merge($result, self::array_flatten($element));
+			} else {
+			$result[] = $element;
+			}
+		}
+		return $result;
+	}
+
+	public static function move_file($path, $to){
+		if (!rename(BASEURL . $path, BASEURL . $to)) {
+			return false;
+		}
+		
+		return true;
 	}
 }

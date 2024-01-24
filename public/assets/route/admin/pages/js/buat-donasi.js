@@ -198,12 +198,9 @@ fetch('/admin/fetch/read/channel-payment', {
         }
     } else {
         // Failed
-        $('.toast[data-toast="feedback"] .time-passed').text('Baru Saja');
-        $('.toast[data-toast="feedback"] .toast-body').html(result.feedback.message);
-        $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
-        $('.toast[data-toast="feedback"] .toast-header strong').text('Peringatan!');
         console.log('there is some error in server side');
-        $('.toast').toast('show');
+        createNewToast(document.querySelector('[aria-live="polite"]'), result.toast.id, result.toast.data_toast, result.toast);
+        $('#'+ result.toast.id +'.toast[data-toast="'+ result.toast.data_toast +'"]').toast('show');
     }
 
     document.querySelector('body').setAttribute('data-token', result.token);
@@ -906,21 +903,13 @@ submitBtn.addEventListener('click', function() {
     })
     .then(response => response.json())
     .then(function(result) {
-        // console.log(result);
-        if (result.error == false) {
-            // Success
-            // $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-danger').addClass('bg-success');
-            // $('.toast[data-toast="feedback"] .toast-header strong').text('Informasi');
-        } else {
-            // Failed
-            $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
-            $('.toast[data-toast="feedback"] .toast-header strong').text('Peringatan!');
+        // console.log(result);                
+        createNewToast(document.querySelector('[aria-live="polite"]'), result.toast.id, result.toast.data_toast, result.toast);
+        if (result.error) {
             console.log('there is some error in server side');
         }
 
-        $('.toast[data-toast="feedback"] .toast-body').html(result.feedback.message);
-        $('.toast[data-toast="feedback"] .time-passed').text('Baru Saja');
-        $('.toast').toast('show');
+        $('#'+ result.toast.id +'.toast[data-toast="'+ result.toast.data_toast +'"]').toast('show');
     
         document.querySelector('body').setAttribute('data-token', result.token);
         fetchTokenChannel.postMessage({

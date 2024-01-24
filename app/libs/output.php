@@ -37,4 +37,16 @@ class Output {
     public static function decodeEscape($string) {
         return html_entity_decode($string ?? '', ENT_QUOTES, "UTF-8");
     }
+
+    public static function decodeEscapeArray($array) {
+        $result = [];
+		foreach ($array as $element) {
+			if (is_array($element)) {
+			    $result = array_merge($result, self::decodeEscapeArray($element));
+			} else {
+			    $result[] = self::decodeEscape($element);
+			}
+		}
+		return $result;
+    }
 }

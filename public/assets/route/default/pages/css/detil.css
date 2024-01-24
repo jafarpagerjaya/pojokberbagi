@@ -43,6 +43,14 @@
     font-size: .725rem;
 }
 
+.ql-container {
+    font-family: inherit;
+}
+
+.ql-editor img {
+    border-radius: 15px;
+}
+
 #selengkapnya img {
     margin: 1em auto;
 }
@@ -208,9 +216,26 @@ h6 {
     padding: 0px;
 }
 
+#update-terkini-area .ql-editor {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+#modalListUpdate .timeline-item .hidden-area-utility .ql-editor,
+#update-terkini-area .timeline-item .hidden-area-utility .ql-editor {
+    max-height: 200px;
+    overflow: hidden;
+}
+
+#modalListUpdate .hidden-area-utility + a[data-bs-target="#modalDetilUpdate"],
+#update-terkini-area .hidden-area-utility + a[data-bs-target="#modalDetilUpdate"] {
+    margin-top: 12px;
+}
+
+#modalDetilUpdate .lets-donate,
+#update-terkini-area .empty,
 #donatur-area .empty,
 #deskripsi-selengkapnya-area .empty {
-    background-image: url('/assets/svg/empty.svg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100%;
@@ -225,6 +250,15 @@ h6 {
 #donatur-area .empty {
     background-size: 90%;
     background-image: url('/assets/svg/sad.svg');
+}
+
+#update-terkini-area .empty {
+    background-image: url('/assets/svg/not-found.svg');
+}
+
+#modalDetilUpdate .lets-donate {
+    background-image: url('/assets/svg/heppy-news.svg');
+    background-position: unset;
 }
 
 #donatur-area #title::before {
@@ -352,11 +386,16 @@ h6 {
     animation: heart-pop 0s steps(28) backwards;
 }
 
+.load.timeline-item *:not(span),
 .load.donatur *:not(span),
 #donatur-area.load .donatur *:not(span) {
     border-radius: inherit;
 }
 
+.load.timeline-item::before,
+.load.timeline-item::after,
+.load.timeline-item a[role="button"],
+.load.timeline-item *:not(span) span,
 .load.donatur .avatar,
 .load.donatur .avatar,
 .load.donatur a[role="button"],
@@ -377,12 +416,14 @@ h6 {
     background: transparent !important;
 }
 
+.load.timeline-item a,
 .load.donatur a,
 #donatur-area.load .donatur a {
     cursor: none !important;
     pointer-events: none !important;
 }
 
+.load.timeline-item span,
 .load.donatur span,
 .load.donatur a i,
 #donatur-area.load .donatur span,
@@ -408,6 +449,79 @@ h6 {
     overflow-x: hidden;
 }
 
+a.badge {
+    transition-duration: 0s;
+    color: #fff;
+}
+
+a.badge:hover {
+    opacity: .85;
+}
+
+#modalListUpdate .timeline {
+    width: 100%;
+}
+
+#modalListUpdate .timeline .timeline-item {
+    gap: 1em;
+}
+
+#modalListUpdate .timeline .timeline-item:before {
+    margin-top: 0;
+}
+
+#modalListUpdate .timeline .timeline-item:not(:last-child):after {
+    bottom: -5px;
+    height: calc(100% - (1em + var(--circle-size)) + 7.5px);
+}
+
+#modalListUpdate .timeline .timeline-item > .row {
+    padding: 12px 0px;
+    background-color: #f8f9fa;
+    border-radius: 15px;
+}
+
+#modalListUpdate .timeline .timeline-item .ql-editor {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+#modalListUpdate .timeline-item a[data-filter="date"] span:first-of-type:last-of-type {
+    display: flex;
+}
+
+.modal.load .timeline-item::before,
+.modal.load .timeline-item::after,
+.modal.load .ql-editor p
+{
+    color: transparent;
+    background: linear-gradient(-90deg, #eee, #ddd, #ddd, #eee);
+    background-size: 400% 400%;
+    animation: gradient-load 1s ease infinite;
+}
+
+.modal.load .timeline-item::before {
+    border: 0px;
+}
+
+.modal.load .ql-editor p img {
+    opacity: 0;
+}
+
+#modalDetilUpdate .ql-editor {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+#modalDetilUpdate .modal-body > .d-flex:first-child + #content {
+    margin-left: -1rem; 
+    margin-right: -1rem;
+}
+
+#modalDetilUpdate .modal-body > .d-flex:first-child + #content .ql-editor {
+    padding-top: 12px;
+}
+
 @media (max-width: 426px) {
     .sticky-btn {
         position: fixed;
@@ -428,6 +542,10 @@ h6 {
 
     .sticky-btn > a[data-bs-toggle="modal"] {
         font-size: 0.65em !important;
+    }
+
+    #modalDetilUpdate .media {
+        text-align: center;
     }
 }
 
@@ -500,6 +618,10 @@ h6 {
 
     .avatar {
         --avatar: 50px;
+    }
+
+    #modalDetilUpdate .avatar {
+        --avatar: 40px;
     }
 }
 
@@ -577,8 +699,22 @@ h6 {
         --avatar: 55px;
     }
 
+    #modalDetilUpdate .avatar {
+        --avatar: 45px;
+    }
+
     .avatar.border.rounded {
         border-radius: .5rem !important;
+    }
+
+    p.p-empty.desc {
+        width: 70%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    #modalDetilUpdate .modal-dialog {
+        max-width: calc(100vw - 2em);
     }
 }
 
@@ -609,6 +745,25 @@ h6 {
 
     .row.custom-gap {
         --c-gap: 1.5em;
+    }
+
+    p.p-empty.desc {
+        width: 100%;
+    }
+
+    #modalListUpdate .timeline .timeline-item > .row > .col-lg-2 {
+        width: 26.825%;
+    }
+
+    #modalListUpdate .timeline-item a[data-filter="date"] span:first-of-type:last-of-type {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 991px) {
+    #modalListUpdate .timeline-item a[data-filter="date"] span:first-of-type:last-of-type {
+        gap: .25rem;
+        flex-direction: row;
     }
 }
 
@@ -647,5 +802,9 @@ h6 {
 
     h4 {
         font-size: 25px;
+    }
+
+    #modalListUpdate .timeline .timeline-item > .row > .col-lg-2 {
+        width: 28%;
     }
 }

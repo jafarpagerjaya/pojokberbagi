@@ -263,4 +263,43 @@ class Utility {
         $arrayStatus['value'] = strtoupper($status);
         return $arrayStatus;
     }
+
+    public static function labelInformasi($label) {
+        $result = array();
+        switch ($label) {
+            case 'I':
+                $result = array(
+                    'text' => 'informasi',
+                    'class' => 'bg-primary'
+                );
+            break;
+    
+            case 'PL':
+                $result = array(
+                    'text' => 'pelaksanaan',
+                    'class' => 'bg-success'
+                );
+            break;
+    
+            case 'PN':
+                $result = array(
+                    'text' => 'penarikan',
+                    'class' => ''
+                );
+            break;
+    
+            case 'PD':
+                $result = array(
+                    'text' => 'pengadaan',
+                    'class' => 'bg-warning'
+                );
+            break;
+            
+            default:
+                return false;
+            break;
+        }
+
+        return $result;
+    } 
 }

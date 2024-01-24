@@ -92,7 +92,8 @@ class BantuanController extends Controller {
                 )
             );
 
-            $this->_bantuan->getData('COUNT(id_bantuan) found','bantuan',array('id_bantuan','=',Sanitize::escape2($params[0])),'AND',array('status','IN',array('D','S')));
+            $params = Sanitize::thisArray($params);
+            $this->_bantuan->getData('COUNT(id_bantuan) found','bantuan',array('id_bantuan','=',$params[0]),'AND',array('status','IN',array('D','S')));
             if ($this->_bantuan->getResult()->found == 0) {
                 Session::flash('notifikasi', array(
                     'pesan' => 'Halaman detil bantuan yang anda cari tidak ditemukan',
@@ -196,6 +197,32 @@ class BantuanController extends Controller {
             if ($this->_bantuan->affected()) {
                 $this->data['list_donatur'] = $this->_bantuan->data();
             }
+
+            $this->_bantuan->query("SELECT id_informasi, judul, isi, label, FormatTanggal(modified_at) waktu_publikasi, DATE_FORMAT(modified_at, '%Y-%m-%d') tanggal_publikasi FROM informasi WHERE id_bantuan = ? ORDER BY modified_at DESC LIMIT 3", array('id_bantuan' => $params[0]));
+            if ($this->_bantuan->affected()) {
+                $this->data['top_update_terbaru']['data'] = $this->_bantuan->data();
+            }
+
+            $result = $this->_bantuan->countData('informasi', array('id_bantuan = ?', array($params[0])));
+            if ($this->_bantuan->affected()) {
+                $this->data['top_update_terbaru']['record'] = $result->jumlah_record;
+            }
+
+            if (isset($params[1]) && isset($params[2])) {
+                switch ($params[1]) {
+                    case 'informasi':
+                        $params[2] = base64_decode(strrev($params[2]));
+                        $this->_bantuan->getData('id_informasi, judul, isi, i.label, FormatTanggal(i.modified_at) modified_at, pa.nama nama_author, ga.path_gambar path_author','informasi i LEFT JOIN pegawai pa ON(pa.id_pegawai = i.id_author) LEFT JOIN admin adm ON(adm.id_pegawai = pa.id_pegawai) LEFT JOIN akun a ON(a.id_akun = adm.id_akun) LEFT JOIN gambar ga ON(ga.id_gambar = a.id_gambar)', array('i.id_informasi','=',Sanitize::escape2($params[2])));
+                        if ($this->_bantuan->affected()) {
+                            $this->data['modal_update_berita'] = $this->_bantuan->getResult();
+                        }
+                    break;
+                    
+                    default:
+                        # do nothing
+                    break;
+                }
+            }
         } else {
             Redirect::to('home');
         }
@@ -221,6 +248,7 @@ class BantuanController extends Controller {
         if (is_null($this->_bantuan->data())) {
             Debug::vd('Unrecognize Kategori Name');
         }
+        
         $this->data['resume_kb'] = $this->_bantuan->data();
         $this->data['resume_kb']->deskripsi = "Program pemberdayaan sebagai upaya dalam meningkatkan kemampuan dan ketahanan masyarakat guna menjadikan  masyarakat yang Tangguh dan mandiri serta menjaga <i>sustainability</i> program.";
 
