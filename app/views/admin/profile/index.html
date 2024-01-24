@@ -71,7 +71,7 @@
                                 value="<?= isset($data_error_feedback['password_baru']['value']) ? $data_error_feedback['password_baru']['value'] :  '' ?>">
                             <div
                                 class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['password_baru']) ? ' d-block' : '') ?>">
-                                <?= ($data_error_feedback['password_baru']['feedback']) ?>
+                                <?= (isset($data_error_feedback['password_baru']) ? $data_error_feedback['password_baru']['feedback'] : ''); ?>
                             </div>
                         </div>
                         <div class="form-group">
@@ -82,7 +82,7 @@
                                 value="<?= isset($data_error_feedback['konfirmasi_ulang']['value']) ? $data_error_feedback['konfirmasi_ulang']['value'] :  '' ?>">
                             <div
                                 class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['konfirmasi_ulang']) ? ' d-block' : '') ?>">
-                                <?= ($data_error_feedback['konfirmasi_ulang']['feedback']) ?>
+                                <?= (isset($data_error_feedback['konfirmasi_ulang']) ? $data_error_feedback['konfirmasi_ulang']['feedback'] : ''); ?>
                             </div>
                         </div>
                         <div class="form-group">
@@ -92,7 +92,7 @@
                                 value="<?= isset($data_error_feedback['password_lama']['value']) ? $data_error_feedback['password_lama']['value'] :  '' ?>">
                             <div
                                 class="<?= 'invalid-feedback px-2 py-1 font-weight-bold' . (!empty($data_error_feedback['password_lama']) ? ' d-block' : '') ?>">
-                                <?= ($data_error_feedback['password_lama']['feedback']) ?>
+                                <?= (isset($data_error_feedback['password_lama']) ? $data_error_feedback['password_lama']['feedback'] : ''); ?>
                             </div>
                         </div>
                         <div class="col-lg-6 d-flex align-items-center">

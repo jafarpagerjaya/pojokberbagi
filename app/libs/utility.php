@@ -1,6 +1,7 @@
 <?php
 class Utility {
     public static function keteranganStatusBantuan($params) {
+        $status = '';
         if ($params == 'B') {
             $status = "Belum Disetujui oleh admin";
         } else if ($params == 'C') {

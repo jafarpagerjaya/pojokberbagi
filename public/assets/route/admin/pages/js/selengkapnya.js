@@ -241,9 +241,13 @@ let fetchResetDeskripsi = function(root, response) {
     }
 
     $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast('show');
-    if (relatedCard.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]') != null) {
-        relatedCard.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"] td>div').insertAdjacentHTML('afterend','<span class="small badge badge-warning text-black-50 text-capitalize">Kosong</span>');
-        relatedCard.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]').classList.add('highlight');
+    const trEl = relatedCard.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]');
+    if (trEl != null) {
+        const title = trEl.querySelector('td[data-title="true"]>div');
+        if (title.querySelector('span.badge') == null) {
+            title.insertAdjacentHTML('afterend','<span class="small badge badge-warning text-black-50 text-capitalize">Kosong</span>');
+        }
+        trEl.classList.add('highlight');
         setTimeout(()=> {
             relatedCard.querySelector('tbody>tr.highlight').classList.remove('highlight');
         }, 3000);
@@ -281,8 +285,12 @@ let fetchUpdateDeskripsiSelengkapnya = function(root, response) {
         setTimeout(() => {
             $('#'+root.id).modal('hide');
             setTimeout(() => {
-                if (relatedModal.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]') != null) {
-                    relatedModal.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]').classList.add('highlight');
+                const trEl = relatedModal.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]');
+                if (trEl != null) {
+                    trEl.classList.add('highlight');
+                    if (trEl.querySelector('td[data-title="true"] span.badge') != null) {
+                        trEl.querySelector('td[data-title="true"] span.badge').remove();
+                    }
                     setTimeout(()=> {
                         if (relatedModal.querySelector('tbody>tr.highlight') != null) {
                             relatedModal.querySelector('tbody>tr.highlight').classList.remove('highlight');

@@ -3550,14 +3550,14 @@ class FetchController extends Controller {
 
         if (!isset($decoded['id_deskripsi'])) {
             $this->_result['feedback'] = array(
-                'message' => 'Id deskripsi tidak ditemukan'
+                'message' => 'Id deskripsi wajib ditentukan'
             );
             $this->result();
             return false; 
         }
 
         $this->model('Bantuan');
-        $this->model->countData('deskripsi',array('id_bantuan = ?', Sanitize::escape2($decoded['id_deskripsi'])));
+        $this->model->countData('deskripsi',array('id_deskripsi = ?', Sanitize::escape2($decoded['id_deskripsi'])));
         if ($this->model->getResult()->jumlah_record < 1) {
             $this->_result['feedback'] = array(
                 'message' => 'Id deskripsi tidak ditemukan'
@@ -4207,7 +4207,6 @@ class FetchController extends Controller {
                         $petugas .= ", ";
                     }
                     $xCol++;
-                    
                 }
                 $petugas .= ")";
             }

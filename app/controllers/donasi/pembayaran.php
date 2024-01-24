@@ -27,10 +27,10 @@ class PembayaranController extends Controller {
 
         $this->model('Donasi');
         $data_bantuan = $this->model->isBantuanActive(Sanitize::escape($params[0]));
-        if ($data_bantuan->status != 'D') {
+        if ($data_bantuan->blokir == '1') {
             Session::flash('notifikasi', array(
-                'pesan' => 'Bantuan <b>'. $data_bantuan->nama .'</b> ' . Utility::keteranganStatusBantuan($data_bantuan->status),
-                'state' => 'warning'
+                'pesan' => 'Bantuan <b>'. $data_bantuan->nama .'</b> dengan ' . Utility::keteranganStatusBantuan($data_bantuan->status) .' sedang diblokir',
+                'state' => 'danger'
             ));
             Redirect::to('home');
         }
@@ -38,6 +38,13 @@ class PembayaranController extends Controller {
             Session::flash('notifikasi', array(
                 'pesan' => 'Bantuan sudah tidak aktif',
                 'state' => 'error'
+            ));
+            Redirect::to('home');
+        }
+        if ($data_bantuan->status != 'D') {
+            Session::flash('notifikasi', array(
+                'pesan' => 'Bantuan <b>'. $data_bantuan->nama .'</b> ' . Utility::keteranganStatusBantuan($data_bantuan->status),
+                'state' => 'warning'
             ));
             Redirect::to('home');
         }

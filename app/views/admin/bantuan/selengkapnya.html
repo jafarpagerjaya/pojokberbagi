@@ -36,7 +36,7 @@
                                     <span class="mb-0"><?= $dataDeskripsi->create_at; ?></span>
                                 </div>
                             </th>
-                            <td><div class="d-block">
+                            <td data-title="true"><div class="d-block">
                                 <?= '<div><span>' . $dataDeskripsi->judul . '</span></div>' . ($dataDeskripsi->isi_length != 0 ? '':'<span class="small badge badge-warning text-black-50 text-capitalize">Kosong</span>'); ?>
                             </div></td>
                             <td class="text-right">

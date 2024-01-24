@@ -63,6 +63,20 @@ class BuatController extends Controller {
 
         $this->model('Donasi');
         $data_bantuan = $this->model->isBantuanActive($id_bantuan);
+        if ($data_bantuan == false) {
+            Session::flash('notifikasi', array(
+                'pesan' => 'Bantuan tidak ditemukan',
+                'state' => 'warning'
+            ));
+            Redirect::to('home');
+        }
+        if ($data_bantuan->blokir == '1') {
+            Session::flash('notifikasi', array(
+                'pesan' => 'Bantuan <b>'. $data_bantuan->nama .'</b> dengan ' . Utility::keteranganStatusBantuan($data_bantuan->status) .' sedang diblokir',
+                'state' => 'danger'
+            ));
+            Redirect::to('home');
+        }
         // Cek jika bantuan masih dibuka
         if ($data_bantuan->status != 'D') {
             Session::flash('notifikasi', array(
