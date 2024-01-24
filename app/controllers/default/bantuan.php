@@ -200,12 +200,17 @@ class BantuanController extends Controller {
 
             $this->_bantuan->query("SELECT id_informasi, judul, isi, label, FormatTanggal(modified_at) waktu_publikasi, DATE_FORMAT(modified_at, '%Y-%m-%d') tanggal_publikasi FROM informasi WHERE id_bantuan = ? ORDER BY modified_at DESC LIMIT 3", array('id_bantuan' => $params[0]));
             if ($this->_bantuan->affected()) {
-                $this->data['top_update_terbaru']['data'] = $this->_bantuan->data();
+                $dataInformasi = $this->_bantuan->data();
             }
 
-            $result = $this->_bantuan->countData('informasi', array('id_bantuan = ?', array($params[0])));
-            if ($this->_bantuan->affected()) {
-                $this->data['top_update_terbaru']['record'] = $result->jumlah_record;
+            if (isset($dataInformasi)) {
+                $result = $this->_bantuan->countData('informasi', array('id_bantuan = ?', array($params[0])));
+                if ($this->_bantuan->affected()) {
+                    $this->data['top_update_terbaru'] = array(
+                        'data' => $dataInformasi,
+                        'record' => $result->jumlah_record
+                    );
+                }
             }
 
             if (isset($params[1]) && isset($params[2])) {
