@@ -43,9 +43,21 @@
 				"icon": "ni ni-tv-2 text-primary"
 			},
 			"Bantuan": {
-				"href": "/admin/bantuan",
-				"title": "Bantuan",
-				"icon": "ni ni-bullet-list-67 text-warning"
+				"href": "javascript:void(0);",
+				"title": "Campaign",
+				"icon": "ni ni-collection text-warning",
+				"dropdown": {
+					"Campaign": {
+						"href": "/admin/bantuan",
+						"title": "Bantuan",
+						"icon": "ni ni-bullet-list-67 text-green-box"
+					},
+					"Selengkapnya": {
+						"href": "/admin/bantuan/selengkapnya",
+						"title": "Selengkapnya",
+						"icon": "ni ni-caps-small text-dark"
+					}
+				}
 			},
 			"Donatur": {
 				"href": "/admin/donatur",
@@ -112,9 +124,26 @@
 				"icon": "ni ni-badge text-success"
 			},
 			"Bantuan": {
-				"href": "/admin/bantuan",
-				"title": "Bantuan",
-				"icon": "ni ni-bullet-list-67 text-warning"
+				"href": "javascript:void(0);",
+				"title": "Campaign",
+				"icon": "ni ni-collection text-warning",
+				"dropdown": {
+					"Campaign": {
+						"href": "/admin/bantuan",
+						"title": "Bantuan",
+						"icon": "ni ni-bullet-list-67 text-green-box"
+					},
+					"Selengkapnya": {
+						"href": "/admin/bantuan/selengkapnya",
+						"title": "Selengkapnya",
+						"icon": "ni ni-caps-small text-dark"
+					},
+					"Informasi": {
+						"href": "/admin/bantuan/informasi",
+						"title": "Informasi",
+						"icon": "ni ni-watch-time text-gray"
+					}
+				}
 			},
 			"Donatur": {
 				"href": "/admin/donatur",

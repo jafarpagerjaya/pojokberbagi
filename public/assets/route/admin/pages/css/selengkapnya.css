@@ -32,3 +32,12 @@
 .modal#modalKonfirmasiResetDeskripsi a.badge-primary:focus {
     color: #fff !important;
 }
+
+select.custom-select~.select2>.selection>.select2-selection {
+    padding: 5px 1.4rem;
+    height: 46px;
+}
+
+select#id-bantuan~span.select2 * {
+    font-size: 12px;
+}

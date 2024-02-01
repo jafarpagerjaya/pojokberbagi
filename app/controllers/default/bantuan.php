@@ -147,7 +147,7 @@ class BantuanController extends Controller {
 				)
             );
 
-            $this->_bantuan->getData('judul, FormatTanggal(create_at) create_at', 'deskripsi', array('id_bantuan','=',$params[0]));
+            $this->_bantuan->getData('LENGTH(isi) len, judul, FormatTanggal(create_at) create_at', 'deskripsi', array('id_bantuan','=',$params[0]));
             if ($this->_bantuan->affected()) {
                 $this->data['deskripsi'] = $this->_bantuan->getResult();
             }

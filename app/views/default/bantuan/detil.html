@@ -121,10 +121,10 @@
         </div>
         
         <div class="row g-0 gap-3 gap-md-4 bg-white position-relative pt-2 pt-lg-3 ql-container ql-disabled mt-2 wow fadeInUp" id="deskripsi-selengkapnya-area" data-wow-delay="1.4s">
-            <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center <?= (isset($data['deskripsi']) ? 'justify-content-between':'justify-content-center'); ?> gap-3" id="title">
+            <div class="col-12 bg-green rounded-box p-3 d-flex align-items-center <?= (isset($data['deskripsi']->len) ? 'justify-content-between':'justify-content-center'); ?> gap-3" id="title">
                 <div class="desc align-self-end">
                     <?php 
-                        if (isset($data['deskripsi'])) {
+                        if (isset($data['deskripsi']->len)) {
                             echo '<p class="date">'. $data['deskripsi']->create_at .'</p><h4>'. $data['deskripsi']->judul .'</h4>';
                         } else { 
                     ?>
@@ -139,7 +139,7 @@
                 </div>
                 <span class="node"></span>
             </div>
-            <?php if (isset($data['deskripsi'])) { ?>
+            <?php if (isset($data['deskripsi']->len)) { ?>
             <div class="col-12 p-md-3 rounded-box">
                 <div class="row justify-content-center">
                     <div class="col-lg-8 px-md-0 hidden-area-utility" id="selengkapnya">

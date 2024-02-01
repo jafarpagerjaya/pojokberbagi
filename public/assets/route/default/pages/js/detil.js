@@ -208,8 +208,7 @@ fetch('/default/fetch/read/bantuan/deskripsi', {
         token: document.querySelector('body').getAttribute('data-token')
     });
 
-    if (!response.error) {
-
+    if (!response.error && response.feedback.data.length) {
         const quill = new Quill('#selengkapnya', {
             modules: {
                 toolbar: false

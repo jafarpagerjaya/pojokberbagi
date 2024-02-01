@@ -235,6 +235,9 @@
                                         <a class="dropdown-item"
                                             href="/admin/bantuan/formulir/<?= $data_bantuan->id_bantuan; ?>">Ubah
                                             Data</a>
+                                        <a class="dropdown-item"
+                                            href="javascript:void(0);" data-toggle="modal" data-target="#modalKelolaSelengkapnya">Kelola
+                                            Selengkapnya</a>
                                         <a class="dropdown-item font-weight-bold <?= ' '.$blokUnblock['class'];?>"
                                             href="/admin/bantuan/blok/<?= $data_bantuan->id_bantuan; ?>">
                                             <?= $blokUnblock['text']; ?>
@@ -274,12 +277,73 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal in " id="modalKelolaSelengkapnya" tabindex="-1" role="dialog"
+    aria-labelledby="modalKelolaSelengkapnya-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container p-0 py-md-3 py-lg-5 px-lg-3 px-3 px-md-0">
+                <div class="row gap-y-4">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group position-relative mb-0">
+                            <span class="font-weight-bolder position-absolute mt-3">
+                                <label for="id-bantuan"
+                                    class="form-control-label m-0">Bantuan</label>
+                            </span>
+                            <select class="custom-select" id="id-bantuan"
+                                name="id-bantuan" required>
+                                <option value="0" disabled selected hidden>Pilih salah satu</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-label-group">
+                            <input type="text" id="input-judul" class="form-control"
+                                name="judul" placeholder="Judul" autocomplete="off" maxlength="100">
+                            <label for="input-judul" class="form-control-label">Judul</label>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex gap-4 flex-column" id="wyswyg-area">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="rounded ql">
+                                    <div id="editor">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between" id="actioon-area">
+                        <button class="btn btn-link font-weight-bolder text-warning"
+                            data-dismiss="modal">Batal</button>
+                        <button class="btn btn-outline-primary" id="buat-deskripsi-selengkapnya" type="submit">Simpan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Modal -->
+
 <!-- Toast -->
-<?php if (Session::exists('toast')) {
-    $toast = Session::flash('toast');
-    ?>
-<div aria-live="polite" aria-atomic="true" style="bottom: 1em; right: 1em; z-index: 10;"
+<div aria-live="polite" aria-atomic="true" style="bottom: 1em; right: 1em; z-index: 1050;"
     class="position-fixed d-flex justify-content-end flex-column align-items-end">
+    <div class="toast w-100 fade hide bg-white" role="alert" aria-live="assertive" aria-atomic="true"
+        data-toast="donasi" data-toast-run="true" data-delay="3000">
+        <div class="toast-header d-flex gap-x-2 justify-content-center align-items-center">
+            <div class="small-box rounded p-2 ailgn-items-center bg-danger"></div>
+            <strong class="mr-auto">Toast</strong>
+            <small class="text-muted time-passed">Time</small>
+            <button type="button" class="close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+
+        </div>
+    </div>
+    <?php if (Session::exists('toast')) { $toast = Session::flash('toast'); ?>
     <div class="toast w-100 fade hide bg-white" role="alert" aria-live="assertive" aria-atomic="true"
         data-toast="feedback" data-delay="5000" data-toast-run="true">
         <div class="toast-header d-flex gap-x-2 justify-content-center align-items-center">
@@ -296,7 +360,5 @@
             <?= $toast['feedback']['message']; ?>
         </div>
     </div>
+    <?php } ?>
 </div>
-<?php
-}
-?>

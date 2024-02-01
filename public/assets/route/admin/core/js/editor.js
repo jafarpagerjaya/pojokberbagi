@@ -90,7 +90,7 @@ let editor = function(el, options = defaultOptions) {
 
     quill.container.querySelector('.ql-editor').addEventListener('paste', function(e) {
         const paste = (e.clipboardData || window.clipboardData).getData("text");
-        console.log(!paste.trim().length);
+        // console.log(!paste.trim().length);
         if (!paste.trim().length) {
             e.preventDefault();
             return false;

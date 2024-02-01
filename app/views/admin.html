@@ -27,7 +27,6 @@
 
 <body<?= (isset($this->data['uri']) ? ' data-uri="'. $this->data['uri'] .'"' : '') ?>
     <?= (isset($this->data[Config::get('session/token_name')]) ? ' data-token="'. $this->data[Config::get('session/token_name')] .'"' : '') ?>>
-
     <!-- Sidenav -->
     <nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-light bg-white" id="sidenav-main">
         <div class="scrollbar-inner">

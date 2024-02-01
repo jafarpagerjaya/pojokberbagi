@@ -30,9 +30,9 @@
                         <tr data-id-deskripsi="<?= $dataDeskripsi->id_deskripsi; ?>">
                             <th scope="row" class="fit">
                                 <div class="d-flex flex-column">
-                                        <a href="<?= (is_null($dataDeskripsi->id_bantuan) ? '#' : '/admin/bantuan/data/' . $dataDeskripsi->id_bantuan); ?>" class="font-weight-bolder">
-                                            <?= '<span>' . $dataDeskripsi->nama_bantuan . '</span>'; ?>
-                                        </a>
+                                    <a href="<?= (is_null($dataDeskripsi->id_bantuan) ? '#' : '/admin/bantuan/data/' . $dataDeskripsi->id_bantuan); ?>" class="font-weight-bolder">
+                                        <?= '<span>' . $dataDeskripsi->nama_bantuan . '</span>'; ?>
+                                    </a>
                                     <span class="mb-0"><?= $dataDeskripsi->create_at; ?></span>
                                 </div>
                             </th>
@@ -100,10 +100,15 @@
             <div class="container p-0 py-md-3 py-lg-5 px-lg-3 px-3 px-md-0">
                 <div class="row gap-y-4">
                     <div class="col-12 col-md-6">
-                        <div class="form-label-group">
-                            <input type="text" id="input-id-bantuan" class="form-control"
-                                name="id_bantuan" placeholder="Id Bantuan" autocomplete="off">
-                            <label for="input-id-bantuan" class="form-control-label">Id Bantuan</label>
+                        <div class="form-group position-relative mb-0">
+                            <span class="font-weight-bolder position-absolute mt-3">
+                                <label for="id-bantuan"
+                                    class="form-control-label m-0">Bantuan</label>
+                            </span>
+                            <select class="custom-select" id="id-bantuan"
+                                name="id-bantuan" required>
+                                <option value="0" disabled selected hidden>Pilih salah satu</option>
+                            </select>
                         </div>
                     </div>
                     <div class="col-12 col-md-6">

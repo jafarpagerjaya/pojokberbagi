@@ -418,6 +418,39 @@ $(window).resize(function () {
     }, 50);
 });
 
+const navbarLinkList = document.querySelectorAll('#sidenav-collapse-main .navbar-nav .nav-item.nav-dropdown');
+
+navbarLinkList.forEach(navlinkA => {
+    if (!navlinkA.children[0].classList.contains('active')) {
+        navlinkA.children[0].nextElementSibling.setAttribute('style','margin-top: -'+ navlinkA.children[0].nextElementSibling.getBoundingClientRect().height.toFixed(2) +'px;')
+    }
+
+    navlinkA.children[0].addEventListener('click', function(e) {
+        let h = 0,
+            t = 0;
+
+        if (this.classList.contains('active')) {
+            h = this.nextElementSibling.getBoundingClientRect().height.toFixed(2);
+            t = (parseFloat(window.getComputedStyle(this.nextElementSibling).transitionDuration)) * (false ? 1000 : 1);
+            this.classList.add('transition');
+        }
+
+        this.classList.toggle('active');
+        
+        if (!this.classList.contains('active')) {
+            h = this.nextElementSibling.setAttribute('style','margin-top: -'+h+'px;');
+        } else {
+            this.nextElementSibling.removeAttribute('style');
+        }
+
+        if (t) {
+            setTimeout(() => {
+                this.classList.remove('transition');
+            }, t* 1000);
+        }
+    });
+});
+
 // New
 $("#notifikasi").modal({backdrop: "static"});
 // Old

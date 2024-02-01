@@ -502,6 +502,12 @@ class FetchController extends Controller {
             case 'deskripsi-selengkapnya':
                 $params[0] = 'deskripsiSelengkapnya';
                 // deskripsiSelengkapnyaGet Params
+                if (isset($params[1])) {
+                    if ($params[1] == 'by-bantuan') {
+                        $params[0] .= 'ByBantuan';
+                        // deskripsiSelengkapnyaByBantuanGet Params
+                    }
+                }
             break;
 
             case 'informasi':
@@ -621,153 +627,158 @@ class FetchController extends Controller {
             return false;
         }
 
-        if (empty($decoded['id_bantuan']) || !isset($decoded['id_bantuan'])) {
-            $this->_result['feedback'] = array(
-                'message' => 'Id bantuan selengkapnya wajib diisi'
-            );
-            $this->result();
-            return false;
-        }
-
-        if (empty($decoded['judul']) || !isset($decoded['judul'])) {
-            $this->_result['feedback'] = array(
-                'message' => 'Judul selengkapnya wajib diisi'
-            );
-            $this->result();
-            return false;
-        }
-
         $this->model('Bantuan');
-        $this->model->countData('bantuan',array('id_bantuan = ?', Sanitize::escape2($decoded['id_bantuan'])));
-        if ($this->model->data()->jumlah_record < 1) {
+        $this->model->countData('deskripsi', array('id_deskripsi = ?', Sanitize::escape2($decoded['id_deskripsi'])));
+        if ($this->model->getResult()->jumlah_record == 0) {
             $this->_result['feedback'] = array(
-                'message' => 'Id Bantuan tidak ditemukan'
+                'message' => 'Id deskripsi selengkapnya tidak ditemukan'
             );
             $this->result();
             return false;
         }
 
-        $content = $decoded['isi'];
-        $counterImg = 1;
+        if (isset($decoded['id_bantuan'])) {
+            $this->model->getData('nama', 'bantuan',array('id_bantuan', '=', Sanitize::escape2($decoded['id_bantuan'])));
+            if (!$this->model->affected()) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Id Bantuan tidak ditemukan'
+                );
+                $this->result();
+                return false;
+            }
+            $nama_bantuan = $this->model->getResult()->nama;
+        }
+
+        $dataUpdate = array();
         $array_id_gambar = array();
-        $path_list = array();
 
-        foreach ($content['ops'] as $key => $value) {
-            if (is_array($value)) {
-                if (array_key_exists('insert', $value)) {
-                    foreach($value as $keyInsert => $insert) {
-                        if (is_array($insert)) {
-                            if (array_key_exists('image', $insert)) {
-                                if (explode('/', $insert['image'])[0] == 'data:image') {
-                                    $dataUrl = array(
-                                        'deskripsi' => $insert['image']
-                                    );
-    
-                                    $name_to_add = '-selengkapnya-' . $counterImg;
-                            
-                                    $uploaded = $this->uploadDataUrlIntoServer($dataUrl, 'bantuan', $name_to_add);
-                            
-                                    $this->_result['uploaded'] = $uploaded;
-                            
-                                    if (!$uploaded) {
-                                        if (count(is_countable($array_id_gambar) ? $array_id_gambar : []) > 0) {
-                                            $this->path_gambar = $array_id_gambar;
-                                            $this->removePathGambar();
-                                        }
-    
-                                        $this->_result['error'] = true;
-                                        $this->_result['feedback'] = array(
-                                            'message' => 'Terjadi kegagalan upload file',
+        if (isset($decoded['isi'])) {
+            $content = $decoded['isi'];
+            $counterImg = 1;
+            $path_list = array();
+
+            foreach ($content['ops'] as $key => $value) {
+                if (is_array($value)) {
+                    if (array_key_exists('insert', $value)) {
+                        foreach($value as $keyInsert => $insert) {
+                            if (is_array($insert)) {
+                                if (array_key_exists('image', $insert)) {
+                                    if (explode('/', $insert['image'])[0] == 'data:image') {
+                                        $dataUrl = array(
+                                            'deskripsi' => $insert['image']
                                         );
-                                        $this->result();
-                                        return false;
-                                    }
-    
-                                    if (count(is_countable($this->path_gambar) ? $this->path_gambar : []) > 0) {
-                                        $this->_result['error'] = true;
-                                        $this->model->create('gambar', array(
-                                            'nama' => Sanitize::escape2($this->path_gambar['deskripsi']['name']), 
-                                            'path_gambar' => Sanitize::escape2($this->path_gambar['deskripsi']['path']),
-                                            'label' => 'deskripsi'
-                                        ));
-                                        if ($this->model->affected()) {
-    
-                                                $array_id_gambar[$counterImg] = array(
-                                                    'id_gambar' => $this->model->lastIID(),
-                                                    'name' => $this->path_gambar['deskripsi']['name'],
-                                                    'path' => $this->path_gambar['deskripsi']['path']
-                                                );
-    
-                                                $this->_result['error'] = false;
-                                                $this->_result['feedback'] = array(
-                                                    'message' => 'Sucess Insert All path_gambar artikel deskripsi'
-                                                );
-                                                
-                                                // reset data menjadi path gambar
-                                                $content['ops'][$key]['insert']['image'] = $this->path_gambar['deskripsi']['path'];
-    
-                                                $counterImg++;
-
-                                                array_push($path_list, $this->path_gambar['deskripsi']['path']);
-                                        } else {
+        
+                                        $name_to_add = '-selengkapnya-' . $counterImg;
+                                
+                                        $uploaded = $this->uploadDataUrlIntoServer($dataUrl, 'bantuan', $name_to_add);
+                                
+                                        $this->_result['uploaded'] = $uploaded;
+                                
+                                        if (!$uploaded) {
+                                            if (count(is_countable($array_id_gambar) ? $array_id_gambar : []) > 0) {
+                                                $this->path_gambar = $array_id_gambar;
+                                                $this->removePathGambar();
+                                            }
+        
+                                            $this->_result['error'] = true;
                                             $this->_result['feedback'] = array(
-                                                'message' => 'Failed to INSERT path_gambar artikel deskripsi => ' . $this->path_gambar['deskripsi']['name']
+                                                'message' => 'Terjadi kegagalan upload file',
                                             );
-                                            break;
+                                            $this->result();
+                                            return false;
                                         }
-                                    }
-    
-                                    if ($this->_result['error'] == true) {
-                                        if (count(is_countable($array_id_gambar) ? $array_id_gambar : []) > 0) {
-                                            $this->path_gambar = $array_id_gambar;
-                                            $this->removePathGambar();
+        
+                                        if (count(is_countable($this->path_gambar) ? $this->path_gambar : []) > 0) {
+                                            $this->_result['error'] = true;
+                                            $this->model->create('gambar', array(
+                                                'nama' => Sanitize::escape2($this->path_gambar['deskripsi']['name']), 
+                                                'path_gambar' => Sanitize::escape2($this->path_gambar['deskripsi']['path']),
+                                                'label' => 'deskripsi'
+                                            ));
+                                            if ($this->model->affected()) {
+        
+                                                    $array_id_gambar[$counterImg] = array(
+                                                        'id_gambar' => $this->model->lastIID(),
+                                                        'name' => $this->path_gambar['deskripsi']['name'],
+                                                        'path' => $this->path_gambar['deskripsi']['path']
+                                                    );
+        
+                                                    $this->_result['error'] = false;
+                                                    $this->_result['feedback'] = array(
+                                                        'message' => 'Sucess Insert All path_gambar artikel deskripsi'
+                                                    );
+                                                    
+                                                    // reset data menjadi path gambar
+                                                    $content['ops'][$key]['insert']['image'] = $this->path_gambar['deskripsi']['path'];
+        
+                                                    $counterImg++;
+
+                                                    array_push($path_list, $this->path_gambar['deskripsi']['path']);
+                                            } else {
+                                                $this->_result['feedback'] = array(
+                                                    'message' => 'Failed to INSERT path_gambar artikel deskripsi => ' . $this->path_gambar['deskripsi']['name']
+                                                );
+                                                break;
+                                            }
                                         }
-                                        $this->result();
-                                        return false;
+        
+                                        if ($this->_result['error'] == true) {
+                                            if (count(is_countable($array_id_gambar) ? $array_id_gambar : []) > 0) {
+                                                $this->path_gambar = $array_id_gambar;
+                                                $this->removePathGambar();
+                                            }
+                                            $this->result();
+                                            return false;
+                                        }
+                                    } else {
+                                        array_push($path_list, $insert['image']);
                                     }
-                                } else {
-                                    array_push($path_list, $insert['image']);
                                 }
                             }
                         }
                     }
                 }
             }
+
+            $this->_result['error'] = true;
+
+            if (count(is_countable($path_list) ? $path_list : []) > 0) {
+                $this->model->getData('g.id_gambar, g.nama name, g.path_gambar path', 'gambar g RIGHT JOIN list_gambar_deskripsi lgd USING(id_gambar) RIGHT JOIN deskripsi d USING(id_deskripsi)', array('g.path_gambar','NOT IN', $path_list), 'AND', array('d.id_bantuan','=',$decoded['id_bantuan']));
+                if ($this->model->affected()) {
+                    $this->path_gambar = json_decode(json_encode($this->model->data()), true);
+                    $this->removePathGambar();
+                }
+            } else {
+                $this->model->countData('list_gambar_deskripsi', array('id_deskripsi = ?', array('id_deskripsi' => Sanitize::escape2($decoded['id_deskripsi']))));
+                if ($this->model->getResult()->jumlah_record > 0) {
+                    $this->model->getData('lgd.id_gambar, g.path_gambar path','list_gambar_deskripsi lgd JOIN gambar g USING(id_gambar)',array('lgd.id_deskripsi','=',Sanitize::escape2($decoded['id_deskripsi'])));
+                    if (!$this->model->affected()) {
+                        $this->_result['feedback'] = array(
+                            'message' => 'Failed to get list_gambar_deskripsi, update deskripsi dibatalkan'
+                        );
+                        $this->result();
+                        return false;
+                    }
+                    $this->model->prepareStmt("DELETE FROM gambar WHERE id_gambar = ?");
+                    foreach($this->model->data() as $index => $value) {
+                        $this->removeFile(ROOT . DS . 'public' . DS . $value->path);
+                        $this->model->executeStmt(array('id_gambar' => Sanitize::toInt2($value->id_gambar)));
+                    }
+                }
+            }
+
+            $dataUpdate['isi'] = str_replace('\/','/', json_encode($content));
         }
 
-        $this->_result['error'] = true;
-
-        if (count(is_countable($path_list) ? $path_list : []) > 0) {
-            $this->model->getData('g.id_gambar, g.nama name, g.path_gambar path', 'gambar g RIGHT JOIN list_gambar_deskripsi lgd USING(id_gambar) RIGHT JOIN deskripsi d USING(id_deskripsi)', array('g.path_gambar','NOT IN', $path_list), 'AND', array('d.id_bantuan','=',$decoded['id_bantuan']));
-            if ($this->model->affected()) {
-                $this->path_gambar = json_decode(json_encode($this->model->data()), true);
-                $this->removePathGambar();
-            }
-        } else {
-            $this->model->countData('list_gambar_deskripsi', array('id_deskripsi = ?', array('id_deskripsi' => Sanitize::escape2($decoded['id_deskripsi']))));
-            if ($this->model->getResult()->jumlah_record > 0) {
-                $this->model->getData('lgd.id_gambar, g.path_gambar path','list_gambar_deskripsi lgd JOIN gambar g USING(id_gambar)',array('lgd.id_deskripsi','=',Sanitize::escape2($decoded['id_deskripsi'])));
-                if (!$this->model->affected()) {
-                    $this->_result['feedback'] = array(
-                        'message' => 'Failed to get list_gambar_deskripsi, update deskripsi dibatalkan'
-                    );
-                    $this->result();
-                    return false;
-                }
-                $this->model->prepareStmt("DELETE FROM gambar WHERE id_gambar = ?");
-                foreach($this->model->data() as $index => $value) {
-                    $this->removeFile(ROOT . DS . 'public' . DS . $value->path);
-                    $this->model->executeStmt(array('id_gambar' => Sanitize::toInt2($value->id_gambar)));
-                }
-            }
+        if (isset($decoded['judul'])) {
+            $dataUpdate['judul'] = $decoded['judul'];
         }
 
-        $decoded['isi'] = str_replace('\/','/', json_encode($content));
-                
-        $this->model->update('deskripsi', Sanitize::thisArray(array(
-            'isi' => $decoded['isi'],
-            'judul' => $decoded['judul']
-        )), array('id_deskripsi', '=', Sanitize::toInt2($decoded['id_deskripsi'])));
+        if (isset($decoded['id_bantuan'])) {
+            $dataUpdate['id_bantuan'] = $decoded['id_bantuan'];
+        }
+
+        $this->model->update('deskripsi', Sanitize::thisArray($dataUpdate), array('id_deskripsi', '=', Sanitize::toInt2($decoded['id_deskripsi'])));
 
         if (!$this->model->affected()) {
             $this->_result['feedback'] = array(
@@ -781,16 +792,18 @@ class FetchController extends Controller {
             return false;
         }
 
-        foreach($array_id_gambar as $key => $value) {
-            $this->model->create('list_gambar_deskripsi', array('id_deskripsi' => Sanitize::escape2($decoded['id_deskripsi']), 'id_gambar' => Sanitize::escape2($value['id_gambar'])));
-            if (!$this->model->affected()) {
-                $this->_result['error'] = true;
-                $this->_result['feedback'] = array(
-                    'message' => 'Failed to INSERT list_gambar_deskripsi id_gambar => ' . $value['id_gambar']
-                );
-                break;
-            } else {
-                $this->_result['error'] = false;
+        if (count(is_countable($array_id_gambar) ? $array_id_gambar : []) > 0) {
+            foreach($array_id_gambar as $key => $value) {
+                $this->model->create('list_gambar_deskripsi', array('id_deskripsi' => Sanitize::escape2($decoded['id_deskripsi']), 'id_gambar' => Sanitize::escape2($value['id_gambar'])));
+                if (!$this->model->affected()) {
+                    $this->_result['error'] = true;
+                    $this->_result['feedback'] = array(
+                        'message' => 'Failed to INSERT list_gambar_deskripsi id_gambar => ' . $value['id_gambar']
+                    );
+                    break;
+                } else {
+                    $this->_result['error'] = false;
+                }
             }
         }
 
@@ -815,6 +828,11 @@ class FetchController extends Controller {
             ),
             'message' => 'Deskripsi terbaharukan'
         );
+
+        if (isset($dataUpdate['id_bantuan'])) {
+            $this->_result['feedback']['data']['id_bantuan'] = $decoded['id_bantuan'];
+            $this->_result['feedback']['data']['nama_bantuan'] = $nama_bantuan;
+        }
         $this->result();
         if (Session::exists('toast')) {
             Session::delete('toast');
@@ -893,6 +911,8 @@ class FetchController extends Controller {
                 $this->result();
                 return false;
             }
+
+            $old_label = $old_label['text'];
 
             $old_array_gambar = array();
             $move_array_gambar = array();
@@ -1053,6 +1073,8 @@ class FetchController extends Controller {
             $this->result();
             return false;
         }
+
+        $label = $label['text'];
 
         if (isset($decoded['fields']['isi'])) {
             $content = $decoded['fields']['isi'];
@@ -4034,6 +4056,9 @@ class FetchController extends Controller {
                     } else if ($params[1] == 'informasi') {
                         // bantuanInformasiRead
                         $params[0] .= 'Informasi';
+                    } else if ($params[1] == 'deskripsi-selengkapnya') {
+                        // bantuanSelengkapnyaRead
+                        $params[0] .= 'Selengkapnya';
                     }
                 }
             break;
@@ -4446,6 +4471,86 @@ class FetchController extends Controller {
         return false;
     }
 
+    private function bantuanSelengkapnyaRead($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        $params = array();
+        $search = null;
+        $search_columnQ = '';
+        if (!empty($decoded['search'])) {
+            $search_value = $decoded['search'];
+            $search_column = "LOWER(CONCAT_WS(' ',IFNULL(nama, ''), IFNULL(group_by, '')))";
+            $search_columnQ = "WHERE {$search_column} LIKE LOWER(CONCAT('%',?,'%'))";
+            array_push($params, $search_value);
+            $search = array(
+                $search_column,
+                $search_value
+            );
+        }
+
+        if (isset($decoded['offset'])) {
+            $offset = $decoded['offset'];
+        } else {
+            $offset = 0;
+        }
+
+        if (isset($decoded['limmit'])) {
+            $limmit = $decoded['limmit'];
+        } else {
+            $limit = 25;
+        }
+
+        $this->model('Bantuan');
+
+        $sql = "WITH cte AS (
+                    SELECT b.id_bantuan id, b.nama nama, IFNULL(k.nama, 'Non-Kategori') group_by 
+                    FROM bantuan b LEFT JOIN kategori k USING(id_kategori) LEFT JOIN deskripsi ds ON(ds.id_bantuan = b.id_bantuan) 
+                    WHERE b.blokir IS NULL AND ds.id_bantuan IS NULL
+                    GROUP BY b.id_bantuan 
+                    ORDER BY k.id_kategori, b.prioritas DESC, b.create_at DESC, b.id_bantuan DESC
+                ) SELECT * FROM cte 
+                  {$search_columnQ}
+                  LIMIT {$offset}, {$limit}
+        ";
+
+        $this->model->query($sql, $params);
+        $dataBantuan = $this->model->getResults();
+
+        if (!empty($decoded['search'])) {
+            $this->model->query("WITH cte AS (
+                SELECT b.id_bantuan id, b.nama nama, IFNULL(k.nama, 'Non-Kategori') group_by 
+                FROM bantuan b LEFT JOIN kategori k USING(id_kategori) LEFT JOIN deskripsi ds ON(ds.id_bantuan = b.id_bantuan) 
+                WHERE b.blokir IS NULL AND ds.id_bantuan IS NULL
+                GROUP BY b.id_bantuan 
+                ORDER BY k.id_kategori, b.prioritas DESC, b.create_at DESC, b.id_bantuan DESC
+            ) SELECT COUNT(*) jumlah_record FROM cte 
+            {$search_columnQ}",array($search_value));
+        } else {
+            $this->model->countData("bantuan b LEFT JOIN kategori k USING(id_kategori) LEFT JOIN deskripsi ds ON(ds.id_bantuan = b.id_bantuan)", "b.blokir IS NULL AND ds.id_bantuan IS NULL");
+        }
+
+        $count = $this->model->getResult();
+
+        $this->_result['error'] = false;        
+        $this->_result['feedback'] = array(
+            'data' => $dataBantuan
+        );
+
+        if (isset($count)) {
+            $this->_result['feedback']['record'] = $count->jumlah_record;
+            $this->_result['feedback']['offset'] = (int) $offset;
+            $this->_result['feedback']['limit'] = $limit;
+            $this->_result['feedback']['load_more'] = ($count->jumlah_record > $offset + $limit);
+        }
+
+        if (!is_null($search)) {
+            $this->_result['feedback']['search'] = $search_value;
+        }
+
+        $this->result();
+        return false;
+    }
+
     private function bantuanInformasiRead($decoded) {
         $decoded = Sanitize::thisArray($decoded);
 
@@ -4513,7 +4618,7 @@ class FetchController extends Controller {
 
         if (isset($count)) {
             $this->_result['feedback']['record'] = $count->jumlah_record;
-            $this->_result['feedback']['offset'] = $offset;
+            $this->_result['feedback']['offset'] = (int) $offset;
             $this->_result['feedback']['limit'] = $limit;
             $this->_result['feedback']['load_more'] = ($count->jumlah_record > $offset + $limit);
         }
@@ -5410,7 +5515,7 @@ class FetchController extends Controller {
         }
 
         $this->model('Bantuan');
-        $this->model->getData('d.judul, d.isi, d.id_bantuan','deskripsi d', array('d.id_deskripsi','=',Sanitize::escape2($decoded['id_deskripsi'])));
+        $this->model->getData('d.judul, d.isi, d.id_bantuan, b.nama nama_bantuan','deskripsi d LEFT JOIN bantuan b USING(id_bantuan)', array('d.id_deskripsi','=',Sanitize::escape2($decoded['id_deskripsi'])));
         if (!$this->model->affected()) {
             $this->_result['feedback'] = array(
                 'message' => 'Failed to get data deskripsi'
@@ -5424,7 +5529,47 @@ class FetchController extends Controller {
             'data' => array(
                 'judul' => Output::decodeEscape($this->model->getResult()->judul),
                 'isi' => Output::decodeEscape($this->model->getResult()->isi),
-                'id_bantuan' => Output::decodeEscape($this->model->getResult()->id_bantuan)
+                'id_bantuan' => Output::decodeEscape($this->model->getResult()->id_bantuan),
+                'nama_bantuan' => Output::decodeEscape($this->model->getResult()->nama_bantuan)
+            )
+        );
+
+        $this->result();
+        if ($this->_result['error'] == false) {
+            Session::delete('toast');
+        }
+        return false;
+    }
+
+    private function deskripsiSelengkapnyaByBantuanGet($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        if (!isset($decoded['id_bantuan'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id bantuan tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->model('Bantuan');
+        $this->model->getData('d.judul, d.isi, b.nama, b.id_bantuan, d.id_deskripsi','deskripsi d RIGHT JOIN bantuan b USING(id_bantuan)', array('b.id_bantuan','=',Sanitize::escape2($decoded['id_bantuan'])));
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id bantuan tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => array(
+                'judul' => Output::decodeEscape($this->model->getResult()->judul),
+                'isi' => Output::decodeEscape($this->model->getResult()->isi),
+                'nama_bantuan' => Output::decodeEscape($this->model->getResult()->nama),
+                'id_bantuan' => $this->model->getResult()->id_bantuan,
+                'id_deskripsi' => $this->model->getResult()->id_deskripsi
             )
         );
 

@@ -29,8 +29,8 @@
                             <div class="form-group">
                                 <label class="form-control-label" for="input-jenis-kelamin-donatur">Jenis Kelamin</label>
                                 <select class="form-control" name="jenis_kelamin" id="input-jenis-kelamin-donatur">
-                                    <option value="P" <?= isset($data_error_feedback['jenis_kelamin']['value']) ? (strtoupper($data_error_feedback['jenis_kelamin']['value']) == 'P' ? 'selected':'') :  (strtoupper($data['data_donatur']->jenis_kelamin) == 'P' ? 'selected' : ''); ?>>Perempuan</option>
-                                    <option value="L" <?= isset($data_error_feedback['jenis_kelamin']['value']) ? (strtoupper($data_error_feedback['jenis_kelamin']['value']) == 'L' ? 'selected':'') :  (strtoupper($data['data_donatur']->jenis_kelamin) == 'L' ? 'selected' : ''); ?>>Laki-laki</option>
+                                    <option value="P" <?= isset($data_error_feedback['jenis_kelamin']['value']) ? (strtoupper($data_error_feedback['jenis_kelamin']['value']) == 'P' ? 'selected':'') :  (strtoupper($data['data_donatur']->jenis_kelamin ?? '') == 'P' ? 'selected' : ''); ?>>Perempuan</option>
+                                    <option value="L" <?= isset($data_error_feedback['jenis_kelamin']['value']) ? (strtoupper($data_error_feedback['jenis_kelamin']['value']) == 'L' ? 'selected':'') :  (strtoupper($data['data_donatur']->jenis_kelamin ?? '') == 'L' ? 'selected' : ''); ?>>Laki-laki</option>
                                     <option value='0' <?= isset($data_error_feedback['jenis_kelamin']['value']) ? ($data_error_feedback['jenis_kelamin']['value'] == null ? 'selected':'') :  ($data['data_donatur']->jenis_kelamin == null ? 'selected' : ''); ?>>Tidak Yakin</option>
                                 </select>
                             </div>

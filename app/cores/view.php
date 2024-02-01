@@ -291,6 +291,51 @@ class View {
 		}
 	}
 
+	private function doNav($menu_key) {
+		if (count(is_countable($menu_key) ? $menu_key : [])) {
+			$nav = '';
+			foreach ($menu_key as $items => $items_value) {
+				if (is_array($items_value)) {
+					$href  = '';
+					$title = '';
+					$icon  = '';
+					$dropdown  = '';
+					$tree = '';
+					foreach ($items_value as $item => $item_value) {
+						switch ($item) {
+							case 'href':
+								$href = $item_value;
+							break;
+							case 'title':
+								$title = $item_value;
+							break;
+							case 'icon':
+								$icon = $item_value;
+							break;
+							case 'dropdown':
+								$dropdown = ' nav-'.$item;
+								if (is_array($item_value)) {
+									$tree = '<ul class="navbar-nav">' . $this->doNav($item_value) . '</ul>';
+								}
+							break;
+							default:
+								die($item . ' On Nav Not Recognize');
+							break;
+						}
+					}
+					$nav .= '<li class="nav-item'. $dropdown .'">
+						<a href="'. $href .'" class="nav-link' . ((strtolower($items) == strtolower($this->getController())) ? ' active' : (strtolower(DS . $this->getRoute(). DS .$this->getController() . ($this->getAction() != null && $this->getAction() != 'index' ? DS .$this->getAction():'')) == $href ? ' active':'')) . '">'. (($this->_route == 'admin' || $this->_route == 'donatur') ? '<i class="' . $icon . '"></i>' : '') .'
+							<span class="nav-link-inner--text">'. $title .'</span>
+						</a>'. $tree .'</li>';
+					if (strtolower($items) == strtolower($this->getController())) {
+						$this->page_name = $title;
+					}
+				}
+			}
+			return $nav;
+		}
+	}
+
 	public function getNav() {
 		if (count(is_countable($this->nav) ? $this->nav : [])) {
 			$nav = '';
@@ -300,39 +345,8 @@ class View {
 						foreach ($controllers as $controller => $menu_key) {
 							if (($this->_route == 'admin') && (strtoupper($controller) == strtoupper($this->data['admin_alias'])) || ($this->_route == 'donatur') && (strtoupper($controller) == strtoupper($this->data['route_alias'])) || ($this->_route != 'admin') && ($this->_route != 'donatur') && strtolower($controller) == $this->getController()) {
 								if (is_array($menu_key)) {
-									foreach ($menu_key as $items => $items_value) {
-										if (is_array($items_value)) {
-											$href  = '';
-											$title = '';
-											$icon  = '';
-											foreach ($items_value as $item => $item_value) {
-												if ($items !== 'tree') {
-													switch ($item) {
-														case 'href':
-															$href = $item_value;
-														break;
-														case 'title':
-															$title = $item_value;
-														break;
-														case 'icon':
-															$icon = $item_value;
-														break;
-														default:
-															die($item . ' On Nav Not Recognize');
-														break;
-													}
-												}
-											}
-											$nav .= '<li class="nav-item">
-												<a href="'. $href .'" class="nav-link  ' . ((strtolower($items) == strtolower($this->getController())) ? 'active' : '') . '">'. (($this->_route == 'admin' || $this->_route == 'donatur') ? '<i class="' . $icon . '"></i>' : '') .'
-													<span class="nav-link-inner--text">'. $title .'</span>
-												</a>
-											</li>';
-											if (strtolower($items) == strtolower($this->getController())) {
-												$this->page_name = $title;
-											}
-										}
-									}
+									// Debug::pr($menu_key);
+									$nav = $this->doNav($menu_key);
 								}	
 							}
 						}

@@ -48,12 +48,66 @@ class BantuanController extends Controller {
     }
 
     public function index() {
+        $this->rel_action = array(
+            array(
+                'href' => '/assets/main/css/utility.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/form-element.css'
+            ),
+            array(
+                'href' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+            ),
+            array(
+                'href' => 'https://cdn.quilljs.com/1.3.7/quill.snow.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/editor.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/pages/css/bantuan.css'
+            )
+        );
+
         $this->script_action = array(
             array(
                 'src' => '/assets/main/js/token.js'
             ),
             array(
                 'src' => '/assets/main/js/token-action-updater.js'
+            ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/core/js/form-function.js'
+			),
+            array(
+                'type' => 'text/javascript',
+                'src' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+                'source' => 'trushworty'
+            ),  
+            array(
+                'type' => 'text/javascript',
+                'src' => 'https://cdn.quilljs.com/1.3.7/quill.js',
+                'source' => 'trushworty'
+            ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/vendors/quill/js/image-compress.js'
+            ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/vendors/quill/js/image-drop.js'
+            ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/vendors/quill/js/image-resize.js'
+            ),
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/core/js/editor.js'
+			),
+            array(
+                'src' => '/assets/route/admin/pages/js/bantuan.js'
             )
         );
 
@@ -109,9 +163,70 @@ class BantuanController extends Controller {
                 'jumlah_bantuan_selesai' => $this->model->jumlahBantuanSelesai()
             );
 
+            $this->rel_action = array(
+                array(
+                    'href' => '/assets/main/css/utility.css'
+                ),
+                array(
+                    'href' => '/assets/main/css/inputGroup.css'
+                ),
+                array(
+                    'href' => '/assets/route/admin/core/css/form-element.css'
+                ),
+                array(
+                    'href' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+                ),
+                array(
+                    'href' => 'https://cdn.quilljs.com/1.3.7/quill.snow.css'
+                ),
+                array(
+                    'href' => '/assets/route/admin/core/css/editor.css'
+                ),
+                array(
+                    'href' => '/assets/route/admin/pages/css/bantuan.css'
+                )
+            );
+
             $this->script_action = array(
                 array(
                     'src' => '/assets/main/js/token.js'
+                ),
+                array(
+                    'type' => 'text/javascript',
+                    'src' => '/assets/route/admin/core/js/form-function.js'
+                ),
+                array(
+                    'type' => 'text/javascript',
+                    'src' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+                    'source' => 'trushworty'
+                ),  
+                array(
+                    'type' => 'text/javascript',
+                    'src' => 'https://cdn.quilljs.com/1.3.7/quill.js',
+                    'source' => 'trushworty'
+                ),
+                array(
+                    'type' => 'text/javascript',
+                    'src' => '/vendors/quill/js/image-compress.js'
+                ),
+                array(
+                    'type' => 'text/javascript',
+                    'src' => '/vendors/quill/js/image-drop.js'
+                ),
+                array(
+                    'type' => 'text/javascript',
+                    'src' => '/vendors/quill/js/image-resize.js'
+                ),
+                array(
+                    'type' => 'text/javascript',
+                    'src' => '/assets/main/js/function-libs.js'
+                ),
+                array(
+                    'type' => 'text/javascript',
+                    'src' => '/assets/route/admin/core/js/editor.js'
+                ),
+                array(
+                    'src' => '/assets/route/admin/pages/js/bantuan.js'
                 )
             );
 
@@ -358,7 +473,7 @@ class BantuanController extends Controller {
             //     'href' => VENDOR_PATH.'cropper'.DS.'dist'.DS.'cropper.min.css'
             // ),
             array(
-                'href' => '/assets/route/admin/core/css/form-element.css'
+                'href' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
             ),
             array(
                 'href' => 'https://cdn.quilljs.com/1.3.7/quill.snow.css'
@@ -387,6 +502,11 @@ class BantuanController extends Controller {
 			// 	'type' => 'text/javascript',
             //     'src' => VENDOR_PATH.'cropper'. DS .'dist'. DS .'cropper.min.js'
 			// ),
+            array(
+                'type' => 'text/javascript',
+                'src' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+                'source' => 'trushworty'
+            ),  
             array(
                 'type' => 'text/javascript',
                 'src' => 'https://cdn.quilljs.com/1.3.7/quill.js',

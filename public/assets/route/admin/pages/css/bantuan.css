@@ -1,0 +1,20 @@
+select#id-bantuan~span.select2 * {
+    font-size: 12px;
+}
+
+select#id-bantuan~span.select2 label {
+    font-weight: bold;
+}
+
+select.custom-select~.select2>.selection>.select2-selection {
+    padding: 5px 1.4rem;
+    height: 46px;
+}
+
+.select2-container--disabled:hover .select2-selection {
+    cursor: not-allowed;
+}
+
+.select2-container--disabled.select2-container--focus .select2-selection {
+    background-color: #eee !important;
+}
