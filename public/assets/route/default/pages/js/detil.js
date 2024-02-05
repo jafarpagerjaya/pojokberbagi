@@ -735,7 +735,8 @@ let fetchReadInformasi = function(modal, response) {
         let timelineEl = '<div class="col-12 timeline-item px-0" data-id-informasi="' + reverseString(btoa(row.id_informasi)) + '"><div class="row m-0 w-100"><div class="col-12 col-lg-2"><div class="time small fw-bold"><a role="button" href="javascript:void(0);" class="text-secondary" data-bs-toggle="modal" data-bs-target="#modalListUpdate" data-filter="date" data-date-value="'+ row.tanggal_publikasi +'"><p><span>' + row.waktu_publikasi + '</span></p></a></div><a role="button" href="javascript:void(0);" data-label-value="'+ row.label +'" data-bs-toggle="modal" data-bs-target="#modalListUpdate" data-filter="label" class="text-capitalize badge' + (typeof labelInformasi(row.label) == 'object' ? ' ' + labelInformasi(row.label).class : '') + '">' + (labelInformasi(row.label).text != null ? labelInformasi(row.label).text : '') + '</a></span></div><div class="col-12 col-lg content flex-column d-flex"><b><span>' + row.judul + '</span></b><div class="editor-read">' + row.isi + '</div><div><a role="button" href="javascript:void(0);" class="text-decoration-underline" data-bs-target="#modalDetilUpdate">Lebih detil <i class="lni lni-chevron-right"></i></a></div></div></div></div>';
         modal.querySelector('#content').insertAdjacentHTML('beforeend', timelineEl);
 
-        const quill = new Quill(modal.querySelector('[data-id-informasi="'+ reverseString(btoa(row.id_informasi)) +'"] .editor-read'), {
+        const dataInformasi = modal.querySelector('[data-id-informasi="'+ reverseString(btoa(row.id_informasi)) +'"]');
+        const quill = new Quill(dataInformasi.querySelector('.editor-read'), {
             modules: {
                 toolbar: false
             },
@@ -743,14 +744,14 @@ let fetchReadInformasi = function(modal, response) {
         });
 
         // render the content
-        quill.setContents(JSON.parse(modal.querySelector('[data-id-informasi="'+ reverseString(btoa(row.id_informasi)) +'"] .editor-read').innerText));
+        quill.setContents(JSON.parse(dataInformasi.querySelector('.editor-read').innerText));
 
         setTimeout(() => {
-            if (modal.querySelector('.editor-read').clientHeight >= 200) {
-                modal.querySelector('.editor-read').classList.add('hidden-area-utility','light');
+            if (dataInformasi.querySelector('.editor-read').clientHeight >= 200) {
+                dataInformasi.querySelector('.editor-read').classList.add('hidden-area-utility','light');
             } else {
-                if (modal.querySelector('a[data-bs-target="#modalDetilUpdate"]') != null) {
-                    modal.querySelector('a[data-bs-target="#modalDetilUpdate"]').remove();
+                if (dataInformasi.querySelector('a[data-bs-target="#modalDetilUpdate"]') != null) {
+                    dataInformasi.querySelector('a[data-bs-target="#modalDetilUpdate"]').remove();
                 }
             }
         }, 0);
