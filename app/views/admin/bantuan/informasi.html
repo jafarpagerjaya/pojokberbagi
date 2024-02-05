@@ -51,7 +51,7 @@
                     <td>
                         <div class="media align-items-center gap-x-3">
                             <div class="media-body">
-                                <div class="name mb-0 text-black-50 font-weight-bold">
+                                <div class="nama_jabatan mb-0 text-black-50 font-weight-bolder">
                                     <span><?= $dataInformasi->jabatan_author; ?></span>
                                 </div>
                                 <div class="small text-black-50 font-weight-bolder">
@@ -72,7 +72,7 @@
                             </div>
                             <?php if (isset($dataInformasi->id_editor)) { ?>
                                 <div class="media-body">
-                                    <div class="name mb-0 text-black-50 font-weight-bold">
+                                    <div class="nama_jabatan mb-0 text-black-50 font-weight-bolder">
                                         <span><?= $dataInformasi->jabatan_editor; ?></span>
                                     </div>
                                     <div class="small text-black-50 font-weight-bolder">
@@ -106,128 +106,6 @@
                     <td colspan="5"><span>Data deskripsi tidak ditemukan ...</span></td>
                 </tr>
                 <?php } ?>
-                <!-- <tr>
-                    <td><a href="#" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span>Geberr</span></a></td>
-                    <td>
-                        <p class="font-weight-bold mb-0"><span>Semangat Baru</span></p>
-                        <div class="row justify-content-between">
-                            <div class="col-auto"><span class="badge badge-primary font-weight-bolder">Informasi</span></div>
-                            <div class="col-auto">
-                                <span><i class="far fa-clock small"></i></span>
-                                <small><span>1 jam yang lalu</span></small>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="media align-items-center">
-                            <div class="media-body">
-                                <div class="name mb-0 text-black-50 font-weight-bold">
-                                    <span>Staff. Program</span>
-                                </div>
-                                <div class="small text-black-50 font-weight-bolder">
-                                    <span>Rudi Salam</span>
-                                </div>
-                            </div>
-                        <div class="avatar rounded ml-3 bg-transparent border overflow-hidden"
-                                data-id-pegawai="2">
-                                <img src="/male-avatar.jpg" alt="Rudi" class="img-fluid">
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="media align-items-center">
-                            <div class="avatar rounded mr-3 bg-transparent border overflow-hidden"
-                                data-id-pegawai="1">
-                                <img src="/female-avatar.jpg" alt="Mira" class="img-fluid">
-                            </div>
-                            <div class="media-body">
-                                <div class="name mb-0 text-black-50 font-weight-bold">
-                                    <span>SVP. Program</span>
-                                </div>
-                                <div class="small text-black-50 font-weight-bolder">
-                                    <span>Mira</span>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="dropdown">
-                            <a class="btn btn-sm btn-icon-only text-light mr-0" href="#"
-                                role="button" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false"
-                                aria-label="Drop Down Action Record">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </a>
-                            <div
-                                class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                <a class="dropdown-item" href="#">Non-akifkan Berita</a>
-                                <a class="dropdown-item" href="#" data-toggle="modal"
-                                data-target="#modalFormInformasi">Ubah Berita</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><a href="#" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span>Geberr</span></a></td>
-                    <td>
-                        <p class="font-weight-bold mb-0"><span>Semangat Lama</span></p>
-                        <div class="row align-items-center justify-content-between">
-                            <div class="col-auto"><span class="badge badge-success font-weight-bolder">Pelaksanaan</span></div>
-                            <div class="col-auto">
-                                <span><i class="far fa-clock small"></i></span>
-                                <small><span>21 jam yang lalu</span></small>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="media align-items-center">
-                            <div class="media-body">
-                                <div class="name mb-0 text-black-50 font-weight-bold">
-                                    <span>Staff. Program</span>
-                                </div>
-                                <div class="small text-black-50 font-weight-bolder">
-                                    <span>Rudi Salam</span>
-                                </div>
-                            </div>
-                            <div class="avatar rounded ml-3 bg-transparent border overflow-hidden"
-                                data-id-pegawai="2">
-                                <img src="/male-avatar.jpg" alt="Rudi" class="img-fluid">
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="media align-items-center">
-                            <div class="avatar rounded mr-3 bg-transparent border overflow-hidden"
-                                data-id-pegawai="1">
-                                <img src="/female-avatar.jpg" alt="Mira" class="img-fluid">
-                            </div>
-                            <div class="media-body">
-                                <div class="name mb-0 text-black-50 font-weight-bold">
-                                    <span>SVP. Program</span>
-                                </div>
-                                <div class="small text-black-50 font-weight-bolder">
-                                    <span>Mira</span>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="dropdown">
-                            <a class="btn btn-sm btn-icon-only text-light mr-0" href="#"
-                                role="button" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false"
-                                aria-label="Drop Down Action Record">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </a>
-                            <div
-                                class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                <a class="dropdown-item" href="#">Non-akifkan Berita</a>
-                                <a class="dropdown-item" href="#" data-toggle="modal"
-                                data-target="#modalFormInformasi">Ubah Berita</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr> -->
             </tbody>
             <tfoot class="tfoot-light">
                 <th>Campaign</th>

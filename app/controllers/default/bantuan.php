@@ -198,13 +198,13 @@ class BantuanController extends Controller {
                 $this->data['list_donatur'] = $this->_bantuan->data();
             }
 
-            $this->_bantuan->query("SELECT id_informasi, judul, isi, label, FormatTanggal(modified_at) waktu_publikasi, DATE_FORMAT(modified_at, '%Y-%m-%d') tanggal_publikasi FROM informasi WHERE id_bantuan = ? ORDER BY modified_at DESC LIMIT 3", array('id_bantuan' => $params[0]));
+            $this->_bantuan->query("SELECT id_informasi, judul, isi, label, FormatTanggal(publish_at) waktu_publikasi, DATE_FORMAT(publish_at, '%Y-%m-%d') tanggal_publikasi FROM informasi WHERE id_bantuan = ? AND publish_at IS NOT NULL AND id_editor IS NOT NULL ORDER BY publish_at DESC LIMIT 3", array('id_bantuan' => $params[0]));
             if ($this->_bantuan->affected()) {
                 $dataInformasi = $this->_bantuan->data();
             }
 
             if (isset($dataInformasi)) {
-                $result = $this->_bantuan->countData('informasi', array('id_bantuan = ?', array($params[0])));
+                $result = $this->_bantuan->countData('informasi', array('id_bantuan = ? AND publish_at IS NOT NULL AND id_editor IS NOT NULL', array($params[0])));
                 if ($this->_bantuan->affected()) {
                     $this->data['top_update_terbaru'] = array(
                         'data' => $dataInformasi,

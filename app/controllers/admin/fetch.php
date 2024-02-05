@@ -7,6 +7,15 @@ class FetchController extends Controller {
         if (!isset($_SERVER['HTTP_REFERER']) && !isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
             Redirect::to('donatur');
         }
+
+        $this->_auth = $this->model('Auth');
+        if (!$this->_auth->hasPermission('admin')) {
+            $this->_result['feedback'] = array(
+                'message' => 'You not have a privilage'
+            );
+            $this->result();
+            return false;
+        }
     }
 
     private function removePathGambar() {
@@ -852,9 +861,7 @@ class FetchController extends Controller {
         $id_informasi = Sanitize::escape2(base64_decode(strrev($decoded['fields']['id_informasi'])));
         unset($decoded['fields']['id_informasi']);
 
-        $this->_auth = $this->model('Auth');
-
-        $this->_auth->isStaff($this->_auth->data()->email, 'email');
+        $this->_auth->isStaff(($this->_auth->data()->email ?? ''), 'email');
         if (!$this->_auth->affected()) {
             $this->_result['feedback'] = array(
                 'message' => 'Id pegawai tidak ditemukan'
@@ -865,8 +872,8 @@ class FetchController extends Controller {
 
         $decoded['fields']['id_author'] = $this->_auth->data()->id_pegawai;
 
-        // Sementara kedepannya 1 dinganti dengan id_pegawai yang mendapat tugas sebagai editor
-        if ($decoded['fields']['id_author'] == 1) {
+        // Sementara, kedepannya dinganti dengan id_pegawai yang mendapat tugas sebagai editor, jika sang author adalah editor
+        // if ($decoded['fields']['id_author'] == 1) {
             $decoded['fields']['id_editor'] = $decoded['fields']['id_author'];
             $this->model('Home');
             $this->model->getData('pe.nama nama_editor, je.nama jabatan_editor, ge.path_gambar path_editor', 'pegawai pe LEFT JOIN jabatan je USING(id_jabatan) LEFT JOIN akun ae ON(ae.email = pe.email) LEFT JOIN gambar ge ON(ge.id_gambar = ae.id_gambar)', array('pe.id_pegawai', '=', $decoded['fields']['id_editor']));
@@ -880,11 +887,11 @@ class FetchController extends Controller {
             $nama_editor = $this->model->getResult()->nama_editor;
             $jabatan_editor = $this->model->getResult()->jabatan_editor;
             $path_editor = $this->model->getResult()->path_editor;
-        }
+        // }
 
         $this->model('Bantuan');
 
-        $this->model->query('SELECT COUNT(id_informasi) jumlah_record, label, b.id_bantuan, b.nama nama_bantuan, judul, isi 
+        $this->model->query('SELECT COUNT(id_informasi) jumlah_record, label, b.id_bantuan, b.nama nama_bantuan, judul, isi, publish_at 
         FROM informasi LEFT JOIN bantuan b USING(id_bantuan) 
         WHERE id_informasi = ?', array(
             'id_informasi' => $id_informasi
@@ -900,6 +907,13 @@ class FetchController extends Controller {
         $old_judul = $this->model->getResult()->judul;
         $old_id_bantuan = $this->model->getResult()->id_bantuan;
         $old_nama_bantuan = $this->model->getResult()->nama_bantuan;
+        $publish_at = $this->model->getResult()->publish_at;
+
+        if (isset($decoded['fields']['id_editor'])) {
+            if (is_null($publish_at)) {
+                $decoded['fields']['publish_at'] = date('Y-m-d H-i-s');
+            }
+        }
 
         if (isset($decoded['fields']['label'])) {
             $old_label_value = $this->model->getResult()->label;
@@ -1456,10 +1470,12 @@ class FetchController extends Controller {
             $decoded['jabatan_editor'] = $jabatan_editor;
             $decoded['path_editor'] = $path_editor;
         }
+
+        $decoded['nama_editor'] = Output::decodeEscape($decoded['nama_editor']);
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(
             'message' => $pesan,
-            'data' => $decoded
+            'data' => Output::decodeEscapeArray($decoded)
         );
 
         $this->result();
@@ -1515,8 +1531,7 @@ class FetchController extends Controller {
             return false;
         }
 
-        $this->_auth = $this->model('Auth');
-        $this->_auth->isStaff($this->_auth->data()->email, 'email');
+        $this->_auth->isStaff(($this->_auth->data()->email ?? ''), 'email');
         if (!$this->_auth->affected()) {
             $this->_result['feedback'] = array(
                 'message' => 'Id pegawai tidak ditemukan'
@@ -1527,8 +1542,8 @@ class FetchController extends Controller {
 
         $decoded['id_author'] = $this->_auth->data()->id_pegawai;
 
-        // Sementara kedepannya 1 dinganti dengan id_pegawai yang mendapat tugas sebagai editor
-        if ($decoded['id_author'] == 1) {
+        // Sementara, kedepannya dinganti dengan id_pegawai yang mendapat tugas sebagai editor, jika sang author adalah editor
+        // if ($decoded['id_author'] == 1) {
             $decoded['id_editor'] = $decoded['id_author'];
             $this->model('Home');
             $this->model->getData('p.nama nama_editor, IFNULL(j.nama,"") jabatan_editor','pegawai p LEFT JOIN jabatan j USING(id_jabatan)',array('p.id_pegawai','=', $decoded['id_editor']));
@@ -1539,9 +1554,9 @@ class FetchController extends Controller {
                 $this->result();
                 return false;
             }
-            $nama_editor = $this->model->getResult()->nama_editor;
-            $jabatan_editor = $this->model->getResult()->jabatan_editor;
-        }
+            // $nama_editor = $this->model->getResult()->nama_editor;
+            // $jabatan_editor = $this->model->getResult()->jabatan_editor;
+        // }
 
         $content = $decoded['isi'];
         $counterImg = 1;
@@ -1594,6 +1609,7 @@ class FetchController extends Controller {
             
             if (isset($decoded['id_editor'])) {
                 $params['id_editor'] = $decoded['id_editor'];
+                $params['publish_at'] = date('Y-m-d H-i-s');
             }
 
             $this->_bantuan->create('informasi', $params);

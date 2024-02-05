@@ -248,7 +248,7 @@ CREATE TABLE pemohon (
 )ENGINE=INNODB;
 
 CREATE TABLE upload_persyaratan_pemohon (
-    nama VARCHAR(50) NOT NULL,
+    nama VARCHAR(75) NOT NULL,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     id_pemohon INT UNSIGNED,
@@ -259,7 +259,7 @@ CREATE TABLE upload_persyaratan_pemohon (
 
 CREATE TABLE kategori (
     id_kategori TINYINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    nama VARCHAR(50) NOT NULL,
+    nama VARCHAR(75) NOT NULL,
     warna VARCHAR(10) DEFAULT '#e9ecef',
     deskripsi VARCHAR(255),
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -296,7 +296,7 @@ INSERT INTO kategori_kebutuhan(nama) VALUES('Jasa'),('Alat'),('Makanan'),('Minum
 
 CREATE TABLE kebutuhan (
     id_kebutuhan INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    nama VARCHAR(50) NOT NULL,
+    nama VARCHAR(75) NOT NULL,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     id_kk TINYINT UNSIGNED,
@@ -307,8 +307,8 @@ CREATE TABLE kebutuhan (
 -- FETURE
 -- CREATE TABLE pengajuan (
 --     id_pengajuan INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
---     nama VARCHAR(50) NOT NULL,
---     nama_penerima VARCHAR(50),
+--     nama VARCHAR(75) NOT NULL,
+--     nama_penerima VARCHAR(75),
 --     satuan_target VARCHAR(15),
 --     jumlah_target INT UNSIGNED,
 --     min_donasi INT UNSIGNED,
@@ -335,12 +335,12 @@ CREATE TABLE kebutuhan (
 CREATE TABLE bantuan (
     id_bantuan INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     id_pemohon INT UNSIGNED,
-    nama VARCHAR(50) NOT NULL,
+    nama VARCHAR(75) NOT NULL,
     tag VARCHAR(30),
     blokir ENUM('1') DEFAULT NULL,
     status ENUM('B','C','T','D','S') NOT NULL DEFAULT 'B',
     prioritas CHAR(1) DEFAULT NULL,
-    nama_penerima VARCHAR(50),
+    nama_penerima VARCHAR(75),
     satuan_target VARCHAR(15),
     jumlah_target INT UNSIGNED,
     min_donasi INT UNSIGNED,
@@ -759,7 +759,7 @@ CREATE TABLE rencana (
     id_rencana INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     total_anggaran BIGINT UNSIGNED NOT NULL DEFAULT 0,
     status ENUM('BD','SD','BP','TD') NOT NULL DEFAULT 'BD',
-    keterangan VARCHAR(50),
+    keterangan VARCHAR(75),
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     id_bantuan INT UNSIGNED,
@@ -785,7 +785,7 @@ CREATE TABLE rencana_anggaran_belanja (
     jumlah INT NOT NULL DEFAULT 1,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    keterangan VARCHAR(50),
+    keterangan VARCHAR(75),
     id_kebutuhan INT UNSIGNED,
     id_rencana INT UNSIGNED NOT NULL,
     CONSTRAINT F_ID_KEBUTUHAN_RENCANA_ANGGARAN_BELANJA_ODR FOREIGN KEY(id_kebutuhan) REFERENCES kebutuhan(id_kebutuhan) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -812,7 +812,7 @@ CREATE TABLE anggaran_pelaksanaan_donasi (
     nominal_kebutuhan BIGINT UNSIGNED NOT NULL,
     saldo_kebutuhan BIGINT UNSIGNED NOT NULL,
     saldo_donasi INT UNSIGNED NOT NULL,
-    keterangan VARCHAR(50),
+    keterangan VARCHAR(75),
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     id_kebutuhan INT UNSIGNED,
@@ -1937,12 +1937,13 @@ CREATE TABLE detil_transaksi_pengembalian_penarikan_anggaran(
 
 CREATE TABLE informasi (
     id_informasi INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    judul VARCHAR(50) NOT NULL,
+    judul VARCHAR(75) NOT NULL,
     isi TEXT,
     label ENUM('I','PN','PD','PL'),
     id_bantuan INT UNSIGNED,
     id_author SMALLINT UNSIGNED,
     id_editor SMALLINT UNSIGNED,
+    publis_at TIMESTAMP,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT F_ID_BANTUAN_INFORMASI_ODN FOREIGN KEY(id_bantuan) REFERENCES bantuan(id_bantuan) ON DELETE SET NULL ON UPDATE CASCADE,

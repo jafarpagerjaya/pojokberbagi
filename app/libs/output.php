@@ -40,11 +40,11 @@ class Output {
 
     public static function decodeEscapeArray($array) {
         $result = [];
-		foreach ($array as $element) {
+		foreach ($array as $key => $element) {
 			if (is_array($element)) {
 			    $result = array_merge($result, self::decodeEscapeArray($element));
 			} else {
-			    $result[] = self::decodeEscape($element);
+			    $result[$key] = self::decodeEscape($element);
 			}
 		}
 		return $result;

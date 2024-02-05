@@ -13,7 +13,7 @@ class InformasiModel extends HomeModel {
             );
         }
         
-        $this->db->query("SELECT i.id_informasi, i.label, i.judul, DATE_FORMAT(i.modified_at, '%Y-%m-%d') tanggal_publikasi, FormatTanggal(i.modified_at) waktu_publikasi, i.id_author, i.id_editor, i.isi FROM informasi i WHERE {$filter_by} i.id_bantuan = ? ORDER BY i.modified_at DESC LIMIT {$this->getOffset()}, {$this->getLimit()}", $params);
+        $this->db->query("SELECT i.id_informasi, i.label, i.judul, DATE_FORMAT(i.publish_at, '%Y-%m-%d') tanggal_publikasi, FormatTanggal(i.publish_at) waktu_publikasi, i.id_author, i.id_editor, i.isi FROM informasi i WHERE {$filter_by} i.id_bantuan = ? AND i.publish_at IS NOT NULL AND i.id_editor IS NOT NULL ORDER BY i.publish_at DESC LIMIT {$this->getOffset()}, {$this->getLimit()}", $params);
         if (!$this->db->count()) {
             return false;
         }
@@ -40,12 +40,12 @@ class InformasiModel extends HomeModel {
                 $decoded['filter_value'], 
                 $decoded['id_bantuan']
             );
-            $result = $this->countData("informasi i", array("{$filter_by} i.id_bantuan = ?", $countValues));
+            $result = $this->countData("informasi i", array("{$filter_by} i.id_bantuan = ? AND i.publish_at IS NOT NULL AND i.id_editor IS NOT NULL", $countValues));
         } else {
             $countValues = array(
                 $decoded['id_bantuan'],
             );
-            $result = $this->countData("informasi i", array("i.id_bantuan = ?", $countValues));
+            $result = $this->countData("informasi i", array("i.id_bantuan = ? AND i.publish_at IS NOT NULL AND i.id_editor IS NOT NULL", $countValues));
         }
 
         $return['record'] = $result->jumlah_record;
@@ -94,16 +94,10 @@ class InformasiModel extends HomeModel {
         $params = array_merge($params, $copyParams);
         $params = array_merge($params, $copyMarkValue);
 
-        // $sql = "SELECT * FROM (
-        //     (SELECT i.id_informasi FROM informasi i WHERE {$filter_by} i.id_bantuan = ? AND i.id_informasi > ANY (SELECT MAX(id_informasi) FROM informasi WHERE id_informasi IN({$questionMarks}) AND /* i.id_editor IS NOT NULL */) /* i.id_editor IS NOT NULL */ ORDER BY 1 ASC LIMIT {$this->getLimit()})
-        //         UNION
-        //     (SELECT i.id_informasi FROM informasi i WHERE {$filter_by} i.id_bantuan = ? AND i.id_informasi IN ({$questionMarks}) AND /* i.id_editor IS NOT NULL */ ORDER BY 1 DESC)
-        // ) b ORDER BY 1 DESC";
-
         $sql = "SELECT * FROM (
-            (SELECT i.id_informasi FROM informasi i WHERE {$filter_by} i.id_bantuan = ? AND i.id_informasi > ANY (SELECT MAX(id_informasi) FROM informasi WHERE id_informasi IN({$questionMarks})) ORDER BY 1 ASC LIMIT {$this->getLimit()})
+            (SELECT i.id_informasi FROM informasi i WHERE {$filter_by} AND i.publish_at IS NOT NULL AND i.id_editor IS NOT NULL AND i.id_bantuan = ? AND i.id_informasi > ANY (SELECT MAX(id_informasi) FROM informasi WHERE id_informasi IN({$questionMarks}) AND publish_at IS NOT NULL AND id_editor IS NOT NULL) ORDER BY 1 ASC LIMIT {$this->getLimit()})
                 UNION
-            (SELECT i.id_informasi FROM informasi i WHERE {$filter_by} i.id_bantuan = ? AND i.id_informasi IN ({$questionMarks}) ORDER BY 1 DESC)
+            (SELECT i.id_informasi FROM informasi i WHERE {$filter_by} AND i.publish_at IS NOT NULL AND i.id_editor IS NOT NULL AND i.id_bantuan = ? AND i.id_informasi IN ({$questionMarks}) ORDER BY 1 DESC)
         ) b ORDER BY 1 DESC";
 
         $this->db->query($sql, $params);
@@ -142,7 +136,7 @@ class InformasiModel extends HomeModel {
             }
         }
 
-        $this->db->query("SELECT * FROM (SELECT i.id_informasi, i.label, i.judul, DATE_FORMAT(i.modified_at, '%Y-%m-%d') tanggal_publikasi, FormatTanggal(i.modified_at) waktu_publikasi, i.id_author, i.id_editor, i.isi FROM informasi i WHERE {$filter_by} i.id_bantuan = ? AND i.id_informasi IN ({$questionMarks}) ORDER BY i.modified_at ASC LIMIT {$this->getLimit()}) b ORDER BY id_informasi DESC", $params);
+        $this->db->query("SELECT * FROM (SELECT i.id_informasi, i.label, i.judul, DATE_FORMAT(i.modified_at, '%Y-%m-%d') tanggal_publikasi, FormatTanggal(i.modified_at) waktu_publikasi, i.id_author, i.id_editor, i.isi FROM informasi i WHERE {$filter_by} i.id_bantuan = ? AND i.id_informasi IN ({$questionMarks}) AND i.publish_at IS NOT NULL AND i.id_editor IS NOT NULL ORDER BY i.modified_at ASC LIMIT {$this->getLimit()}) b ORDER BY id_informasi DESC", $params);
         if (!$this->db->count()) {
             return false;
         }

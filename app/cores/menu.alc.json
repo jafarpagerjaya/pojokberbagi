@@ -164,15 +164,39 @@
 		"it": {
 			"Home": {
 				"href": "/admin",
-				"title": "Beranda"
+				"title": "Beranda",
+				"icon": "ni ni-tv-2 text-primary"
 			},
 			"Akun": {
 				"href": "/admin/akun",
-				"title": "Akun"
+				"title": "Akun",
+				"icon": "ni ni-badge text-success"
 			},
 			"BackupRestore": {
 				"href": "/admin/backup-restore",
 				"title": "Backup & Restore"
+			},
+			"Bantuan": {
+				"href": "javascript:void(0);",
+				"title": "Campaign",
+				"icon": "ni ni-collection text-warning",
+				"dropdown": {
+					"Campaign": {
+						"href": "/admin/bantuan",
+						"title": "Bantuan",
+						"icon": "ni ni-bullet-list-67 text-green-box"
+					},
+					"Selengkapnya": {
+						"href": "/admin/bantuan/selengkapnya",
+						"title": "Selengkapnya",
+						"icon": "ni ni-caps-small text-dark"
+					},
+					"Informasi": {
+						"href": "/admin/bantuan/informasi",
+						"title": "Informasi",
+						"icon": "ni ni-watch-time text-gray"
+					}
+				}
 			}
 		}
 	},

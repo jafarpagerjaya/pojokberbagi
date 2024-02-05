@@ -298,7 +298,7 @@
             <div class="modal-header">
                 <div class="d-flex flex-column">
                     <h5 class="modal-title"><?= (isset($data['modal_update_berita']) ? $data['modal_update_berita']->judul :'Judul Informasi'); ?></h5>
-                    <?= (isset($data['modal_update_berita']) ? '<span class="badge'. (' '). Utility::labelInformasi($data['modal_update_berita']->label)['class'] .' pt-1 text-capitalize">'. Utility::labelInformasi($data['modal_update_berita']->label)['text'] .'</span>' : ''); ?>
+                    <?= (isset($data['modal_update_berita']) ? '<div><span class="badge'. (' '). Utility::labelInformasi($data['modal_update_berita']->label)['class'] .' pt-1 text-capitalize">'. Utility::labelInformasi($data['modal_update_berita']->label)['text'] .'</span></div>' : ''); ?>
                 </div>
                 <button type="button" class="btn btn-outline-orange-reverse" data-bs-dismiss="modal" aria-label="Close">Tutup</button>
             </div>

@@ -38,7 +38,6 @@
 }
 
 .ql-container,
-#selengkapnya p,
 #commit-bantuan-area p {
     font-size: .725rem;
 }
@@ -49,6 +48,19 @@
 
 .ql-editor img {
     border-radius: 15px;
+}
+
+.ql-container p {
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+}
+
+.ql-container p:first-of-type {
+    margin-top: 0px;
+}
+
+.ql-container p:last-of-type {
+    margin-bottom: 0px;
 }
 
 #selengkapnya img {
@@ -577,7 +589,7 @@ a.badge:hover {
     }
 
     .ql-container,
-    #selengkapnya p,
+
     #commit-bantuan-area p {
         font-size: .75rem;
     }
@@ -611,7 +623,7 @@ a.badge:hover {
     }
 
     .ql-container,
-    #selengkapnya p,
+
     #commit-bantuan-area p {
         font-size: .8rem;
     }
@@ -641,7 +653,7 @@ a.badge:hover {
     }
 
     .ql-container,
-    #selengkapnya p,
+
     #commit-bantuan-area p {
         font-size: .9rem;
     }
@@ -726,7 +738,7 @@ a.badge:hover {
     }
 
     .ql-container,
-    #selengkapnya p,
+
     #commit-bantuan-area p {
         font-size: 1rem;
     }

@@ -1117,7 +1117,7 @@ class FetchController extends Controller {
 
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(
-            'data' => $this->model->getResult()
+            'data' => Output::decodeEscapeArray(json_decode(json_encode($this->model->getResult()),true))
         );
 
         $this->result();

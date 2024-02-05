@@ -774,7 +774,7 @@ let fetchGetInformasiBerita = function(modal, response) {
     modal.querySelector('.modal-title').innerText = data.judul;
     if (typeof labelInformasi(data.label) != 'boolean') {
         if (modal.querySelector('.badge') == null) {
-            let badge = '<span class="badge '+ labelInformasi(data.label).class +' pt-1 text-capitalize">'+ labelInformasi(data.label).text +'</span>';
+            let badge = '<div><span class="badge '+ labelInformasi(data.label).class +' pt-1 text-capitalize">'+ labelInformasi(data.label).text +'</span></div>';
             modal.querySelector('.modal-title').insertAdjacentHTML('afterend', badge);
         }
     }

@@ -25,8 +25,10 @@ class HomeController extends Controller {
 
         if (!$this->_auth->hasPermission('admin')) {
             if ($this->_auth->isSignIn()) {
-                $this->_auth->getData('nama, id_pegawai', 'pegawai', array('email','=',$this->_auth->data()->email));
-                Session::flash('error','Assalamualaikum, '. ucwords(strtolower($this->_auth->data()->nama)) .' [PBI-'. $this->_auth->data()->id_pegawai .']');
+                if ($this->_auth->isStaff($this->_auth->data()->email, 'email')){
+                    $this->_auth->getData('nama, id_pegawai', 'pegawai', array('id_pegawai','=',$this->_auth->data()->id_pegawai));
+                    Session::flash('error','Assalamualaikum, '. ucwords(strtolower($this->_auth->data()->nama)) .' [PBI-'. $this->_auth->data()->id_pegawai .']');
+                }
             }
             Redirect::to('donatur');
         }
@@ -61,6 +63,11 @@ class HomeController extends Controller {
             case 'CRE':
                 $this->cr();
                 return VIEW_PATH.'admin'.DS.'home'.DS.'cre.html';
+            break;
+
+            case 'IT':
+                $this->sys();
+                return VIEW_PATH.'admin'.DS.'home'.DS.'sys.html';
             break;
 
             case 'DE':
