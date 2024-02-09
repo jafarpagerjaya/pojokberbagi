@@ -804,7 +804,7 @@ class BantuanModel extends HomeModel {
     }
 
     public function readInformasiBantuan() {
-        $fields = "i.id_informasi, timeAgo(i.modified_at) time_ago, b.nama nama_bantuan, i.judul, CASE WHEN i.label = 'I' THEN 'informasi' WHEN i.label = 'PL' THEN 'pelaksanaan' WHEN i.label = 'PN' THEN 'penarikan' ELSE 'pengadaan' END label, i.modified_at, i.id_author, pa.nama nama_author, jpa.nama jabatan_author, IFNULL(ga.path_gambar,'/uploads/images/default.png') path_author, i.id_editor, IFNULL(pe.nama,'') nama_editor, IFNULL(jpe.nama,'') jabatan_editor, IFNULL(ge.path_gambar,'') path_editor";
+        $fields = "i.id_informasi, timeAgo(i.modified_at) time_ago, i.id_bantuan, b.nama nama_bantuan, i.judul, CASE WHEN i.label = 'I' THEN 'informasi' WHEN i.label = 'PL' THEN 'pelaksanaan' WHEN i.label = 'PN' THEN 'penarikan' ELSE 'pengadaan' END label, i.modified_at, i.id_author, pa.nama nama_author, jpa.nama jabatan_author, IFNULL(ga.path_gambar,'/uploads/images/default.png') path_author, i.id_editor, IFNULL(pe.nama,'') nama_editor, IFNULL(jpe.nama,'') jabatan_editor, IFNULL(ge.path_gambar,'') path_editor";
         $tables = "informasi i JOIN bantuan b USING(id_bantuan) JOIN pegawai pa ON(pa.id_pegawai = i.id_author) LEFT JOIN jabatan jpa ON(jpa.id_jabatan = pa.id_jabatan) LEFT JOIN pegawai pe ON(pe.id_pegawai = i.id_editor) LEFT JOIN jabatan jpe ON(jpe.id_jabatan = pe.id_jabatan) LEFT JOIN akun aa ON(aa.email = pa.email) LEFT JOIN gambar ga ON(ga.id_gambar = aa.id_gambar) LEFT JOIN akun ae ON(ae.email = pe.email) LEFT JOIN gambar ge ON(ge.id_gambar = ae.id_gambar)";
         // Where bisa di set jika perlu;
         $where = null;

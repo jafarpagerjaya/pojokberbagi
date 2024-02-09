@@ -182,7 +182,21 @@ const counterTarget = document.querySelectorAll('.box-info h6[data-count-up-valu
 counterUpSup(counterTarget, counterSpeed);
 counterUpProgress(progressBar, counterSpeed);
 
-const c_id_bantuan = window.location.pathname.split('/').at(3);
+let getIdBantuan = function(pathname) {
+    let id_bantuan;
+    switch (pathname.split('/').at(1)) {
+        case 'default':
+            id_bantuan = pathname.split('/').at(4);
+        break;
+    
+        default:
+            id_bantuan = pathname.split('/').at(3);
+        break;
+    }
+    return id_bantuan;
+}
+
+const c_id_bantuan = getIdBantuan(window.location.pathname);
 
 let data = {
     id_bantuan: c_id_bantuan,

@@ -566,12 +566,15 @@ let submitFunction = function(e) {
             if (objectInformasi.data.label == objectInformasi.fields.label) {
                 delete objectInformasi.fields.label;
             }
-            if (objectInformasi.data.selected.id == objectInformasi.fields[objectInformasi.select_name]) {
-                delete objectInformasi.fields[objectInformasi.select_name];
-                delete objectInformasi.fields.select_text;
-            } else {
-                objectInformasi.fields.select_name = objectInformasi.select_name;
+            if (objectInformasi.data.selected != null) {
+                if (objectInformasi.data.selected.id == objectInformasi.fields[objectInformasi.select_name]) {
+                    delete objectInformasi.fields[objectInformasi.select_name];
+                    delete objectInformasi.fields.select_text;
+                }
             }
+
+            objectInformasi.fields.select_name = objectInformasi.select_name;
+
             if (objectInformasi.data.selected_chain != null) {
                 
                 let aData = setIdOnMultipleSelect(objectInformasi.data.selected_chain),
@@ -656,17 +659,41 @@ let fetchGetInformasiBerita = function(result, root) {
         // for select2
         setTimeout(() => {
             $('#jenis-label').val(data.label).trigger('change');
-            setTimeout(() => {
-                let defaultSelectChain = [objectInformasi.data.selected];
-                resetDataSelect2($('#'+ objectInformasi.select_name), defaultSelectChain);
-                if (data.selected_chain != undefined) {
-                    $('#'+ objectInformasi.select_name).trigger('change');
-                    let defaultSelectChain2 = data.selected_chain;
-                    resetDataSelect2($('#'+ objectInformasi.select_name2), defaultSelectChain2);
-                    $('#'+ objectInformasi.select_name2).val(setIdOnMultipleSelect(defaultSelectChain2)).trigger('change');
-                }
-            }, 0);
+            if (objectInformasi.data.selected != null) {
+                setTimeout(() => {
+                    let defaultSelectChain = [objectInformasi.data.selected];
+                    resetDataSelect2($('#'+ objectInformasi.select_name), defaultSelectChain);
+                    if (data.selected_chain != undefined) {
+                        $('#'+ objectInformasi.select_name).trigger('change');
+                        let defaultSelectChain2 = data.selected_chain;
+                        resetDataSelect2($('#'+ objectInformasi.select_name2), defaultSelectChain2);
+                        $('#'+ objectInformasi.select_name2).val(setIdOnMultipleSelect(defaultSelectChain2)).trigger('change');
+                    }
+                }, 0);
+            }
         }, 0);
+    }
+};
+
+let fetchGetInformasiKonfirmasi = function(result, root) {
+    if (!result.error) {
+        const data = result.feedback.data;
+        objectInformasi.data = data;
+        root.querySelector('.badge').innerText = data.label_text;
+        if (!root.querySelector('.badge').classList.contains(data.label_class)) {
+            let newClassList = [];
+            root.querySelector('.badge').classList.forEach(cl => {
+                if (!cl.indexOf('bg-')) {
+                    newClassList.push(data.label_class);
+                    return;
+                }
+                newClassList.push(cl);
+            });
+            root.querySelector('.badge').setAttribute('class', newClassList.join(' '));
+        }
+        root.querySelector('#judul').innerText = data.judul;
+        root.querySelector('a').innerText = data.nama_bantuan;
+        root.querySelector('a').setAttribute('href', '/admin/bantuan/data/'+data.id_bantuan);
     }
 };
 
@@ -774,6 +801,114 @@ $('#modalFormInformasi').on('hidden.bs.modal', function(e) {
     e.target.querySelector('#modalFormInformasiLebel span').innerText = objectInformasi.mode;
 });
 
+$('#modalKonfirmasiStatusInformasi').on('show.bs.modal', function(e) {
+    relatedTarget = e.relatedTarget;
+    let data = {
+        token: body.getAttribute('data-token'),
+        id_informasi: relatedTarget.closest('tr').getAttribute('data-id-informasi'),
+        confirm_only: true
+    };
+
+    if (relatedTarget.closest('tr').querySelector('[data-id-editor]').getAttribute('data-id-editor').length > 0) {
+        e.target.querySelector('.modal-dialog').classList.remove('modal-info');
+        e.target.querySelector('.modal-dialog').classList.add('modal-danger');
+        e.target.querySelector('.modal-content').classList.remove('bg-gradient-info');
+        e.target.querySelector('.modal-content').classList.add('bg-gradient-danger');
+        e.target.querySelector('#modalKonfirmasiStatusInformasiLabel').innerText = 'Peringatan';
+        e.target.querySelector('.modal-body p>span#mode').innerText = 'menon-aktifkan';
+        e.target.querySelector('[type="submit"]').classList.remove('text-info');
+        e.target.querySelector('[type="submit"]').classList.add('text-danger');
+        e.target.querySelector('[type="submit"]').innerText = 'Ya, non-aktifkan';
+        objectInformasi.mode = 'disable';
+    } else {
+        e.target.querySelector('.modal-dialog').classList.remove('modal-danger');
+        e.target.querySelector('.modal-dialog').classList.add('modal-info');
+        e.target.querySelector('.modal-content').classList.remove('bg-gradient-danger');
+        e.target.querySelector('.modal-content').classList.add('bg-gradient-info');
+        e.target.querySelector('#modalKonfirmasiStatusInformasiLabel').innerText = 'Pemberitahuan';
+        e.target.querySelector('.modal-body p>span#mode').innerText = 'mengaktifkan';
+        e.target.querySelector('[type="submit"]').classList.remove('text-danger');
+        e.target.querySelector('[type="submit"]').classList.add('text-info');
+        e.target.querySelector('[type="submit"]').innerText = 'Ya, aktifkan';
+        objectInformasi.mode = 'enable';
+    }
+
+    // fetchGetInformasiKonfirmasi
+    fetchData('/admin/fetch/get/informasi', data, e.target, 'get-informasi-konfirmasi');
+});
+
+let fetchEnableDisableInformasi = function(response, modal) {
+    if (!response.error) {
+        const relatedTR = relatedTarget.closest('tr'),
+              data = response.feedback.data;
+
+        switch (objectInformasi.mode) {
+            case 'disable':
+                relatedTR.querySelector('[data-id-editor]').setAttribute('data-id-editor', '');
+                relatedTR.querySelector('[data-id-editor] img').setAttribute('src', '');
+                relatedTR.querySelector('[data-id-editor] img').setAttribute('alt', '');
+                relatedTR.querySelector('[data-id-editor] + .media-body').remove();
+
+                relatedTarget.classList.add('text-info');
+                relatedTarget.classList.remove('text-danger');
+                relatedTarget.innerText = 'Aktifkan Berita';
+            break;
+
+            case 'enable':
+                if (data.id_editor != null) {
+                    relatedTR.querySelector('[data-id-editor]').setAttribute('data-id-editor', data.id_editor);
+                    relatedTR.querySelector('[data-id-editor] img').setAttribute('src', data.path_editor);
+                    relatedTR.querySelector('[data-id-editor] img').setAttribute('alt', data.nama_editor);
+                    if (relatedTR.querySelector('[data-id-editor] + .media-body') == null) {
+                        const media = '<div class="media-body"><div class="nama_jabatan mb-0 text-black-50 font-weight-bolder"><span>'+ data.jabatan_editor +'</span></div><div class="small text-black-50 font-weight-bolder"><span>'+ data.nama_editor +'</span></div></div>';
+                        relatedTR.querySelector('[data-id-editor]').insertAdjacentHTML('afterend', media);
+                    } else {
+                        relatedTR.querySelector('[data-id-editor] + .media-body > .nama_jabatan span').innerText = data.nama_editor;
+                        relatedTR.querySelector('[data-id-editor] + .media-body > .nama_jabatan +* span').innerText = data.jabatan_editor;
+                    }
+                }
+
+                relatedTarget.classList.remove('text-info');
+                relatedTarget.classList.add('text-danger');
+                relatedTarget.innerText = 'Non-aktifkan Berita';
+            break;
+        
+            default:
+            break;
+        }
+
+        relatedTR.querySelector('[data-modified-value]').setAttribute('data-modified-value', data.modified_at);
+
+        timeAgoRuns('table tr span[data-modified-value]','data-modified-value','data-modified-value-', 60000, 'tr','data-id-informasi');
+
+        relatedTR.classList.add('highlight');
+        setTimeout(() => {
+            relatedTR.classList.remove('highlight')
+        }, 3000);
+        
+        $(modal).modal('hide');
+    }
+    objectInformasi = {};
+};
+
+const submitEnableDisable = function(e) {
+    let data = {
+        token: body.getAttribute('data-token'),
+        fields: {
+            id_informasi: relatedTarget.closest('tr').getAttribute('data-id-informasi'),
+            mode: objectInformasi.mode
+        }
+    };
+
+    // console.log(data);
+    // fetchEnableDisableInformasi
+    fetchData('/admin/fetch/update/bantuan/informasi/enable-disable', data, e.target.closest('.modal'), 'enable-disable-informasi');
+    
+    e.preventDefault();
+};
+
+document.querySelector('#modalKonfirmasiStatusInformasi button[type="submit"]').addEventListener('click', debounceIgnoreLast(submitEnableDisable, 500));
+
 let fetchCreateInformasi = function(response, modal) {
     if (!response.error) {
         if (relatedCard.querySelector('.pagination .page-link.page-item.active') != null) {
@@ -781,7 +916,7 @@ let fetchCreateInformasi = function(response, modal) {
         } else {
             let el = response.feedback.data;
             relatedCard.querySelector('tbody').innerHTML = '';
-            const tr = '<tr data-id-informasi="'+ el.id_informasi +'"><td><a href="#" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span>'+ el.nama_bantuan +'</span></a></td><td><p class="font-weight-bold mb-0"><span>'+ el.judul +'</span></p><div class="row justify-content-between"><div class="col-auto"><span class="badge badge-primary font-weight-bolder">'+ el.label +'</span></div><div class="col-auto"><span><i class="far fa-clock small"></i></span><small><span data-modified-value="'+ el.modified_at +'">'+ el.time_ago +'</span></small></div></div></td><td><div class="media align-items-center"><div class="media-body"><div class="nama_jabatan mb-0 text-black-50 font-weight-bolder"><span>'+ el.jabatan_author +'</span></div><div class="small text-black-50 font-weight-bolder"><span>'+ el.nama_author +'</span></div></div><div class="avatar rounded ml-3 bg-transparent border overflow-hidden" data-id-author="'+ el.id_author +'"><img src="'+ el.path_author +'" alt="'+ el.nama_author +'" class="img-fluid"></div></div></td><td><div class="media align-items-center"><div class="avatar rounded mr-3 bg-transparent border overflow-hidden" data-id-editor="'+ el.id_editor +'"><img src="'+ el.path_editor +'" alt="'+ el.nama_editor +'" class="img-fluid"></div><div class="media-body"><div class="nama_jabatan mb-0 text-black-50 font-weight-bolder"><span>'+ el.jabatan_editor +'</span></div><div class="small text-black-50 font-weight-bolder"><span>'+ el.nama_editor +'</span></div></div></div></td><td><div class="dropdown"><a class="btn btn-sm btn-icon-only text-light mr-0" href="javascript::void();" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Drop Down Action Record"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" data-value="'+ el.id_informasi +'"><a class="dropdown-item" href="#">Non-akifkan Berita</a><a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalFormInformasi" data-type="update">Ubah Berita</a></div></div></td></tr>';
+            const tr = '<tr data-id-informasi="'+ el.id_informasi +'"><td><a href="#" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span>'+ el.nama_bantuan +'</span></a></td><td><p class="font-weight-bold mb-0"><span>'+ el.judul +'</span></p><div class="row justify-content-between"><div class="col-auto"><span class="badge badge-primary font-weight-bolder">'+ el.label +'</span></div><div class="col-auto"><span><i class="far fa-clock small"></i></span><small><span data-modified-value="'+ el.modified_at +'">'+ el.time_ago +'</span></small></div></div></td><td><div class="media align-items-center"><div class="media-body"><div class="nama_jabatan mb-0 text-black-50 font-weight-bolder"><span>'+ el.jabatan_author +'</span></div><div class="small text-black-50 font-weight-bolder"><span>'+ el.nama_author +'</span></div></div><div class="avatar rounded ml-3 bg-transparent border overflow-hidden" data-id-author="'+ el.id_author +'"><img src="'+ el.path_author +'" alt="'+ el.nama_author +'" class="img-fluid"></div></div></td><td><div class="media align-items-center"><div class="avatar rounded mr-3 bg-transparent border overflow-hidden" data-id-editor="'+ el.id_editor +'"><img src="'+ el.path_editor +'" alt="'+ el.nama_editor +'" class="img-fluid"></div><div class="media-body"><div class="nama_jabatan mb-0 text-black-50 font-weight-bolder"><span>'+ el.jabatan_editor +'</span></div><div class="small text-black-50 font-weight-bolder"><span>'+ el.nama_editor +'</span></div></div></div></td><td><div class="dropdown"><a class="btn btn-sm btn-icon-only text-light mr-0" href="javascript::void();" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Drop Down Action Record"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" data-value="'+ el.id_informasi +'"><a class="dropdown-item '+(el.id_editor != null ? 'text-danger':'text-info')+'" data-toggle="modal" data-target="#modalKonfirmasiStatusInformasi" href="javascript:void(0);">'+(el.id_editor != null ? 'Non-akifkan Berita':'Aktifkan Berita')+'</a><a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#modalFormInformasi" data-type="update">Ubah Berita</a></div></div></td></tr>';
             relatedCard.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
 
             if (relatedCard.querySelector('tr[data-id-informasi="'+ response.feedback.data.id_informasi +'"') != null) {
@@ -884,6 +1019,10 @@ let fetchData = function (url, data, root, f) {
                 fetchUpdateInformasi(response, root);
             break;
 
+            case 'enable-disable-informasi':
+                fetchEnableDisableInformasi(response, root);
+            break;
+
             case 'read-list-informasi':
                 if (!fetchReadInformasiList(response, root)) {
                     return false;
@@ -892,6 +1031,10 @@ let fetchData = function (url, data, root, f) {
 
             case 'get-informasi':
                 fetchGetInformasiBerita(response, root);
+            break;
+
+            case 'get-informasi-konfirmasi':
+                fetchGetInformasiKonfirmasi(response, root);
             break;
 
             default:
@@ -943,8 +1086,12 @@ let fetchReadInformasiList = function(result, root) {
             data.forEach(el => {
                 el.id_informasi = reverseString(btoa(el.id_informasi));
                 el.id_author = reverseString(btoa(el.id_author));
-                el.id_editor = reverseString(btoa(el.id_editor));
-                let tr = '<tr data-id-informasi="'+ el.id_informasi +'"><td><a href="#" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span>'+ el.nama_bantuan +'</span></a></td><td><p class="font-weight-bold mb-0"><span>'+ el.judul +'</span></p><div class="row justify-content-between"><div class="col-auto"><span class="badge badge-primary font-weight-bolder">'+ el.label +'</span></div><div class="col-auto"><span><i class="far fa-clock small"></i></span><small><span data-modified-value="'+ el.modified_at +'">'+ el.time_ago +'</span></small></div></div></td><td><div class="media align-items-center"><div class="media-body"><div class="nama_jabatan mb-0 text-black-50 font-weight-bolder"><span>'+ el.jabatan_author +'</span></div><div class="small text-black-50 font-weight-bolder"><span>'+ el.nama_author +'</span></div></div><div class="avatar rounded ml-3 bg-transparent border overflow-hidden" data-id-author="'+ el.id_author +'"><img src="'+ el.path_author +'" alt="'+ el.nama_author +'" class="img-fluid"></div></div></td><td><div class="media align-items-center"><div class="avatar rounded mr-3 bg-transparent border overflow-hidden" data-id-editor="'+ el.id_editor +'"><img src="'+ el.path_editor +'" alt="'+ el.nama_editor +'" class="img-fluid"></div><div class="media-body"><div class="nama_jabatan mb-0 text-black-50 font-weight-bolder"><span>'+ el.jabatan_editor +'</span></div><div class="small text-black-50 font-weight-bolder"><span>'+ el.nama_editor +'</span></div></div></div></td><td><div class="dropdown"><a class="btn btn-sm btn-icon-only text-light mr-0" href="javascript::void();" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Drop Down Action Record"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" data-value="'+ el.id_informasi +'"><a class="dropdown-item" href="#">Non-akifkan Berita</a><a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalFormInformasi" data-type="update">Ubah Berita</a></div></div></td></tr>';
+                if (el.id_editor != null) {
+                    el.id_editor = reverseString(btoa(el.id_editor));
+                } else {
+                    el.id_editor = '';
+                }
+                let tr = '<tr data-id-informasi="'+ el.id_informasi +'"><td><a href="'+ (el.id_bantuan == null ? 'javascript:void(0);' : '/bantuan/detil/'+el.id_bantuan+'/informasi/'+el.id_informasi) +'" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span>'+ el.nama_bantuan +'</span></a></td><td><p class="font-weight-bold mb-0"><span>'+ el.judul +'</span></p><div class="row justify-content-between"><div class="col-auto"><span class="badge badge-primary font-weight-bolder">'+ el.label +'</span></div><div class="col-auto"><span><i class="far fa-clock small"></i></span><small><span data-modified-value="'+ el.modified_at +'">'+ el.time_ago +'</span></small></div></div></td><td><div class="media align-items-center"><div class="media-body"><div class="nama_jabatan mb-0 text-black-50 font-weight-bolder"><span>'+ el.jabatan_author +'</span></div><div class="small text-black-50 font-weight-bolder"><span>'+ el.nama_author +'</span></div></div><div class="avatar rounded ml-3 bg-transparent border overflow-hidden" data-id-author="'+ el.id_author +'"><img src="'+ el.path_author +'" alt="'+ el.nama_author +'" class="img-fluid"></div></div></td><td><div class="media align-items-center"><div class="avatar rounded mr-3 bg-transparent border overflow-hidden" data-id-editor="'+ el.id_editor +'"><img src="'+ el.path_editor +'" alt="'+ el.nama_editor +'" class="img-fluid"></div><div class="media-body"><div class="nama_jabatan mb-0 text-black-50 font-weight-bolder"><span>'+ el.jabatan_editor +'</span></div><div class="small text-black-50 font-weight-bolder"><span>'+ el.nama_editor +'</span></div></div></div></td><td><div class="dropdown"><a class="btn btn-sm btn-icon-only text-light mr-0" href="javascript::void();" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Drop Down Action Record"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" data-value="'+ el.id_informasi +'"><a class="dropdown-item '+(el.id_editor != null ? 'text-danger':'text-info')+'" data-toggle="modal" data-target="#modalKonfirmasiStatusInformasi" href="javascript:void(0);">'+(el.id_editor != null ? 'Non-akifkan Berita':'Aktifkan Berita')+'</a><a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#modalFormInformasi" data-type="update">Ubah Berita</a></div></div></td></tr>';
                 root.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
             });
         } else {

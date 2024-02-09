@@ -37,7 +37,7 @@
                     foreach($data['list_informasi']['data'] as $row => $dataInformasi) {
                  ?>
                 <tr data-id-informasi="<?= strrev(base64_encode($dataInformasi->id_informasi)); ?>">
-                    <td><a href="#" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span><?= $dataInformasi->nama_bantuan; ?></span></a></td>
+                    <td><a href="<?= (isset($dataInformasi) ? '/bantuan/detil/'.$dataInformasi->id_bantuan.'/informasi/'.strrev(base64_encode($dataInformasi->id_informasi)) : 'javascript:void(0);'); ?>" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span><?= $dataInformasi->nama_bantuan; ?></span></a></td>
                     <td>
                         <p class="font-weight-bold mb-0"><span><?= $dataInformasi->judul; ?></span></p>
                         <div class="row justify-content-between">
@@ -92,8 +92,9 @@
                             </a>
                             <div
                                 class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" data-value="<?= base64_decode(strrev($dataInformasi->id_informasi)); ?>">
-                                <a class="dropdown-item" href="#">Non-akifkan Berita</a>
-                                <a class="dropdown-item" href="#" data-toggle="modal"
+                                <a class="dropdown-item <?= (isset($dataInformasi->id_editor) ? 'text-danger' : 'text-info') ?> font-weight-light" href="javascript:void(0);" data-toggle="modal"
+                                data-target="#modalKonfirmasiStatusInformasi"><?= (isset($dataInformasi->id_editor) ? 'Non-akifkan Berita' : 'Aktifkan Berita'); ?></a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal"
                                 data-target="#modalFormInformasi" data-type="update">Ubah Berita</a>
                             </div>
                         </div>
@@ -193,6 +194,44 @@ aria-hidden="true">
                                 <button type="clear" class="btn btn-link">Kosongkan</button>
                                 <button type="submit" class="btn btn-primary ml-auto shadow-none font-weight-bolder">Simpan</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" tabindex="-2" id="modalKonfirmasiStatusInformasi" role="dialog"
+    aria-labelledby="modalKonfirmasiStatusInformasiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-danger modal-dialog-centered fullscreen">
+        <div class="modal-content bg-gradient-danger d-flex justify-content-center">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalKonfirmasiStatusInformasiLabel">Peringatan</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="py-3 text-center">
+                                <i class="ni ni-bell-55 ni-3x"></i>
+                                <h2 class="heading my-4">Anda harus baca ini !</h2>
+                                <p class="font-weight-light mb-1">Anda akan <span id="mode"></span> berita<span class="badge p-2 mx-1 bg-primary text-white">label</span></p>
+                                <div>
+                                    <strong id="judul">Lorem ipsum dolor sit amet.</strong>
+                                    untuk campaign 
+                                    <a target="_blank"
+                                class="text-underline badge p-2 bg-white text-primary font-weight-bolder mt-2"
+                                id="nama-bantuan">nama_bantuan</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-link bg-green-box font-weight-bolder" data-dismiss="modal">Batalkan</button>
+                            <button type="submit" class="btn btn-secondary font-weight-bolder">Ya, non-aktifkan.</button>
                         </div>
                     </div>
                 </div>
