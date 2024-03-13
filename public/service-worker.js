@@ -128,12 +128,13 @@ self.addEventListener('fetch', e => {
                 })
             });
         })
-        .catch(() => caches.match('/fallback/offline'))
-        // .catch(() => {
-        //     if (e.request.url.indexOf('.html') > -1) {
-        //         console.log(e.request.url);
-        //         return caches.match('/fallback/offline')
-        //     }
-        // })
+        // .catch(() => caches.match('/fallback/offline'))
+        .catch(() => {
+            // console.log(e.request.url);
+            // if (e.request.url.split(self.location.origin)[1].indexOf('.') == -1) {
+            if (e.request.url.split(self.location.origin)[1].indexOf('.') == -1 && self.location.pathname !== '/home/kunjungan') {
+                return caches.match('/fallback/offline')
+            }
+        })
     );
 });
