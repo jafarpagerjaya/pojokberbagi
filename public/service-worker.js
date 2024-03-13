@@ -1,9 +1,10 @@
-const staticCacheName = 'shell-cache';
-const dynamicCache = 'dynamic-cache';
+const staticCacheName = 'shell-caches';
+const dynamicCache = 'dynamic-caches';
 const staticAssets = [
         '/',
+        'https://pojokberbagi.id/',
         '/assets/images/brand/pojok-berbagi-transparent.png?nw=1',
-        '/manifest.json',
+        'manifest.json',
         '/fallback/offline',
         '/assets/route/default/core/css/LineIcons.3.0.css?nw=1',
         '/assets/route/default/core/fonts/LineIcons.woff?nw=1',
@@ -117,7 +118,7 @@ self.addEventListener('activate', e => {
 
 // fetch event
 self.addEventListener('fetch', e => {
-    // console.log('fetch event: ', e.request.url);
+    console.log('fetch event: ', e.request.url);
     e.respondWith(
         caches.match(e.request).then(cachesResponse => {
             return cachesResponse || fetch(e.request).then(fetchRes => {
@@ -131,7 +132,6 @@ self.addEventListener('fetch', e => {
         // .catch(() => caches.match('/fallback/offline'))
         .catch(() => {
             // console.log(e.request.url);
-            // if (e.request.url.split(self.location.origin)[1].indexOf('.') == -1) {
             if (e.request.url.split(self.location.origin)[1].indexOf('.') == -1 && self.location.pathname !== '/home/kunjungan') {
                 return caches.match('/fallback/offline')
             }
