@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row" id="visual-banner-area">
             <div class="col">
-                <div class="app-image img-wrapper d-flex align-items-center justify-content-center overflow-hidden rounded-box wow fadeInUp shadow-none"
+                <div <?= (isset($data['detil_bantuan']->id_video) ? 'data-video="on" ' : '');?>class="app-image img-wrapper d-flex align-items-center justify-content-center overflow-hidden rounded-box wow fadeInUp shadow-none"
                     data-wow-delay=".2s">
                     <img src="<?= $data['detil_bantuan']->path_gambar_medium; ?>"
                         alt="Gambar <?= $data['detil_bantuan']->nama_gambar_medium; ?>"
@@ -330,6 +330,36 @@
                     <p class="desc small">Yuk kita bantu</p>
                 </div>
                 <button class="btn btn-outline-orange-reverse p-2" data-bs-target="#modalShareBtn"><i class="bi bi-share-fill fs-1" style="margin-left: -0.5px;"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" tabindex="-1" id="modalVideoGallery">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content overflow-hidden rounded-box">
+            <div class="modal-header p-0">
+                <div class="row w-100 m-0">
+                    <div class="col-12 p-0 border-bottom ratio ratio-16x9">
+                        <div id="player" <?= (isset($data['detil_bantuan']->id_video) ? 'data-vid="' . $data['detil_bantuan']->id_video .'"' : ''); ?>>
+                        </div>
+                    </div>
+                    <div class="col-12 bg-white" id="video-panel">
+                        <div class="d-flex gap-2 share bg-white justify-content-between">
+                            <div class="d-flex gap-2">
+                                <a type="button" class="btn btn-outline-green-box rounded-box p-2 medsos-icon">
+                                    <i class="bi bi-whatsapp fs-4"></i>
+                                </a>
+                                <a type="button" class="btn btn-outline-dark rounded-box p-2 medsos-icon">
+                                    <i class="bi bi-twitter-x fs-4"></i>
+                                </a>
+                            </div>
+                            <a href="<?= '/donasi/buat/baru/'. $data['detil_bantuan']->id_bantuan; ?>" type="button" class="btn button donasi rounded-box shadow-none d-grid align-items-center justify-items-center">
+                                Donasi Sekarang
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

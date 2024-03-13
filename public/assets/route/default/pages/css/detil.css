@@ -534,6 +534,153 @@ a.badge:hover {
     padding-top: 12px;
 }
 
+@keyframes circle_player {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 hsla(0,0%,100%,.3);
+        box-shadow: 0 0 0 0 hsla(0,0%,100%,.3);
+    }
+    100% {
+        -webkit-box-shadow: 0 0 0 30px hsla(0,0%,100%,.3);
+        box-shadow: 0 0 0 30px hsla(0,0%,100%,.3);
+    }
+}
+
+#visual-banner-area .app-image.img-wrapper[data-video="on"] {
+    position: relative;
+    background-color: transparent;
+    transition: background-color .3s ease;
+}
+
+#visual-banner-area .app-image.img-wrapper[data-video="on"]::before,
+#visual-banner-area .app-image.img-wrapper[data-video="on"]::after {
+    position: absolute;
+    display: flex;
+    content: '';
+    justify-content: center;
+    align-items : center;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+#visual-banner-area .app-image.img-wrapper[data-video="on"]::before {
+    height: 75px;
+    width: 75px;
+    background-color: hsla(0,0%,100%,.3);
+    animation: circle_player 1s infinite alternate;
+}
+
+#visual-banner-area .app-image.img-wrapper[data-video="on"]::after {
+    padding: 1rem;
+    background-color: var(--orange);
+    height: 60px;
+    width: 60px;
+    color: white;
+    font: normal normal normal 1.25rem/1 'lineicons';
+    content: "\eb57";
+    animation: circle_player 1s .5s infinite alternate;
+}
+
+#visual-banner-area .app-image.img-wrapper[data-video="on"]:hover {
+    cursor: pointer;
+    background-color: rgba(45,45,79,.4);
+}
+
+#visual-banner-area .app-image.img-wrapper[data-video="on"] img {
+    transition: opacity .3s ease;
+    opacity: 1;
+}
+
+#visual-banner-area .app-image.img-wrapper[data-video="on"]:hover img {
+    opacity: 0.5;
+}
+
+#modalVideoGallery .modal-header #player:not([data-yt-run]) {
+    background-color: var(--green) !important;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column-reverse;
+    gap: 1em;
+}
+
+#modalVideoGallery .modal-header div#player:not([data-yt-run])::before {
+    content: attr(data-content);
+    font-weight: 900;
+    font-size: 1.15rem;
+}
+
+#modalVideoGallery #video-panel {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+#modalVideoGallery .modal-footer {
+    grid-template-columns: 1fr 1fr;
+}
+
+#modalVideoGallery .modal-footer .item::after {
+    width: 100%;
+    height: 100%;
+    content: '';
+    display: flex;
+    position: absolute;
+    top: 0;
+    transition: all .3s ease;
+}
+
+#modalVideoGallery .modal-footer .item:hover::after {
+    background-color: #fe5000f0;
+}
+
+#modalVideoGallery .modal-footer .item .yt-thumbnail {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+#modalVideoGallery .modal-footer .item:hover {
+    cursor: pointer;
+}
+
+#modalVideoGallery .modal-footer .item:hover .yt-thumbnail::before {
+    opacity: 1;
+}
+
+#modalVideoGallery .modal-footer .item .yt-thumbnail::before {
+    height: 45px;
+    width: 45px;
+    color: var(--bs-light);
+    font: normal normal normal 1.25rem/1 'bootstrap-icons' !important;
+    content: "\F21C";
+    position: absolute;
+    right: 0;
+    display: grid;
+    place-items: center;
+    opacity: .7;
+    z-index: 1;
+    transition: all .3s ease;
+}
+
+#modalVideoGallery .modal-footer .item .yt-thumbnail .d-flex {
+    height: 100%;
+    color: white;
+    z-index: 1;
+    position: relative;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .3s, visibility .3s, transform .3s;
+    transform: translateY(10%);
+}
+
+#modalVideoGallery .modal-footer .item:hover .yt-thumbnail .d-flex {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+    transform: translateY(0);
+}
+
 @media (max-width: 426px) {
     .sticky-btn {
         position: fixed;
@@ -558,6 +705,11 @@ a.badge:hover {
 
     #modalDetilUpdate .media {
         text-align: center;
+    }
+
+    #modalVideoGallery .modal-xl {
+        margin-left: 0px;
+        margin-right: 0px;
     }
 }
 
@@ -728,6 +880,10 @@ a.badge:hover {
     #modalDetilUpdate .modal-dialog {
         max-width: calc(100vw - 2em);
     }
+
+    #modalVideoGallery .modal-xl {
+        max-width: calc(768px - 2.5em);
+    }
 }
 
 @media (min-width: 992px) {
@@ -770,6 +926,10 @@ a.badge:hover {
     #modalListUpdate .timeline-item a[data-filter="date"] span:first-of-type:last-of-type {
         flex-direction: column;
     }
+
+    #modalVideoGallery .modal-footer {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 @media (max-width: 991px) {
@@ -799,6 +959,10 @@ a.badge:hover {
 
     .avatar.border.rounded {
         border-radius: 1rem !important;
+    }
+
+    #modalVideoGallery .modal-footer {
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 

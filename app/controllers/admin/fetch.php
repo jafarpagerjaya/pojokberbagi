@@ -2322,6 +2322,10 @@ class FetchController extends Controller {
         //     return false;
         // }
 
+        if (isset($decoded['id_video_youtube'])) {
+            $decoded['id_video_youtube'] = Output::getYoutubeIdFromUrl($decoded['id_video_youtube']);
+        }
+
         $dataUrl = array(
             'medium' => $decoded['card_img'],
             'wide' => $decoded['wide_img']
@@ -2380,7 +2384,7 @@ class FetchController extends Controller {
         $decoded['id_gambar_medium'] = $array_id_gambar['medium'];
         $decoded['id_gambar_wide'] = $array_id_gambar['wide'];
 
-        $decoded = Sanitize::thisArray($decoded, 'escape');
+        $decoded = Sanitize::thisArray($decoded, 'escape2');
 
         if (isset($decoded['lama_penayangan'])) {
             $decoded['lama_penayangan'] = Sanitize::toInt2($decoded['lama_penayangan']);
@@ -3404,6 +3408,10 @@ class FetchController extends Controller {
     }
 
     private function bantuanUpdate($decoded) {
+        if (isset($decoded['id_video_youtube'])) {
+            $decoded['id_video_youtube'] = Output::getYoutubeIdFromUrl($decoded['id_video_youtube']);
+        }
+
         if (isset($decoded['card_img'])) {
             $dataUrl['medium'] = $decoded['card_img'];
             $fieldsGambar['medium'] = array(

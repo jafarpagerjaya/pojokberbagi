@@ -281,7 +281,12 @@ shareButtons.forEach(button => {
             if (objectInformasi.id_informasi == relatedModal.getAttribute('data-id-informasi')) {
                 uTarget = uTarget + '/informasi/' + objectInformasi.id_informasi;
             }
+        } else {
+            if (e.target.parentElement.closest('.modal').getAttribute('id') == 'modalVideoGallery') {
+                uTarget = player.playerInfo.videoUrl;
+            }
         }
+
         // Get the URL of the current page
         const url = uTarget;
 
@@ -1057,4 +1062,92 @@ modalDetilUpdate.addEventListener('hide.bs.modal', function (e) {
 
 modalDetilUpdate.querySelector('button[data-bs-target="#modalShareBtn"]').addEventListener('click', function(e) {
     myShareModal.show();
+});
+
+// Youtube Player API
+const modalVideoGallery = document.getElementById('modalVideoGallery');
+const myVedoGalleryModal = new bootstrap.Modal(modalVideoGallery);
+
+const vBtn = document.querySelector('#visual-banner-area .app-image.img-wrapper[data-video="on"]');
+if (vBtn != null) {
+    vBtn.addEventListener('click', function(e) {
+        myVedoGalleryModal.show();
+    });
+}
+
+let tag = document.createElement('script');
+
+tag.src = "https://www.youtube.com/iframe_api";
+const scriptNodeList = document.getElementsByTagName('script');
+
+let firstScriptTag = scriptNodeList[scriptNodeList.length-1];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+// after the API code downloads.
+let player;
+function onYouTubeIframeAPIReady() {
+    let vid = document.querySelector('#player').getAttribute('data-vid');
+    // console.log(vid);
+    if (vid != null && typeof vid == 'string') {
+        player = new YT.Player('player', {
+            videoId: vid,
+            playerVars: {
+                rel: '0',
+                showinfo: '0',
+                loop: '1',
+                autoplay: '1',
+                mute: '0',
+                iv_load_policy: '3',
+                'ytp-pause-overlay': '0',
+                cc_load_policy: '1',
+                cc_lang_pref: 'id',
+                playsinline: '1'
+            },
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+}
+
+// The API will call this function when the video player is ready.
+function onPlayerReady(event) {
+    document.querySelector('#player').setAttribute('data-yt-run','true');
+    player.pauseVideo();
+}
+
+// The API calls this function when the player's state changes.
+// The function indicates that when playing a video (state=1),
+// the player should play for six seconds and then stop.
+
+function onPlayerStateChange(event) {
+    switch(event.data){
+        // Stop the video on ending so recommended videos don't pop up
+        case 0:     // ended
+           player.stopVideo();
+           break;
+        case -1:    // unstarted
+        case 1:     // playing
+        case 2:     // paused
+        case 3:     // buffering
+        case 5:     // video cued
+        default:
+        break;
+    }
+}
+
+modalVideoGallery.addEventListener('shown.bs.modal', function (e) {
+    if(typeof player.playVideo == 'function') {
+        player.playVideo();
+    } else {
+        var fn = function(){
+            player.playVideo();
+        };
+        setTimeout(fn, 200);
+    }
+});
+
+modalVideoGallery.addEventListener('hide.bs.modal', function (e) {
+    player.pauseVideo();
 });

@@ -14,6 +14,7 @@
     <meta name="twiter:site" content="@pojok_berbagi">
     <meta name="twiter:creator" content="@pojok_berbagi">
     <meta name="facebook-domain-verification" content="b8es9uq1temep9f2kg19dn43axauya" />
+    <meta name="theme-color" content="#FFF">
     <title>
         <?= $this->getTitle() . Config::get('defaults/default_title') ?>
     </title>
@@ -31,6 +32,7 @@
     <link rel="stylesheet" href="/assets/route/default/core/css/default.css?v=220124">
     <?= $this->getLinkRel('controller'); ?>
     <?= $this->getLinkRel('action'); ?>
+    <link rel="manifest" href="/manifest.json">
 </head>
 
 <body<?= (isset($this->data['uri']) ? ' data-uri="'. $this->data['uri'] .'"' : '') ?>
@@ -225,10 +227,10 @@
     <!-- <script src="/assets/route/default/core/js/count-up.min.js"></script> -->
     <script src="/assets/route/default/core/js/main.js"></script>
     <!-- Core Script -->
-    <script src="/assets/route/default/core/js/default.js?v=1711231"></script>
-    <script src="/assets/route/auth/js/auth.js?v=160723"></script>
+    <script src="/assets/route/default/core/js/default.js?v=171123"></script>
+    <script src="/assets/route/auth/js/auth.js?v=080324"></script>
     <?= $this->getScript('controller'); ?>
     <?= $this->getScript('action'); ?>
     </body>
-
+    
 </html>

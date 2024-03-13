@@ -349,6 +349,7 @@ CREATE TABLE bantuan (
     tanggal_awal DATE,
     tanggal_akhir DATE,
     deskripsi VARCHAR(255) NOT NULL,
+    id_video_youtube VARCHAR(100),
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     action_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

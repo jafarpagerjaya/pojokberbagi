@@ -345,3 +345,37 @@ const debounceIgnoreLast = (fn, delay) => {
   
 // const btn = document.querySelector("#like");
 // btn.addEventListener("click", debounceNameVar);
+
+window.addEventListener('online', () => 
+    {
+        console.log('Became online')
+        
+        if (document.querySelector('[data-connection-mode]') != null) {
+            document.querySelector('[data-connection-mode]').setAttribute('data-connection-mode','online');
+            document.querySelector('[data-connection-mode] span').innerText = 'Sudah sudah terhubung lagi Sob';
+            
+            setTimeout(() => {
+                document.querySelector('[data-connection-mode]').remove()
+            }, 1500);
+        }
+    }
+);
+
+window.addEventListener('offline', () => 
+    {
+        console.log('Became offline')
+
+        if (document.querySelector('[data-connection-mode]') == null) {
+            const internetConnectionMode = document.createElement('div'),
+            internetConnectionModeClass = {
+                'class': 'position-fixed rounded-box py-2 px-3 text-white fw-bold',
+                'data-connection-mode': 'offline'
+            };
+            
+            setMultipleAttributesonElement(internetConnectionMode, internetConnectionModeClass)
+    
+            internetConnectionMode.innerHTML = '<span>Sob, koneksi internetmu terputus</span>';
+            document.querySelector('body').appendChild(internetConnectionMode)
+        }
+    }
+);

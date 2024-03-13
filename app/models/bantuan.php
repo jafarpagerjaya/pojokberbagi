@@ -330,7 +330,7 @@ class BantuanModel extends HomeModel {
                IF(SUM(pl.jumlah_pelaksanaan) IS NULL, 0, TRUNCATE((SUM(pl.jumlah_pelaksanaan)/b.jumlah_target)*100,0))
            ) persentase_pelaksanaan, 
            IF(b.id_bantuan = 1, jumlah_donatur+1999, jumlah_donatur) jumlah_donatur,
-           b.nama, b.status, b.satuan_target, b.total_rab, b.deskripsi, b.create_at, b.action_at,
+           b.nama, b.status, b.satuan_target, b.total_rab, b.deskripsi, b.create_at, b.action_at, b.id_video_youtube id_video,
            s.nama layanan, gm.path_gambar path_gambar_medium, IFNULL(gm.nama, b.nama) nama_gambar_medium, IFNULL(gw.nama, b.nama) nama_gambar_wide, gw.path_gambar path_gambar_wide
        FROM (
            SELECT 

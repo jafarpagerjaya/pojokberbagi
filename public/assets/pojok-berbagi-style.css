@@ -435,6 +435,27 @@ textarea {
     }
 }
 
+[data-connection-mode] {
+    z-index: 1056;
+    transition: all .3s ease;
+}
+
+[data-connection-mode="offline"] {
+    background-color: var(--orange);
+}
+
+[data-connection-mode="online"] {
+    background-color: var(--green);
+}
+
+[data-connection-mode="offline"] span::after {
+    content: ' 😣';
+}
+
+[data-connection-mode="online"] span::after {
+    content: ' 🤗';
+}
+
 @media (min-width: 375px) {
 
     .box-icon {
@@ -462,6 +483,14 @@ textarea {
 
 @media (min-width: 480px) {}
 
+@media (max-width: 767px) {
+    [data-connection-mode] {
+        top: 1em;
+        transform: translateX(-50%);
+        left: 50%;
+    }
+}
+
 @media (min-width: 767px) {
 
     .box {
@@ -480,6 +509,11 @@ textarea {
 
     .kontak .d-grid {
         justify-content: start;
+    }
+
+    [data-connection-mode] {
+        bottom: 1em;
+        left: 1em;
     }
 }
 
