@@ -68,7 +68,8 @@ INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES
 ('Dana','/assets/images/partners/dana.png','partner',1),
 ('Qris','/assets/images/partners/qris.png','partner',1),
 ('jafar-signature','/uploads/images/signature/jafar-signature.png','signature','1'),
-('bank-mandiri','/assets/images/partners/mandiri.png','partner','1');
+('bank-mandiri','/assets/images/partners/mandiri.png','partner','1'),
+('shopeepay','/assets/images/partners/shopeepay.png','partner','1');
 
 CREATE TABLE pegawai (
     id_pegawai SMALLINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -379,13 +380,32 @@ CREATE TABLE deskripsi (
     CONSTRAINT F_ID_BANTUAN_deskripsi_ODC FOREIGN KEY(id_bantuan) REFERENCES bantuan(id_bantuan) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=INNODB;
 
-CREATE TABLE list_gambar_deskripsi(
+CREATE TABLE list_gambar_deskripsi (
     id_deskripsi INT UNSIGNED,
     id_gambar INT UNSIGNED,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT F_ID_DESKRIPSI_LGS_ODN FOREIGN KEY(id_deskripsi) REFERENCES deskripsi(id_deskripsi) ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT F_ID_GAMBAR_LGS_ODC FOREIGN KEY(id_gambar) REFERENCES gambar(id_gambar) ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=INNODB;
+
+CREATE TABLE video (
+    id_video INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    url VARCHAR(255),
+    label VARCHAR(10),
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT U_URL_VIDEO UNIQUE(url)
+)ENGINE=INNODB;
+
+CREATE TABLE video_deskripsi (
+    id_video_deskripsi INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    url VARCHAR(255),
+    id_deskripsi INT UNSIGNED,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT F_ID_DESKRIPSI_VD_ODC FOREIGN KEY(id_deskripsi) REFERENCES deskripsi(id_deskripsi) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT U_URL_VD UNIQUE(url)
 )ENGINE=INNODB;
 
 -- DROP TRIGGER IF EXISTS BANTUAN_CHECK_UPDATE;
@@ -459,7 +479,8 @@ INSERT INTO penyelenggara_jasa_pembayaran(nama, kode) VALUES
 ('PT Bank Syariah Indonesia', '451'),
 ('PT Espay Debit Indonesia Koe', 'DAN'),
 ('PT Dompet Anak Bangsa', 'GOP'),
-('PT Bank Mandiri (Persero), Tbk','008');
+('PT Bank Mandiri (Persero), Tbk','008'),
+('PT AirPay International Indonesia','SOP');
 -- ('PT OVO', 'OVO');
 
 CREATE TABLE channel_account (
@@ -482,10 +503,11 @@ INSERT INTO channel_account(nama, nomor, atas_nama, jenis) VALUES
 ('CR Kantor Pusat', 1, 'CR POJOK BERBAGI INDONESIA', 'KT'),
 ('Bank BJB', '0001000080001', 'POJOK BERBAGI INDONESIA', 'RB'),
 ('Bank BSI', '7400525255', 'POJOK BERBAGI INDONESIA', 'RB'),
-('Dana', '081233311113', 'Pojok Berbagi', 'EW'),
-('GoPay', '081233311113', 'Pojok Berbagi', 'EW'),
-('Ovo', '081233311113', 'Pojok Berbagi', 'EW'),
-('Bank Mandiri', '1320080829998', 'POJOK BERBAGI INDONESIA', 'RB');
+('Dana', '081213331113', 'Pojok Berbagi', 'EW'),
+('GoPay', '081213331113', 'Pojok Berbagi', 'EW'),
+('Ovo', '081213331113', 'Pojok Berbagi', 'EW'),
+('Bank Mandiri', '1320080829998', 'POJOK BERBAGI INDONESIA', 'RB'),
+('ShopeePay','081213331113','Pojok Berbagi','EW');
 
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE kode = '002') WHERE nama LIKE '%BRI%';
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE kode = '110') WHERE nama LIKE '%BJB%';
@@ -494,6 +516,7 @@ UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pemba
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE nama = 'PT Dompet Anak Bangsa') WHERE nama LIKE '%GoPay%';
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE nama = 'OVO') WHERE nama LIKE '%OVO%';
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE kode = '008') WHERE nama LIKE '%Mandiri%';
+UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE nama = 'PT AirPay International Indonesia') WHERE nama LIKE '%ShopeePay%';
 
 CREATE TABLE channel_payment (
     id_cp TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -519,10 +542,11 @@ INSERT INTO channel_payment(nama, kode, nomor, jenis, atas_nama, id_gambar) VALU
 ('Tunai Via CR', '1', '1', 'TN','CR POJOK BERBAGI KANTOR PUSAT', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%tunai%" AND label = 'partner')),
 ('Bank BSI','451','7400525255','TB','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bsi%" AND label = 'partner')),
 ('Bank BRI','002','107001000272300','TB','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bri%" AND label = 'partner')),
-('GoPay','GOP','081233311113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'gopay')),
-('Dana','DAN','081233311113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'dana')),
+('GoPay','GOP','081213331113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'gopay')),
+('Dana','DAN','081213331113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'dana')),
 ('Bank BRI','002','ID1022148253464','QR','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'qris')),
-('Bank Mandiri','008','1320080829998','TB','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%mandiri%" AND label = 'partner'));
+('Bank Mandiri','008','1320080829998','TB','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%mandiri%" AND label = 'partner')),
+('ShopeePay','SOP','081213331113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'shopeepay'));
 
 UPDATE channel_payment cp, channel_account ca LEFT JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp) SET cp.id_ca = ca.id_ca WHERE cp.nama LIKE CONCAT('%',ca.nama,'%');
 

@@ -99,6 +99,10 @@ table .avatar {
         max-width: calc(50% - 1em);
     }
     /* Akhir Percobaan */
+
+    .col-12.col-md-6.card[data-cp] {
+        max-width: calc(50% - 1em);
+    }
 }
 
 /* Media Query */
@@ -111,8 +115,9 @@ table .avatar {
     }
     /* Akhir Percobaan */
 
-    #cp-card .logo-cp > img {
-        padding: 0px .75em;
+    .col-12.col-md-6.card[data-cp] {
+        max-width: calc(33.33333% - (2em / 1) + (2em / 3));
+        flex-basis: 33.33%;
     }
 }
 
@@ -125,10 +130,6 @@ table .avatar {
 
     .card img[alt="Pojok Berbagi"] {
         max-width: 100%;
-    }
-
-    #cp-card .logo-cp > img {
-        padding: 0px;
     }
 
     .col-12.col-md-6.card[data-cp] {
@@ -148,6 +149,13 @@ table .avatar {
         -webkit-overflow-scrolling: touch;
     } */
 }
+
+@media (min-width: 1278px) {
+    .col-12.col-md-6.card[data-cp] {
+        max-width: calc(25% - (2em / 1) + (2em / 4));
+        flex-basis: 25%;
+    }
+} 
 
 @media (min-width: 1548px) {
     .col-12.col-md-6.card[data-cp] {

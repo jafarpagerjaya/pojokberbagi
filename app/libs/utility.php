@@ -285,14 +285,14 @@ class Utility {
             case 'PN':
                 $result = array(
                     'text' => 'penarikan',
-                    'class' => 'bg-purple'
+                    'class' => 'bg-warning'
                 );
             break;
     
             case 'PD':
                 $result = array(
                     'text' => 'pengadaan',
-                    'class' => 'bg-warning'
+                    'class' => 'bg-orange'
                 );
             break;
             

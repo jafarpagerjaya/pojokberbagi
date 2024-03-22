@@ -1,4 +1,4 @@
-const staticCacheName = 'shell-cache-v1';
+const staticCacheName = 'shell-cache-v2';
 const dynamicCache = 'dynamic-cache';
 const staticAssets = [
         '/',
@@ -16,7 +16,7 @@ const staticAssets = [
         '/assets/route/default/core/js/wow.min.js?nw=1',
         '/assets/route/default/core/js/main.js?nw=1',
         '/assets/route/default/core/js/default.js?v=171123',
-        '/assets/route/auth/js/auth.js?v=080324',
+        '/assets/route/auth/js/auth.js?v=220324',
         'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
         'https://lottie.host/994d72ff-5477-41a0-8efa-a126f1ba34e9/xsTdPGGTsY.lottie',
         'https://unpkg.com/@dotlottie/player-component@2.7.11/dist/chunk-ODPU3M3Z.mjs',
@@ -117,7 +117,7 @@ self.addEventListener('activate', e => {
 
 // fetch event
 self.addEventListener('fetch', e => {
-    // console.log('fetch event: ', e.request.url);
+    console.log('fetch event: ', e.request.url);
     e.respondWith(
         caches.match(e.request).then(cachesResponse => {
             return cachesResponse || fetch(e.request).then(fetchRes => {
@@ -131,7 +131,7 @@ self.addEventListener('fetch', e => {
         // .catch(() => caches.match('/fallback/offline'))
         .catch(() => {
             // console.log(e.request.url);
-            if (e.request.url.split(self.location.origin)[1].indexOf('.') == -1 && self.location.pathname !== '/home/kunjungan' || e.request.url.indexOf('.html') > -1) {
+            if (e.request.url.split(self.location.origin)[1].indexOf('.') == -1 || e.request.url.indexOf('.html') > -1) {
                 return caches.match('/fallback/offline')
             }
         })

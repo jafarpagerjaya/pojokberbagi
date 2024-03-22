@@ -671,6 +671,7 @@ class FetchController extends Controller {
             $content = $decoded['isi'];
             $counterImg = 1;
             $path_list = array();
+            $array_video = array();
 
             foreach ($content['ops'] as $key => $value) {
                 if (is_array($value)) {
@@ -748,6 +749,12 @@ class FetchController extends Controller {
                                     } else {
                                         array_push($path_list, $insert['image']);
                                     }
+                                } else if (array_key_exists('video', $insert)) {
+                                    if (str_contains($insert['video'], 'youtube.com')) {
+                                        $insert['video'] = str_replace('youtube.com','youtube-nocookie.com', $insert['video']);
+                                        $content['ops'][$key]['insert']['video'] = $insert['video'];
+                                    }
+                                    array_push($array_video, $insert['video']);
                                 }
                             }
                         }
@@ -758,7 +765,7 @@ class FetchController extends Controller {
             $this->_result['error'] = true;
 
             if (count(is_countable($path_list) ? $path_list : []) > 0) {
-                $this->model->getData('g.id_gambar, g.nama name, g.path_gambar path', 'gambar g RIGHT JOIN list_gambar_deskripsi lgd USING(id_gambar) RIGHT JOIN deskripsi d USING(id_deskripsi)', array('g.path_gambar','NOT IN', $path_list), 'AND', array('d.id_bantuan','=',$decoded['id_bantuan']));
+                $this->model->getData('g.id_gambar, g.nama name, g.path_gambar path', 'gambar g RIGHT JOIN list_gambar_deskripsi lgd USING(id_gambar) RIGHT JOIN deskripsi d USING(id_deskripsi)', array('g.path_gambar','NOT IN', $path_list), 'AND', array('d.id_deskripsi','=',$decoded['id_deskripsi']));
                 if ($this->model->affected()) {
                     $this->path_gambar = json_decode(json_encode($this->model->data()), true);
                     $this->removePathGambar();
@@ -783,6 +790,72 @@ class FetchController extends Controller {
             }
 
             $dataUpdate['isi'] = str_replace('\/','/', json_encode($content));
+
+            if (count(is_countable($array_video) ? $array_video : []) > 0) {
+                if (Config::no_dupes($array_video) !== true) {
+                    if (count(is_countable($array_id_gambar) ? $array_id_gambar : []) > 0) {
+                        $this->path_gambar = $array_id_gambar;
+                        $this->removePathGambar();
+                    }
+
+                    $this->_result['feedback'] = array(
+                        'message' => "Video deskripsi harus berbeda"
+                    );
+                    $this->result();
+                    return false;
+                }
+                
+                $array_video_id = array();
+    
+                $sqlVID = "JOIN (";
+                $sql = "url IN (";
+                $xCol = 1;
+                foreach($array_video as $index => $value) {
+                    $value = explode('?', explode('/embed/', $value)[1])[0];
+                    array_push($array_video_id, $value);
+                    $sqlVID .= "SELECT '%". $value ."%' AS cond";
+                    $sql .= "?";
+                    if ($xCol < count(is_countable($array_video) ? $array_video : [])) {
+                        $sql .= ", ";
+                        $sqlVID .= "UNION ALL";
+                    }
+                    $xCol++;
+                }
+                $sql .= ") AND id_deskripsi != ?";
+                $sqlVID .= ") vid ON vd.url LIKE cond";
+
+                $this->model->countData('video_deskripsi', array($sql, array_merge($array_video, [$decoded['id_deskripsi']])));
+                if ($this->model->data()->jumlah_record >= 1) {
+                    $this->model->query("SELECT b.nama, d.id_bantuan FROM bantuan b JOIN deskripsi d USING(id_bantuan) JOIN video_deskripsi vd USING(id_deskripsi) {$sqlVID}");
+                    if (!$this->model->affected()) {
+                        if (count(is_countable($array_id_gambar) ? $array_id_gambar : []) > 0) {
+                            $this->path_gambar = $array_id_gambar;
+                            $this->removePathGambar();
+                        }
+                        $this->_result['feedback'] = array(
+                            'message' => 'Failed to get data video deskripsi'
+                        );
+                        $this->result();
+                        return false;
+                    }
+                    $dataVD = $this->model->getResults();
+                    $links_campaign = "";
+                    $vdCol = 1;
+                    foreach($dataVD as $index => $val) {
+                        $links_campaign .= '<a class="font-weight-bold" href="/admin/bantuan/data/'. $val->id_bantuan. '">'. $val->nama .'</a>';
+                        if ($vdCol < count(is_countable($dataVD) ? $dataVD : [])) {
+                            $sql .= ", ";
+                        }
+                        $vdCol++;
+                    }
+    
+                    $this->_result['feedback'] = array(
+                        'message' => "Url video sudah digunakan pada campaign {$links_campaign}, silahkan update yang ada atau gunakan video yang lain"
+                    );
+                    $this->result();
+                    return false;
+                }
+            }
         }
 
         if (isset($decoded['judul'])) {
@@ -834,7 +907,51 @@ class FetchController extends Controller {
                 return false;
             }
         }
-        
+
+        if (count(is_countable($array_video) ? $array_video : []) > 0) {
+            $this->model->getData('url','video_deskripsi',array('url','IN',$array_video),'OR',array('id_deskripsi','=',Sanitize::toInt2($decoded['id_deskripsi'])));
+
+            if (!$this->model->affected()) {
+                $dataVD = [];
+            } else {
+                $dataVD = array_column($this->model->getResults(), 'url');
+            }
+
+            $array_video_insert = array_diff($array_video, $dataVD);
+            if (count(is_countable($array_video_insert) ? $array_video_insert : []) > 0) {
+                $array_video_insert = array_map(function($link_video){
+                    return array(
+                        'url' => $link_video
+                    );
+                }, $array_video_insert);
+    
+                foreach($array_video_insert as $key => $values) {
+                    $array_video_insert[$key]['id_deskripsi'] = $decoded['id_deskripsi'];
+                }
+    
+                $this->model->createMultiple('video_deskripsi', $array_video_insert);
+                if (!$this->model->affected()) {
+                    $this->_result['feedback'] = array(
+                        'message' => 'Failed to create multiple video deskripsi'
+                    );
+                    $this->result();
+                    return false;
+                }
+            }
+
+            $array_video_delete = array_diff($dataVD, $array_video);
+
+            if (count(is_countable($array_video_delete) ? $array_video_delete : []) > 0) {
+                $this->model->delete('video_deskripsi', array('url','IN',$array_video_delete));
+                if (!$this->model->affected()) {
+                    $this->_result['feedback'] = array(
+                        'message' => 'Failed to delete video deskripsi'
+                    );
+                    $this->result();
+                    return false;
+                }
+            }
+        }
         
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(
@@ -1980,6 +2097,7 @@ class FetchController extends Controller {
         
         $counterImg = 1;
         $array_id_gambar = array();
+        $array_video = array();
 
         foreach ($content['ops'] as $key => $value) {
             if (is_array($value)) {
@@ -2054,6 +2172,12 @@ class FetchController extends Controller {
                                     $this->result();
                                     return false;
                                 }
+                            } else if (array_key_exists('video', $insert)) {
+                                if (str_contains($insert['video'], 'youtube.com')) {
+                                    $insert['video'] = str_replace('youtube.com','youtube-nocookie.com', $insert['video']);
+                                    $content['ops'][$key]['insert']['video'] = $insert['video'];
+                                }
+                                array_push($array_video, $insert['video']);
                             }
                         }
                     }
@@ -2064,6 +2188,55 @@ class FetchController extends Controller {
         $this->_result['error'] = true;
 
         $decoded['isi'] = str_replace('\/','/', json_encode($content));
+
+        if (count(is_countable($array_video) ? $array_video : []) > 0) {
+            $array_video_id = array();
+
+            $sqlVID = "JOIN (";
+            $sql = "url IN (";
+            $xCol = 1;
+            foreach($array_video as $index => $value) {
+                $value = explode('?', explode('/embed/', $value)[1])[0];
+                array_push($array_video_id, $value);
+                $sqlVID .= "SELECT '%". $value ."%' AS cond";
+                $sql .= "?";
+                if ($xCol < count(is_countable($array_video) ? $array_video : [])) {
+                    $sql .= ", ";
+                    $sqlVID .= "UNION ALL";
+                }
+                $xCol++;
+            }
+            $sql .= ")";
+            $sqlVID .= ") vid ON vd.url LIKE cond";
+
+            $this->model->countData('video_deskripsi', array($sql, $array_video));
+            if ($this->model->data()->jumlah_record >= 1) {
+                $this->model->query("SELECT b.nama, d.id_bantuan FROM bantuan b JOIN deskripsi d USING(id_bantuan) JOIN video_deskripsi vd USING(id_deskripsi) {$sqlVID}");
+                if (!$this->model->affected()) {
+                    $this->_result['feedback'] = array(
+                        'message' => 'Failed to get data video deskripsi'
+                    );
+                    $this->result();
+                    return false;
+                }
+                $dataVD = $this->model->getResults();
+                $links_campaign = "";
+                $vdCol = 1;
+                foreach($dataVD as $index => $val) {
+                    $links_campaign .= '<a class="font-weight-bold" href="/admin/bantuan/data/'. $val->id_bantuan. '">'. $val->nama .'</a>';
+                    if ($vdCol < count(is_countable($dataVD) ? $dataVD : [])) {
+                        $sql .= ", ";
+                    }
+                    $vdCol++;
+                }
+
+                $this->_result['feedback'] = array(
+                    'message' => "Url video sudah digunakan pada campaign {$links_campaign}, silahkan update yang ada atau gunakan video yang lain"
+                );
+                $this->result();
+                return false;
+            }
+        }
                 
         $this->model->create('deskripsi', Sanitize::thisArray($decoded));
 
@@ -2091,6 +2264,27 @@ class FetchController extends Controller {
                 break;
             }
             $this->_result['error'] = false;
+        }
+
+        if (count(is_countable($array_video) ? $array_video : []) > 0) {
+            $array_video = array_map(function($link_video){
+                return array(
+                    'url' => $link_video
+                );
+            }, $array_video);
+
+            foreach($array_video as $key => $values) {
+                $array_video[$key]['id_deskripsi'] = $new_id_deskripsi_selengkapnya;
+            }
+
+            $this->model->createMultiple('video_deskripsi', $array_video);
+            if (!$this->model->affected()) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Failed to create video deskripsi'
+                );
+                $this->result();
+                return false;
+            }
         }
         
         if ($this->_result['error'] == true) {

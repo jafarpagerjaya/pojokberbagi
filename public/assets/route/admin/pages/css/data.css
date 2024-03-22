@@ -5,13 +5,18 @@
 #cp-list .card img[alt="BJB"],
 #cp-list .card img[alt="BSI"],
 #cp-list .card img[alt="BRI"],
-#cp-list .card img[alt="Mandiri"] {
+#cp-list .card img[alt="Mandiri"],
+#cp-list .card img[alt="Gopay"] {
     margin-top: -0.5rem;
 }
 
-#cp-list .card img[alt="Gopay"],
 #cp-list .card img[alt="Dana"] {
     margin-top: -0.25rem;
+}
+
+#cp-list .card img[alt="ShopeePay"] {
+    margin-top: -0.3rem;
+    margin-right: -.8em;
 }
 
 #cp-list .card .col-3 {

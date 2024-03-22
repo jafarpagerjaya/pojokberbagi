@@ -738,13 +738,15 @@ class BantuanModel extends HomeModel {
         IFNULL(SUM(IF(LOWER(cp.jenis) = 'tn', d.jumlah_donasi, 0)), 0) saldo_tunai,
         IFNULL(SUM(IF(LOWER(cp.jenis) = 'ew' AND LOWER(cp.nama) LIKE '%gopay%', d.jumlah_donasi, 0)), 0) saldo_gopay,
         IFNULL(SUM(IF(LOWER(cp.jenis) = 'ew' AND LOWER(cp.nama) LIKE '%dana%', d.jumlah_donasi, 0)), 0) saldo_dana,
+        IFNULL(SUM(IF(LOWER(cp.jenis) = 'ew' AND LOWER(cp.nama) LIKE '%shopeepay%', d.jumlah_donasi, 0)), 0) saldo_shopeepay,
         (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bjb' AND cptb.jenis = 'TB') path_gambar_bjb,
         (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bsi' AND cptb.jenis = 'TB') path_gambar_bsi,
         (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bri' AND cptb.jenis = 'TB') path_gambar_bri,
         (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank mandiri' AND cptb.jenis = 'TB') path_gambar_mandiri,
         '/assets/images/brand/pojok-berbagi-transparent.png' path_gambar_tunai,
         (SELECT g.path_gambar FROM gambar g JOIN channel_payment cpew USING(id_gambar) WHERE LOWER(cpew.nama) = 'gopay' AND cpew.jenis = 'EW') path_gambar_gopay,
-        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cpew USING(id_gambar) WHERE LOWER(cpew.nama) = 'dana' AND cpew.jenis = 'EW') path_gambar_dana
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cpew USING(id_gambar) WHERE LOWER(cpew.nama) = 'dana' AND cpew.jenis = 'EW') path_gambar_dana,
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cpew USING(id_gambar) WHERE LOWER(cpew.nama) = 'shopeepay' AND cpew.jenis = 'EW') path_gambar_shopeepay
         FROM donasi d LEFT JOIN channel_payment cp ON(d.id_cp = cp.id_cp)
         WHERE d.bayar = 1 AND d.id_bantuan = ? AND d.id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi)", array('d.id_bantuan' => Sanitize::escape2($id_bantuan)));
         if (!$this->db->count()) {

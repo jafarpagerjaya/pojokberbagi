@@ -24,6 +24,10 @@
     box-shadow: 0 0 0 0.2rem rgb(94 114 228 / 25%);
 }
 
+#wyswyg-area .quill-editor iframe {
+    pointer-events: none;
+}
+
 .modal#modalKonfirmasiResetDeskripsi a.badge-primary {
     color: var(--danger) !important;
 }

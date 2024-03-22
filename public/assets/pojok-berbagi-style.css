@@ -305,8 +305,13 @@ textarea {
     background-color: #6c757d70 !important;
 }
 
-*:not(textarea):not(body):not(html).modal::-webkit-scrollbar-thumb {
-    background-color: white !important;
+*:not(textarea):not(body):not(html).modal:not(.grabbing)::-webkit-scrollbar-thumb {
+    /* background-color: white !important; */
+    cursor: grab;
+}
+
+*:not(textarea):not(body):not(html).modal.grabbing::-webkit-scrollbar-thumb {
+    cursor: grabbing;
 }
 
 *:not(textarea):not(body):not(html)::-webkit-scrollbar-thumb:hover,

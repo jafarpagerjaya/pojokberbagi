@@ -63,6 +63,15 @@
     margin-bottom: 0px;
 }
 
+.ql-video {
+    position: relative;
+    width: 100%;
+    height: calc((100vw - 24px) / (16/9));
+    overflow: hidden;
+    max-width: 100%;
+    border-radius: 15px;
+}
+
 #selengkapnya img {
     margin: 1em auto;
 }
@@ -681,6 +690,10 @@ a.badge:hover {
     transform: translateY(0);
 }
 
+*:not(textarea):not(body):not(html).modal::-webkit-scrollbar-track {
+    background-color: transparent !important;
+}
+
 @media (max-width: 426px) {
     .sticky-btn {
         position: fixed;
@@ -741,7 +754,6 @@ a.badge:hover {
     }
 
     .ql-container,
-
     #commit-bantuan-area p {
         font-size: .75rem;
     }
@@ -775,7 +787,6 @@ a.badge:hover {
     }
 
     .ql-container,
-
     #commit-bantuan-area p {
         font-size: .8rem;
     }
@@ -805,7 +816,6 @@ a.badge:hover {
     }
 
     .ql-container,
-
     #commit-bantuan-area p {
         font-size: .9rem;
     }
@@ -886,6 +896,20 @@ a.badge:hover {
     }
 }
 
+@media (min-width: 768px) and (max-width: 992px) {
+    .ql-video {
+        height: calc(664px  / (16/9));
+        max-height: calc(664px  / (16/9));
+    }
+}
+
+@media (max-width: 991px) {
+    #modalListUpdate .timeline-item a[data-filter="date"] span:first-of-type:last-of-type {
+        gap: .25rem;
+        flex-direction: row;
+    }
+}
+
 @media (min-width: 992px) {
 
     #detil-banner-area .app-image.img-wrapper {
@@ -894,7 +918,6 @@ a.badge:hover {
     }
 
     .ql-container,
-
     #commit-bantuan-area p {
         font-size: 1rem;
     }
@@ -930,12 +953,10 @@ a.badge:hover {
     #modalVideoGallery .modal-footer {
         grid-template-columns: repeat(3, 1fr);
     }
-}
 
-@media (max-width: 991px) {
-    #modalListUpdate .timeline-item a[data-filter="date"] span:first-of-type:last-of-type {
-        gap: .25rem;
-        flex-direction: row;
+    .ql-video {
+        height: calc(602.66px  / (16/9));
+        max-height: calc(602.66px  / (16/9));
     }
 }
 
@@ -964,6 +985,11 @@ a.badge:hover {
     #modalVideoGallery .modal-footer {
         grid-template-columns: repeat(4, 1fr);
     }
+
+    .ql-video {
+        height: calc(722.66px  / (16/9));
+        max-height: calc(722.66px  / (16/9));
+    }
 }
 
 @media (min-width: 1400px) {
@@ -982,5 +1008,10 @@ a.badge:hover {
 
     #modalListUpdate .timeline .timeline-item > .row > .col-lg-2 {
         width: 28%;
+    }
+
+    .ql-video {
+        height: calc((824.66px + 16px)  / (16/9));
+        max-height: calc((824.66px + 16px)  / (16/9));
     }
 }

@@ -868,8 +868,8 @@ class FetchController extends Controller {
         if (isset($decoded['filter_by'])) {
             switch ($decoded['filter_by']) {
                 case 'date':
-                    // modified_at
-                    $filter_by = "DATE_FORMAT(i.modified_at, '%Y-%m-%d') = ? AND";
+                    // publish_at
+                    $filter_by = "DATE_FORMAT(i.publish_at, '%Y-%m-%d') = ? AND";
                 break;
 
                 case 'label':

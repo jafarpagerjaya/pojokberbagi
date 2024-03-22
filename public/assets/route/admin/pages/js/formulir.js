@@ -995,7 +995,7 @@ if (action.split('/').at(-1) == 'formulir') {
 }
     
 submit.addEventListener('click', function (e) {
-    if (Object.keys(errorRequired).length) {
+    if (Object.keys(errorRequired).length && errorRequired.count) {
         e.preventDefault();
         return false;
     }
@@ -1077,7 +1077,7 @@ submit.addEventListener('click', function (e) {
 });
 
 submit.addEventListener('mouseenter', function () {
-    // console.log(nameNew);
+    console.log(nameNew);
 
     const form = this.closest('form');
     let tabRequiredError = 0;

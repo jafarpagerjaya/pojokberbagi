@@ -11,19 +11,24 @@ let toolbarOptions = [
     // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
     // [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
     // [ 'link', 'image', 'video', 'formula' ],          // add's image support
-    [ 'link', 'image'],
+    [ 'link', 'image','video'],
     [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
     // [{ 'font': [] }],
     [{ 'align': [] }],
 
-    ['clean']                                         // remove formatting button
+    ['clean'],                                         // remove formatting button
 ];
 
 let defaultOptions = {
     theme: 'snow',
     placeholder: 'Isi lengkap deskripsi...',
     modules: { 
-        toolbar: toolbarOptions, 
+        toolbar: {
+            container: toolbarOptions, 
+            // handlers: {
+            //     'youtube': () => {}
+            // }
+        },
         imageDrop: true,
         imageResize: {
             handleStyles: {
@@ -43,15 +48,55 @@ let defaultOptions = {
             maxWidth: 1000, // default
             maxHeight: 1000, // default
             imageType: 'image/jpeg'
-        }
+        },
     }
 };
 
+function getVideoUrl(url) {
+    if (url == null) {
+        return null;
+    }
+    
+    let match = url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtube\.com\/watch.*v=([a-zA-Z0-9_-]+)/) ||
+        url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtu\.be\/([a-zA-Z0-9_-]+)/) ||
+        url.match(/^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/);
+
+    // console.log(match[2]);
+
+    if (match && match[2].length === 11) {
+        return ('https') + '://www.youtube-nocookie.com/embed/' + match[2] + '?showinfo=0';
+    }
+    if (match = url.match(/^(?:(https?):\/\/)?(?:www\.)?vimeo\.com\/(\d+)/)) { // eslint-disable-line no-cond-assign
+        return (match[1] || 'https') + '://player.vimeo.com/video/' + match[2] + '/';
+    }
+}
+
 let editor = function(el, options = defaultOptions) {
+    const icons = Quill.import('ui/icons');
+    icons['video'] = '<i class="fab fa-youtube" aria-hidden="true"></i>';
+
     Quill.register("modules/imageCompressor", imageCompressor);
 
     let quill = new Quill(el, options);
-    
+
+    let youtubeHandlerFunction = function() {
+        let url = prompt("Enter Video URL: ");
+        url = url.replace('youtube.com','youtube-nocookie.com');
+        url = getVideoUrl(url);
+        let range = quill.getSelection();
+
+        if (url != null) {
+            quill.insertEmbed(range, 'video', url);
+            quill.insertText(range + 2, '');
+        }
+
+        if (quill.root.closest('.ql.is-invalid') != null) {
+            quill.root.closest('.ql.is-invalid').classList.remove('is-invalid');
+        }
+    }
+
+    quill.getModule("toolbar").addHandler("video", youtubeHandlerFunction);
+
     // console.log(quill);
 
     quill.container.querySelector('.ql-editor').addEventListener('focus', function(e) {

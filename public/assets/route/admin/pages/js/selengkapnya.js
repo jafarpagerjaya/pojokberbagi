@@ -348,6 +348,10 @@ let clickFunction = function(e) {
         data.deskripsi.id_deskripsi = objectDeskripsi.id_deskripsi;
     }
 
+    if (data.deskripsi.isi.ops.slice(-1).insert === '\n') {
+        data.deskripsi.isi.ops.pop();
+    }
+
     // console.log(data);
     // fetchCreateDeskripsiSelengkapnya OR fetchUpdateDeskripsiSelengkapnya
     fetchData('/admin/fetch/'+ objectDeskripsi.mode +'/bantuan/deskripsi-selengkapnya', data, root, objectDeskripsi.mode +'-deskripsi-selengkapnya');

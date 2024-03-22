@@ -131,4 +131,8 @@ class Config {
 		
 		return true;
 	}
+
+	public static function no_dupes(array $input_array) {
+		return count($input_array) === count(array_flip($input_array));
+	}
 }

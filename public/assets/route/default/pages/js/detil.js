@@ -354,7 +354,9 @@ function stickyBtn(e) {
 
 
 setTimeout(()=>{
-    stickyBtnOffsetTopYStart = sticky_btn.offsetTop + sticky_btn_height + sticky_btn_area.offsetTop;
+    if (sticky_btn != null) {
+        stickyBtnOffsetTopYStart = sticky_btn.offsetTop + sticky_btn_height + sticky_btn_area.offsetTop;
+    }
     stickyBtn();
 }, 50);
 
@@ -1070,18 +1072,18 @@ const myVedoGalleryModal = new bootstrap.Modal(modalVideoGallery);
 
 const vBtn = document.querySelector('#visual-banner-area .app-image.img-wrapper[data-video="on"]');
 if (vBtn != null) {
+    let tag = document.createElement('script');
+
+    tag.src = "https://www.youtube.com/iframe_api";
+    const scriptNodeList = document.getElementsByTagName('script');
+
+    let firstScriptTag = scriptNodeList[scriptNodeList.length-1];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
     vBtn.addEventListener('click', function(e) {
         myVedoGalleryModal.show();
     });
 }
-
-let tag = document.createElement('script');
-
-tag.src = "https://www.youtube.com/iframe_api";
-const scriptNodeList = document.getElementsByTagName('script');
-
-let firstScriptTag = scriptNodeList[scriptNodeList.length-1];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 // after the API code downloads.
 let player;
@@ -1091,6 +1093,7 @@ function onYouTubeIframeAPIReady() {
     if (vid != null && typeof vid == 'string') {
         player = new YT.Player('player', {
             videoId: vid,
+            host: 'https://www.youtube-nocookie.com',
             playerVars: {
                 rel: '0',
                 showinfo: '0',

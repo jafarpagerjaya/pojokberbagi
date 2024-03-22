@@ -230,18 +230,18 @@ function labelInformasi(label) {
         break;
 
         case 'PN':
-            badge.class = 'bg-orange';
+            badge.class = 'bg-warning';
             badge.text = 'Penarikan';
         break;
 
         case 'PL':
-            badge.class = 'bg-success';
+            badge.class = 'bg-green-box';
             badge.text = 'Pelaksanaan';
         break;
 
         case 'PD':
-            badge.class = 'bg-yellow';
-            badge.text = 'Informasi';
+            badge.class = 'bg-orange';
+            badge.text = 'Pengadaan';
         break;
     
         default:
@@ -346,36 +346,65 @@ const debounceIgnoreLast = (fn, delay) => {
 // const btn = document.querySelector("#like");
 // btn.addEventListener("click", debounceNameVar);
 
-window.addEventListener('online', () => 
-    {
-        console.log('Became online')
+const offlineNotice = () => {
+    // console.log('Became offline')
+
+    if (document.querySelector('[data-connection-mode]') == null) {
+        const internetConnectionMode = document.createElement('div'),
+        internetConnectionModeClass = {
+            'class': 'position-fixed rounded-box py-2 px-3 text-white fw-bold',
+            'data-connection-mode': 'offline'
+        };
         
-        if (document.querySelector('[data-connection-mode]') != null) {
-            document.querySelector('[data-connection-mode]').setAttribute('data-connection-mode','online');
-            document.querySelector('[data-connection-mode] span').innerText = 'Sudah sudah terhubung lagi Sob';
-            
-            setTimeout(() => {
+        setMultipleAttributesonElement(internetConnectionMode, internetConnectionModeClass)
+
+        internetConnectionMode.innerHTML = '<span>Sob, koneksi internetmu terputus</span>';
+        document.querySelector('body').appendChild(internetConnectionMode)
+    } else {
+        document.querySelector('[data-connection-mode]').setAttribute('data-connection-mode','offline');
+        document.querySelector('[data-connection-mode] span').innerText = 'Sob, koneksi internetmu terputus';
+    }
+};
+
+const onlineNotice = () => {
+    // console.log('Became online')
+
+    if (document.querySelector('[data-connection-mode]') != null) {
+        document.querySelector('[data-connection-mode]').setAttribute('data-connection-mode','online');
+        document.querySelector('[data-connection-mode] span').innerText = 'Sudah sudah terhubung lagi Sob';
+        
+        setTimeout(() => {
+            if (window.navigator.onLine) {
                 document.querySelector('[data-connection-mode]').remove()
-            }, 1500);
-        }
+            }
+        }, 1500);
     }
-);
+};
 
-window.addEventListener('offline', () => 
-    {
-        console.log('Became offline')
+if (window.navigator.onLine) {
+    onlineNotice();
+} else {
+    offlineNotice();
+}
 
-        if (document.querySelector('[data-connection-mode]') == null) {
-            const internetConnectionMode = document.createElement('div'),
-            internetConnectionModeClass = {
-                'class': 'position-fixed rounded-box py-2 px-3 text-white fw-bold',
-                'data-connection-mode': 'offline'
-            };
-            
-            setMultipleAttributesonElement(internetConnectionMode, internetConnectionModeClass)
-    
-            internetConnectionMode.innerHTML = '<span>Sob, koneksi internetmu terputus</span>';
-            document.querySelector('body').appendChild(internetConnectionMode)
-        }
+window.addEventListener('online', onlineNotice);
+
+window.addEventListener('offline', offlineNotice);
+
+function onMouseDown(e) {
+    if (e.offsetX > e.target.clientWidth || e.offsetY > e.target.clientHeight) {
+        // mouse down over scroll element
+        e.delegateTarget.classList.add('grabbing');
     }
-);
+}
+
+function onMouseUp(e) {
+    if (e.target.classList.contains('grabbing')) {
+        // mouse up over scroll element
+        e.target.classList.remove('grabbing');
+    }
+}
+
+window.addEventListener("mousedown", onMouseDown);
+
+window.addEventListener("mouseup", onMouseUp);
