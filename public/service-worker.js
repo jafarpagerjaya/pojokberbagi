@@ -1,5 +1,5 @@
 const staticCacheName = 'shell-cache-v1';
-const dynamicCache = 'dynamic-cache';
+const dynamicCache = 'dynamic-cache-v1';
 const staticAssets = [
         '/',
         '/assets/images/pwa/error/medium.png?nw=1',
