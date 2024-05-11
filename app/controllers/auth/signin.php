@@ -255,6 +255,41 @@ class SigninController extends Controller {
 		}
     }
 
+	public function token($params) {
+		if (count(is_countable($params) ? $params : []) > 0) {
+			$fetch = new Fetch(false);
+
+			switch ($params[0]) {
+				case 'regenerate':
+					// regenerateToken
+				break;
+				
+				default:
+					$this->_result['feedback'] = array(
+						'message' => 'Unrecognize params '. $params[0]
+					);
+					$this->result();
+					return false;
+				break;
+			}
+
+			$decoded = $fetch->getDecoded();
+
+			// prepare method Token name
+			$action = $params[0] . 'Token';
+			// call method Token
+			$this->$action($decoded, $fetch);
+			
+			return false;
+		} else {
+			Redirect::to('auth');
+		}
+	}
+
+	private function regenerateToken($decoded, $fetch) {
+		$fetch->result();
+	}
+
     // public function google() {
 
     // }

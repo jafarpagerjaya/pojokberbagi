@@ -181,4 +181,13 @@ window.addEventListener('load', () => {
         console.error('SW registration failed! 😱', err)
       }
     )
+
+    navigator.serviceWorker.addEventListener('message',  
+    (event) => { 
+        if (event.data && event.data.type === 'updateToken') { 
+            if (window.location.pathname.indexOf('/auth/') > -1) {
+                document.querySelector('[name="token"]').value = event.data.data;
+            }
+        }
+    })
 });

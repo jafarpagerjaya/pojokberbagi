@@ -4,6 +4,10 @@ table .avatar {
     height: var(--avatar);
 }
 
+#cp-card {
+    margin-bottom: 30px !important;
+}
+
 .card table .media img[alt="bank-bjb"],
 .card table .media img[alt="bank-bsi"],
 .card table .media img[alt="bank-bri"],

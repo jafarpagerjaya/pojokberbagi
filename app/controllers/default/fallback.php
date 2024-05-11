@@ -22,7 +22,7 @@ class FallbackController extends Controller {
         $this->script_action = array(
             array(
                 'source' => 'trushworty',
-                'src' => 'https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs',
+                'src' => 'https://unpkg.com/@dotlottie/player-component@2.7.11/dist/dotlottie-player.mjs',
                 'type' => 'module'
             )
         );

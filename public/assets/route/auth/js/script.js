@@ -58,3 +58,29 @@ inputNoDoubleSpace.forEach(el => {
         }, 0);
     });
 });
+
+// fetch('/auth/signin/token/regenerate', {
+//     method: "POST",
+//     cache: "no-cache",
+//     mode: "same-origin",
+//     credentials: "same-origin",
+//     headers: {
+//         "Content-Type": "application/json",
+//     },
+//     referrer: "no-referrer",
+//     body: JSON.stringify({
+//         token: document.querySelector('[name="token"]').value
+//     })
+// })
+// .then(response => response.json())
+// .then(function(result) {
+    
+//     if (result.error == false) {
+//         console.log('Failed to get Token, you dont have internet connection');
+//     } else {
+//         document.querySelector('[name="token"]').value = result.token;
+//         fetchTokenChannel.postMessage({
+//             token: body.getAttribute('data-token')
+//         });
+//     }
+// });
