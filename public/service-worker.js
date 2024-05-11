@@ -1,4 +1,4 @@
-const staticCacheName = 'shell-cache-v6';
+const staticCacheName = 'shell-cache-v1';
 const dynamicCache = 'dynamic-cache';
 const staticAssets = [
         '/',
@@ -181,7 +181,7 @@ self.addEventListener('fetch', e => {
                     }
                 }
             }
-            // return cachesResponse || fetch(e.request);
+            return cachesResponse || fetch(e.request);
             return cachesResponse || fetch(e.request).then(fetchRes => {
                 return caches.open(dynamicCache).then(cache => {
                     cache.put(e.request.url, fetchRes.clone())
