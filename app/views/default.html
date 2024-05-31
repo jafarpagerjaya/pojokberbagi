@@ -41,7 +41,16 @@
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-5MM5MQSD');
     </script>
-        <!-- End Google Tag Manager -->
+    <!-- End Google Tag Manager -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QELLKXH3BZ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-QELLKXH3BZ');
+    </script>
 </head>
 
 <body<?= (isset($this->data['uri']) ? ' data-uri="'. $this->data['uri'] .'"' : '') ?>
@@ -55,15 +64,13 @@
             </div>
         </div>
     </div>
-    <!-- Google Tag Manager (noscript) -->
+    <!-- /End Preloader -->
     <!-- Google Tag Manager (noscript) -->
     <noscript>
         <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5MM5MQSD"
         height="0" width="0" style="display:none;visibility:hidden"></iframe>
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
-        <!-- End Google Tag Manager (noscript) -->
-    <!-- /End Preloader -->
     <!-- Start Header Area -->
     <header class="header navbar-area d-flex align-items-center">
         <div class="container">
