@@ -24,7 +24,23 @@ class FallbackController extends Controller {
                 'source' => 'trushworty',
                 'src' => 'https://unpkg.com/@dotlottie/player-component@2.7.11/dist/dotlottie-player.mjs',
                 'type' => 'module'
+            ),
+            array(
+                'src' => '/assets/main/js/fallback.js',
+                'type' => 'text/javascript'
             )
         );
+    }
+
+    public function fetch() {
+    echo '<pre>
+    |   ####  #     ##### #   # #   #   | 
+    |   #   # #     #   # ##  # ## #    | 
+    |   ####  #     ##  # ##  # ###     |  
+    |   ####  #     ##### # # # ###     |  
+    |   #   # ##    #   # #  ## ## #    |  
+    |   ####  ##### #   # #  ## #   #   |  
+    </pre>';
+        return false;
     }
 }

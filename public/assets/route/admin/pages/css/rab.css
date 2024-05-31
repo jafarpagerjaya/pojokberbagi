@@ -276,10 +276,6 @@ ol {
 }
 
 /* Select2 */
-.select2-results .select2-results__option--highlighted .badge {
-    color: var(--primary);
-}
-
 select.custom-select:not(#id-bantuan)~.select2>.selection>.select2-selection {
     padding-top: .45em;
     padding-bottom: 0px;

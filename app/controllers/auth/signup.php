@@ -1,6 +1,19 @@
 <?php
 class SignupController extends Controller {
 	private $_auth;
+	public function __construct() {
+		$this->rel_controller = array(
+            array(
+                'href' => '/assets/pojok-berbagi-style.css'
+            )
+        );
+
+        $this->script_controller = array(
+            array(
+                'src' => '/assets/pojok-berbagi-script.js'
+            )
+        );
+	}
     public function index() {
 		$this->_auth = $this->model('Auth');
 
@@ -35,7 +48,7 @@ class SignupController extends Controller {
         }
 
 		$this->title = "Sign Up";
-		$this->script_controller = array(
+		$this->script_action = array(
 			array(
 				'type' => 'text/javascript',
 				'src' => VENDOR_PATH.'passy'.DS.'passy.min.js'

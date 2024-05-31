@@ -38,10 +38,17 @@ class HomeController extends Controller {
 			)
 		);
 		
-		$this->model('Bantuan');
+		$this->model('Banner');
 		$this->model->getBanner();
-		$this->data['banner'] = $this->model->data();
+		$this->data['banner'] = array_map(function($data_banner) {
+			if ($data_banner->id_banner) {
+				$data_banner->id_banner = strrev(base64_encode($data_banner->id_banner));
+			}
+			return $data_banner;
+		}, $this->model->data());
+
 		
+		$this->model('Bantuan');
 		$this->model->setStatus(Sanitize::escape2('D'));
         $this->model->setOrder('b.action_at');
         $this->model->setDirection('DESC');
@@ -74,5 +81,40 @@ class HomeController extends Controller {
 		$this->model('Home');
 		$this->setKunjungan2(null, $uri, $path);
 		return false;
+	}
+
+	public function token($params) {
+		if (count(is_countable($params) ? $params : []) > 0) {
+			$fetch = new Fetch(false);
+
+			switch ($params[0]) {
+				case 'regenerate':
+					// regenerateToken
+				break;
+				
+				default:
+					$this->_result['feedback'] = array(
+						'message' => 'Unrecognize params '. $params[0]
+					);
+					$this->result();
+					return false;
+				break;
+			}
+
+			$decoded = $fetch->getDecoded();
+
+			// prepare method Token name
+			$action = $params[0] . 'Token';
+			// call method Token
+			$this->$action($decoded, $fetch);
+			
+			return false;
+		} else {
+			Redirect::to('auth');
+		}
+	}
+
+	private function regenerateToken($decoded, $fetch) {
+		$fetch->result();
 	}
 }

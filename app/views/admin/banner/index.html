@@ -1,0 +1,148 @@
+<div class="row mt--6">
+    <div class="col">
+        <div class="card">
+            <?php if (count(is_countable($this->data['data_banner']) ? $this->data['data_banner'] : []) <= 8) {
+                $dataBanner = $this->data['data_banner'];
+            } ?>
+            <div class="card-header d-flex justify-content-between align-items-center border-0">
+                <h2 class="mb-0">Daftar Banner</h2>
+                <?php if (count(is_countable($dataBanner) ? $dataBanner : []) < 8) { ?>
+                <div class="btn btn-primary d-flex align-items-center justify-content-center"
+                    data-toggle="modal" data-target="#modalFormBanner">
+                    <span class="d-none d-md-block">Tambahkan Banner Baru</span>
+                    <i class="d-md-none fa fa-plus m-0"></i>
+                </div>
+                <?php } ?>
+            </div>
+            <div class="card-body p-0">
+                <table class="table align-items-center mb-0 table-hover table-borderless table-responsive" id="list-banner">
+                    <thead class="thead-light">
+                        <tr>
+                            <?php if (count(is_countable($dataBanner) ? $dataBanner : []) > 0) { ?>
+                            <th scope="col" class="fit pr-0">Slot</th>
+                            <th scope="col" class="sort" data-sort="id-banner">Banner</th>
+                            <th scope="col" class="sort fit" data-sort="judul">Status</th>
+                            <th scope="col" class="fit"></th>
+                            <?php } else { ?>
+                            <th scope="col" class="sort fit" data-sort="id-banner">Banner</th>
+                            <?php } ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (count(is_countable($dataBanner) ? $dataBanner : []) > 0) { 
+                            foreach($dataBanner as $key => $data) {
+                        ?>
+                        <tr data-id-banner="<?= strrev(base64_encode($data->id_banner)); ?>">
+                            <td class="pr-0 text-center"><?= '<b>'. $key+1 .'</b>'; ?></td>
+                            <th scope="row">
+                                <div class="d-flex flex-column">
+                                    <a href="<?= (is_null($data->id_bantuan) ? '#' : '/admin/bantuan/data/' . $data->id_bantuan); ?>" class="font-weight-bolder">
+                                        <?= '<span>' . $data->nama_bantuan . '</span>'; ?>
+                                    </a>
+                                    <span class="mb-0"><?= $data->modified_at; ?></span>
+                                </div>
+                            </th>
+                            <td>
+                                <div class="d-block">
+                                <?= '<div>'. (($data->status['text'] == 'kosong') ? '':'<span>Campaign</span>') .'</div><span class="small badge '. $data->status['class'] .' text-black-50 text-capitalize">'. $data->status['text'] .'</span>'; ?>
+                                </div>
+                            </td>
+                            <td class="text-right">
+                                <div class="dropdown">
+                                    <a class="btn btn-sm btn-icon-only text-light" href="#"
+                                        role="button" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                    <div
+                                        class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                        <a href="/" class="dropdown-item font-weight-bold banner-peek">Lihat Banner</a>
+                                        <a class="dropdown-item font-weight-bold text-warning" href="#" data-toggle="modal" data-target="#modalFormBanner" data-type="update">Ubah Banner</a>
+                                        <?= (is_null($data->id_banner) || is_null($data->id_bantuan) ? '': '<a class="dropdown-item font-weight-bold text-danger" href="#" data-toggle="modal" data-target="#modalKonfirmasiAksiBanner" data-type="reset">Reset</a>'); ?>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php } } else { ?>
+                            <tr>
+                                <th><span>Data banner tidak ditemukan ...</span></th>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modals -->
+<div class="modal in" id="modalFormBanner" tabindex="-1" role="dialog"
+    aria-labelledby="modalFormBanner-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container py-md-4 px-md-4 p-3">
+                <div class="row gap-y-4">
+                    <div class="col-12">
+                        <h3 class="m-0">Form <span id="mode">Tambah</span> Banner</h3>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group position-relative mb-0">
+                            <span class="font-weight-bolder position-absolute mt-3">
+                                <label for="id-bantuan"
+                                    class="form-control-label m-0">Bantuan</label>
+                            </span>
+                            <select class="custom-select" id="id-bantuan"
+                                name="id-bantuan" required>
+                                <option value="0" disabled selected hidden>Pilih salah satu</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between" id="actioon-area">
+                        <button class="btn btn-link font-weight-bolder text-warning"
+                            data-dismiss="modal">Batal</button>
+                        <button class="btn btn-outline-primary" id="buat-banner" type="submit">Simpan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade in" tabindex="-2" id="modalKonfirmasiAksiBanner" role="dialog"
+    aria-labelledby="modalKonfirmasiAksiBannerLabel" aria-hidden="true">
+    <div class="modal-dialog modal-danger modal-dialog-centered fullscreen">
+        <div class="modal-content bg-gradient-danger d-flex justify-content-center">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalKonfirmasiAksiBannerLabel">Konfirmasi Perubahan
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="py-3 text-center">
+                                <i class="ni ni-bell-55 ni-3x"></i>
+                                <h4 class="heading mt-4">Anda harus baca ini!</h4>
+                                <p class="font-weight-lighter mb-0">Apakah anda yakin me<span data-type="reset">reset</span> slot banner</p>
+                                <p>Campaign <a
+                                    target="_blank"
+                                    class="font-weight-bolder text-underline badge badge-primary p-2"
+                                    id="nama-bantuan" href="/">nama_bantuan</a></p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-link text-white mr-auto"
+                                data-dismiss="modal">Tidak</button>
+                            <button type="submit" class="btn btn-secondary font-weight-bolder text-danger">Ya</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Modals -->
+<div aria-live="polite" aria-atomic="true"
+    class="position-fixed d-flex justify-content-end flex-column align-items-end">
+</div>

@@ -1,0 +1,8 @@
+select.custom-select~.select2>.selection>.select2-selection {
+    padding-top: 5px;
+    height: 56px;
+}
+
+.select2-selection__rendered:not(ul) {
+    padding-left: .25em !important;
+}

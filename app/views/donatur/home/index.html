@@ -207,13 +207,14 @@
                                 </div>
                                 <?php 
                                     if (!is_null($data['channel_payment'])) {
+                                        $i = 1;
                                         foreach($data['channel_payment'] as $data_cp) {
                                         ?>
                                 <div
                                     class="item p-3 d-flex flex-column justify-content-center align-items-center border rounded border-3">
                                     <div class="inputGroup">
-                                        <input id="radio2" value="<?= $data_cp->id_cp; ?>" name="id_cp" type="radio" />
-                                        <label for="radio2">
+                                        <input id="radio<?= $i; ?>" value="<?= $data_cp->id_cp; ?>" name="id_cp" type="radio" />
+                                        <label for="radio<?= $i; ?>">
                                             <?= $data_cp->nama_cp; ?>
                                         </label>
                                     </div>
@@ -226,6 +227,7 @@
                                     </h6>
                                 </div>
                                 <?php
+                                    $i++;
                                         }
                                     }
                                 ?>

@@ -38,11 +38,17 @@ class BuatController extends Controller {
                 'href' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
             ),
             array(
+                'href' => '/assets/main/css/inputGroup.css'
+            ),
+            array(
                 'href' => '/assets/route/donasi/pages/css/baru.css'
             )
         );
         
         $this->script_action = array(
+            array(
+                'src' => '/assets/main/js/terbilang.js'
+            ),
             array(
                 'src' => '/assets/route/default/core/js/bootstrap.min.js'
             ),

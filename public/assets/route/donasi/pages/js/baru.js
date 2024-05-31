@@ -51,6 +51,28 @@ function restrictNumber () {
     this.value = newValue;
 };
 
+const pilihanListValue = [...document.querySelectorAll('.pilihan-donasi label')].map(label => {
+    return {
+        'name': label.getAttribute('for'),
+        'value': price_to_number(label.innerText),
+        'terbilang': terbilang(price_to_number(label.innerText)).trim()
+    }
+});
+
+pilihanListValue.forEach(el => {
+    document.querySelector('label[for="'+el.name+'"]').setAttribute('data-terbilang', el.terbilang);
+});
+
+const pilihanDonasi = document.querySelectorAll('[name="pilihan_donasi"]');
+pilihanDonasi.forEach(radio => {
+    radio.addEventListener('change', function(e) {
+        const selectedDonate = pilihanListValue.find(key => {
+            return key.name === e.target.id;
+        })
+        nominalDonasi.value = formatTSparator(selectedDonate.value, 'Rp. ');
+    })
+});
+
 let textarea = document.querySelector(".textarea");
 
 textarea.addEventListener('input', autoResize, false);
@@ -91,6 +113,19 @@ nominalDonasi.addEventListener('keyup', function (e) {
         prefix = numberTPArray[3];
 
     this.value = value;
+
+    // Checker radio Pilihan Donasi
+    const selectedRadio = pilihanListValue.find(key => {
+        return key.value === price_to_number(value);
+    });
+
+    if (selectedRadio == undefined) {
+        if (document.querySelector('[name="pilihan_donasi"]:checked')) {
+            document.querySelector('[name="pilihan_donasi"]:checked').checked = false;
+        }
+    } else {
+        document.querySelector('#'+selectedRadio.name).checked = true;
+    }
 
     if (e.code.match('Digit')) {
         if (ribuan != null) {
@@ -359,10 +394,3 @@ window.addEventListener('resize', function onResize() {
         });
     }, 50);
 });
-
-
-
-
-
-
-

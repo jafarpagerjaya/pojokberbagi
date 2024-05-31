@@ -164,7 +164,7 @@ function setBeforeAfterBgColor(el) {
 
             canvas.width = elTargetImg.width;
             canvas.height = elTargetImg.height;
-            canvas.getContext('2d').drawImage(elTargetImg, 0, 0, elTargetImg.width, elTargetImg.height);
+            canvas.getContext('2d', { willReadFrequently: true }).drawImage(elTargetImg, 0, 0, elTargetImg.width, elTargetImg.height);
 
             let rgbaBefore = canvas.getContext('2d').getImageData(3, elTargetImg.height-3, 1, 1).data.join(),
                 rgbaAfter = canvas.getContext('2d').getImageData(elTargetImg.width-3, elTargetImg.height-3, 1, 1).data.join();
@@ -203,7 +203,7 @@ buttonCollapse.forEach(elemButton => {
         if (!e.which || buttonCollapseClicked) {
             return false;
         }
-        if (window.outerWidth < 768) {
+        if (window.innerWidth < 768) {
             const elTargetList = document.querySelectorAll('.row.custom-height-setter'),
                   elTargetSetter = this.closest('.order-0');
             let i = 0,
@@ -326,6 +326,11 @@ bannerCarousel.addEventListener('slide.bs.carousel', function (e) {
     counterUpSup(counterTargetCarouselActive, counterSpeed);
     doAnimations(e.relatedTarget.querySelectorAll('.wow'));
 });
+
+if (localStorage.getItem("banner")) {
+    document.querySelector('.carousel-indicators button[data-id-banner="'+ localStorage.getItem("banner") +'"]').click();
+    localStorage.removeItem("banner");
+}
 
 const notifikasiModalEl = document.getElementById('notifikasi');
 // Modal BS
@@ -452,6 +457,11 @@ if (loadMoreBtn != null) {
     const wowDelay = parseFloat(targetRow.getAttribute('data-delay'));
     
     loadMoreBtn.addEventListener('click', function() {
+        if (!window.navigator.onLine) {
+            console.log('Sorry, you are offline now');
+            return false;
+        }
+        
         if (data.limit != undefined && data.load_more == true && parseInt(data.record) > (parseInt(data.offset) + parseInt(data.limit))) {
             data.offset = parseInt(data.offset) + parseInt(data.limit);
         } else if (data.limit == undefined) {

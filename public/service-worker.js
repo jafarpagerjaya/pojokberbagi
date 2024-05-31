@@ -1,5 +1,5 @@
-const staticCacheName = 'shell-cache-v1';
-const dynamicCache = 'dynamic-cache-v1';
+const staticCacheName = 'shell-cache-v3';
+const dynamicCache = 'dynamic-cache-v3';
 const staticAssets = [
         '/',
         '/assets/images/pwa/error/medium.png?nw=1',
@@ -10,6 +10,7 @@ const staticAssets = [
         '/assets/images/brand/pojok-berbagi-transparent.png?nw=1',
         '/manifest.json',
         '/fallback/offline',
+        '/fallback/fetch',
         'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css',
         '/assets/route/default/core/css/LineIcons.3.0.css?nw=1',
         '/assets/route/default/core/fonts/LineIcons.woff?nw=1',
@@ -17,8 +18,8 @@ const staticAssets = [
         '/assets/route/default/core/fonts/LineIcons.ttf?nw=1',
         '/assets/route/default/core/css/animate.css?nw=1',
         '/assets/route/default/core/css/main.css?v=171123',
-        'https://fonts.gstatic.com/s/nunito/v26/XRXV3I6Li01BKofINeaBTMnFcQ.woff2',
-        'https://fonts.gstatic.com/s/nunito/v26/XRXX3I6Li01BKofIMNaDRs7nczIH.woff2',
+        'https://fonts.gstatic.com/s/nunito/v26/XRXV3I6Li01BKofINeaB.woff2',
+        'https://fonts.gstatic.com/s/nunito/v26/XRXX3I6Li01BKofIMNaDRs4.woff2',
         'https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,300;1,400;1,600;1,700;1,800;1,900&display=swap',
         '/assets/pojok-berbagi-style.css?tw=1',
         '/assets/route/default/core/css/services.css?tw=1',
@@ -32,6 +33,7 @@ const staticAssets = [
         '/assets/main/js/token.js?tw=1',
         '/assets/route/auth/js/auth.js?v=220324',
         '/assets/route/default/pages/js/home.js?tw=1',
+        '/assets/main/js/fallback.js?tw=1',
         'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
         'https://lottie.host/994d72ff-5477-41a0-8efa-a126f1ba34e9/xsTdPGGTsY.lottie',
         'https://unpkg.com/@dotlottie/player-component@2.7.11/dist/chunk-ODPU3M3Z.mjs',
@@ -86,11 +88,11 @@ self.addEventListener('install', e => {
                     return asset.replace('?nw=1','');
                 }
 
-                if (shellCache === staticCacheName) {
-                    const cur_date = new Date();
-                    shellCache += '-v-'+zeroPad(cur_date.getDate(),2)+''+zeroPad(cur_date.getMonth()+1,2)+''+zeroPad(cur_date.getFullYear().toString().substring(2),2); 
-                    // console.log(shellCache);
-                }
+                // if (shellCache === staticCacheName) {
+                //     const cur_date = new Date();
+                //     shellCache += '-v-'+zeroPad(cur_date.getDate(),2)+''+zeroPad(cur_date.getMonth()+1,2)+''+zeroPad(cur_date.getFullYear().toString().substring(2),2)+''+zeroPad(cur_date.getHours(),2)+''+cur_date.getMilliseconds(); 
+                //     // console.log(shellCache);
+                // }
 
                 return fetchLastModified(asset).then(function(r) {
                     return r
@@ -136,53 +138,59 @@ self.addEventListener('activate', e => {
 
 // fetch event
 self.addEventListener('fetch', e => {
-    // console.log('fetch event: ', e);
+    // console.log('fetch event: ', e.request.url);
     e.respondWith(
         caches.match(e.request.url).then(cachesResponse => {
             const ownAsset = e.request.url.split(self.location.origin);
-            if (cachesResponse && ownAsset.length > 1) {
+            if (cachesResponse && ownAsset.length > 1) {                            
                 if ((ownAsset[1].indexOf('.') === -1) || (ownAsset.indexOf('.html') > -1)) {
-                    switch (ownAsset[1].split('/')[1]) {
-                        case 'auth':
+                    if (ownAsset[1].indexOf('token/regenerate') > 0) {
+                        fetch('/default/home/token/regenerate', {
+                            method: "POST",
+                            cache: "no-cache",
+                            mode: "same-origin",
+                            credentials: "same-origin",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            referrer: "no-referrer"
+                        })
+                        .then(response => response.json())
+                        .then(function(result) {
+                            self.clients.matchAll().then((clients) => { 
+                                clients.forEach((client) => { 
+                                    client.postMessage({  
+                                        type: 'updateToken',  
+                                        data: result.token 
+                                    }) 
+                                }) 
+                            })
+                        });
+                    } else {
+                        if (navigator.onLine) {
                             return fetch(e.request);
-                            // fetch('/auth/signin/token/regenerate', {
-                            //     method: "POST",
-                            //     cache: "no-cache",
-                            //     mode: "same-origin",
-                            //     credentials: "same-origin",
-                            //     headers: {
-                            //         "Content-Type": "application/json",
-                            //     },
-                            //     referrer: "no-referrer"
-                            // })
-                            // .then(response => response.json())
-                            // .then(function(result) {
-                                
-                            //     if (result.error == false) {
-                            //         console.log('Failed to get Token, you dont have internet connection');
-                            //     } else {
-                            //         self.clients.matchAll().then((clients) => { 
-                            //             // console.log(clients);
-                            //             clients.forEach((client) => { 
-                            //                 // console.log(client);
-                            //                 client.postMessage({  
-                            //                     type: 'updateToken',  
-                            //                     data: result.token 
-                            //                 }) 
-                            //             }) 
-                            //         })
-                            //     }
-                            // });
-                        break;
-                    
-                        default:
-
-                        break;
+                        }
                     }
                 }
             }
-            return cachesResponse || fetch(e.request);
+            // return cachesResponse || fetch(e.request);
             return cachesResponse || fetch(e.request).then(fetchRes => {
+                if (ownAsset.length > 1) {
+                    switch(ownAsset[1]) {
+                        case '/home/kunjungan':
+                            return fetchRes;
+                        break;
+                        default:
+                            if (ownAsset[1].indexOf('fetch') > 0) {
+                                return fetchRes;
+                            }
+
+                            if (ownAsset[1].indexOf('token/regenerate') > 0) {
+                                return fetchRes;
+                            }
+                        break;
+                    }
+                }
                 return caches.open(dynamicCache).then(cache => {
                     cache.put(e.request.url, fetchRes.clone())
                     limitCacheSize(dynamicCache, 30);
@@ -192,9 +200,15 @@ self.addEventListener('fetch', e => {
         })
         .catch(() => {
             // console.log(e.request.url);
-            const htmlOrUriPass = ((e.request.url.split(self.location.origin)[1].indexOf('.') === -1) || (e.request.url.indexOf('.html') > -1));
-            if (htmlOrUriPass) {
-                return caches.match('/fallback/offline')
+            const serverAsset = e.request.url.split(self.location.origin);
+            const htmlOrUriPass = ((serverAsset.length > 1) && ((serverAsset[1].indexOf('.') === -1) || (e.request.url.indexOf('.html') > -1)));
+
+            if (htmlOrUriPass) { 
+                if (serverAsset[1].indexOf('fetch') > 0) {
+                    console.log('Disconnect from internet');
+                    return caches.match('/fallback/fetch');
+                }      
+                return caches.match('/fallback/offline');
             }
 
             if (e.request.destination == 'image') {

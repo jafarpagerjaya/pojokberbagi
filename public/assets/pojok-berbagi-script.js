@@ -290,7 +290,7 @@ function toastPassed(element) {
     
     let timeInterval = setInterval(() => {
         element.innerHTML = timePassed(startTime);
-        console.log(timePassed(startTime));
+        // console.log(timePassed(startTime));
     }, 1000);
 
     timeIntervalList[dataToast] = timeInterval;
@@ -366,9 +366,31 @@ const offlineNotice = () => {
     }
 };
 
-const onlineNotice = () => {
+const onlineNotice = (e = false) => {
     // console.log('Became online')
+    if (e !== false) {
+        if (document.querySelector('body[data-token]') != null) {
+            fetch('/default/home/token/regenerate', {
+                method: "POST",
+                cache: "no-cache",
+                mode: "same-origin",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                referrer: "no-referrer"
+            })
+            .then(response => response.json())
+            .then(function(result) {
+                body.setAttribute('data-token', result.token);
 
+                fetchTokenChannel.postMessage({
+                    token: result.token
+                });
+            });
+        }
+    }
+    
     if (document.querySelector('[data-connection-mode]') != null) {
         document.querySelector('[data-connection-mode]').setAttribute('data-connection-mode','online');
         document.querySelector('[data-connection-mode] span').innerText = 'Sudah sudah terhubung lagi Sob';
@@ -387,7 +409,7 @@ if (window.navigator.onLine) {
     offlineNotice();
 }
 
-window.addEventListener('online', onlineNotice);
+window.addEventListener('online', onlineNotice, true);
 
 window.addEventListener('offline', offlineNotice);
 
@@ -405,6 +427,6 @@ function onMouseUp(e) {
     }
 }
 
-window.addEventListener("mousedown", onMouseDown);
-
-window.addEventListener("mouseup", onMouseUp);
+// Perlu perbaikan 
+// window.addEventListener("mousedown", onMouseDown);
+// window.addEventListener("mouseup", onMouseUp);

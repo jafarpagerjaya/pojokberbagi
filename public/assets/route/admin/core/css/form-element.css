@@ -391,12 +391,12 @@ select[disabled]~.select2-container--default .select2-selection--single {
     color: #fff !important;
 }
 
-.select2-results .select2-results__option--highlighted * {
-    color: #fff;
-}
+.select2 .selection .badge {
+    font-size: .7em;
+} 
 
-.select2-results .select2-results__option--highlighted .badge-primary {
-    color: var(--primary);
+.select2-results .select2-results__option--highlighted *:not(.badge) {
+    color: #fff;
 }
 
 .select2-results ul {
@@ -523,4 +523,10 @@ span+select.custom-select[multiple]~.select2-container--open .selection:before {
 
 .select2-results__options::-webkit-scrollbar-thumb:hover {
     background-color: #f4f4f4c3 !important;
+}
+
+.select2 label {
+    font-size: .875em !important;
+    color: #495057;
+    font-weight: bold;
 }

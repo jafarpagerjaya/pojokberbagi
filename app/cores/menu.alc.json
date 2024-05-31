@@ -42,6 +42,11 @@
 				"title": "Beranda",
 				"icon": "ni ni-tv-2 text-primary"
 			},
+			"Banner": {
+				"href": "/admin/banner",
+				"title": "Banner",
+				"icon": "ni ni-diamond text-info"
+			},
 			"Bantuan": {
 				"href": "javascript:void(0);",
 				"title": "Campaign",
@@ -197,6 +202,11 @@
 						"icon": "ni ni-watch-time text-gray"
 					}
 				}
+			},
+			"Banner": {
+				"href": "/admin/banner",
+				"title": "Banner",
+				"icon": "ni ni-diamond text-info"
 			}
 		}
 	},

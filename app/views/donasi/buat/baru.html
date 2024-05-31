@@ -17,6 +17,24 @@
         <div class="row justify-content-center">
             <form spellcheck="false" class="col col-md-9 col-lg-6" autocomplete="off" method="post" action="/donasi/pembayaran/index/<?= $data['bantuan']->id_bantuan ?>">
                 <div class="row g-0 g-md-3">
+                    <div class="col-12 mb-3">
+                        <!-- Ini Nanti pake kondisional jika opsi diset saat create bantuan -->
+                        <h5 class="mb-2">Pilihan Donasi</h5>
+                        <div class="row m-0 gap-3">
+                            <div class="col pilihan-donasi form-control inputGroup">
+                                <input type="radio" name="pilihan_donasi" id="radio1">
+                                <label for="radio1">10.000</label>
+                            </div>
+                            <div class="col pilihan-donasi form-control inputGroup">
+                                <input type="radio" name="pilihan_donasi" id="radio2">
+                                <label for="radio2">50.000</label>
+                            </div>
+                            <div class="col pilihan-donasi form-control inputGroup">
+                                <input type="radio" name="pilihan_donasi" id="radio3">
+                                <label for="radio3">100.000</label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-12 col-md-6">
                         <div class="form-floating mb-3<?= (!empty($data_error_feedback['jumlah_donasi']['rule']) ? ' text-danger' : '') ?>">
                             <input min="<?= $data['bantuan']->min_donasi ?>" type="text" class="form-control" id="floatingInputDonasi" placeholder="Jumlah Donasi"

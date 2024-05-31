@@ -8,6 +8,12 @@ class TentangKamiController extends Controller {
             )
         );
 
+        $this->script_controller = array(
+            array(
+                'src' => '/assets/pojok-berbagi-script.js'
+            )
+        );
+
         $this->_auth = $this->model('Auth');
 		$this->data['signin'] = $this->_auth->isSignIn();
     }

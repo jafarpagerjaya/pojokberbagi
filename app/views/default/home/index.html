@@ -10,7 +10,7 @@
                 $loop = 0;
                 while($loop < count(is_countable($data['banner']) ? $data['banner'] : [])) {
             ?>
-            <button type="button" data-bs-target="#banner-carousel" data-bs-slide-to="<?= $loop ?>" <?=($loop==0
+            <button data-id-banner="<?= $data['banner'][$loop]->id_banner; ?>" type="button" data-bs-target="#banner-carousel" data-bs-slide-to="<?= $loop ?>" <?=($loop==0
                 ? 'class="active" aria-current="true"' : '' ) ?> aria-label="Slide
                 <?= $loop ?>">
             </button>

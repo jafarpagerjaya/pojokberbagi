@@ -1,5 +1,18 @@
 <?php
 class ResetController extends Controller {
+    public function __construct() {
+        $this->rel_controller = array(
+            array(
+                'href' => '/assets/pojok-berbagi-style.css'
+            )
+        );
+
+        $this->script_controller = array(
+            array(
+                'src' => '/assets/pojok-berbagi-script.js'
+            )
+        );
+    }
     public function index() {
         if (Input::exists()) {
             if (Token::check(Input::get('token'))) {

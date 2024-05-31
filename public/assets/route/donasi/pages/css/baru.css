@@ -95,6 +95,28 @@ span.selection {
     border-color: var(--green) !important;
 }
 
+.inputGroup:hover {
+    border-color: #86b7fe;
+}
+
+.inputGroup label {
+    font-size: 1rem;
+    z-index: -1;
+}
+
+.inputGroup label::before {
+    content: attr(data-terbilang);
+    font-weight: 300;
+    font-size: 0.7rem;
+    display: block;
+}
+
+.inputGroup input[type="radio"],
+.inputGroup input[type="radio"]+label:after {
+    top: 0.25rem;
+    right: 0.25rem;
+}
+
 @media (max-width: 500px) {
     label[for="flexSwitchCheckChecked"] {
         font-size: .7em;

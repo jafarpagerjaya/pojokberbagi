@@ -5,7 +5,7 @@ buttonCollapse.forEach(elemButton => {
         if (!e.which) {
             return false;
         }
-        if (window.outerWidth < 768) {
+        if (window.innerWidth < 768) {
             const elTargetList = document.querySelectorAll('.row.custom-height-setter'),
                   elTargetSetter = this.closest('.order-0');
             let i = 0,

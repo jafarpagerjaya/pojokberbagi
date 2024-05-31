@@ -6,10 +6,14 @@ if (body.getAttribute('data-token') != null) {
     // If recive message
     fetchTokenChannel.onmessage = event => { 
         // set data token
-        body.setAttribute('data-token', event.data.token);
+        if (window.navigator.onLine) {
+            body.setAttribute('data-token', event.data.token);
+        }
     };
 
-    fetchTokenChannel.postMessage({
-        token: body.getAttribute('data-token')
-    });
+    if (window.navigator.onLine) {
+        fetchTokenChannel.postMessage({
+            token: body.getAttribute('data-token')
+        });
+    }
 }

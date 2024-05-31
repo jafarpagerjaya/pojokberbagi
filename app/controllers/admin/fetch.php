@@ -139,6 +139,11 @@ class FetchController extends Controller {
                 // pinbukCreate
                 $decoded = Sanitize::thisArray($decoded['fields']);
             break;
+            
+            case 'banner':
+                // bannerCreate
+                $decoded = Sanitize::thisArray($decoded['fields']);
+            break;
             default:
                 $this->_result['feedback'] = array(
                     'message' => 'Unrecognize params '. $params[0]
@@ -246,6 +251,10 @@ class FetchController extends Controller {
             case 'deskripsi':
                 // deskripsiUpdate
             break;
+
+            case 'banner':
+                // bannerUpdate
+            break;
             
             default:
                 $this->_result['feedback'] = array(
@@ -283,6 +292,10 @@ class FetchController extends Controller {
 
             case 'deskripsi':
                 // deskripsiReset
+            break;
+
+            case 'banner':
+                // bannerReset
             break;
             
             default:
@@ -525,6 +538,10 @@ class FetchController extends Controller {
                 }
             break;
 
+            case 'banner':
+                // bannerGet
+            break;
+
             case 'informasi':
                 // informasiGet
             break;
@@ -630,6 +647,99 @@ class FetchController extends Controller {
             }
         }
         echo json_encode($this->_result);
+    }
+
+    private function bannerUpdate($decoded) {
+        if (empty($decoded['id_banner']) || !isset($decoded['id_banner'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id banner wajib diisi'
+            );
+            $this->result();
+            return false;
+        }
+
+        $id_banner = Sanitize::escape2(base64_decode(strrev($decoded['id_banner'])));
+        $decoded = Sanitize::thisArray($decoded['fields']);
+
+        $this->model('Banner');
+        $this->model->countData('banner', array('id_banner = ?', $id_banner));
+        if ($this->model->getResult()->jumlah_record == 0) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id banner tidak valid'
+            );
+            $this->result();
+            return false;
+        }
+
+        if (isset($decoded['id_bantuan'])) {
+            $this->model->getData("b.nama, 
+            CASE 
+                WHEN b.status <> 'D' AND b.status <> 'S' THEN
+                    'belum aktif'
+                WHEN b.status = 'S' THEN
+                    'sudah ditakedown'
+                ELSE
+                    IF (b.tanggal_akhir IS NOT NULL, IF(b.tanggal_akhir > NOW(),'kadaluarsa','aktif'), 'aktif')
+            END status", "bantuan b LEFT JOIN banner bn USING(id_bantuan)",array('b.id_bantuan', '=', $decoded['id_bantuan']),'AND',array('bn.id_bantuan','IS',NULL));
+            if (!$this->model->affected()) {
+                $this->_result['feedback'] = array(
+                    'message' => 'Id Bantuan tidak ditemukan'
+                );
+                $this->result();
+                return false;
+            }
+            $nama_bantuan = $this->model->getResult()->nama;
+            $status = $this->model->getResult()->status;
+            if ($status == 'aktif') {
+                $status = array(
+                    'text' => $status,
+                    'class' => 'badge-success'
+                );
+            } else if ($status == 'belum aktif') {
+                $status = array(
+                    'text' => $status,
+                    'class' => 'badge-warning'
+                );
+            } else if ($status == 'kadaluarsa') {
+                $status = array(
+                    'text' => $status,
+                    'class' => 'badge-danger'
+                );
+            } else {
+                $status = array(
+                    'text' => $status,
+                    'class' => 'badge-secondary'
+                );
+            }
+        }
+
+        $this->model->update('banner', array('id_bantuan' => $decoded['id_bantuan']), array('id_banner', '=', Sanitize::toInt2($id_banner)));
+
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Terjadi kesalahan update banner'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => array(
+                'id_banner' => strrev(base64_encode($id_banner)),
+                'id_bantuan' => $decoded['id_bantuan'],
+                'nama_bantuan' => $nama_bantuan,
+                'modified_at' => date('Y-m-d h:m:i'),
+                'status' => $status
+            ),
+            'message' => 'Banner terbaharukan'
+        );
+
+        $this->result();
+        if (Session::exists('toast')) {
+            Session::delete('toast');
+        }
+        return false;
     }
 
     private function bantuanDeskripsiSelengkapnyaUpdate($decoded) {
@@ -1762,6 +1872,95 @@ class FetchController extends Controller {
             'data' => Output::decodeEscapeArray($decoded)
         );
 
+        $this->result();
+        return false;
+    }
+
+    private function bannerCreate($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        if (empty($decoded['id_bantuan']) || !isset($decoded['id_bantuan'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id bantuan selengkapnya wajib diisi'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->_banner = $this->model('Banner');
+        $this->_banner->countData('bantuan',array('id_bantuan = ?', $decoded['id_bantuan']));
+        if ($this->_banner->data()->jumlah_record < 1) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id Bantuan tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->_banner->create('banner', array('id_bantuan' => $decoded['id_bantuan']));
+
+        if (!$this->_banner->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Terjadi kesalahan create banner'
+            );
+            $this->result();
+            return false;
+        }
+
+        $new_id_banner = $this->_banner->lastIID();
+
+        $this->model->getData('(SELECT COUNT(id_banner) FROM banner) slot, CASE 
+        WHEN b.status <> "D" AND b.status <> "S" THEN
+            "belum aktif"
+        WHEN b.status = "S" THEN
+            "sudah ditakedown"
+        ELSE
+            IF (b.tanggal_akhir IS NOT NULL, IF(b.tanggal_akhir > NOW(),"kadaluarsa","aktif"), "aktif")
+        END status','bantuan b JOIN banner bn USING(id_bantuan)', array('bn.id_banner','=',$new_id_banner));
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Failed to get data banner bantuan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $newBanner = $this->model->getResult();
+
+        if ($newBanner->status == 'aktif') {
+            $newBanner->status = array(
+                'text' => $newBanner->status,
+                'class' => 'badge-success'
+            );
+        } else if ($newBanner->status == 'belum aktif') {
+            $newBanner->status = array(
+                'text' => $newBanner->status,
+                'class' => 'badge-warning'
+            );
+        } else if ($newBanner->status == 'kadaluarsa') {
+            $newBanner->status = array(
+                'text' => $newBanner->status,
+                'class' => 'badge-danger'
+            );
+        } else {
+            $newBanner->status = array(
+                'text' => $newBanner->status,
+                'class' => 'badge-secondary'
+            );
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'message' => 'Berhasil menambahkan data banner (<span class="font-weight-bold" data-id-target="'. $new_id_banner .'">#' . $decoded['nama_bantuan'] . '</span>)',
+            'data' => array(
+                'id_banner' => strrev(base64_encode($new_id_banner)),
+                'id_bantuan' => $decoded['id_bantuan'],
+                'create_at' => date('Y-m-d H:m:i'),
+                'nama_bantuan' => $decoded['nama_bantuan'],
+                'status' => $newBanner->status,
+                'slot' => $newBanner->slot
+            )
+        );
         $this->result();
         return false;
     }
@@ -3952,6 +4151,52 @@ class FetchController extends Controller {
         return false;
     }
 
+    private function bannerReset($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        if (!isset($decoded['id_banner'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id banner wajib ditentukan'
+            );
+            $this->result();
+            return false; 
+        }
+
+        $idBanner = base64_decode(strrev($decoded['id_banner']));
+        $this->model('Banner');
+        $this->model->countData('banner',array('id_banner = ?', Sanitize::escape2($idBanner)));
+        if ($this->model->getResult()->jumlah_record < 1) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id banner tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->model->update('banner', array('id_bantuan' => NULL), array('id_banner','=',Sanitize::escape2($idBanner)));
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id banner gagal di reset'
+            );
+            $this->result();
+            return false; 
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'message' => 'Slot banner berhasil direset',
+            'data' => array(
+                'id_banner' => $decoded['id_banner']
+            )
+        );
+
+        $this->result();
+        if ($this->_result['error'] == false) {
+            Session::delete('toast');
+        }
+        return false;
+    }
+
     private function deskripsiReset($decoded) {
         $decoded = Sanitize::thisArray($decoded);
 
@@ -4444,6 +4689,9 @@ class FetchController extends Controller {
                     } else if ($params[1] == 'deskripsi-selengkapnya') {
                         // bantuanSelengkapnyaRead
                         $params[0] .= 'Selengkapnya';
+                    } else if ($params[1] == 'banner') {
+                        $params[0] .= 'Banner';
+                        // bantuanBannerRead
                     }
                 }
             break;
@@ -4853,6 +5101,77 @@ class FetchController extends Controller {
         if ($this->_result['error'] == false) {
             Session::delete('toast');
         }
+        return false;
+    }
+
+    private function bantuanBannerRead($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        $search = null;
+        $search_columnQ = '';
+        $params = array();
+        if (!empty($decoded['search'])) {
+            $search_value = $decoded['search'];
+            $search_column = "LOWER(CONCAT(IFNULL(b.nama, ''), CASE 
+            WHEN b.status <> 'D' AND b.status <> 'S' THEN
+                'belum aktif'
+            WHEN b.status = 'S' THEN
+                'sudah ditakedown'
+            ELSE
+                IF (b.tanggal_akhir IS NOT NULL, IF(TIMESTAMPDIFF(DAY, NOW(), b.tanggal_akhir) < 0,'kadaluarsa','aktif'), 'aktif')
+            END)) LIKE LOWER(CONCAT('%',?,'%'))";
+            $search_columnQ = "AND {$search_column}";
+            array_push($params, $search_value);
+            $search = array(
+                $search_column,
+                $search_value
+            );
+        }
+
+        if (isset($decoded['offset'])) {
+            $offset = $decoded['offset'];
+        } else {
+            $offset = 0;
+        }
+
+        if (isset($decoded['limmit'])) {
+            $limmit = $decoded['limmit'];
+        } else {
+            $limit = 25;
+        }
+
+        $this->model('Bantuan');
+        $this->model->query("SELECT b.id_bantuan id, b.nama text, CASE 
+        WHEN b.status <> 'D' AND b.status <> 'S' THEN
+            'belum aktif'
+        WHEN b.status = 'S' THEN
+            'sudah ditakedown'
+        ELSE
+            IF (b.tanggal_akhir IS NOT NULL, IF(b.tanggal_akhir > NOW(),'kadaluarsa','aktif'), 'aktif')
+        END status
+        FROM bantuan b LEFT JOIN banner bn USING(id_bantuan) WHERE b.blokir IS NULL AND bn.id_bantuan IS NULL {$search_columnQ} ORDER BY b.prioritas DESC, b.create_at DESC, b.id_bantuan ASC LIMIT {$offset}, {$limit}", $params);
+
+        $dataBantuan = $this->model->getResults();
+
+        $count = $this->model->countData('bantuan b','b.blokir IS NULL', $search);
+        
+        $this->_result['error'] = false;        
+        $this->_result['feedback'] = array(
+            'data' => $dataBantuan
+        );
+
+        if (isset($count)) {
+            $this->_result['feedback']['record'] = $count->jumlah_record;
+            $this->_result['feedback']['offset'] = $offset;
+            $this->_result['feedback']['limit'] = $limit;
+            $this->_result['feedback']['load_more'] = ($count->jumlah_record > $offset + $limit);
+        }
+
+        if (!is_null($search)) {
+            $this->_result['feedback']['search'] = $search_value;
+        }
+
+        $this->result();
         return false;
     }
 
@@ -5879,6 +6198,80 @@ class FetchController extends Controller {
         $this->_result['error'] = false;
         $this->_result['feedback'] = array (
             'data' => $data
+        );
+
+        $this->result();
+        if ($this->_result['error'] == false) {
+            Session::delete('toast');
+        }
+        return false;
+    }
+
+    private function bannerGet($decoded) {
+        if (!isset($decoded['id_banner'])) {
+            $this->_result['feedback'] = array(
+                'message' => 'Id banner wajib ada'
+            );
+            $this->result();
+            return false;
+        }
+
+        $id_banner = base64_decode(strrev(Sanitize::escape2($decoded['id_banner'])));
+
+        $this->model('Banner');
+        $this->model->getData("b.id_bantuan id, b.nama text, CASE 
+        WHEN b.status <> 'D' AND b.status <> 'S' THEN
+            'belum aktif'
+        WHEN b.status = 'S' THEN
+            'sudah ditakedown'
+        ELSE
+            IF (b.tanggal_akhir IS NOT NULL, IF(b.tanggal_akhir > NOW(),'kadaluarsa','aktif'), 'aktif')
+        END status","bantuan b LEFT JOIN banner bn USING(id_bantuan)",array('b.blokir','IS',NULL),"AND",array('bn.id_banner','=',$id_banner));
+        if (!$this->model->affected() && !$this->model->error()) {
+            $this->_result['error'] = false;
+            $this->result();
+            return false;
+        }
+
+        if (!$this->model->affected() && $this->model->error()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Failed to get data banner'
+            );
+            $this->result();
+            return false;
+        }
+
+        $data = $this->model->getResult();
+
+        if ($data->status == 'aktif') {
+            $data->status = array(
+                'text' => $data->status,
+                'class' => 'badge-success'
+            );
+        } else if ($data->status == 'belum aktif') {
+            $data->status = array(
+                'text' => $data->status,
+                'class' => 'badge-warning'
+            );
+        } else if ($data->status == 'kadaluarsa') {
+            $data->status = array(
+                'text' => $data->status,
+                'class' => 'badge-danger'
+            );
+        } else {
+            $data->status = array(
+                'text' => $data->status,
+                'class' => 'badge-secondary'
+            );
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => array(
+                'id' => $data->id,
+                'text' => Output::decodeEscape($data->text),
+                'status' => $data->status
+            )
         );
 
         $this->result();

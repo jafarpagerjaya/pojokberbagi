@@ -161,6 +161,10 @@ class HomeModel {
 		return $this->db->count();
 	}
 
+    public function error() {
+		return $this->db->error();
+    }
+
     public function data() {
         return $this->data;
     }

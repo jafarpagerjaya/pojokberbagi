@@ -909,7 +909,7 @@ CREATE TABLE kunjungan (
 )ENGINE=INNODB;
 
 CREATE TABLE banner (
-    id_banner BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id_banner TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     id_bantuan INT UNSIGNED,
@@ -3595,6 +3595,20 @@ ALTER TABLE anggaran_pelaksanaan_donasi CONSTRAINT U_ID_KEBUTUHAN_ID_RENCANA_KET
 -- INSERT INTO transaksi(nominal,jenis,create_at,id_ca)
 -- SELECT nominal,'K',waktu_penarikan, id_ca FROM penarikan;
 
+-- INI UNTUK MEREORDER ID_DONASI JIKA ADA PENGHAPUSAN AKIBAT KESALAHAN DATA DONASI
+-- ###########################################################
+-- SET  @id_donasi := 177;
+-- SET  @num := @id_donasi;
+-- UPDATE donasi SET bayar = 0 WHERE id_donasi > @num;
+-- DELETE FROM virtual_ca_donasi WHERE id_donasi > @num;
+-- UPDATE donasi SET id_donasi = @num := (@num+1) WHERE id_donasi > @num;
+-- ALTER TABLE donasi AUTO_INCREMENT = 1;
+-- UPDATE donasi SET bayar = 1, modified_at = create_at WHERE id_donasi > @id_donasi;
+-- UPDATE kuitansi k JOIN donasi d ON d.id_donasi = k.id_donasi SET k.create_at = d.create_at WHERE d.id_donasi > @id_donasi;
+-- ###########################################################
+-- AKHIR REORDER WAJIB REKONSIALISADI SESUAI KONDISI DTPA OR NON DTPA
+
+
 -- UPDATE INI DI RUN UNTUK REKONSIALISASI SALDO DONASI (BUTUH PERBAIUKAN UNTUK MENGAMBIL KE DETIL PINBUK JUGA)
 -- VERSI TABEL BELUM ADA TABEL DTPA
 UPDATE channel_account, 
@@ -3615,7 +3629,7 @@ SET channel_account.saldo = s.saldo WHERE channel_account.nama = s.nama;
 --         UNION
 --         (SELECT SUM(d.jumlah_donasi) saldo_donasi, cp.id_ca, ca.nama FROM channel_account ca JOIN channel_payment cp USING(id_ca) JOIN donasi d ON(d.id_cp = cp.id_cp) LEFT JOIN anggaran_pelaksanaan_donasi a USING(id_donasi) LEFT JOIN detil_transaksi_penarikan_anggaran dtpa USING(id_apd) WHERE d.bayar = 1 AND dtpa.id_apd IS NULL GROUP BY cp.id_ca, dtpa.id_dtpa)
 --         ) sd
---         GROUP BY sd.id_ca, sd.nama;
+--         GROUP BY sd.id_ca, sd.nama
 --     ) s
 -- SET channel_account.saldo = s.saldo WHERE channel_account.nama = s.nama;
 
