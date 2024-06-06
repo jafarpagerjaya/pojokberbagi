@@ -116,7 +116,7 @@ nominalDonasi.addEventListener('keyup', function (e) {
 
     // Checker radio Pilihan Donasi
     const selectedRadio = pilihanListValue.find(key => {
-        return key.value === price_to_number(value);
+        return key.value === price_to_number(this.value);
     });
 
     if (selectedRadio == undefined) {
@@ -188,7 +188,7 @@ nominalDonasi.addEventListener('click', function(e) {
     }
 });
 
-let min = 2000;
+let min = 10000;
 
 if (nominalDonasi.getAttribute('min').length) {
     min = nominalDonasi.getAttribute('min');

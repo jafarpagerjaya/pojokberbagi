@@ -100,7 +100,7 @@
                 <div class="row gap-4">
                     <?php if (strtoupper($data['detil_bantuan']->status) == 'D') { ?>
                     <div class="col-12 d-flex gap-3">
-                        <a href="<?= '/donasi/buat/baru/'. $data['detil_bantuan']->id_bantuan; ?>"
+                        <a href="<?= '/donasi/buat/' . (!is_null($data['detil_bantuan']->tag) ? $data['detil_bantuan']->tag : 'baru/'. $data['detil_bantuan']->id_bantuan); ?>"
                             class="btn button donasi btn-lg w-100 shadow-none d-grid align-items-center justify-items-center">Donasi Sekarang</a>
                         <a href="#" data-bs-toggle="modal" data-bs-target="#modalShareBtn" class="btn d-flex fw-bold flex-column-reverse fs-6 button btn-outline-orange-reverse justify-content-center">
                             <span>Bagikan</span>
@@ -326,7 +326,7 @@
             <div class="modal-footer border-light justify-content-center py-4 gap-3">
                 <div class="lets-donate"></div>
                 <div class="media">
-                    <a href="<?= '/donasi/buat/baru/'. $data['detil_bantuan']->id_bantuan; ?>" class="text-danger fw-bolder text-decoration-underline">Ikutan juga berdonasi</a>
+                    <a href="<?= '/donasi/buat/' . (!is_null($data['detil_bantuan']->tag) ? $data['detil_bantuan']->tag : 'baru/'. $data['detil_bantuan']->id_bantuan); ?>" class="text-danger fw-bolder text-decoration-underline">Ikutan juga berdonasi</a>
                     <p class="desc small">Yuk kita bantu</p>
                 </div>
                 <button class="btn btn-outline-orange-reverse p-2" data-bs-target="#modalShareBtn"><i class="bi bi-share-fill fs-1" style="margin-left: -0.5px;"></i></button>
@@ -354,7 +354,7 @@
                                     <i class="bi bi-twitter-x fs-4"></i>
                                 </a>
                             </div>
-                            <a href="<?= '/donasi/buat/baru/'. $data['detil_bantuan']->id_bantuan; ?>" type="button" class="btn button donasi rounded-box shadow-none d-grid align-items-center justify-items-center">
+                            <a href="<?= '/donasi/buat/' . (!is_null($data['detil_bantuan']->tag) ? $data['detil_bantuan']->tag : 'baru/'. $data['detil_bantuan']->id_bantuan); ?>" type="button" class="btn button donasi rounded-box shadow-none d-grid align-items-center justify-items-center">
                                 Donasi Sekarang
                             </a>
                         </div>
@@ -410,7 +410,7 @@
             </div>
             <div class="modal-body justify-content-between d-flex">
                 <button class="btn btn-light border" data-bs-dismiss="modal">Nanti Aja</button>
-                <a href="<?= '/donasi/buat/baru/'. $data['detil_bantuan']->id_bantuan; ?>" class="btn donasi fw-bold">Ya saya donasi</a>
+                <a href="<?= '/donasi/buat/' . (!is_null($data['detil_bantuan']->tag) ? $data['detil_bantuan']->tag : 'baru/'. $data['detil_bantuan']->id_bantuan); ?>" class="btn donasi fw-bold">Ya saya donasi</a>
             </div>
         </div>
     </div>

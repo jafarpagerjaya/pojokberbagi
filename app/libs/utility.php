@@ -303,4 +303,25 @@ class Utility {
 
         return $result;
     } 
+
+    public static function flipSenderBankType($jenis_cp) {
+        switch ($jenis_cp) {
+            case 'tb':
+                $sender_bank_type = 'bank_account';
+            break;
+
+            case 'va':
+                $sender_bank_type = 'virtual_account';
+            break;
+
+            case 'ew':
+                $sender_bank_type = 'wallet_account';
+            break;
+            
+            default:
+                $sender_bank_type = NULL;
+            break;
+        }
+        return $sender_bank_type;
+    }
 }

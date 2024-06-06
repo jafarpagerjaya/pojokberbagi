@@ -410,6 +410,52 @@ $('#imgCanvasCropper').on('click', '.modal-footer [type="button"]', function () 
     delete nameNew[inputFileName];
 });
 
+const inputTag = document.querySelector('#input-tag-campaign');
+inputTag.addEventListener('keydown', function(e) {
+    if (e.target.selectionStart == 0 && e.target.selectionEnd == 0) {
+        if ((e.which >= 49 && e.which <= 57) || (e.which >= 97 && e.which <= 105) || e.which == 8 || e.which == 38) {
+            e.preventDefault();
+            return false;
+        }
+    }
+
+    if (e.code != 'Space' && e.code != 'Minus') {
+        return false;
+    }
+
+    if (e.target.value.length == e.target.getAttribute('maxlength')) {
+        e.preventDefault();
+        return false;
+    }
+    
+    if (e.target.selectionStart == 0) {
+        e.preventDefault();
+        return false;
+    }
+
+    if ((e.target.value.charAt(e.target.selectionStart) === '-') || (e.target.value.charAt(e.target.selectionStart - 1) === '-')) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+inputTag.addEventListener('keypress', function(e) {
+    const oldValue = e.target.value;
+    let newValue;
+    if (e.code == 'Space') {
+        newValue = oldValue.slice(0, e.target.selectionStart) + '-' + oldValue.slice(e.target.selectionEnd)
+        e.target.value = newValue;
+        e.target.selectionStart = e.target.selectionEnd = e.target.selectionStart + 1;
+        e.preventDefault();
+    }
+});
+
+inputTag.addEventListener('change', function(e) {
+    if (e.target.value.at(-1) === '-') {
+        e.target.value = e.target.value.slice(0, -1);
+    }
+});
+
 let jumlahTarget = document.getElementById('input-jumlah-target'),
     inputSatuan = document.getElementById('input-satuan-target'),
     oldValueJumlahTarget;
@@ -1077,7 +1123,7 @@ submit.addEventListener('click', function (e) {
 });
 
 submit.addEventListener('mouseenter', function () {
-    console.log(nameNew);
+    // console.log(nameNew);
 
     const form = this.closest('form');
     let tabRequiredError = 0;

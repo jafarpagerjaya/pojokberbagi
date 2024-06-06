@@ -58,7 +58,7 @@
                                     </p>
                                 </div>
                                 <div class="button">
-                                    <a href="<?= '/donasi/buat/baru/'.$banner->id_bantuan; ?>"
+                                    <a href="<?= '/donasi/buat/'. (!is_null($banner->tag) ? $banner->tag : 'baru/'.$banner->id_bantuan); ?>"
                                         class="btn w-100 shadow rounded-box">Donasi Sekarang</a>
                                 </div>
                             </div>
@@ -70,7 +70,7 @@
                                 data-animation-name="pojokers">
                                 <div
                                     class="col-12 bg-transparent overflow-hidden img-wrapper d-flex justify-content-center align-items-center">
-                                    <a href="<?= '/bantuan/detil/'.$banner->id_bantuan; ?>">
+                                    <a href="<?= '/bantuan/'. (isset($banner->tag) ? $banner->tag : 'detil/'.$banner->id_bantuan); ?>">
                                         <img src="<?= $banner->path_gambar_medium; ?>"
                                             alt="<?= $banner->nama_gambar_medium; ?>" class="img-fluid">
                                     </a>
@@ -227,7 +227,7 @@
             <div class="col-lg-4 col-md-6 col-12 wow fadeInUp" data-wow-delay="<?= $delay_card.'s'; ?>"
                 data-id-bantuan="<?= $list_bantuan->id_bantuan; ?>">
                 <!-- Start Single Service -->
-                <a class="p-4 single-service animation d-block" href="<?= '/bantuan/detil/'. $list_bantuan->id_bantuan; ?>">
+                <a class="p-4 single-service animation d-block" href="<?= '/bantuan/'. (isset($list_bantuan->tag) ? $list_bantuan->tag : 'detil/'. $list_bantuan->id_bantuan); ?>">
                     <div
                         class="app-image img-wrapper rounded-box top overflow-hidden d-flex justify-content-center align-items-center position-relative mb-3">
                         <img src="<?= $list_bantuan->path_gambar_medium; ?>"

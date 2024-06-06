@@ -109,8 +109,6 @@
 					if (method_exists($this->controller_object, $controller_method)) {
 						$this->action = $controller_method;
 						array_shift($path_parts);
-					} else {
-						unset($path_parts);
 					}
 				}
 				// Get params - all of the rest

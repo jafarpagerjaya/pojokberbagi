@@ -85,9 +85,9 @@ class HomeModel {
         return $this->db->result();
     }
 
-    public function getAllData($table, $where = array()) {
+    public function getAllData($table, $where = array(), $condition = null, $another_filter = array()) {
 		if ($this->checkParams($table, $where)) {
-            if (!$this->db->getAll($table, $where)) {
+            if (!$this->db->getAll($table, $where, $condition, $another_filter)) {
                 throw new Exception("Error Processing Read All Data " . $table);
             }
             if ($this->db->count()) {

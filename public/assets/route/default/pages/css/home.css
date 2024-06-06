@@ -143,11 +143,8 @@ header.header+.hero-area {
 }
 
 /* Handler img broken pojok-berbagi-stype extender */
-.app-image > .img-wrapper > a[href] {
-    max-height: inherit;
-    min-height: inherit;
-    width: 100%;
-}
+.app-image > .img-wrapper > a[href],
+.app-image > .img-wrapper > a[href] > img,
 .app-image > .img-wrapper > a[href] > img[src=""] {
     max-height: inherit;
     min-height: inherit;

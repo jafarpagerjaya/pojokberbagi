@@ -1,7 +1,7 @@
 <?php
 class DonasiModel extends HomeModel {
     public function isBantuanActive($params) {
-        $this->db->query("SELECT id_bantuan, nama, min_donasi, tanggal_akhir, status, blokir FROM bantuan WHERE id_bantuan = ?", array('id_bantuan' => $params));
+        $this->db->query("SELECT tag, id_bantuan, nama, min_donasi, tanggal_akhir, status, blokir FROM bantuan WHERE id_bantuan = ? OR tag = ?", array('id_bantuan' => $params, 'tag' => $params));
         if ($this->db->count()) {
             $this->data = $this->db->result();
             return $this->data;

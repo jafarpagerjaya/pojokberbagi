@@ -230,6 +230,7 @@
 }
 
 /* Handler img broken pojok-berbagi-stype extender */
+/* .single-service>.app-image.img-wrapper>img, */
 .single-service>.app-image.img-wrapper>img[src=""] {
     max-height: inherit;
     min-height: inherit;

@@ -22,10 +22,12 @@ class BuatController extends Controller {
     }
 
     public function index($params) {
-        if (count(is_countable($params) ? $params : [])) {
-            $params = implode('/', $params);
+        if (count(is_countable($params) ? $params : []) > 0) {
+            $this->baru($params);
+            return VIEW_PATH.'donasi'.DS.'buat'.DS.'baru.html';
+        } else {
+            Redirect::to('home');
         }
-        Redirect::to('donasi/buat/baru'. (!is_null($params) ? '/'. $params : ''));
     }
 
     public function baru($params) {
@@ -65,9 +67,17 @@ class BuatController extends Controller {
             )
         );
 
-        $id_bantuan = Sanitize::escape2($params[0]);
-
         $this->model('Donasi');
+        $this->model->query("SELECT COUNT(id_bantuan) found, id_bantuan FROM bantuan WHERE id_bantuan = ? OR tag = ? AND status IN ('D','S') GROUP BY id_bantuan", array('id_bantuan' => $params[0], 'tag' => $params[0]));
+        if ($this->model->getResult()->found == 0) {
+            Session::flash('notifikasi', array(
+                'pesan' => 'Halaman donasi yang anda cari tidak ditemukan',
+                'state' => 'warning'
+            ));
+            Redirect::to('home');
+        }
+        $id_bantuan = $this->model->getResult()->id_bantuan;
+
         $data_bantuan = $this->model->isBantuanActive($id_bantuan);
         if ($data_bantuan == false) {
             Session::flash('notifikasi', array(

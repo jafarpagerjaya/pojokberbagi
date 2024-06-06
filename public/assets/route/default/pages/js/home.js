@@ -160,20 +160,22 @@ function setBeforeAfterBgColor(el) {
         const elTargetImgList = el.querySelectorAll('a>img');
 
         elTargetImgList.forEach(elTargetImg => {
-            let canvas = document.createElement('canvas');
+            elTargetImg.onload = function() {
+                let canvas = document.createElement('canvas');
 
-            canvas.width = elTargetImg.width;
-            canvas.height = elTargetImg.height;
-            canvas.getContext('2d', { willReadFrequently: true }).drawImage(elTargetImg, 0, 0, elTargetImg.width, elTargetImg.height);
+                canvas.width = elTargetImg.width;
+                canvas.height = elTargetImg.height;
+                canvas.getContext('2d', { willReadFrequently: true }).drawImage(elTargetImg, 0, 0, elTargetImg.width, elTargetImg.height);
 
-            let rgbaBefore = canvas.getContext('2d').getImageData(3, elTargetImg.height-3, 1, 1).data.join(),
-                rgbaAfter = canvas.getContext('2d').getImageData(elTargetImg.width-3, elTargetImg.height-3, 1, 1).data.join();
-            
-            elTargetImg.closest('.app-image').setAttribute('data-bg-color-before', rgbaBefore);
-            elTargetImg.closest('.app-image').setAttribute('data-bg-color-after', rgbaAfter);
+                let rgbaBefore = canvas.getContext('2d').getImageData(3, elTargetImg.height-3, 1, 1).data.join(),
+                    rgbaAfter = canvas.getContext('2d').getImageData(elTargetImg.width-3, elTargetImg.height-3, 1, 1).data.join();
+                
+                elTargetImg.closest('.app-image').setAttribute('data-bg-color-before', rgbaBefore);
+                elTargetImg.closest('.app-image').setAttribute('data-bg-color-after', rgbaAfter);
 
-            elTargetImg.closest('.app-image').style.setProperty('--data-bg-color-before', 'rgba('+rgbaBefore+')');
-            elTargetImg.closest('.app-image').style.setProperty('--data-bg-color-after', 'rgba('+rgbaAfter+')');
+                elTargetImg.closest('.app-image').style.setProperty('--data-bg-color-before', 'rgba('+rgbaBefore+')');
+                elTargetImg.closest('.app-image').style.setProperty('--data-bg-color-after', 'rgba('+rgbaAfter+')');
+            }
         });
     }, 0);
 };

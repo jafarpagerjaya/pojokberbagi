@@ -388,7 +388,7 @@ class Controller {
 
 	protected function getMetaUri() {
 		$path = array(
-			Config::getHTTPHost()
+			'host' => Config::getHTTPHost()
 		);
 		
 		if (App::getRouter()->getLanguages() != 'id') {
@@ -399,7 +399,11 @@ class Controller {
 			array_push($path, App::getRouter()->getRoute());
 		}
 
-		$path = array_merge($path, array(App::getRouter()->getController(), App::getRouter()->getAction(), App::getRouter()->getParams()[0]));
+		$path = array_merge($path, array('controller' => App::getRouter()->getController(), 'action' => App::getRouter()->getAction(), 'params' => App::getRouter()->getParams()[0]));
+
+		if ($path['action'] == 'index') {
+			unset($path['action']);
+		}
 
 		return implode('/', $path);
 	}

@@ -20,13 +20,19 @@ class PembayaranController extends Controller {
         if (count(is_countable($params) ? $params : []) < 1) {
             Redirect::to('home');
         }
+
+        if (ctype_digit($params[0])) {
+            $redirectLink = 'donasi/buat/baru/' . implode('/', $params);
+        } else {
+            $redirectLink = 'donasi/buat/' . implode('/', $params);
+        }
         
         if (!Input::exists()) {
-            Redirect::to('donasi/buat/baru/' . $params[0]);
+            Redirect::to($redirectLink);
         }
 
         $this->model('Donasi');
-        $data_bantuan = $this->model->isBantuanActive(Sanitize::escape($params[0]));
+        $data_bantuan = $this->model->isBantuanActive(Sanitize::escape2($params[0]));
         if ($data_bantuan->blokir == '1') {
             Session::flash('notifikasi', array(
                 'pesan' => 'Bantuan <b>'. $data_bantuan->nama .'</b> dengan ' . Utility::keteranganStatusBantuan($data_bantuan->status) .' sedang diblokir',
@@ -78,7 +84,7 @@ class PembayaranController extends Controller {
         ), array('LOWER(email)', '!=', strtolower(Input::get('email'))));
         if (!$validate->passed()) {
             Session::put('error_feedback', $validate->getValueFeedback());
-            Redirect::to('donasi/buat/baru/' . $params[0]);
+            Redirect::to($redirectLink);
         }
 
         $this->model->getData('id_donatur, samaran, kontak','donatur', array('LOWER(email)','=', strtolower(trim(Input::get('email')))));
@@ -102,7 +108,7 @@ class PembayaranController extends Controller {
             ));
             if (!$uniqueValidate->passed()) {
                 Session::put('error_feedback', $uniqueValidate->getValueFeedback());
-                Redirect::to('donasi/buat/baru/' . $params[0]);
+                Redirect::to($redirectLink);
             }
             // Akhir Blok Yang kemungkinan bisa di hapus karena kontak pasti beda
             // Create donatur baru
@@ -116,7 +122,7 @@ class PembayaranController extends Controller {
                     'pesan' => 'Gagal Auto Create Donatur Di Pembayaran',
                     'state' => 'error'
                 ));
-                Redirect::to('donasi/buat/baru/' . $params[0]);
+                Redirect::to($redirectLink);
             }
             $id_donatur = $this->model->lastIID();
             $samaran = null;
@@ -129,19 +135,19 @@ class PembayaranController extends Controller {
         $dataDonasi = array(
             'jumlah_donasi' => Sanitize::toInt(trim(Input::get('jumlah_donasi'))),
             'doa' => trim(Input::get('pesan_atau_doa')),
-            'id_bantuan' => trim(Sanitize::escape($params[0])),
+            'id_bantuan' => $data_bantuan->id_bantuan,
             'id_donatur' => $id_donatur,
             'id_cp' => Sanitize::escape(trim(Input::get('metode_pembayaran')))
         );
 
         // Sementara pakai condisional tambahan AND jenis = 'TB'
-        $dataCP = $this->model->getData('LOWER(jenis) jenis_payment','channel_payment', array('id_cp','=',$dataDonasi['id_cp']),'AND',array('jenis','=','TB'));
+        $dataCP = $this->model->getData('LOWER(cp.jenis) jenis_payment, pjp.brand','channel_payment cp JOIN channel_account ca USING(id_ca) JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp)', array('cp.id_cp','=',$dataDonasi['id_cp']),'AND',array('cp.jenis','=','TB'));
         if ($dataCP == false) {
             Session::put('notifikasi', array(
                 'pesan' => 'Metode pembayaran tidak ditemukan mohon pilih metode lainnya',
                 'state' => 'error'
             ));
-            Redirect::to('donasi/buat/baru/' . $params[0]);
+            Redirect::to($redirectLink);
         }
 
         $dataCP = $this->model->getResult();
@@ -175,24 +181,78 @@ class PembayaranController extends Controller {
             Redirect::to('home');
         }
 
-        $donasi = $this->model->create('donasi', $dataDonasi);
+        // $secret_key = "JDJ5JDEzJHdvT1NmbE9kbW5LRGNCM1V0RVhMZy5JUFlRQmhIZFp3RnRLR05KMXo1dUwuOWsva3hQQVN5";
+
+        // $encoded_auth = base64_encode($secret_key.":");
+
+        // $ch = curl_init();
+        // curl_setopt($ch, CURLOPT_HTTPHEADER, ["Authorization: Basic ".$encoded_auth]);
+
+        // curl_setopt($ch, CURLOPT_URL, "https://bigflip.id/big_sandbox_api/v2/pwf/bill");
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        // curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+        // curl_setopt($ch, CURLOPT_POST, TRUE);
+
+        // $hash_transaksi = $data_bantuan->tag . '/' . Hash::unique();
+
+        // $payloads = [
+        //     "title" => "Donasi ". $data_bantuan->nama,
+        //     "amount" => $dataDonasi['jumlah_donasi'],
+        //     "type" => "SINGLE",
+        //     "expired_date" => date('Y-m-d H:i', strtotime('+ 1 day')),
+        //     "redirect_url" => "https://pojokberbagi.id/donasi/pembayaran/transaksi/" . $hash_transaksi,
+        //     "is_address_required" => 1,
+        //     "is_phone_number_required" => 0,
+        //     "step" => 2,
+        //     "sender_name" => Input::get('nama'),
+        //     "sender_email" => strtolower(trim(Input::get('email'))),
+        //     "sender_address" => Config::getHTTPHost()
+        //     // Ini untuk Step 3 namun Step 3 hanya bisa untuk VA dan QRIS
+        //     // "sender_bank" => $dataCP->brand,
+        //     // "sender_bank_type" => Utility::flipSenderBankType($jenis_payment)
+        // ];
+
+        // curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payloads));
+
+        // curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        //     "Authorization: Basic ".$encoded_auth,
+        //     "Content-Type: application/x-www-form-urlencoded"
+        // ));
+
+        // curl_setopt($ch, CURLOPT_USERPWD, $secret_key.":");
+
+        // $response = curl_exec($ch);
+        // curl_close($ch);
+
+        // $dataResponse = json_decode($response);
+
+        // $dataDonasi['external_id'] = $dataResponse->link_id;
+        // $dataDonasi['url'] = $dataResponse->link_url;
+        // $dataDonasi['kode_pembayaran'] = $hash_transaksi;
+
+        $order = $this->model->create('donasi', $dataDonasi);
         
-        if (!$donasi) {
+        if (!$order) {
             Session::put('notifikasi', array(
-                'pesan' => 'Gagal Create Donasi',
+                'pesan' => 'Gagal Create Order Donasi',
                 'state' => 'error'
             ));
-            Redirect::to('donasi/buat/baru/' . $params[0]);
+            Redirect::to('donasi/buat/'. (!is_null($data_bantuan) ? $data_bantuan->tag : 'baru/'. $data_bantuan->id_bantuan));
         }
 
-        Cookie::update(Config::get('donasi/cookie_name'),'',-1,'/donasi/buat/baru/'. $params[0]);
+        Cookie::update(Config::get('donasi/cookie_name'),'',-1,'/donasi/buat/'. (!is_null($data_bantuan) ? $data_bantuan->tag : 'baru/'. $data_bantuan->id_bantuan));
 
         Session::put('notifikasi', array(
-            'pesan' => 'Berhasil Create Donasi',
+            'pesan' => 'Berhasil Create Order Donasi',
             'state' => 'success'
         ));
-        $id_donasi = $this->model->lastIID();
-        Redirect::to('donasi/pembayaran/tagihan/' . $jenis_payment . '/' . $id_donasi);
+        $id_order_donasi = $this->model->lastIID();
+        Redirect::to('donasi/pembayaran/tagihan/' . $jenis_payment . '/' . $id_order_donasi);
+
+        // Redirect to flip payment method
+        // Debug::prd(Redirect::to($dataResponse->link_url));
+        // Redirect::to($dataResponse->link_url);
     }
 
     public function tagihan($params) {

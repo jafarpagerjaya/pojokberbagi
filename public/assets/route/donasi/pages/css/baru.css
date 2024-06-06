@@ -95,13 +95,14 @@ span.selection {
     border-color: var(--green) !important;
 }
 
-.inputGroup:hover {
+.form-control:hover {
     border-color: #86b7fe;
 }
 
 .inputGroup label {
     font-size: 1rem;
     z-index: -1;
+    padding: .375rem .75rem;
 }
 
 .inputGroup label::before {
@@ -117,9 +118,24 @@ span.selection {
     right: 0.25rem;
 }
 
+#list-pilihan .col-6 {
+    width: calc(50% - 0.5rem);
+}
+
+#list-pilihan .col-6:nth-last-child(1):nth-child(odd) {
+    width: 100%;
+}
+
 @media (max-width: 500px) {
     label[for="flexSwitchCheckChecked"] {
         font-size: .7em;
         align-self: end;
+    }
+}
+
+@media (min-width: 768px) {
+    #list-pilihan .col-md {
+        width: calc(25% - 0.75rem);
+        flex-basis: auto;
     }
 }

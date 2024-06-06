@@ -182,67 +182,153 @@ const counterTarget = document.querySelectorAll('.box-info h6[data-count-up-valu
 counterUpSup(counterTarget, counterSpeed);
 counterUpProgress(progressBar, counterSpeed);
 
+let fetchData = function (url, data, root, f) {
+    return fetch(url, {
+        method: "POST",
+        cache: "no-cache",
+        mode: "same-origin",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        referrer: "no-referrer",
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(function (response) {
+        body.setAttribute('data-token', response.token);
+        fetchTokenChannel.postMessage({
+            token: body.getAttribute('data-token')
+        });
+
+        if (response.error) {
+            createNewToast(document.querySelector('[aria-live="polite"]'), response.toast.id, response.toast.data_toast, response.toast);
+            $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast({
+                'autohide': false
+            }).toast('show');
+            return false;
+        }
+
+        switch (f) {
+            case 'liked-click':
+                fetchLikeClicked(url, data, root, f, response);
+            break;
+            case 'read-donatur-list':
+                fetchReadDonatur(root, response);
+            break;
+            case 'read-donatur-list-default':
+                fetchReadDonaturDefault(root, response);
+            break;
+            case 'get-informasi-berita':
+                objectInformasi.id_informasi = data.fields.id_informasi;
+                fetchGetInformasiBerita(root, response);
+            break;
+            case 'read-informasi':
+                fetchReadInformasi(root, response);
+            break;
+            case 'get-id-bantuan':
+                return fetchGetIdBantuan(response);
+            default:
+            break;
+        }
+    });
+};
+
+let pm1;
+
 let getIdBantuan = function(pathname) {
-    let id_bantuan;
-    switch (pathname.split('/').at(1)) {
+    let id_bantuan, 
+        splitPath = pathname.split('/');
+    switch (splitPath.at(1)) {
         case 'default':
-            id_bantuan = pathname.split('/').at(4);
+            if (splitPath.length > 3 && splitPath.at(3) == 'detil') {
+                id_bantuan = splitPath.at(4);
+            } else {
+                // fetchGetIdByTag
+                let data = {
+                    fields: {
+                        tag: splitPath.at(3)
+                    },
+                    token: body.getAttribute('data-token')
+                };
+                // fetchGetIdBantuan
+                id_bantuan = fetchData('/default/fetch/get/id-bantuan/by-tag', data, null, 'get-id-bantuan');                
+            }
         break;
     
         default:
-            id_bantuan = pathname.split('/').at(3);
+            if (splitPath.length > 2 && splitPath.at(2) == 'detil') {
+                id_bantuan = splitPath.at(3);
+            } else {
+                // fetchGetIdByTag
+                let data = {
+                    fields: {
+                        tag: splitPath.at(2)
+                    },
+                    token: body.getAttribute('data-token')
+                };
+                // fetchGetIdBantuan
+                id_bantuan = fetchData('/default/fetch/get/id-bantuan/by-tag', data, null, 'get-id-bantuan');                
+            }
         break;
     }
     return id_bantuan;
 }
 
-const c_id_bantuan = getIdBantuan(window.location.pathname);
+let c_id_bantuan;
 
-let data = {
-    id_bantuan: c_id_bantuan,
-    token: body.getAttribute('data-token')
-};
-
-fetch('/default/fetch/read/bantuan/deskripsi', {
-    method: "POST",
-    cache: "no-cache",
-    mode: "same-origin",
-    credentials: "same-origin",
-    headers: {
-        "Content-Type": "application/json",
-    },
-    referrer: "no-referrer",
-    body: JSON.stringify(data)
-})
-.then(response => response.json())
-.then(function (response) {
-    // console.log(response);
-    document.querySelector('body').setAttribute('data-token', response.token);
-    fetchTokenChannel.postMessage({
-        token: document.querySelector('body').getAttribute('data-token')
-    });
-
-    if (!response.error && response.feedback.data.length) {
-        const quill = new Quill('#selengkapnya', {
-            modules: {
-                toolbar: false
-            },
-            readOnly: true
-        });
-
-        // render the content
-        quill.setContents(JSON.parse(response.feedback.data));    
-    }
-
-    if (response.toast != null && response.toast.feedback != undefined && response.toast.feedback.message != undefined) {
-        createNewToast(document.querySelector('[aria-live="polite"]'), response.toast.id, response.toast.data_toast, response.toast);
+const prIdBantuan = getIdBantuan(window.location.pathname);
+Promise.all([prIdBantuan])
+.then(([data1]) => {
+    console.log(data1);
+    c_id_bantuan = data1;
     
-        $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast({
-            'autohide': true
-        }).toast('show');
-    }
-
-    data = {};
+    let data = {
+        id_bantuan: c_id_bantuan,
+        token: body.getAttribute('data-token')
+    };
+    
+    fetch('/default/fetch/read/bantuan/deskripsi', {
+        method: "POST",
+        cache: "no-cache",
+        mode: "same-origin",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        referrer: "no-referrer",
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(function (response) {
+        console.log(response);
+        document.querySelector('body').setAttribute('data-token', response.token);
+        fetchTokenChannel.postMessage({
+            token: document.querySelector('body').getAttribute('data-token')
+        });
+    
+        if (!response.error && response.feedback.data.length) {
+            const quill = new Quill('#selengkapnya', {
+                modules: {
+                    toolbar: false
+                },
+                readOnly: true
+            });
+    
+            // render the content
+            quill.setContents(JSON.parse(response.feedback.data));    
+        }
+    
+        if (response.toast != null && response.toast.feedback != undefined && response.toast.feedback.message != undefined) {
+            createNewToast(document.querySelector('[aria-live="polite"]'), response.toast.id, response.toast.data_toast, response.toast);
+        
+            $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast({
+                'autohide': true
+            }).toast('show');
+        }
+    
+        data = {};
+    });
 });
 
 if (document.querySelector('.timeline') != null) {
@@ -494,56 +580,6 @@ modalDonaturList.addEventListener('hide.bs.modal', function (e) {
 
 // myModal.show();
 
-let fetchData = function (url, data, root, f) {
-    fetch(url, {
-        method: "POST",
-        cache: "no-cache",
-        mode: "same-origin",
-        credentials: "same-origin",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        referrer: "no-referrer",
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(function (response) {
-        body.setAttribute('data-token', response.token);
-        fetchTokenChannel.postMessage({
-            token: body.getAttribute('data-token')
-        });
-
-        if (response.error) {
-            createNewToast(document.querySelector('[aria-live="polite"]'), response.toast.id, response.toast.data_toast, response.toast);
-            $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast({
-                'autohide': false
-            }).toast('show');
-            return false;
-        }
-
-        switch (f) {
-            case 'liked-click':
-                fetchLikeClicked(url, data, root, f, response);
-            break;
-            case 'read-donatur-list':
-                fetchReadDonatur(root, response);
-            break;
-            case 'read-donatur-list-default':
-                fetchReadDonaturDefault(root, response);
-            break;
-            case 'get-informasi-berita':
-                objectInformasi.id_informasi = data.fields.id_informasi;
-                fetchGetInformasiBerita(root, response);
-            break;
-            case 'read-informasi':
-                fetchReadInformasi(root, response);
-            break;
-            default:
-            break;
-        }
-    });
-};
-
 let clickLiked = function(e) {
     let data = {
         'checked': e.target.getAttribute('checked'),
@@ -787,6 +823,12 @@ let fetchReadInformasi = function(modal, response) {
             modal.classList.remove('load');
         }, 500);
     }
+};
+
+let fetchGetIdBantuan = function(response) {
+    let value = response.feedback.data.id_bantuan;
+    // localStorage.setItem('id_bantuan', response.feedback.data.id_bantuan);
+    return value;
 };
 
 let objectInformasi = {};

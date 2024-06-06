@@ -570,8 +570,6 @@ class FetchController extends Controller {
 
         if (file_exists($path_gambar)) {
             unlink($path_gambar);
-        } else {
-            echo "Failed to remove file";
         }
     }
 
@@ -2804,7 +2802,7 @@ class FetchController extends Controller {
         if (isset($decoded['tag'])) {
             $decoded['tag'] = Sanitize::noDblSpace2($decoded['tag']);
             $this->model->query('SELECT COUNT(id_bantuan) found_tag FROM bantuan WHERE tag = ?', array('tag' => $decoded['tag']));
-            if ($this->model->result()->found_tag >= 1) {
+            if ($this->model->getResult()->found_tag >= 1) {
                 $this->_result['error'] = true;
                 $this->_result['feedback'] = array(
                     'message' => 'Nama Tag bantuan sudah terpakai, coba ganti dengan nama tag yang lain.',
@@ -3801,6 +3799,8 @@ class FetchController extends Controller {
     }
 
     private function bantuanUpdate($decoded) {
+        $uploaded = false;
+
         if (isset($decoded['id_video_youtube'])) {
             $decoded['id_video_youtube'] = Output::getYoutubeIdFromUrl($decoded['id_video_youtube']);
         }
@@ -3822,7 +3822,23 @@ class FetchController extends Controller {
         }
 
         $this->model('Bantuan');
-        $id_bantuan = $decoded['id_bantuan'];
+        $id_bantuan = Sanitize::escape2($decoded['id_bantuan']);
+
+        if (isset($decoded['tag'])) {
+            $decoded['tag'] = Sanitize::noDblSpace2($decoded['tag']);
+            $this->model->query('SELECT COUNT(id_bantuan) found_tag FROM bantuan WHERE tag = ? AND id_bantuan != ?', array('tag' => Sanitize::escape2($decoded['tag']), 'id_bantuan' => $id_bantuan));
+            if ($this->model->getResult()->found_tag >= 1) {
+                $this->_result['error'] = true;
+                $this->_result['feedback'] = array(
+                    'message' => 'Nama Tag bantuan sudah terpakai, coba ganti dengan nama tag yang lain.',
+                    'rule' => 'unique',
+                    'name' => 'tag'
+                );
+                $this->result();
+                return false;
+            }
+        }
+
         unset($decoded['id_bantuan']);
         unset($decoded['token']);
 
@@ -3877,7 +3893,7 @@ class FetchController extends Controller {
                             'label' => 'bantuan'
                         ));
                         $value['id_gambar'] = $this->model->lastIID();
-                        $decoded['id_' . $key] = $value['id_gambar'];
+                        $decoded['id_gambar_' . $key] = $value['id_gambar'];
                     } else {
                         $this->model->update('gambar', array(
                             'nama' => Sanitize::escape2($this->path_gambar[$key]['name']),

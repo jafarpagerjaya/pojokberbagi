@@ -498,7 +498,7 @@ class FetchController extends Controller {
     // getDeskripsi(); Route Default BantuanController
     private function bantuanDeskripsiRead($decoded) {
         $this->model('Bantuan');
-        $this->model->getAllData('deskripsi', array('id_bantuan', '=', $decoded['id_bantuan']));
+        $this->model->getAllData('deskripsi', array('id_bantuan', '=', Sanitize::escape2($decoded['id_bantuan'])));
         if (!$this->model->affected()) {
             $this->result();
             return false;
@@ -1077,6 +1077,16 @@ class FetchController extends Controller {
             case 'informasi':
                 // informasi Params
             break;
+
+            case 'id-bantuan':
+                // idBantuan Params
+                $params[0] = 'idBantuan';
+                if (isset($params[1])) {
+                    if ($params[1] == 'by-tag') {
+                        $params[0] .= 'ByTag';
+                    }
+                }
+            break;
             
             default:
                 $this->_result['feedback'] = array(
@@ -1118,6 +1128,26 @@ class FetchController extends Controller {
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(
             'data' => Output::decodeEscapeArray(json_decode(json_encode($this->model->getResult()),true))
+        );
+
+        $this->result();
+        return false;
+    }
+
+    private function idBantuanByTagGet($decoded) {
+        $this->model('Bantuan');
+        $this->model->getIdBantuanByTag($decoded['tag']);
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Data tag tidak ditemukan'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => $this->model->getResult()
         );
 
         $this->result();

@@ -330,7 +330,7 @@ class BantuanModel extends HomeModel {
                IF(SUM(pl.jumlah_pelaksanaan) IS NULL, 0, TRUNCATE((SUM(pl.jumlah_pelaksanaan)/b.jumlah_target)*100,0))
            ) persentase_pelaksanaan, 
            IF(b.id_bantuan = 1, jumlah_donatur+1999, jumlah_donatur) jumlah_donatur,
-           b.nama, b.status, b.satuan_target, b.total_rab, b.deskripsi, b.create_at, b.action_at, b.id_video_youtube id_video,
+           b.tag, b.nama, b.status, b.satuan_target, b.total_rab, b.deskripsi, b.create_at, b.action_at, b.id_video_youtube id_video,
            s.nama layanan, gm.path_gambar path_gambar_medium, IFNULL(gm.nama, b.nama) nama_gambar_medium, IFNULL(gw.nama, b.nama) nama_gambar_wide, gw.path_gambar path_gambar_wide
        FROM (
            SELECT 
@@ -429,6 +429,15 @@ class BantuanModel extends HomeModel {
             $this->data = $this->db->result();
             return $this->data;
         }
+    }
+
+    public function getIdBantuanByTag($tag) {
+        $this->db->get('id_bantuan','bantuan',array('tag','=',Sanitize::escape2($tag)));
+        if (!$this->db->count()) {
+            return false;
+        }
+        $this->data = $this->db->result();
+        return $this->data;
     }
 
     public function getCurrentListIdBantuan($nama_kategori = null, $list_id = array()) {
@@ -576,7 +585,7 @@ class BantuanModel extends HomeModel {
         $innerArrayFilter = implode(' ', $innerArrayFilter);
 
         $sql = "WITH bil AS (
-            SELECT id_bantuan, bantuan.nama nama_bantuan, jumlah_target, id_pemohon, id_sektor, id_kategori, id_gambar_medium, id_gambar_wide, tanggal_akhir, prioritas, action_at
+            SELECT id_bantuan, tag, bantuan.nama nama_bantuan, jumlah_target, id_pemohon, id_sektor, id_kategori, id_gambar_medium, id_gambar_wide, tanggal_akhir, prioritas, action_at
             FROM bantuan {$kategoriTable}
             WHERE blokir IS NULL {$innerArrayFilter} AND (tanggal_akhir IS NULL OR TIMESTAMPDIFF(DAY,NOW(), CONCAT(tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) >= 0)
             ORDER BY prioritas {$this->getDirection()}, action_at {$this->getDirection()}, id_bantuan ASC
@@ -587,7 +596,7 @@ class BantuanModel extends HomeModel {
               IF(ddibpl.total_pelaksanaan IS NULL, 0, TRUNCATE((IFNULL(ddibpl.total_pelaksanaan,0)/bil.jumlah_target)*100,2))
           ) persentase_donasi_disalurkan,
           IFNULL(FORMAT(SUM(IF(d.bayar = 1,d.jumlah_donasi,0)),0,'id_ID'),0) total_donasi,
-          bil.id_bantuan, bil.nama_bantuan, bil.id_sektor, 
+          bil.tag, bil.id_bantuan, bil.nama_bantuan, bil.id_sektor, 
           IF(bil.tanggal_akhir IS NULL, 'Unlimited', CASE WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) < 0 THEN 'Sudah lewat' WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) = 0 THEN 'Terakhir hari ini' ELSE CONCAT(TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))),' hari') END ) sisa_waktu,
           IF(k.warna IS NULL, '#727272', k.warna) warna,
           IF(pmh.nama IS NULL, '/assets/images/brand/pojok-berbagi-transparent.png', gp.path_gambar) path_gambar_pengaju,
