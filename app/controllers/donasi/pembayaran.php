@@ -181,55 +181,68 @@ class PembayaranController extends Controller {
             Redirect::to('home');
         }
 
-        // $secret_key = "JDJ5JDEzJHdvT1NmbE9kbW5LRGNCM1V0RVhMZy5JUFlRQmhIZFp3RnRLR05KMXo1dUwuOWsva3hQQVN5";
+        // if ($jenis_payment != 'tb' && $jenis_payment != 'gi' && $jenis_payment != 'tn') {
+        //     $secret_key = FLIP_API_KEY;
 
-        // $encoded_auth = base64_encode($secret_key.":");
+        //     $encoded_auth = base64_encode($secret_key.":");
 
-        // $ch = curl_init();
-        // curl_setopt($ch, CURLOPT_HTTPHEADER, ["Authorization: Basic ".$encoded_auth]);
+        //     $ch = curl_init();
+        //     curl_setopt($ch, CURLOPT_HTTPHEADER, ["Authorization: Basic ".$encoded_auth]);
 
-        // curl_setopt($ch, CURLOPT_URL, "https://bigflip.id/big_sandbox_api/v2/pwf/bill");
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        // curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        //     curl_setopt($ch, CURLOPT_URL, "https://bigflip.id/big_sandbox_api/v2/pwf/bill");
+        //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        //     curl_setopt($ch, CURLOPT_HEADER, FALSE);
 
-        // curl_setopt($ch, CURLOPT_POST, TRUE);
+        //     curl_setopt($ch, CURLOPT_POST, TRUE);
 
-        // $hash_transaksi = $data_bantuan->tag . '/' . Hash::unique();
+        //     $hash_transaksi = $data_bantuan->tag . '/' . Hash::unique();
 
-        // $payloads = [
-        //     "title" => "Donasi ". $data_bantuan->nama,
-        //     "amount" => $dataDonasi['jumlah_donasi'],
-        //     "type" => "SINGLE",
-        //     "expired_date" => date('Y-m-d H:i', strtotime('+ 1 day')),
-        //     "redirect_url" => "https://pojokberbagi.id/donasi/pembayaran/transaksi/" . $hash_transaksi,
-        //     "is_address_required" => 1,
-        //     "is_phone_number_required" => 0,
-        //     "step" => 2,
-        //     "sender_name" => Input::get('nama'),
-        //     "sender_email" => strtolower(trim(Input::get('email'))),
-        //     "sender_address" => Config::getHTTPHost()
-        //     // Ini untuk Step 3 namun Step 3 hanya bisa untuk VA dan QRIS
-        //     // "sender_bank" => $dataCP->brand,
-        //     // "sender_bank_type" => Utility::flipSenderBankType($jenis_payment)
-        // ];
+        //     $payloads = [
+        //         "title" => "Donasi ". $data_bantuan->nama,
+        //         "amount" => $dataDonasi['jumlah_donasi'],
+        //         "type" => "SINGLE",
+        //         "expired_date" => date('Y-m-d H:i', strtotime('+ 1 day')),
+        //         "redirect_url" => "https://pojokberbagi.id/donasi/pembayaran/transaksi/" . $hash_transaksi,
+        //         "is_address_required" => 1,
+        //         "is_phone_number_required" => 0,
+        //         "step" => 3,
+        //         "sender_name" => Input::get('nama'),
+        //         "sender_email" => strtolower(trim(Input::get('email'))),
+        //         "sender_address" => Config::getHTTPHost(),
+        //         // Ini untuk Step 3 namun Step 3 hanya bisa untuk VA dan QRIS
+        //         "sender_bank" => $dataCP->brand,
+        //         "sender_bank_type" => Utility::flipSenderBankType($jenis_payment)
+        //     ];
 
-        // curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payloads));
+        //     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payloads));
 
-        // curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        //     "Authorization: Basic ".$encoded_auth,
-        //     "Content-Type: application/x-www-form-urlencoded"
-        // ));
+        //     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        //         "Authorization: Basic ".$encoded_auth,
+        //         "Content-Type: application/x-www-form-urlencoded"
+        //     ));
 
-        // curl_setopt($ch, CURLOPT_USERPWD, $secret_key.":");
+        //     curl_setopt($ch, CURLOPT_USERPWD, $secret_key.":");
 
-        // $response = curl_exec($ch);
-        // curl_close($ch);
+        //     $response = curl_exec($ch);
+        //     curl_close($ch);
 
-        // $dataResponse = json_decode($response);
+        //     $dataResponse = json_decode($response);
 
-        // $dataDonasi['external_id'] = $dataResponse->link_id;
-        // $dataDonasi['url'] = $dataResponse->link_url;
-        // $dataDonasi['kode_pembayaran'] = $hash_transaksi;
+        //     if ($dataResponse->code == 'VALIDATION_ERROR') {
+        //         Session::flash('notifikasi', array(
+        //             'pesan' => "Flip Accept Payment [STEP 3] ". $dataResponse->errors[0]->message,
+        //             'state' => 'warning'
+        //         ));
+        //         Redirect::to('home');
+        //     }
+
+        //     Debug::pr($dataResponse);
+        //     Debug::prd($dataDonasi);
+
+        //     $dataDonasi['external_id'] = $dataResponse->link_id;
+        //     $dataDonasi['url'] = $dataResponse->link_url;
+        //     $dataDonasi['kode_pembayaran'] = $hash_transaksi;
+        // }
 
         $order = $this->model->create('donasi', $dataDonasi);
         
@@ -251,8 +264,7 @@ class PembayaranController extends Controller {
         Redirect::to('donasi/pembayaran/tagihan/' . $jenis_payment . '/' . $id_order_donasi);
 
         // Redirect to flip payment method
-        // Debug::prd(Redirect::to($dataResponse->link_url));
-        // Redirect::to($dataResponse->link_url);
+        // header('Location: '. $dataResponse->link_url);
     }
 
     public function tagihan($params) {

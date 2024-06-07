@@ -280,7 +280,6 @@ let c_id_bantuan;
 const prIdBantuan = getIdBantuan(window.location.pathname);
 Promise.all([prIdBantuan])
 .then(([data1]) => {
-    console.log(data1);
     c_id_bantuan = data1;
     
     let data = {
@@ -301,7 +300,7 @@ Promise.all([prIdBantuan])
     })
     .then(response => response.json())
     .then(function (response) {
-        console.log(response);
+        // console.log(response);
         document.querySelector('body').setAttribute('data-token', response.token);
         fetchTokenChannel.postMessage({
             token: document.querySelector('body').getAttribute('data-token')

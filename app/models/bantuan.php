@@ -514,7 +514,7 @@ class BantuanModel extends HomeModel {
         IF(p2.nama IS NULL, 'Pojok Berbagi Indonesia', p2.nama) pengaju_bantuan,
         FORMAT(SUM(CASE WHEN d.bayar = 1 THEN d.jumlah_donasi ELSE 0 END),0,'id_ID') total_donasi,
         SUM(CASE WHEN d.bayar = 1 AND apd.id_pelaksanaan IS NOT NULL THEN d.jumlah_donasi ELSE 0 END) donasi_disalurkan,
-        IF(b.tanggal_akhir IS NULL, 'Unlimited', CASE WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(b.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) < 0 THEN 'Sudah lewat' WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(b.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) = 0 THEN 'Terakhir hari ini' ELSE CONCAT(TIMESTAMPDIFF(DAY,NOW(), CONCAT(b.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))),' hari lagi') END ) sisa_waktu,
+        IF(b.tanggal_akhir IS NULL, ' Unlimited', CASE WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(b.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) < 0 THEN 'Sudah lewat' WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(b.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) = 0 THEN 'Terakhir hari ini' ELSE CONCAT(TIMESTAMPDIFF(DAY,NOW(), CONCAT(b.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))),' hari lagi') END ) sisa_waktu,
         IF(b.jumlah_target IS NULL,
         IF(TRUNCATE((SUM(IF(apd.id_pelaksanaan IS NULL, 0, d.jumlah_donasi))/IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)))*100,1) IS NULL, 0, TRUNCATE((SUM(IF(apd.id_pelaksanaan IS NULL, 0, d.jumlah_donasi))/IF(SUM(d.jumlah_donasi) IS NULL, 0, SUM(d.jumlah_donasi)))*100,1))
         , IF(TRUNCATE((SUM(p1.jumlah_pelaksanaan)/b.jumlah_target)*100,1) IS NULL, 0, TRUNCATE((SUM(p1.jumlah_pelaksanaan)/b.jumlah_target)*100,1))) persentase_donasi_dilaksanakan";
@@ -597,7 +597,7 @@ class BantuanModel extends HomeModel {
           ) persentase_donasi_disalurkan,
           IFNULL(FORMAT(SUM(IF(d.bayar = 1,d.jumlah_donasi,0)),0,'id_ID'),0) total_donasi,
           bil.tag, bil.id_bantuan, bil.nama_bantuan, bil.id_sektor, 
-          IF(bil.tanggal_akhir IS NULL, 'Unlimited', CASE WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) < 0 THEN 'Sudah lewat' WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) = 0 THEN 'Terakhir hari ini' ELSE CONCAT(TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))),' hari') END ) sisa_waktu,
+          IF(bil.tanggal_akhir IS NULL, ' Unlimited', CASE WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) < 0 THEN 'Sudah lewat' WHEN TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))) = 0 THEN 'Terakhir hari ini' ELSE CONCAT(TIMESTAMPDIFF(DAY,NOW(), CONCAT(bil.tanggal_akhir,DATE_FORMAT(NOW(),' %H:%i:%s'))),' hari') END ) sisa_waktu,
           IF(k.warna IS NULL, '#727272', k.warna) warna,
           IF(pmh.nama IS NULL, '/assets/images/brand/pojok-berbagi-transparent.png', gp.path_gambar) path_gambar_pengaju,
           IF(pmh.nama IS NULL, 'Pojok Berbagi Indonesia', pmh.nama) pengaju_bantuan,

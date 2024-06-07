@@ -475,13 +475,14 @@ CREATE TABLE penyelenggara_jasa_pembayaran (
 )ENGINE=INNODB;
 
 INSERT INTO penyelenggara_jasa_pembayaran(nama, kode, brand) VALUES
-('PT Bank Rakyat Indonesia (Persero), Tbk', '002'),
-('PT Bank Jabar Dan Banten', '110'),
-('PT Bank Syariah Indonesia', '451'),
-('PT Espay Debit Indonesia Koe', 'DAN'),
-('PT Dompet Anak Bangsa', 'GOP'),
-('PT Bank Mandiri (Persero), Tbk','008'),
-('PT AirPay International Indonesia','SOP');
+('PT Bank Rakyat Indonesia (Persero), Tbk', '002', 'bri'),
+('PT Bank Jabar Dan Banten', '110', 'bjb'),
+('PT Bank Syariah Indonesia', '451', 'bsi'),
+('PT Espay Debit Indonesia Koe', 'DAN', 'dana'),
+('PT Dompet Anak Bangsa', 'GOP', 'gopay'),
+('PT Bank Mandiri (Persero), Tbk','008', 'mandiri'),
+('PT AirPay International Indonesia','SOP', 'shopeepay_app'),
+('PT Fliptech Lentera Inspirasi Pertiwi', 'LIP', 'flip');
 -- ('PT OVO', 'OVO');
 
 CREATE TABLE channel_account (
@@ -490,7 +491,7 @@ CREATE TABLE channel_account (
     saldo BIGINT UNSIGNED NOT NULL DEFAULT 0,
     nomor VARCHAR(30) NOT NULL,
     atas_nama VARCHAR(30) NOT NULL,
-    jenis ENUM('RB','EW','KT') NOT NULL,
+    jenis ENUM('RB','EW','KT','PG') NOT NULL,
     block ENUM('0','1') NOT NULL DEFAULT '0',
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -508,7 +509,8 @@ INSERT INTO channel_account(nama, nomor, atas_nama, jenis) VALUES
 ('GoPay', '081213331113', 'Pojok Berbagi', 'EW'),
 ('Ovo', '081213331113', 'Pojok Berbagi', 'EW'),
 ('Bank Mandiri', '1320080829998', 'POJOK BERBAGI INDONESIA', 'RB'),
-('ShopeePay','081213331113','Pojok Berbagi','EW');
+('ShopeePay','081213331113','Pojok Berbagi','EW'),
+('Flip','pojokflip','PojokBerbagiID','PG');
 
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE kode = '002') WHERE nama LIKE '%BRI%';
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE kode = '110') WHERE nama LIKE '%BJB%';
@@ -518,6 +520,7 @@ UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pemba
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE nama = 'OVO') WHERE nama LIKE '%OVO%';
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE kode = '008') WHERE nama LIKE '%Mandiri%';
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE nama = 'PT AirPay International Indonesia') WHERE nama LIKE '%ShopeePay%';
+UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE nama = 'PT Fliptech Lentera Inspirasi Pertiwi') WHERE nama LIKE '%Flip%';
 
 CREATE TABLE channel_payment (
     id_cp TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -547,7 +550,13 @@ INSERT INTO channel_payment(nama, kode, nomor, jenis, atas_nama, id_gambar) VALU
 ('Dana','DAN','081213331113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'dana')),
 ('Bank BRI','002','ID1022148253464','QR','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'qris')),
 ('Bank Mandiri','008','1320080829998','TB','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%mandiri%" AND label = 'partner')),
-('ShopeePay','SOP','081213331113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'shopeepay'));
+('ShopeePay','SOP','081213331113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'shopeepay')),
+('Bank BRI','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bri%" AND label = 'partner')),
+('Bank BNI','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bni%" AND label = 'partner')),
+('Bank BCA','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bca%" AND label = 'partner')),
+('Bank Mandiri','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%mandiri%" AND label = 'partner')),
+('Bank BSI','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bsi%" AND label = 'partner')),
+('Bank CIMB','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%cimb%" AND label = 'partner'));
 
 UPDATE channel_payment cp, channel_account ca LEFT JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp) SET cp.id_ca = ca.id_ca WHERE cp.nama LIKE CONCAT('%',ca.nama,'%');
 

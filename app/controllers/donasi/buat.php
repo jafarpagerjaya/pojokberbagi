@@ -55,8 +55,9 @@ class BuatController extends Controller {
                 'src' => '/assets/route/default/core/js/bootstrap.min.js'
             ),
             array(
-                'src' => 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',
-                'source' => 'trushworty'
+                'src' => '/vendors/crypto-js/js/crypto-js.js'
+                // 'src' => 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',
+                // 'source' => 'trushworty'
             ),
             array(
                 'src' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
@@ -140,7 +141,7 @@ class BuatController extends Controller {
         $this->data[Config::get('session/token_name')] = Token::generate();
 
         // Masih dibatasi TB dulu
-        $dataCP = $this->_home->query("SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar FROM channel_payment cp LEFT JOIN gambar USING(id_gambar) WHERE jenis = 'TB'", array());
+        $dataCP = $this->_home->query("SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar FROM channel_payment cp LEFT JOIN gambar USING(id_gambar) WHERE jenis NOT IN ('TB','TN','GI')", array());
         $this->data['metode_pembayaran'] = $this->_home->getResults();
     }
 

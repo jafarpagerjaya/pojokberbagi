@@ -100,6 +100,11 @@ nominalDonasi.addEventListener('keydown', function (e) {
             return false;
         }
     }
+
+    if (price_to_number(this.value) >= maxDonasi) {
+        e.preventDefault();
+        return false;
+    }
 });
 
 nominalDonasi.addEventListener('keypress', preventNonNumbersInInput);
@@ -125,6 +130,11 @@ nominalDonasi.addEventListener('keyup', function (e) {
         }
     } else {
         document.querySelector('#'+selectedRadio.name).checked = true;
+    }
+
+    if (price_to_number(this.value) >= maxDonasi && e.key >= 0) {
+        this.value = formatTSparator(maxDonasi, 'Rp. ');
+        return false;
     }
 
     if (e.code.match('Digit')) {
@@ -188,13 +198,19 @@ nominalDonasi.addEventListener('click', function(e) {
     }
 });
 
-let min = 10000;
+let min = 10000,
+    max = 10000000;
 
-if (nominalDonasi.getAttribute('min').length) {
+if (nominalDonasi.getAttribute('min') != null) {
     min = nominalDonasi.getAttribute('min');
 }
 
-const minDonasi = min;
+if (nominalDonasi.getAttribute('max') != null) {
+    max = nominalDonasi.getAttribute('max');
+}
+
+const minDonasi = min,
+      maxDonasi = max;
 
 nominalDonasi.addEventListener('change', function (e) {
     if (this.value.length < 1) {
@@ -203,6 +219,8 @@ nominalDonasi.addEventListener('change', function (e) {
 
     if (price_to_number(this.value) < minDonasi) {
         this.value = minDonasi;
+    } else if (price_to_number(this.value) > maxDonasi) {
+        this.value = maxDonasi;
     } else {
         this.value = price_to_number(this.value);
     }
