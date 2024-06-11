@@ -56,6 +56,10 @@ class Fetch {
         return $this->_decoded;
     }
 
+    public function addResults($array) {
+        $this->_result = array_merge($this->_result, $array);
+    }
+
     public function result() {
         $this->_result[Config::get('session/token_name')] = Token::generate();
         $toast = array(

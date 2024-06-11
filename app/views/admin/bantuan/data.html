@@ -87,6 +87,7 @@
                                         </div>
                                         <div class="small text-muted font-weight-bold">
                                             <?= Utility::keteranganJenisChannelPayment($donasiBantuan->jenis); ?>
+                                            <?= (!is_null($donasiBantuan->flip) ? '<span class="badge badge-warning">'. $donasiBantuan->flip .'</span>':''); ?>
                                         </div>
                                     </div>
                                     <div class="avatar rounded ml-3 bg-transparent border"
@@ -251,6 +252,22 @@
                                 </div>
                                 <div class="col-3">
                                     <img src="<?= $this->data['saldo_bantuan']->path_gambar_tunai; ?>" alt="TUNAI CR"
+                                        class="img-fluid saldo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="bg-white rounded p-3">
+                            <div class="row justify-content-between align-items-center">
+                                <div class="col-auto">
+                                    <b>Saldo</b>
+                                    <span class="text-muted">
+                                        <?= Output::tSparator($this->data['saldo_bantuan']->saldo_flip); ?>
+                                    </span>
+                                </div>
+                                <div class="col-3">
+                                    <img src="<?= $this->data['saldo_bantuan']->path_gambar_flip; ?>" alt="Flip"
                                         class="img-fluid saldo">
                                 </div>
                             </div>

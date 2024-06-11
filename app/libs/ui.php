@@ -896,7 +896,7 @@ class Ui {
                                             <tr>
                                                 <td>
                                                     <p style="margin-bottom: 0px;">NOMOR DONASI</p>
-                                                    <strong>NDPBI-'. strip_tags((string) $data["id_donasi"]) .'</strong>
+                                                    <strong>'. (isset($data["id_donasi"]) ? 'NDPBI-'. strip_tags((string) $data["id_donasi"]) : 'ID TRANSAKSI #' . strip_tags((string) $data["id"])) .'</strong>
                                                 </td>
                                                 <td id="transfer">
                                                     <p style="margin-bottom: 0px;">Transfer</p>

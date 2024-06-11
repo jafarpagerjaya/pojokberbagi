@@ -227,8 +227,132 @@ nominalDonasi.addEventListener('change', function (e) {
     this.value = formatTSparator(this.value, 'Rp. ');
 });
 
-$('.selectpicker').select2({
-    placeholder: "Pilih Metode Pembayaran"
+function formatChannelPayment(cp) {
+    if (cp.loading) {
+        return cp.text;
+    }
+    let $cp;
+    if (cp.path_gambar == null || cp.path_gambar == undefined) {
+        $cp = '<div class="font-weight-bolder">'+ cp.text +'</div>'
+    } else {
+        $cp = '<div class="row w-100 m-0 align-items-center"><div class="col p-0"><span class="fw-bold">' + cp.text + '</span></div><div class="col-auto p-0 d-flex align-items-center"><img src="'+ cp.path_gambar +'" alt="'+ cp.text +'" class="img-fluid"></div></div>'
+    }
+    return $cp;
+};
+
+function formatSelectedChannelPayment(cp) {
+    if (cp.loading) {
+        return cp.text;
+    }
+
+    let $cp;
+    if (cp.path_gambar == null || cp.path_gambar == undefined) {
+        $cp = '<div class="font-weight-bolder">'+ cp.text +'</div>'
+    } else {
+        $cp = '<div class="row w-100 m-0 align-items-center"><div class="col p-0"><span class="fw-bold">' + cp.text + '</span><span class="badge bg-secondary ms-2 fw-light">'+ cp.jenis +'</span></div><div class="col-auto p-0 d-flex align-items-center"><img src="'+ cp.path_gambar +'" alt="'+ cp.text +'" class="img-fluid"></div></div>'
+    }
+    return $cp;
+};
+
+function selectOtionGroupLabel(array) {
+    return Object.values(array.reduce((accu, { id_cp: id, jenis: text, nama, path_gambar }) => {
+        (accu[text] ??= { text: keteranganJenisChannelPayment(text), children: [] }).children.push({ id, text: nama, path_gambar, jenis: keteranganJenisChannelPayment(text) });
+        return accu;
+    }, {}));
+}
+
+// Select2 for Channel Payment
+function modelMatcher(params, data) {
+    data.parentText = data.parentText || "";
+
+    // Always return the object if there is nothing to compare
+    if ($.trim(params.term) === '') {
+        return data;
+    }
+
+    // Do a recursive check for options with children
+    if (data.children && data.children.length > 0) {
+        // Clone the data object if there are children
+        // This is required as we modify the object to remove any non-matches
+        var match = $.extend(true, {}, data);
+
+        // Check each child of the option
+        for (var c = data.children.length - 1; c >= 0; c--) {
+            var child = data.children[c];
+            child.parentText += data.parentText + " " + data.text;
+
+            var matches = modelMatcher(params, child);
+
+            // If there wasn't a match, remove the object in the array
+            if (matches == null) {
+                match.children.splice(c, 1);
+            }
+        }
+
+        // If any children matched, return the new object
+        if (match.children.length > 0) {
+            return match;
+        }
+
+        // If there were no matching children, check just the plain object
+        return modelMatcher(params, match);
+    }
+
+    // If the typed-in term matches the text of this term, or the text from any
+    // parent term, then it's a match.
+    var original = (data.parentText + ' ' + data.text).toUpperCase();
+    var term = params.term.toUpperCase();
+
+    // Check if the text contains the term
+    if (original.indexOf(term) > -1) {
+        return data;
+    }
+
+    // If it doesn't contain the term, don't return anything
+    return null;
+}
+
+fetch('/donasi/buat/get/channel-payment', {
+    method: "POST",
+    cache: "no-cache",
+    mode: "same-origin",
+    credentials: "same-origin",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    referrer: "no-referrer",
+    body:JSON.stringify({'token': document.querySelector('[name="token"]').value})
+})
+.then(response => response.json())
+.then(function(result) {
+    document.querySelector('[name="token"]').value = result.token;
+    fetchTokenChannel.postMessage({
+        token: result.token
+    });
+
+    if (result.error == false) {
+        // Success
+        let data = result.feedback.data;
+        console.log(selectOtionGroupLabel(data));
+        if (data.length > 0) {
+            $('.selectpicker').select2({
+                placeholder: "Pilih Metode Pembayaran",
+                escapeMarkup: function (markup) { return markup; },
+                data: selectOtionGroupLabel(data),
+                templateResult: formatChannelPayment,
+                templateSelection: formatSelectedChannelPayment,
+                matcher: modelMatcher,
+                language: {
+                    inputTooShort: function () { return 'Ketikan minimal 1 huruf'; }, noResults: function () { return "Data yang dicari tidak ditemukan"; }, searching: function () { return "Sedang melakukan pencarian..."; }, loadingMore: function () { return "Menampilkan data yang lainnya"; }, maximumSelected: function (e) { return 'Maksimum petugas pencairan terpilih adalah ' + e.maximum + ' orang'; },
+                }
+            });
+        }
+    } else {
+        // Failed
+        console.log('there is some error in server side');
+        createNewToast(document.querySelector('[aria-live="polite"]'), result.toast.id, result.toast.data_toast, result.toast);
+        $('#'+ result.toast.id +'.toast[data-toast="'+ result.toast.data_toast +'"]').toast('show');
+    }
 });
 
 let fields = {},

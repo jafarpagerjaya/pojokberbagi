@@ -27,7 +27,8 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
                 $(this).closest('.box').prepend('<div class="px-2 mb-3 d-flex justify-content-center align-items-center gap-3"><span class="font-weight-bolder text-muted">' + $(this).datepicker('getFormattedDate') + '</span><a href="#" class="font-weight-bolder text-orange small" id="ganti-tanggal">Ganti Tanggal</a></div>');
             }
 
-            $('#'+ toastLocal.id +'.toast[data-toast="'+ toastLocal.data_toast +'"]').toast('hide');
+            // Lupa lagi ini buat apa dan ambil data dari mana
+            // $('#'+ toastLocal.id +'.toast[data-toast="'+ toastLocal.data_toast +'"]').toast('hide');
 
             $(this).closest('.box').find('#date-type-text').text('Waktu');
             $(this).closest('.box').find('.timepicker').show();
@@ -137,6 +138,8 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
             }
         }
 
+        console.log(result.feedback.data);
+
         modal.find('img#donatur-avatar').attr('src', result.feedback.data.path_gambar_avatar);
         modal.find('img#donatur-avatar').attr('alt', result.feedback.data.nama_avatar);
         modal.find('#donatur-name').text(result.feedback.data.nama_donatur);
@@ -147,6 +150,11 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
         modal.find('img#donasi-cp').attr('src', result.feedback.data.path_gambar_cp);
         modal.find('img#donasi-cp').attr('alt', result.feedback.data.nama_cp);
         modal.find('span.create-at').text(dateToID(result.feedback.data.create_at));
+        
+        if (result.feedback.data.pay_gate != null) {
+            console.log(modal.find('#jenis-cp-verivication'));
+            modal.find('#jenis-cp-verivication').append('<span class="badge badge-warning px-2 py-1 pay_gate">'+ result.feedback.data.pay_gate +'</span>');
+        }
 
         if (result.feedback.data.doa != null) {
             if (modal.find('#pesan-doa-is-null').length) {
@@ -208,6 +216,10 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
 }).on('hidden.bs.modal', function() {
     if ($(this).find('#pesan-doa').length) {
         modal.find('#pesan-doa .box>.px-2>p').text('');
+    }
+
+    if (modal.find('#jenis-cp-verivication .pay_gate') != null) {
+        modal.find('#jenis-cp-verivication .pay_gate').remove();
     }
 });
 

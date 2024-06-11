@@ -1,3 +1,8 @@
+#cp-list .card img {
+    max-width: 50px;
+    margin-right: 0px;
+}
+
 #cp-list .card img[alt="bank-bjb"],
 #cp-list .card img[alt="bank-bsi"],
 #cp-list .card img[alt="bank-bri"],
@@ -5,9 +10,18 @@
 #cp-list .card img[alt="BJB"],
 #cp-list .card img[alt="BSI"],
 #cp-list .card img[alt="BRI"],
-#cp-list .card img[alt="Mandiri"],
 #cp-list .card img[alt="Gopay"] {
     margin-top: -0.5rem;
+}
+
+#cp-list .card img[src*="bsi"] {
+    margin-right: -.4em;
+}
+
+#cp-list .card img[alt="Mandiri"] {
+    position: absolute;
+    top: -1.1em;
+    right: 1em;
 }
 
 #cp-list .card img[alt="Dana"] {
@@ -15,12 +29,25 @@
 }
 
 #cp-list .card img[alt="ShopeePay"] {
-    margin-top: -0.3rem;
-    margin-right: -.8em;
+    max-width: 60px;
+    position: absolute;
+    top: -1.05em;
+    right: 0px;
+}
+
+#cp-list .card img[src*="bjb"] {
+    margin-right: -.15em;
+}
+
+#cp-list .card img[alt="Flip"] {
+    position: absolute;
+    top: -1.25em;
+    right: .75em;
+    width: 40px;
 }
 
 #cp-list .card .col-3 {
-    max-height: 25px;
+    /* max-height: 25px; */
 }
 
 .card table .media img[alt="bank-bjb"],

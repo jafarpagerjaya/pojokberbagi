@@ -18,8 +18,18 @@ span.selection {
     border: 1px solid #86b7fe !important;
 }
 
+.select2-dropdown,
 .select2-container--default .select2-selection--single[aria-expanded="true"] {
     border-color: #86b7fe !important;
+}
+
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #86b7fe;
+    transition-duration: 0s !important;
+}
+
+.select2-container--default span {
+    transition-duration: 0s !important;
 }
 
 .select2-container--default .select2-results__option--selected {
@@ -31,7 +41,12 @@ span.selection {
     padding-top: 1.625rem;
     padding-bottom: 0.125rem;
     padding-left: 0.75rem !important;
-    padding-right: 1rem;
+    padding-right: .75rem !important;
+}
+
+.select2-selection__rendered span.badge {
+    position: absolute;
+    bottom: 1.15em;
 }
 
 .select2-dropdown.select2-dropdown--below {
@@ -56,9 +71,88 @@ span.selection {
     border-top: 1px dashed #86b7fe;
 }
 
-.select2-results__options>li:last-child {
+/* .select2-results__options[role="group"]>li:last-child {
     border-bottom-left-radius: 0.25rem;
     border-bottom-right-radius: 0.25rem;
+} */
+
+.select2-results__option[role="group"] ul>li {
+    max-height: 47px;
+    min-height: 47px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.select2-selection img,
+.select2-results__option li img {
+    max-width: 40px;
+}
+
+.select2-selection img[src*="linkaja"],
+.select2-selection img[src*="doku"] {
+    max-width: 25px;
+}
+
+.select2-results__option li img[src*="linkaja"],
+.select2-results__option li img[src*="doku"] {
+    max-width: 35px;
+}
+
+.select2-results__options li img[src*="bsi"] {
+    margin-right: -.25em;
+}
+
+.select2-selection img[src*="danamon"],
+.select2-selection img[src*="cimb"],
+.select2-results__options li img[src*="danamon"],
+.select2-results__options li img[src*="cimb"] {
+    max-width: 60px;
+}
+
+.select2-selection img[src*="bjb"],
+.select2-selection img[src*="bsi"],
+.select2-selection img[src*="bri"],
+.select2-results__options li img[src*="bjb"],
+.select2-results__options li img[src*="bsi"],
+.select2-results__options li img[src*="bri"] {
+    margin-top: -.33rem;
+}
+
+.select2-results__options li img[src*="shopeepay"] {
+    max-width: 50px;
+    margin-right: -.75em;
+}
+
+.select2-selection img[src*="mandiri"],
+.select2-selection img[src*="dana"],
+.select2-selection img[src*="gopay"],
+.select2-selection img[src*="permata"],
+.select2-selection img[src*="qris"],
+.select2-results__options li img[src*="qris"],
+.select2-results__options li img[src*="dana"],
+.select2-results__options li img[src*="gopay"],
+.select2-results__options li img[src*="mandiri"] {
+    margin-top: -.15em;
+}
+
+.select2-selection img[src*="mandiri"],
+.select2-selection img[src*="dana"],
+.select2-selection img[src*="gopay"],
+.select2-selection img[src*="permata"],
+.select2-results__options li img[src*="dana"],
+.select2-results__options li img[src*="gopay"],
+.select2-results__options li img[src*="mandiri"],
+.select2-results__options li img[src*="permata"] {
+    max-width: 45px;
+}
+
+.select2-results__options::-webkit-scrollbar-track {
+    background-color: #86b7fe !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    right: .5em;
 }
 
 #charLeft {

@@ -151,8 +151,8 @@ class DonasiModel extends HomeModel {
     }
 
     public function getDataTagihanDonasiDonatur($id_donasi) {
-        $fields = "dt.nama nama_donatur, dt.email, (CASE WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin IS NULL) THEN '/assets/images/default.png' WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin = 'P') THEN '/assets/images/female-avatar.jpg' WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin = 'L') THEN '/assets/images/male-avatar.jpg' ELSE gad.path_gambar END) path_gambar_akun, (CASE WHEN (gad.nama IS NULL AND dt.jenis_kelamin IS NULL) THEN 'default' WHEN (gad.nama IS NULL AND dt.jenis_kelamin = 'P') THEN 'female-avatar' WHEN (gad.nama IS NULL AND dt.jenis_kelamin = 'L') THEN 'male-avatar' ELSE gad.nama END) nama_path_gambar_akun, b.nama nama_bantuan, FORMAT(dn.jumlah_donasi,0,'id_ID') jumlah_donasi, dn.doa, dn.create_at, cp.jenis, gcp.path_gambar path_gambar_cp, gcp.nama nama_path_gambar_cp";
-        $tables = "donasi dn JOIN donatur dt USING(id_donatur) LEFT JOIN akun a USING(id_akun) LEFT JOIN gambar gad ON(a.id_gambar = gad.id_gambar) JOIN bantuan b USING(id_bantuan) JOIN channel_payment cp USING(id_cp) LEFT JOIN gambar gcp ON(cp.id_gambar = gcp.id_gambar)";
+        $fields = "IF(ca.jenis = 'PG', ca.nama, NULL) pay_gate, dt.nama nama_donatur, dt.email, (CASE WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin IS NULL) THEN '/assets/images/default.png' WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin = 'P') THEN '/assets/images/female-avatar.jpg' WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin = 'L') THEN '/assets/images/male-avatar.jpg' ELSE gad.path_gambar END) path_gambar_akun, (CASE WHEN (gad.nama IS NULL AND dt.jenis_kelamin IS NULL) THEN 'default' WHEN (gad.nama IS NULL AND dt.jenis_kelamin = 'P') THEN 'female-avatar' WHEN (gad.nama IS NULL AND dt.jenis_kelamin = 'L') THEN 'male-avatar' ELSE gad.nama END) nama_path_gambar_akun, b.nama nama_bantuan, FORMAT(dn.jumlah_donasi,0,'id_ID') jumlah_donasi, dn.doa, dn.create_at, cp.jenis, gcp.path_gambar path_gambar_cp, gcp.nama nama_path_gambar_cp";
+        $tables = "donasi dn JOIN donatur dt USING(id_donatur) LEFT JOIN akun a USING(id_akun) LEFT JOIN gambar gad ON(a.id_gambar = gad.id_gambar) JOIN bantuan b USING(id_bantuan) JOIN channel_payment cp USING(id_cp) LEFT JOIN gambar gcp ON(cp.id_gambar = gcp.id_gambar) LEFT JOIN channel_account ca USING(id_ca)";
 
         $this->db->get($fields, $tables, array('dn.id_donasi', '=', $id_donasi));
         
@@ -204,14 +204,16 @@ class DonasiModel extends HomeModel {
         SUM(IF(LOWER(cp.nama) LIKE '%gopay%', d.jumlah_donasi, 0)) saldo_gopay,
         SUM(IF(LOWER(cp.nama) LIKE '%dana%', d.jumlah_donasi, 0)) saldo_dana,
         SUM(IF(LOWER(cp.nama) LIKE '%shopeepay%', d.jumlah_donasi, 0)) saldo_shopeepay,
-        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bjb' AND cptb.jenis = 'TB') nomor_bjb,
-        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bsi' AND cptb.jenis = 'TB') nomor_bsi,
-        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bri' AND cptb.jenis = 'TB') nomor_bri,
-        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank mandiri' AND cptb.jenis = 'TB') nomor_mandiri,
-        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'cr kantor pusat' AND cptb.jenis = 'TN') nomor_tunai,
-        (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'gopay' AND cpew.jenis = 'EW') nomor_gopay,
-        (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'dana' AND cpew.jenis = 'EW') nomor_dana,
-        (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'shopeepay' AND cpew.jenis = 'EW') nomor_shopeepay
+        SUM(IF(LOWER(cp.kode) LIKE '%LIP%', d.jumlah_donasi, 0)) saldo_flip,
+        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bjb' AND cptb.jenis = 'TB' AND cptb.kode != 'LIP') nomor_bjb,
+        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bsi' AND cptb.jenis = 'TB' AND cptb.kode != 'LIP') nomor_bsi,
+        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank bri' AND cptb.jenis = 'TB' AND cptb.kode != 'LIP') nomor_bri,
+        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'bank mandiri' AND cptb.jenis = 'TB' AND cptb.kode != 'LIP') nomor_mandiri,
+        (SELECT cptb.nomor FROM channel_payment cptb WHERE LOWER(cptb.nama) = 'cr kantor pusat' AND cptb.jenis = 'TN' AND cptb.kode != 'LIP') nomor_tunai,
+        (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'gopay' AND cpew.jenis = 'EW' AND cpew.kode != 'LIP') nomor_gopay,
+        (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'dana' AND cpew.jenis = 'EW' AND cpew.kode != 'LIP') nomor_dana,
+        (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'shopeepay' AND cpew.jenis = 'EW' AND cpew.kode != 'LIP') nomor_shopeepay,
+        (SELECT DISTINCT(cppg.nomor) FROM channel_payment cppg WHERE LOWER(cppg.kode) = 'LIP') id_flip
         FROM channel_payment cp LEFT JOIN donasi d ON(d.id_cp = cp.id_cp)
         WHERE d.bayar = 1 AND d.id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi)");
         if ($this->db->count()) {
@@ -222,7 +224,7 @@ class DonasiModel extends HomeModel {
     }
 
     public function getListDonasi() {
-        $fields = "b.nama nama_bantuan, k.nama nama_kategori, IFNULL(k.warna,'#727272') warna, s.nama nama_sektor, d.id_donasi, formatTanggalFull(d.create_at) create_donasi_at, d.bayar, formatTanggalFull(d.waktu_bayar) waktu_bayar, FORMAT(d.jumlah_donasi,0,'id_ID') jumlah_donasi, d.id_bantuan, d.id_donatur, cp.jenis jenis_cp, IFNULL(gcp.path_gambar,'/assets/images/brand/favicon-pojok-icon.ico') path_gambar_cp, IFNULL(gcp.nama, CONCAT('Gambar ',cp.nama)) nama_path_gambar_cp";
+        $fields = "b.nama nama_bantuan, k.nama nama_kategori, IFNULL(k.warna,'#727272') warna, s.nama nama_sektor, d.id_donasi, formatTanggalFull(d.create_at) create_donasi_at, d.bayar, formatTanggalFull(d.waktu_bayar) waktu_bayar, FORMAT(d.jumlah_donasi,0,'id_ID') jumlah_donasi, d.id_bantuan, d.id_donatur, IF(cp.kode = 'LIP','flip',NULL) flip, cp.jenis jenis_cp, IFNULL(gcp.path_gambar,'/assets/images/brand/favicon-pojok-icon.ico') path_gambar_cp, IFNULL(gcp.nama, CONCAT('Gambar ',cp.nama)) nama_path_gambar_cp";
         $tables = "bantuan b
         LEFT JOIN sektor s ON(s.id_sektor = b.id_sektor)
         LEFT JOIN kategori k ON (k.id_kategori = b.id_kategori)
@@ -234,7 +236,7 @@ class DonasiModel extends HomeModel {
         $data['data'] = array();
         if ($this->getSearch() != null) {
             // OFSET
-            $search = "CONCAT(IFNULL(b.nama,''), IFNULL(k.nama,''), IFNULL(s.nama,''), IFNULL(formatTanggalFull(d.create_at),''), IFNULL(IF(d.bayar = 1, 'sudah diverivikasi','belum diverivikasi'),''), IFNULL(formatTanggalFull(d.waktu_bayar),''), CAST(IFNULL(FORMAT(d.jumlah_donasi,0,'id_ID'),'') AS CHAR CHARACTER SET UTF8MB4), IFNULL(cp.nama,''), IFNULL(CASE WHEN UPPER(cp.jenis) = 'TB' THEN 'Transfer Bank' WHEN UPPER(cp.jenis) = 'QR' THEN 'Qris' WHEN UPPER(cp.jenis) = 'VA' THEN 'Virtual Account' WHEN UPPER(cp.jenis) = 'GM' THEN 'Gerai Mart' WHEN UPPER(cp.jenis) = 'EW' THEN 'E-Wallet' WHEN UPPER(cp.jenis) = 'GI' THEN 'Giro' WHEN UPPER(cp.jenis) = 'TN' THEN 'Tunai' ELSE '' END,'')) LIKE '%{$this->getSearch()}%'";
+            $search = "CONCAT(IFNULL(b.nama,''), IFNULL(k.nama,''), IFNULL(s.nama,''), IFNULL(formatTanggalFull(d.create_at),''), IFNULL(IF(d.bayar = 1, 'sudah diverivikasi','belum diverivikasi'),''), IFNULL(formatTanggalFull(d.waktu_bayar),''), CAST(IFNULL(FORMAT(d.jumlah_donasi,0,'id_ID'),'') AS CHAR CHARACTER SET UTF8MB4), IFNULL(IF(cp.kode = 'LIP','flip',NULL),''), IFNULL(cp.nama,''), IFNULL(CASE WHEN UPPER(cp.jenis) = 'TB' THEN 'Transfer Bank' WHEN UPPER(cp.jenis) = 'QR' THEN 'Qris' WHEN UPPER(cp.jenis) = 'VA' THEN 'Virtual Account' WHEN UPPER(cp.jenis) = 'GM' THEN 'Gerai Mart' WHEN UPPER(cp.jenis) = 'EW' THEN 'E-Wallet' WHEN UPPER(cp.jenis) = 'GI' THEN 'Giro' WHEN UPPER(cp.jenis) = 'TN' THEN 'Tunai' ELSE '' END,'')) LIKE '%{$this->getSearch()}%'";
             $result = $this->countData($tables, $where, $search);
             $sql = "SELECT {$fields} FROM {$tables} WHERE {$search} ORDER BY d.id_donasi {$this->getDirection()}, {$this->getOrder()} {$this->getDirection()} LIMIT {$this->getHalaman()[0]},{$this->getLimit()}";
             $params = array();
@@ -261,7 +263,7 @@ class DonasiModel extends HomeModel {
     }
 
     public function getLastDonasi($limit) {
-        $this->db->query("SELECT FORMAT(d.jumlah_donasi,0,'id_ID') jumlah_donasi, formatTanggal(d.waktu_bayar) waktu_bayar, b.nama nama_bantuan, b.id_bantuan, cp.jenis jenis_cp, cp.nama nama_cp FROM donasi d JOIN bantuan b USING(id_bantuan) LEFT JOIN channel_payment cp USING(id_cp) WHERE d.bayar = 1 ORDER BY d.waktu_bayar DESC LIMIT {$limit}");
+        $this->db->query("SELECT FORMAT(d.jumlah_donasi,0,'id_ID') jumlah_donasi, formatTanggal(d.waktu_bayar) waktu_bayar, b.nama nama_bantuan, b.id_bantuan, ca.jenis, IF(ca.jenis = 'PG', ca.nama, NULL) pay_gate, cp.jenis jenis_cp, cp.nama nama_cp FROM donasi d JOIN bantuan b USING(id_bantuan) LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN channel_account ca USING(id_ca) WHERE d.bayar = 1 ORDER BY d.waktu_bayar DESC LIMIT {$limit}");
         if ($this->db->count()) {
             $this->data = $this->db->results();
             return $this->data;

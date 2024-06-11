@@ -4535,7 +4535,7 @@ class FetchController extends Controller {
     // Daftar Channel Payment
     private function channelPaymentRead($params = array()) {
         $this->model('Donasi');
-        $cp = $this->model->query("SELECT cp.id_cp, cp.nama, cp.jenis, g.path_gambar FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
+        $cp = $this->model->query("SELECT cp.id_cp, cp.nama, cp.jenis, g.path_gambar FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar) WHERE cp.kode != 'LIP'");
         if (!$cp) {
             $this->_result['feedback'] = array(
                 'message' => 'There is something wrong on the server side'

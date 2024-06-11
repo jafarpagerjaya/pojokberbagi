@@ -379,12 +379,12 @@ class BantuanModel extends HomeModel {
         $sql_index = "SELECT id_donasi FROM donasi WHERE bayar = ? AND id_bantuan = ? ORDER BY waktu_bayar {$this->getDirection()}, id_donasi {$this->getDirection()} LIMIT {$this->getOffset()}, {$this->getLimit()}";
 
         if (isset($this->_search)) {
-            $column_filter = "d.id_donasi, IFNULL(d.id_donatur,''), CAST(FORMAT(d.jumlah_donasi,0,'id_ID') AS CHAR CHARACTER SET UTF8MB4), IFNULL(formatTanggalFull(d.waktu_bayar),''), IFNULL(d2.nama, ''), IFNULL(d2.email, ''), IFNULL(d2.kontak,''), IFNULL(CASE WHEN UPPER(cp.jenis) = 'TB' THEN 'Transfer Bank' WHEN UPPER(cp.jenis) = 'QR' THEN 'Qris' WHEN UPPER(cp.jenis) = 'VA' THEN 'Virtual Account' WHEN UPPER(cp.jenis) = 'GM' THEN 'Gerai Mart' WHEN UPPER(cp.jenis) = 'EW' THEN 'E-Wallet' WHEN UPPER(cp.jenis) = 'GI' THEN 'Giro' WHEN UPPER(cp.jenis) = 'TN' THEN 'Tunai' ELSE '' END,''), IFNULL(gcp.nama,''), IFNULL(cp.nama,'')";
+            $column_filter = "IFNULL(IF(cp.kode = 'LIP','flip',NULL),''), d.id_donasi, IFNULL(d.id_donatur,''), CAST(FORMAT(d.jumlah_donasi,0,'id_ID') AS CHAR CHARACTER SET UTF8MB4), IFNULL(formatTanggalFull(d.waktu_bayar),''), IFNULL(d2.nama, ''), IFNULL(d2.email, ''), IFNULL(d2.kontak,''), IFNULL(CASE WHEN UPPER(cp.jenis) = 'TB' THEN 'Transfer Bank' WHEN UPPER(cp.jenis) = 'QR' THEN 'Qris' WHEN UPPER(cp.jenis) = 'VA' THEN 'Virtual Account' WHEN UPPER(cp.jenis) = 'GM' THEN 'Gerai Mart' WHEN UPPER(cp.jenis) = 'EW' THEN 'E-Wallet' WHEN UPPER(cp.jenis) = 'GI' THEN 'Giro' WHEN UPPER(cp.jenis) = 'TN' THEN 'Tunai' ELSE '' END,''), IFNULL(gcp.nama,''), IFNULL(cp.nama,'')";
             $this->splits = $column_filter;
             $sql_index = "SELECT d.id_donasi FROM donasi d LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN donatur d2 USING(id_donatur) LEFT JOIN gambar gcp ON(gcp.id_gambar = cp.id_gambar) WHERE d.bayar = ? AND d.id_bantuan = ? AND CONCAT({$this->splits}) LIKE '%{$this->_search}%' ORDER BY waktu_bayar {$this->getDirection()} LIMIT {$this->getOffset()}, {$this->getLimit()}";
         }
 
-        $sql = "SELECT d.id_donasi, d.id_donatur, CAST(FORMAT(d.jumlah_donasi, 0, 'id_ID') AS CHAR CHARACTER SET UTF8MB4) jumlah_donasi, IFNULL(ga.path_gambar, '/assets/images/default.png') path_gambar_akun, IFNULL(ga.nama,'default') nama_path_gambar_akun, d2.nama nama_donatur, d2.email, d2.kontak, formatTanggalFull(d.waktu_bayar) waktu_bayar, cp.id_cp, cp.jenis, IFNULL(gcp.path_gambar, '/assets/images/brand/favicon-pojok-icon.ico') path_gambar_cp, IFNULL(gcp.nama, cp.nama) nama_path_gambar_cp
+        $sql = "SELECT IF(cp.kode = 'LIP', 'flip', NULL) flip, d.id_donasi, d.id_donatur, CAST(FORMAT(d.jumlah_donasi, 0, 'id_ID') AS CHAR CHARACTER SET UTF8MB4) jumlah_donasi, IFNULL(ga.path_gambar, '/assets/images/default.png') path_gambar_akun, IFNULL(ga.nama,'default') nama_path_gambar_akun, d2.nama nama_donatur, d2.email, d2.kontak, formatTanggalFull(d.waktu_bayar) waktu_bayar, cp.id_cp, cp.jenis, IFNULL(gcp.path_gambar, '/assets/images/brand/favicon-pojok-icon.ico') path_gambar_cp, IFNULL(gcp.nama, cp.nama) nama_path_gambar_cp
         FROM donasi d JOIN ({$sql_index}) di ON (di.id_donasi = d.id_donasi)
         LEFT JOIN channel_payment cp USING(id_cp)
         LEFT JOIN donatur d2 USING(id_donatur) 
@@ -704,14 +704,16 @@ class BantuanModel extends HomeModel {
         IFNULL(SUM(IF(LOWER(cp.jenis) = 'ew' AND LOWER(cp.nama) LIKE '%gopay%', d.jumlah_donasi, 0)), 0) saldo_gopay,
         IFNULL(SUM(IF(LOWER(cp.jenis) = 'ew' AND LOWER(cp.nama) LIKE '%dana%', d.jumlah_donasi, 0)), 0) saldo_dana,
         IFNULL(SUM(IF(LOWER(cp.jenis) = 'ew' AND LOWER(cp.nama) LIKE '%shopeepay%', d.jumlah_donasi, 0)), 0) saldo_shopeepay,
-        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bjb' AND cptb.jenis = 'TB') path_gambar_bjb,
-        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bsi' AND cptb.jenis = 'TB') path_gambar_bsi,
-        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bri' AND cptb.jenis = 'TB') path_gambar_bri,
-        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank mandiri' AND cptb.jenis = 'TB') path_gambar_mandiri,
+        IFNULL(SUM(IF(LOWER(cp.kode) = 'LIP', d.jumlah_donasi, 0)), 0) saldo_flip,
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bjb' AND cptb.jenis = 'TB' AND cptb.kode != 'LIP') path_gambar_bjb,
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bsi' AND cptb.jenis = 'TB' AND cptb.kode != 'LIP') path_gambar_bsi,
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank bri' AND cptb.jenis = 'TB' AND cptb.kode != 'LIP') path_gambar_bri,
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cptb USING(id_gambar) WHERE LOWER(cptb.nama) = 'bank mandiri' AND cptb.jenis = 'TB' AND cptb.kode != 'LIP') path_gambar_mandiri,
         '/assets/images/brand/pojok-berbagi-transparent.png' path_gambar_tunai,
-        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cpew USING(id_gambar) WHERE LOWER(cpew.nama) = 'gopay' AND cpew.jenis = 'EW') path_gambar_gopay,
-        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cpew USING(id_gambar) WHERE LOWER(cpew.nama) = 'dana' AND cpew.jenis = 'EW') path_gambar_dana,
-        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cpew USING(id_gambar) WHERE LOWER(cpew.nama) = 'shopeepay' AND cpew.jenis = 'EW') path_gambar_shopeepay
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cpew USING(id_gambar) WHERE LOWER(cpew.nama) = 'gopay' AND cpew.jenis = 'EW' AND cpew.kode != 'LIP') path_gambar_gopay,
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cpew USING(id_gambar) WHERE LOWER(cpew.nama) = 'dana' AND cpew.jenis = 'EW' AND cpew.kode != 'LIP') path_gambar_dana,
+        (SELECT g.path_gambar FROM gambar g JOIN channel_payment cpew USING(id_gambar) WHERE LOWER(cpew.nama) = 'shopeepay' AND cpew.jenis = 'EW' AND cpew.kode != 'LIP') path_gambar_shopeepay,
+        '/assets/images/partners/flip.png' path_gambar_flip
         FROM donasi d LEFT JOIN channel_payment cp ON(d.id_cp = cp.id_cp)
         WHERE d.bayar = 1 AND d.id_bantuan = ? AND d.id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi)", array('d.id_bantuan' => Sanitize::escape2($id_bantuan)));
         if (!$this->db->count()) {

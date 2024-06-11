@@ -16,6 +16,9 @@ class BuatController extends Controller {
         );
         $this->script_controller = array(
             array(
+                'src' => '/assets/pojok-berbagi-script.js'
+            ),
+            array(
                 'src' => '/assets/route/donasi/core/js/donasi.js'
             )
         );
@@ -62,6 +65,9 @@ class BuatController extends Controller {
             array(
                 'src' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
                 'source' => 'trushworty'
+            ),
+            array(
+                'src' => '/assets/main/js/token.js'
             ),
             array(
                 'src' => '/assets/route/donasi/pages/js/baru.js'
@@ -141,8 +147,64 @@ class BuatController extends Controller {
         $this->data[Config::get('session/token_name')] = Token::generate();
 
         // Masih dibatasi TB dulu
-        $dataCP = $this->_home->query("SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar FROM channel_payment cp LEFT JOIN gambar USING(id_gambar) WHERE jenis NOT IN ('TB','TN','GI')", array());
-        $this->data['metode_pembayaran'] = $this->_home->getResults();
+        // $dataCP = $this->_home->query("SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar, gambar.nama nama_partner FROM channel_payment cp JOIN channel_account ca USING(id_ca) LEFT JOIN gambar USING(id_gambar) WHERE cp.jenis = 'TB' OR ca.jenis = 'PG'", array());
+        // $this->data['metode_pembayaran'] = $this->_home->getResults();
+    }
+
+    public function get($params) {
+		if (count(is_countable($params) ? $params : []) > 0) {
+			$fetch = new Fetch();
+
+			switch ($params[0]) {
+				case 'channel-payment':
+					// channelPayment Params
+                    $params[0] = 'ChannelPayment';
+				break;
+				
+				default:
+					$this->_result['feedback'] = array(
+						'message' => 'Unrecognize params '. $params[0]
+					);
+					$this->result();
+					return false;
+				break;
+			}
+
+			$decoded = $fetch->getDecoded();
+
+			// prepare method Token name
+			$action = __FUNCTION__ . $params[0];
+			// call method Token
+			$this->$action($decoded, $fetch);
+			
+			return false;
+		} else {
+			Redirect::to('/fallback/fetch');
+		}
+	}
+
+    public function getChannelPayment($decoded, $fetch) {
+        $this->model("Donasi");
+        // Sementara TB dulu 
+        $dataCP = $this->model->query("SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar, gambar.nama nama_partner FROM channel_payment cp JOIN channel_account ca USING(id_ca) LEFT JOIN gambar USING(id_gambar) WHERE cp.jenis = 'TB'", array());
+        // $dataCP = $this->model->query("SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar, gambar.nama nama_partner FROM channel_payment cp JOIN channel_account ca USING(id_ca) LEFT JOIN gambar USING(id_gambar) WHERE cp.jenis = 'TB' OR ca.jenis = 'PG'", array());
+        if (!$dataCP) {
+            $fetch->addResults(array(
+                'feedback' => array(
+                    'massage' => 'Failed to get Channel Payment'
+                )
+            ));
+        } else {
+            $fetch->addResults(array(
+                'error' => false
+            ));
+            $fetch->addResults(array(
+                'feedback' => array(
+                    'data' => $this->model->getResults()
+                )
+            ));
+        }
+        $fetch->result();
     }
 
     public function ajax() {
@@ -152,6 +214,32 @@ class BuatController extends Controller {
         $this->model('Donasi');
         $data = $this->model->getSamaranDonatur($_POST['email']);
         echo $data;
+        return false;
+    }
+
+    public function flip() {
+        $secret_key = FLIP_API_KEY;
+
+        $encoded_auth = base64_encode($secret_key.":");
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, "https://bigflip.id/big_sandbox_api/v2/pwf/109168/payment");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            "Authorization: Basic ".$encoded_auth,
+            "Content-Type: application/x-www-form-urlencoded"
+        ));
+
+        curl_setopt($ch, CURLOPT_USERPWD, $secret_key.":");
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $dataResponse = json_decode($response);
+
+        Debug::prd($dataResponse);
         return false;
     }
 }

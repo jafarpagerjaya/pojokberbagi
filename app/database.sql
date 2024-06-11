@@ -69,7 +69,15 @@ INSERT INTO gambar(nama,path_gambar, label, gembok) VALUES
 ('Qris','/assets/images/partners/qris.png','partner',1),
 ('jafar-signature','/uploads/images/signature/jafar-signature.png','signature','1'),
 ('bank-mandiri','/assets/images/partners/mandiri.png','partner','1'),
-('shopeepay','/assets/images/partners/shopeepay.png','partner','1');
+('shopeepay','/assets/images/partners/shopeepay.png','partner','1'),
+('bank-bca','/assets/images/partners/bca.png','partner','1'),
+('bank-bni','/assets/images/partners/bni.png','partner','1'),
+('bank-cimb','/assets/images/partners/cimb.png','partner','1'),
+('bank-danamon','/assets/images/partners/danamon.png','partner','1'),
+('bank-permata','/assets/images/partners/permata.png','partner','1'),
+('linkaja','/assets/images/partners/linkaja.png','partner','1'),
+('doku','/assets/images/partners/doku.png','partner','1'),
+('ovo','/assets/images/partners/ovo.png','partner','1');
 
 CREATE TABLE pegawai (
     id_pegawai SMALLINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -522,10 +530,34 @@ UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pemba
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE nama = 'PT AirPay International Indonesia') WHERE nama LIKE '%ShopeePay%';
 UPDATE channel_account SET id_pjp = (SELECT id_pjp FROM penyelenggara_jasa_pembayaran WHERE nama = 'PT Fliptech Lentera Inspirasi Pertiwi') WHERE nama LIKE '%Flip%';
 
+CREATE TABLE paygate_brand (
+    kode_paygate_brand VARCHAR(16) NOT NULL PRIMARY KEY,
+    jenis_biaya ENUM('nominal','persentase') NOT NULL,
+    biaya DECIMAL(6,2) UNSIGNED NOT NULL
+)ENGINE=INNODB;
+
+INSERT INTO paygate_brand VALUES
+('bri','nominal',3000),
+('bsm','nominal',3000),
+('bni','nominal',3000),
+('mandiri','nominal',3000),
+('danamon','nominal',3000),
+('permata','nominal',3000),
+('cimb','nominal',3000),
+('bca','nominal',3500),
+('doku','persentase',1),
+('linkaja','persentase',1.5),
+('qris','persentase',0.7),
+('shopeepay_app','persentase',4),
+('ovo','persentase',3.4),
+('gopay','persentase',0.7),
+('dana','persentase',0.7);
+
 CREATE TABLE channel_payment (
     id_cp TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nama VARCHAR(25) NOT NULL,
     kode CHAR(3) DEFAULT NULL,
+    kode_paygate_brand VARCHAR(16) DEFAULT NULL,
     nomor VARCHAR(30) NOT NULL,
     atas_nama VARCHAR(30) NOT NULL,
     jenis ENUM('TB','VA','EW','QR','GM','GI','TN') NOT NULL,
@@ -535,31 +567,51 @@ CREATE TABLE channel_payment (
     id_gambar INT UNSIGNED,
     CONSTRAINT U_NAMA_NOMOR_JENIS_CHANNEL_PAYMENT UNIQUE(nama, nomor, jenis),
     CONSTRAINT F_ID_CA_CHANNEL_PAYMENT_ODR FOREIGN KEY(id_ca) REFERENCES channel_account(id_ca) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT F_ID_GAMBAR_CHANNEL_PAYMENT_ODN FOREIGN KEY(id_gambar) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT F_ID_GAMBAR_CHANNEL_PAYMENT_ODN FOREIGN KEY(id_gambar) REFERENCES gambar(id_gambar) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_KODE_PAYGATE_BRAND_CHANNEL_PAYMENT_ODN FOREIGN KEY(kode_paygate_brand) REFERENCES paygate_brand(kode_paygate_brand) ON DELETE SET NULL ON UPDATE CASCADE
 )ENGINE=INNODB;
 
 -- jenis channel_payment TB = Transfer Bank, VA = Virtual Acount, EW = E-Wallet, QR, Qris, GM = Gerai Mart, GI = GIRO, TN = Tunai
 
-INSERT INTO channel_payment(nama, kode, nomor, jenis, atas_nama, id_gambar) VALUES
-('Bank BJB', '110', '0001000080001', 'TB','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bjb%" AND label = 'partner')),
-('Bank BJB Giro Payment', '110', '0001000080001', 'GI','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bjb%" AND label = 'partner')),
-('Tunai Via CR', '1', '1', 'TN','CR POJOK BERBAGI KANTOR PUSAT', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%tunai%" AND label = 'partner')),
-('Bank BSI','451','7400525255','TB','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bsi%" AND label = 'partner')),
-('Bank BRI','002','107001000272300','TB','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bri%" AND label = 'partner')),
-('GoPay','GOP','081213331113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'gopay')),
-('Dana','DAN','081213331113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'dana')),
-('Bank BRI','002','ID1022148253464','QR','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'qris')),
-('Bank Mandiri','008','1320080829998','TB','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%mandiri%" AND label = 'partner')),
-('ShopeePay','SOP','081213331113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'shopeepay')),
-('Bank BRI','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bri%" AND label = 'partner')),
-('Bank BNI','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bni%" AND label = 'partner')),
-('Bank BCA','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bca%" AND label = 'partner')),
-('Bank Mandiri','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%mandiri%" AND label = 'partner')),
-('Bank BSI','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bsi%" AND label = 'partner')),
-('Bank CIMB','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%cimb%" AND label = 'partner'));
+INSERT INTO channel_payment(kode_paygate_brand, nama, kode, nomor, jenis, atas_nama, id_gambar) VALUES
+(NULL, 'Bank BJB', '110', '0001000080001', 'TB','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bjb%" AND label = 'partner')),
+(NULL, 'Bank BJB Giro Payment', '110', '0001000080001', 'GI','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bjb%" AND label = 'partner')),
+(NULL, 'Tunai Via CR', '1', '1', 'TN','CR POJOK BERBAGI KANTOR PUSAT', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%tunai%" AND label = 'partner')),
+(NULL, 'Bank BSI','451','7400525255','TB','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bsi%" AND label = 'partner')),
+(NULL, 'Bank BRI','002','107001000272300','TB','POJOK BERBAGI INDONESIA', (SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bri%" AND label = 'partner')),
+(NULL, 'GoPay','GOP','081213331113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'gopay')),
+(NULL, 'Dana','DAN','081213331113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'dana')),
+(NULL, 'Bank BRI','002','ID1022148253464','QR','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'qris')),
+(NULL, 'Bank Mandiri','008','1320080829998','TB','POJOK BERBAGI INDONESIA',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%mandiri%" AND label = 'partner')),
+(NULL, 'ShopeePay','SOP','081213331113','EW','Pojok Berbagi',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'shopeepay')),
+('bri', 'Bank BRI','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bri%" AND label = 'partner')),
+('bni', 'Bank BNI','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bni%" AND label = 'partner')),
+('bca', 'Bank BCA','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bca%" AND label = 'partner')),
+('mandiri', 'Bank Mandiri','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%mandiri%" AND label = 'partner')),
+('bsm', 'Bank BSI','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%bsi%" AND label = 'partner')),
+('cimb', 'Bank CIMB','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%cimb%" AND label = 'partner')),
+('danamon', 'Bank Danamon','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%danamon%" AND label = 'partner')),
+('permata', 'Bank Permata','LIP','pojokflip','VA','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) LIKE "%permata%" AND label = 'partner')),
+('linkaja', 'Link Aja','LIP','pojokflip','EW','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'linkaja')),
+('doku', 'Doku','LIP','pojokflip','EW','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'doku')),
+('shopeepay_app', 'ShopeePay','LIP','pojokflip','EW','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'shopeepay')),
+('qris', 'QRIS','LIP','pojokflip','QR','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'qris')),
+('ovo', 'OVO','LIP','pojokflip','EW','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'ovo')),
+('gopay', 'GoPay','LIP','pojokflip','EW','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'gopay')),
+('dana', 'Dana','LIP','pojokflip','EW','PojokBerbagiID',(SELECT id_gambar FROM gambar WHERE LOWER(nama) = 'dana'));
 
-UPDATE channel_payment cp, channel_account ca LEFT JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp) SET cp.id_ca = ca.id_ca WHERE cp.nama LIKE CONCAT('%',ca.nama,'%');
+-- FOR BANK CA NON FLIP
+UPDATE channel_payment cp, channel_account ca LEFT JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp) SET cp.id_ca = ca.id_ca WHERE cp.nama LIKE CONCAT('%',ca.nama,'%') AND cp.kode != 'LIP';
 
+-- FOR FLIP
+UPDATE channel_payment cp, channel_account ca LEFT JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp) SET cp.id_ca = ca.id_ca WHERE cp.kode = 'LIP' AND ca.nama = 'Flip'; 
+UPDATE channel_payment cp LEFT JOIN channel_account ca ON(cp.id_ca = ca.id_ca)
+SET cp.kode_paygate_brand = TRIM(LOWER(REPLACE(cp.nama,'Bank','')))
+WHERE cp.kode = 'LIP' AND ca.nama = 'Flip' AND LOWER(cp.nama) LIKE '%bank%' AND LOWER(cp.nama) NOT LIKE '%bsi%';
+UPDATE channel_payment SET kode_paygate_brand = 'bsm' WHERE kode = 'LIP' AND LOWER(nama) LIKE '%bsi%';
+UPDATE channel_payment SET kode_paygate_brand = REPLACE(TRIM(LOWER(nama)),' ','') WHERE kode = 'LIP' AND nama = 'Link Aja';
+UPDATE channel_payment SET kode_paygate_brand = CONCAT(LOWER(nama),'_app') WHERE kode = 'LIP' AND nama = 'ShopeePay';
+UPDATE channel_payment SET kode_paygate_brand = (LOWER(nama)) WHERE kode = 'LIP' AND jenis IN('EW','QR') AND kode_paygate_brand IS NULL;
 -- FEATURE
 -- CREATE TABLE pembayaran (
 --     kode_pembayaran VARCHAR(64) PRIMARY KEY,
@@ -586,6 +638,41 @@ UPDATE channel_payment cp, channel_account ca LEFT JOIN penyelenggara_jasa_pemba
 -- DO 
 -- DELETE FROM pembayaran WHERE create_at < CURRENT_TIMESTAMP - INTERVAL 24 HOUR;
 
+CREATE TABLE order_donasi (
+    id_order_donasi INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    url VARCHAR(255),
+    external_id BIGINT UNSIGNED,
+    kode_pembayaran VARCHAR(82),
+    alias VARCHAR(30),
+    kontak VARCHAR(13),
+    doa VARCHAR(200),
+    notifikasi CHAR(1) DEFAULT NULL,
+    jumlah_donasi BIGINT UNSIGNED NOT NULL,
+    status ENUM('PENDING','SUCCESSFUL','FAILED') DEFAULT 'PENDING',
+    end_at TIMESTAMP DEFAULT NULL,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id_bantuan INT UNSIGNED,
+    id_donatur INT UNSIGNED,
+    id_cp TINYINT UNSIGNED,
+    CONSTRAINT U_EXTERNAL_ID_ORDER_DONASI UNIQUE(external_id),
+    CONSTRAINT U_KODE_PEMBAYARAN_ORDER_DONASI UNIQUE(kode_pembayaran),
+    CONSTRAINT F_ID_BANTUAN_ORDER_DONASI_ODR FOREIGN KEY(id_bantuan) REFERENCES bantuan(id_bantuan) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT F_ID_DONATUR_ORDER_DONASI_ODR FOREIGN KEY(id_donatur) REFERENCES donatur(id_donatur) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT F_ID_CP_ORDER_DONASI_ODN FOREIGN KEY(id_cp) REFERENCES channel_payment(id_cp) ON DELETE SET NULL ON UPDATE CASCADE
+)ENGINE=INNODB;
+
+CREATE TABLE order_paygate (
+    id_order_paygate BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    redirect_url VARCHAR(255),
+    link_id BIGINT UNSIGNED,
+    status ENUM('PENDING','SUCCESSFUL','FAILED') DEFAULT 'PENDING',
+    expiry_at TIMESTAMP DEFAULT NULL,
+    complated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+)ENGINE=INNODB;
+
 CREATE TABLE donasi (
     id_donasi BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
     kode_pembayaran VARCHAR(82),
@@ -601,10 +688,12 @@ CREATE TABLE donasi (
     id_bantuan INT UNSIGNED,
     id_donatur INT UNSIGNED,
     id_cp TINYINT UNSIGNED,
+    id_order_paygate BIGINT UNSIGNED,
     CONSTRAINT U_KODE_PEMBAYARAN_DONASI UNIQUE(kode_pembayaran),
     CONSTRAINT F_ID_BANTUAN_DONASI_ODR FOREIGN KEY(id_bantuan) REFERENCES bantuan(id_bantuan) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT F_ID_DONATUR_DONASI_ODR FOREIGN KEY(id_donatur) REFERENCES donatur(id_donatur) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT F_ID_CP_DONASI_ODN FOREIGN KEY(id_cp) REFERENCES channel_payment(id_cp) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT F_ID_CP_DONASI_ODN FOREIGN KEY(id_cp) REFERENCES channel_payment(id_cp) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_ID_ORDER_PAYGATE_DONASI_ODR FOREIGN KEY(id_order_paygate) REFERENCES order_paygate(id_order_paygate) ON DELETE RESTRICT ON UPDATE CASCADE 
 )ENGINE=INNODB;
 
 -- bayar donasi 0 = pembayaran belum dilakukan, 1 = pembayaran berhasil;
@@ -620,27 +709,37 @@ CREATE TABLE virtual_ca_donasi (
     CONSTRAINT UN_ID_DONASI_ID_CA UNIQUE(id_donasi,id_ca)
 )ENGINE=INNODB;
 
-CREATE TABLE order_donasi (
-    id_order_donasi BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    url VARCHAR(255),
-    external_id BIGINT UNSIGNED,
-    kode_pembayaran VARCHAR(82),
-    alias VARCHAR(30),
-    kontak VARCHAR(13),
-    doa VARCHAR(200),
-    jumlah_donasi BIGINT UNSIGNED NOT NULL,
-    status ENUM('PENDING','SUCCESSFUL','FAILED') DEFAULT 'PENDING',
-    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    id_bantuan INT UNSIGNED,
-    id_donatur INT UNSIGNED,
-    id_cp TINYINT UNSIGNED,
-    CONSTRAINT U_EXTERNAL_ID_ORDER_DONASI UNIQUE(external_id),
-    CONSTRAINT U_KODE_PEMBAYARAN_ORDER_DONASI UNIQUE(kode_pembayaran),
-    CONSTRAINT F_ID_BANTUAN_ORDER_DONASI_ODR FOREIGN KEY(id_bantuan) REFERENCES bantuan(id_bantuan) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT F_ID_DONATUR_ORDER_DONASI_ODR FOREIGN KEY(id_donatur) REFERENCES donatur(id_donatur) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT F_ID_CP_ORDER_DONASI_ODN FOREIGN KEY(id_cp) REFERENCES channel_payment(id_cp) ON DELETE SET NULL ON UPDATE CASCADE
-)ENGINE=INNODB;
+DROP TRIGGER BeforeInsertOrderPaygate;
+DELIMITER $$
+CREATE TRIGGER BeforeInsertOrderPaygate
+BEFORE INSERT ON order_paygate FOR EACH ROW
+    BEGIN
+    IF NEW.status != 'SUCCESSFUL' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Failed to insert paygate: SUCCESS status only';
+    END IF;
+    END$$
+DELIMITER ;
+
+DROP TRIGGER AfterInsertOrderPaygate;
+DELIMITER $$
+CREATE TRIGGER AfterInsertOrderPaygate
+AFTER INSERT ON order_paygate FOR EACH ROW
+    BEGIN
+    	IF NEW.status = 'SUCCESSFUL' THEN
+        	INSERT INTO donasi(kode_pembayaran, alias, kontak, doa, jumlah_donasi, bayar, waktu_bayar, notifikasi, id_order_paygate)
+        	SELECT kode_pembayaran, alias, kontak, doa, jumlah_donasi, '1', modified_at, notifikasi, NEW.id_order_paygate
+        	FROM order_donasi WHERE external_id = NEW.link_id;
+        	IF (ROW_COUNT() != 1) THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Failed to insert donasi from paygate';
+        	ELSE 
+            DELETE FROM order_donasi WHERE external_id = NEW.link_id AND status = NEW.status;
+            IF (ROW_COUNT() != 1) THEN
+                SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT = 'Failed to delete order from paygate';
+            END IF;
+        END IF;
+      END IF;
+    END$$
+DELIMITER ;
 
 DROP TRIGGER BeforeInsertDonasi;
 DELIMITER $$

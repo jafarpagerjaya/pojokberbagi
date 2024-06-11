@@ -134,6 +134,7 @@
                                         </div>
                                         <div class="small text-black-50 font-weight-bolder">
                                             <?= Utility::keteranganJenisChannelPayment($listDonasi->jenis_cp); ?>
+                                            <?= (!is_null($listDonasi->flip) ? '<span class="badge badge-warning">flip</span>':''); ?>
                                         </div>
                                     </div>
                                     <div class="avatar rounded ml-3 bg-transparent border"
@@ -476,12 +477,12 @@
                                 </div>
                                 <div class="col text-right">
                                     <div class="px-1 row">
-                                        <div class="px-1 col">
+                                        <div class="px-1 col align-items-center justify-content-end d-flex gap-x-1" id="jenis-cp-verivication">
                                             <span id="jenis-cp" class="text-muted font-weight-bold">Transfer
                                                 Bank</span>
                                         </div>
-                                        <div class="px-1 col-auto">
-                                            <img src="/img/payment/bsi.png" alt="qris" class="img-fluid" id="donasi-cp">
+                                        <div class="px-1 col-auto partner">
+                                            <img src="/assets/images/partners/doku.png" alt="bsi" id="donasi-cp">
                                         </div>
                                     </div>
                                 </div>

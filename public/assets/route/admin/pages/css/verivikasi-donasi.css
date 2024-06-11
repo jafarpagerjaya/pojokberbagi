@@ -1,6 +1,65 @@
+.partner {
+    max-height: 24px;
+}
 .modal img#donasi-cp {
     width: 42.5px;
     margin-top: -.25rem;
+}
+
+.modal .flip {
+    font-size: .5em !important;
+}
+
+.modal img#donasi-cp[src*="shopeepay"] {
+    width: 50px;
+    margin-right: -.25em;
+    margin-left: -.25em;
+}
+
+.modal img#donasi-cp[src*="gopay"] {
+    width: 60px;
+    margin-top: -.39em;
+}
+
+.modal img#donasi-cp[src*="dana"] {
+    width: 55px;
+}
+
+.modal img#donasi-cp[src*="qris"] {
+    margin-top: -.2rem;
+}
+
+.modal img#donasi-cp[src*="bni"] {
+    margin-top: 0px;
+}
+
+.modal img#donasi-cp[src*="cimb"] {
+    width: 80px;
+}
+
+.modal img#donasi-cp[src*="doku"],
+.modal img#donasi-cp[src*="linkaja"] {
+    width: 30px;
+}
+
+.modal img#donasi-cp[src*="permata"] {
+    width: 50px;
+    margin-top: -.375rem;
+}
+
+.modal img#donasi-cp[src*="danamon"] {
+    width: 60px;
+    margin-top: -.375rem;
+}
+
+.modal img#donasi-cp[src*="mandiri"] {
+    width: 50px;
+    margin-top: -.375rem;
+}
+
+.modal img#donasi-cp[src*="bca"] {
+    width: 50px;
+    margin-top: -.375rem;
 }
 
 /* Datepicker */

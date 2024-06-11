@@ -141,7 +141,12 @@ class PembayaranController extends Controller {
         );
 
         // Sementara pakai condisional tambahan AND jenis = 'TB'
-        $dataCP = $this->model->getData('LOWER(cp.jenis) jenis_payment, pjp.brand','channel_payment cp JOIN channel_account ca USING(id_ca) JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp)', array('cp.id_cp','=',$dataDonasi['id_cp']),'AND',array('cp.jenis','=','TB'));
+        $dataCP = $this->model->query("SELECT LOWER(cp.jenis) jenis_payment, cp.kode_paygate_brand FROM channel_payment cp JOIN channel_account ca USING(id_ca) JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp) WHERE cp.id_cp = ? AND cp.kode = 'LIP'", 
+            array(
+                'cp.id_cp' => $dataDonasi['id_cp']
+            )
+        );
+        
         if ($dataCP == false) {
             Session::put('notifikasi', array(
                 'pesan' => 'Metode pembayaran tidak ditemukan mohon pilih metode lainnya',
@@ -181,70 +186,74 @@ class PembayaranController extends Controller {
             Redirect::to('home');
         }
 
-        // if ($jenis_payment != 'tb' && $jenis_payment != 'gi' && $jenis_payment != 'tn') {
-        //     $secret_key = FLIP_API_KEY;
+        $table = 'donasi';
 
-        //     $encoded_auth = base64_encode($secret_key.":");
+        if ($jenis_payment != 'tb' && $jenis_payment != 'gi' && $jenis_payment != 'tn') {
+            $table = 'order_'.$table;
 
-        //     $ch = curl_init();
-        //     curl_setopt($ch, CURLOPT_HTTPHEADER, ["Authorization: Basic ".$encoded_auth]);
+            $secret_key = FLIP_API_KEY;
 
-        //     curl_setopt($ch, CURLOPT_URL, "https://bigflip.id/big_sandbox_api/v2/pwf/bill");
-        //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        //     curl_setopt($ch, CURLOPT_HEADER, FALSE);
+            $encoded_auth = base64_encode($secret_key.":");
 
-        //     curl_setopt($ch, CURLOPT_POST, TRUE);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ["Authorization: Basic ".$encoded_auth]);
 
-        //     $hash_transaksi = $data_bantuan->tag . '/' . Hash::unique();
+            curl_setopt($ch, CURLOPT_URL, "https://bigflip.id/big_sandbox_api/v2/pwf/bill");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_HEADER, FALSE);
 
-        //     $payloads = [
-        //         "title" => "Donasi ". $data_bantuan->nama,
-        //         "amount" => $dataDonasi['jumlah_donasi'],
-        //         "type" => "SINGLE",
-        //         "expired_date" => date('Y-m-d H:i', strtotime('+ 1 day')),
-        //         "redirect_url" => "https://pojokberbagi.id/donasi/pembayaran/transaksi/" . $hash_transaksi,
-        //         "is_address_required" => 1,
-        //         "is_phone_number_required" => 0,
-        //         "step" => 3,
-        //         "sender_name" => Input::get('nama'),
-        //         "sender_email" => strtolower(trim(Input::get('email'))),
-        //         "sender_address" => Config::getHTTPHost(),
-        //         // Ini untuk Step 3 namun Step 3 hanya bisa untuk VA dan QRIS
-        //         "sender_bank" => $dataCP->brand,
-        //         "sender_bank_type" => Utility::flipSenderBankType($jenis_payment)
-        //     ];
+            curl_setopt($ch, CURLOPT_POST, TRUE);
 
-        //     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payloads));
+            $hash_transaksi = $data_bantuan->tag . '/' . Hash::unique();
 
-        //     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        //         "Authorization: Basic ".$encoded_auth,
-        //         "Content-Type: application/x-www-form-urlencoded"
-        //     ));
+            $payloads = [
+                "title" => "Donasi ". $data_bantuan->nama,
+                "amount" => $dataDonasi['jumlah_donasi'],
+                "type" => "SINGLE",
+                "expired_date" => date('Y-m-d H:i', strtotime('+ 1 day')),
+                "redirect_url" => "https://pojokberbagi.id/donasi/pembayaran/transaksi/" . $hash_transaksi,
+                "is_address_required" => 1,
+                "is_phone_number_required" => 0,
+                "step" => 3,
+                "sender_name" => Input::get('nama'),
+                "sender_email" => strtolower(trim(Input::get('email'))),
+                "sender_address" => Config::getHTTPHost(),
+                // Ini untuk Step 3 namun Step 3 hanya bisa untuk VA dan QRIS
+                "sender_bank" => $dataCP->kode_paygate_brand,
+                "sender_bank_type" => Utility::flipSenderBankType($jenis_payment)
+            ];
 
-        //     curl_setopt($ch, CURLOPT_USERPWD, $secret_key.":");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payloads));
 
-        //     $response = curl_exec($ch);
-        //     curl_close($ch);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                "Authorization: Basic ".$encoded_auth,
+                "Content-Type: application/x-www-form-urlencoded"
+            ));
 
-        //     $dataResponse = json_decode($response);
+            curl_setopt($ch, CURLOPT_USERPWD, $secret_key.":");
 
-        //     if ($dataResponse->code == 'VALIDATION_ERROR') {
-        //         Session::flash('notifikasi', array(
-        //             'pesan' => "Flip Accept Payment [STEP 3] ". $dataResponse->errors[0]->message,
-        //             'state' => 'warning'
-        //         ));
-        //         Redirect::to('home');
-        //     }
+            $response = curl_exec($ch);
+            curl_close($ch);
 
-        //     Debug::pr($dataResponse);
-        //     Debug::prd($dataDonasi);
+            $dataResponse = json_decode($response);
 
-        //     $dataDonasi['external_id'] = $dataResponse->link_id;
-        //     $dataDonasi['url'] = $dataResponse->link_url;
-        //     $dataDonasi['kode_pembayaran'] = $hash_transaksi;
-        // }
+            if (property_exists($dataResponse, 'code')) {
+                if ($dataResponse->code == 'VALIDATION_ERROR') {
+                    Session::flash('notifikasi', array(
+                        'pesan' => "Flip Accept Payment [STEP 3] ". $dataResponse->errors[0]->message,
+                        'state' => 'warning'
+                    ));
+                    Redirect::to('home');
+                }
+            }
 
-        $order = $this->model->create('donasi', $dataDonasi);
+            $dataDonasi['external_id'] = $dataResponse->link_id;
+            $dataDonasi['url'] = $dataResponse->link_url;
+            $dataDonasi['kode_pembayaran'] = $hash_transaksi;
+            $dataDonasi['end_at'] = $dataResponse->expired_date;
+        }
+
+        $order = $this->model->create($table, $dataDonasi);
         
         if (!$order) {
             Session::put('notifikasi', array(
@@ -260,11 +269,39 @@ class PembayaranController extends Controller {
             'pesan' => 'Berhasil Create Order Donasi',
             'state' => 'success'
         ));
-        $id_order_donasi = $this->model->lastIID();
-        Redirect::to('donasi/pembayaran/tagihan/' . $jenis_payment . '/' . $id_order_donasi);
+        
+        if ($table == 'donasi') {
+            $id_create_record = $this->model->lastIID();
+        } else {
+            // bill link id from flip
+            $id_create_record = $dataResponse->link_id;
+        }
+        Redirect::to('donasi/pembayaran/tagihan/' . $jenis_payment . '/' . $id_create_record);
+    }
 
-        // Redirect to flip payment method
-        // header('Location: '. $dataResponse->link_url);
+    private function getBillPayment($link_id) {
+        $secret_key = FLIP_API_KEY;
+
+        $encoded_auth = base64_encode($secret_key.":");
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, "https://bigflip.id/big_sandbox_api/v2/pwf/{$link_id}/payment");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            "Authorization: Basic ".$encoded_auth,
+            "Content-Type: application/x-www-form-urlencoded"
+        ));
+
+        curl_setopt($ch, CURLOPT_USERPWD, $secret_key.":");
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $dataResponse = json_decode($response);
+
+        return $dataResponse->data[0];
     }
 
     public function tagihan($params) {
@@ -285,7 +322,42 @@ class PembayaranController extends Controller {
         }
     
         $this->model('Donasi');
-        $donasi = $this->model->getDataTagihanDonasi($params[1]);
+        $table = 'order_donasi';
+
+        if (strtolower($params[0]) == 'tb') {
+            $donasi = $this->model->getDataTagihanDonasi($params[1]);
+            $table = 'donasi';
+        } else {
+            // link id 
+            $this->model->query("SELECT 'od',IF(status != 'SUCCESSFUL','0','1') bayar, external_id link_id, notifikasi, STATUS, id_bantuan, order_donasi.kontak, doa, cp.jenis, cp.nama nama_cp, cp.nomor, cp.atas_nama, g.path_gambar path_gambar_cp, d.email
+            FROM order_donasi LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN donatur d ON (d.id_donatur = order_donasi.id_donatur) LEFT JOIN gambar g ON(g.id_gambar = cp.id_gambar) WHERE external_id = ?
+            UNION
+            SELECT 'op', bayar, link_id, notifikasi, STATUS, id_bantuan, d.kontak, doa, cp.jenis, cp.nama nama_cp, cp.nomor, cp.atas_nama, g.path_gambar path_gambar_cp, d.email
+            FROM order_paygate JOIN donasi USING(id_order_paygate) LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN donatur d ON (d.id_donatur = donasi.id_donatur) LEFT JOIN gambar g ON(g.id_gambar = cp.id_gambar) WHERE link_id = ?", 
+                array(
+                    'external_id' => Sanitize::escape2($params[1]), 
+                    'link_id' => Sanitize::escape2($params[1])
+                )
+            );
+            if (!$this->model->affected()) {
+                Session::flash('notifikasi', array(
+                    'pesan' => 'Tagihan yang anda cari tidak ditemukan',
+                    'state' => 'danger'
+                ));
+                Redirect::to('home');
+            }
+            $donasi = $this->model->getResult();
+            // Get Payment
+            $billPayment = $this->getBillPayment($params[1]);
+            $donasi = (object) array_merge((array) $donasi, (array) $billPayment);
+            $donasi->nama_donatur = $donasi->sender_name;
+            $donasi->jumlah_donasi = $donasi->amount;
+            unset($donasi->amount);
+            unset($donasi->sender_name);
+            unset($donasi->bill_link);
+            unset($donasi->settlement_status);
+            unset($donasi->sender_bank);
+        }
         
         if (!$donasi) {
             Session::flash('notifikasi', array(
@@ -295,7 +367,7 @@ class PembayaranController extends Controller {
             Redirect::to('home');
         }
 
-        if ($donasi->bayar) {
+        if ($donasi->bayar || $billPayment->status == 'SUCCESSFUL') {
             Session::flash('notifikasi', array(
                 'pesan' => 'Donasi sudah dibayar',
                 'state' => 'success'
@@ -304,11 +376,16 @@ class PembayaranController extends Controller {
         }
 
         // Jika sudah lebih dari 24 jam
-        // $expiry = strtotime($donasi->create_at) + 86400;
-        // if ($expiry < time()) {
-        //     Session::flash('warning','Tagihan tidak valid sudah lebih dari 24 jam');
-        //     Redirect::to('donasi/pembayaran/dibatalkan/' . $params[1]);
-        // }
+        if (isset($donasi->end_at)) {
+            $expiry = strtotime($donasi->end_at) + 86400;
+            if ($expiry < time()) {
+                Session::flash('notifikasi', array(
+                    'pesan' => 'Tagihan tidak valid sudah lebih dari 24 jam',
+                    'state' => 'warning'
+                ));
+                Redirect::to('donasi/pembayaran/dibatalkan/' . $params[1]);
+            }
+        }
 
         $this->model->getData('id_bantuan, nama, nama_penerima, tanggal_akhir', 'bantuan', array('id_bantuan', '=', $donasi->id_bantuan));
         $bantuan = $this->model->getResult();
@@ -350,9 +427,9 @@ class PembayaranController extends Controller {
             )
         );
 
-        if (!is_null($donasi->notifikasi) && $donasi->notifikasi == 1) {
-            return VIEW_PATH.'donasi'.DS.'pembayaran'. DS . $params[0] . '.html';
-        }
+        // if (!is_null($donasi->notifikasi) && $donasi->notifikasi == 1) {
+        //     return VIEW_PATH.'donasi'.DS.'pembayaran'. DS . $params[0] . '.html';
+        // }
         
         if ($donasi->jenis == 'TB') {
             $metode_bayar = "Transfer Bank";
@@ -382,19 +459,31 @@ class PembayaranController extends Controller {
             'samaran' => 'Sahabat Berbagi',
             'nama_bantuan' => $bantuan->nama
         );
-        
-        $dataFollow = array(
-            'nama_karyawan' => 'Dinda',
-            'nama_donatur' => $donasi->nama_donatur,
-            'kontak_donatur' => $donasi->kontak,
-            'email_donatur' => $donasi->email,
-            'nama_bantuan' => $bantuan->nama,
-            'penerima_donasi' => $bantuan->nama_penerima,
-            'doa_dan_pesan' => $donasi->doa,
-            'id_donasi' => $donasi->id_donasi,
-            'jumlah_donasi' => Output::tSparator($donasi->jumlah_donasi),
-            'nama_cp' => $donasi->nama_cp
-        );
+
+        if (!property_exists($donasi, 'id_donasi')) {
+            $dataFollow = array(
+                'nama_karyawan' => 'Dewi',
+                'nama_donatur' => $donasi->nama_donatur,
+                'kontak_donatur' => $donasi->kontak,
+                'email_donatur' => $donasi->email,
+                'nama_bantuan' => $bantuan->nama,
+                'penerima_donasi' => $bantuan->nama_penerima,
+                'doa_dan_pesan' => $donasi->doa,
+                'jumlah_donasi' => Output::tSparator($donasi->jumlah_donasi),
+                'nama_cp' => $donasi->nama_cp
+            );
+            $dataFollow['id'] = $billPayment->link_id;
+            $filter = array(
+                'key' => 'external_id',
+                'value' => $dataFollow['id']
+            );
+        } else {
+            $filter = array(
+                'key' => 'id_donasi',
+                'value' => Sanitize::escape2($donasi->id_donasi)
+            );
+        }
+
 
         // Kirim email
         $subject = "[Info Donasi] Pojok Berbagi";
@@ -407,9 +496,9 @@ class PembayaranController extends Controller {
         
         if (mail($donasi->email, $subject, $pesan, $headers)) {
             $this->mailSended = true;
-            $this->model->update('donasi', array(
+            $this->model->update($table, array(
                 'notifikasi' => '1'
-            ), array('id_donasi','=',Sanitize::escape2($donasi->id_donasi)));
+            ), array($filter['key'],'=',$filter['value']));
         } else {
             Session::flash('notifikasi', array(
                 'pesan' => 'Email ' . $donasi->email . ' tidak valid, mohon maaf anda tidak akan mendapatkan notifikasi info donasi',
@@ -417,16 +506,21 @@ class PembayaranController extends Controller {
             ));
         }
 
-        if ($this->mailSended == true) {
-            $subject = "[Follow Up Donasi] Pojok Berbagi";
-            $headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: No-Replay <no-replay@pojokberbagi.id>' . "\r\n";
-            $headers .= "MIME-Version: 1.0\r\n";
-            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-            $pesan = wordwrap(Ui::emailFollowUpDonasi($dataFollow), 70, "\r\n");
-            mail('cr@pojokberbagi.id', $subject, $pesan, $headers);
+        if ($donasi->jenis == 'TB') {
+            if ($this->mailSended == true) {                
+                $subject = "[Follow Up Donasi] Pojok Berbagi";
+                $headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: No-Replay <no-replay@pojokberbagi.id>' . "\r\n";
+                $headers .= "MIME-Version: 1.0\r\n";
+                $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+                $pesan = wordwrap(Ui::emailFollowUpDonasi($dataFollow), 70, "\r\n");
+                mail('cr@pojokberbagi.id', $subject, $pesan, $headers);
+            }
+    
+            return VIEW_PATH.'donasi'.DS.'pembayaran'. DS . $params[0] . '.html';
         }
 
-        return VIEW_PATH.'donasi'.DS.'pembayaran'. DS . $params[0] . '.html';
+        header("Location: ". $billPayment->payment_url);
+        return false;
     }
 
     public function transaksi($params) {
@@ -497,10 +591,64 @@ class PembayaranController extends Controller {
 
     // Action untuk mengirim notifikasi donasi
     public function notif($params) {
+        if (count(is_countable($params) ? $params : []) < 1) {
+            Session::put('notifikasi', array(
+                'pesan' => 'Unrecognize notif payment',
+                'state' => 'warning'
+            ));
+            Redirect::to('home');
+        }
+
+        $params = Sanitize::escape2(implode('/',$params));
+        $this->model('Donasi');
+        $this->model->query("SELECT external_id, url, kode_pembayaran, alias, order_donasi.kontak, doa, notifikasi, jumlah_donasi, end_at, id_bantuan, nama_penerima, id_cp, id_donatur, order_donasi.create_at, d.nama, d.email FROM order_donasi JOIN donatur d USING(id_donatur) LEFT JOIN bantuan USING(id_bantuan) WHERE kode_pembayaran = ?", array($params));
+        if (!$this->model->affected()) {
+            if (count(is_countable($params) ? $params : []) < 1) {
+                Session::put('notifikasi', array(
+                    'pesan' => 'Unrecognize params payment',
+                    'state' => 'warning'
+                ));
+                Redirect::to('home');
+            }    
+        }
+
+        $dataOrderDonasi = $this->model->getResult();
+
+        // Check Status Payment
+        $billPayment = $this->getBillPayment($dataOrderDonasi->external_id);
+        Debug::pr($billPayment);
+        if ($billPayment->status != 'SUCCESSFUL') {
+            Session::put('notifikasi', array(
+                'pesan' => 'Callback bill ill belum lunas',
+                'state' => 'warning'
+            ));
+            Redirect::to('home');
+        }
+
+        $this->model->update('order_donasi',array('status' => 'SUCCESSFUL'), array('external_id','=',$dataOrderDonasi->external_id),'AND',array('kode_pembayaran','=',$dataOrderDonasi->kode_pembayaran));
+        if (!$this->model->affected()) {
+            Session::put('notifikasi', array(
+                'pesan' => 'Failed to update callback order status',
+                'state' => 'danger'
+            ));
+            Redirect::to('home');
+        }
+
+        try {
+            $this->model->insert('order_paygete', array(
+                'redirect_url' => $dataOrderDonasi->url,
+                'link_id' => $dataOrderDonasi->external_id,
+                'status' => $billPayment->status,
+                'expiry_at' => $dataOrderDonasi->end_at
+            ));
+        } catch (\Throwable $th) {
+            throw $th;
+            return false;
+        }
+
         $arrayNotif = array(
-            'nama_donatur' => "Arief Riandi",
-            'jumlah_donasi' => Output::tSparator(1500000),
-            'penerima_donasi' => "Raska",
+            'nama_donatur' => $dataOrderDonasi->alias,
+            'jumlah_donasi' => Output::tSparator($dataOrderDonasi->jumlah_donasi),
             'metode_bayar' => "Transfer",
             'nama_cp' => "Bank BJB",
             'path_gambar_cp' => "/assets/images/partners/bjb.png",
@@ -509,29 +657,34 @@ class PembayaranController extends Controller {
             'samaran' => "Haji Arief",
             'nama_bantuan' => "Peduli Razka"
         );
-        
-        $kontak = "085322661186";
-        $email = "arifriandi834@gmail.com";
-        
 
-        $arrayFollow = array(
-            'nama_karyawan' => 'Dinda',
-            'kontak_donatur' => $kontak,
-            'email_donatur' => $email,
-            'doa_dan_pesan' => "Semoga razka dapat tersenyum kembali dan dapat bermain lagi dengan kakanya. Sang kaka (teteh Razka) semoga kamu dapat menggapai semua impianmu dimasa depan kelah amin. Jagain terus ya razkanya",
-            'id_donasi' => 10
-        );
-        
-        $arrayFollow = array_merge($arrayFollow, $arrayNotif);
-        
-        $subject = "Pojok Berbagi Donasi Payment Notification";
-        $headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: CR PBI <cr@pojokberbagi.id>' . "\r\n";
-        $headers .= "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $pesan = Ui::emailFollowUpDonasi($arrayFollow);
-
-        if (mail($email, $subject, $pesan, $headers)) {
-            echo "Email donasi " . $params[0] . " terkitim";
+        if (isset($dataOrderDonasi->nama_penerima)) {
+            $arrayNotif['penerima_bantuan'] = $dataOrderDonasi->nama_penerima;
         }
+
+        Debug::prd($dataOrderDonasi);
+        
+        // $kontak = "085322661186";
+        // $email = "arifriandi834@gmail.com";
+
+        // $arrayFollow = array(
+        //     'nama_karyawan' => 'Dinda',
+        //     'kontak_donatur' => $kontak,
+        //     'email_donatur' => $email,
+        //     'doa_dan_pesan' => "Semoga razka dapat tersenyum kembali dan dapat bermain lagi dengan kakanya. Sang kaka (teteh Razka) semoga kamu dapat menggapai semua impianmu dimasa depan kelah amin. Jagain terus ya razkanya",
+        //     'id_donasi' => 10
+        // );
+        
+        // $arrayFollow = array_merge($arrayFollow, $arrayNotif);
+        
+        // $subject = "Pojok Berbagi Donasi Payment Notification";
+        // $headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: CR PBI <cr@pojokberbagi.id>' . "\r\n";
+        // $headers .= "MIME-Version: 1.0\r\n";
+        // $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+        // $pesan = Ui::emailFollowUpDonasi($arrayFollow);
+
+        // if (mail($email, $subject, $pesan, $headers)) {
+        //     echo "Email donasi " . $params[0] . " terkitim";
+        // }
     }
 }
