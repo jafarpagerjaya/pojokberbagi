@@ -59,11 +59,30 @@
     </div>
     <!-- /End Preloader -->
     <?= $this->action_view; ?>
-
     <!-- ========================= scroll-top ========================= -->
     <a href="#" class="scroll-top">
         <i class="lni lni-chevron-up"></i>
     </a>
+    <?php 
+    if (Session::exists('notifikasi')) {
+        $notifikasi = Session::flash('notifikasi');
+    }
+    if (isset($notifikasi)) { ?>
+    <!-- Modal -->
+    <div class="modal fade" id="notifikasi" tabindex="-1" aria-labelledby="notifikasiModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-box">
+                <div class="modal-header">
+                    <h5 class="modal-title <?= 'text-'.$notifikasi['state']; ?>" id="notifikasiModalLabel">Pesan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <?= $notifikasi['pesan']; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php } ?>
     <!-- Vendor Script -->
     <script src="/vendors/jquery/dist/jquery.min.js"></script>
     <!-- Core Script -->

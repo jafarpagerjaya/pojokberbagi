@@ -896,7 +896,7 @@ class Ui {
                                             <tr>
                                                 <td>
                                                     <p style="margin-bottom: 0px;">NOMOR DONASI</p>
-                                                    <strong>'. (isset($data["id_donasi"]) ? 'NDPBI-'. strip_tags((string) $data["id_donasi"]) : 'ID TRANSAKSI #' . strip_tags((string) $data["id"])) .'</strong>
+                                                    <strong>'. (!is_null($data["id_order_donasi"]) ? 'NDPBI-'. strip_tags((string) $data["id_order_donasi"]) : 'ID TRANSAKSI #' . strip_tags((string) $data["id"])) .'</strong>
                                                 </td>
                                                 <td id="transfer">
                                                     <p style="margin-bottom: 0px;">Transfer</p>
@@ -1247,7 +1247,7 @@ class Ui {
                                                 <td>Jumlah Donasi</td><td>:</td><td><strong style="color: var(--green-box);">Rp. '. strip_tags((string) $data["jumlah_donasi"]) .'</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Metode Pembayaran</td><td>:</td><td><strong style="display: flex; align-items: center; justify-content: start; gap: .5em;"><div><img src="'. strip_tags((string) $data["path_gambar_ca"]) .'" alt="'. strip_tags((string) $data["nama_ca"]) .'" style="width: 40px; max-width: 40px;"></div><div>'. strip_tags((string) $data["nama_ca"]) .'</div></strong></td>
+                                                <td>Metode Pembayaran</td><td>:</td><td><strong style="display: flex; align-items: center; justify-content: start; gap: .5em;"><div><img src="'. strip_tags((string) $data["path_gambar_cp"]) .'" alt="'. strip_tags((string) $data["nama_cp"]) .'" style="width: 40px; max-width: 40px;"></div><div>'. strip_tags((string) $data["nama_cp"]) .'</div></strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Waktu pembayaran</td><td>:</td><td><strong>'. strip_tags((string) $data["waktu_bayar"]) .'</strong></td>
@@ -1262,7 +1262,7 @@ class Ui {
                                         </small>
                                     </div>
                                     <div class="item" style="display: flex; align-items: center;">
-                                        <a href="' . strip_tags((string) $data["link_check_donasi"]) . '" style="padding: 1em; background-color: var(--orange); color: white; font-weight: bold; border-radius: 10px;">Cek Perkembangan</a>
+                                        <a href="' . strip_tags((string) $data["link_kuitansi"]) . '" style="padding: 1em; background-color: var(--orange); color: white; font-weight: bold; border-radius: 10px;">Cek Perkembangan</a>
                                     </div>
                                 </div>
                                 <div style="display: flex;">

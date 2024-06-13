@@ -664,13 +664,14 @@ CREATE TABLE order_donasi (
 
 CREATE TABLE order_paygate (
     id_order_paygate BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    payment_id VARCHAR(255),
     redirect_url VARCHAR(255),
     link_id BIGINT UNSIGNED,
     status ENUM('PENDING','SUCCESSFUL','FAILED') DEFAULT 'PENDING',
     expiry_at TIMESTAMP DEFAULT NULL,
-    complated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )ENGINE=INNODB;
 
 CREATE TABLE donasi (
@@ -726,8 +727,8 @@ CREATE TRIGGER AfterInsertOrderPaygate
 AFTER INSERT ON order_paygate FOR EACH ROW
     BEGIN
     	IF NEW.status = 'SUCCESSFUL' THEN
-        	INSERT INTO donasi(kode_pembayaran, alias, kontak, doa, jumlah_donasi, bayar, waktu_bayar, notifikasi, id_order_paygate)
-        	SELECT kode_pembayaran, alias, kontak, doa, jumlah_donasi, '1', modified_at, notifikasi, NEW.id_order_paygate
+        	INSERT INTO donasi(id_bantuan, id_donatur, id_cp, kode_pembayaran, alias, kontak, doa, jumlah_donasi, bayar, waktu_bayar, notifikasi, id_order_paygate)
+        	SELECT id_bantuan, id_donatur, id_cp, kode_pembayaran, alias, kontak, doa, jumlah_donasi, '1', NEW.completed_at, notifikasi, NEW.id_order_paygate
         	FROM order_donasi WHERE external_id = NEW.link_id;
         	IF (ROW_COUNT() != 1) THEN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Failed to insert donasi from paygate';
@@ -3743,11 +3744,11 @@ ALTER TABLE anggaran_pelaksanaan_donasi CONSTRAINT U_ID_KEBUTUHAN_ID_RENCANA_KET
 -- UPDATE INI DI RUN UNTUK REKONSIALISASI SALDO DONASI (BUTUH PERBAIUKAN UNTUK MENGAMBIL KE DETIL PINBUK JUGA)
 -- VERSI TABEL BELUM ADA TABEL DTPA
 UPDATE channel_account, 
-    (SELECT SUM(sd.saldo_donasi) saldo, sd.id_ca, sd.nama FROM 
+    (SELECT IFNULL(SUM(sd.saldo_donasi),0) saldo, sd.id_ca, sd.nama FROM 
         (
         (SELECT MIN(a.saldo_donasi) saldo_donasi, cp.id_ca, ca.nama FROM channel_account ca JOIN channel_payment cp USING(id_ca) JOIN donasi d ON(d.id_cp = cp.id_cp) JOIN anggaran_pelaksanaan_donasi a USING(id_donasi) WHERE d.bayar = 1 GROUP BY cp.id_ca, a.id_donasi HAVING saldo_donasi)
         UNION
-        (SELECT SUM(d.jumlah_donasi), cp.id_ca, ca.nama FROM channel_account ca JOIN channel_payment cp USING(id_ca) JOIN donasi d ON(d.id_cp = cp.id_cp) LEFT JOIN anggaran_pelaksanaan_donasi a USING(id_donasi) WHERE d.bayar = 1 AND a.id_pelaksanaan IS NULL GROUP BY cp.id_ca)
+        (SELECT SUM(d.jumlah_donasi), cp.id_ca, ca.nama FROM channel_account ca LEFT JOIN channel_payment cp USING(id_ca) LEFT JOIN donasi d ON(d.id_cp = cp.id_cp) LEFT JOIN anggaran_pelaksanaan_donasi a USING(id_donasi) WHERE d.bayar = 1 OR d.bayar IS NULL AND a.id_pelaksanaan IS NULL GROUP BY ca.id_ca)
         ) sd
         GROUP BY sd.id_ca, sd.nama
     ) s 

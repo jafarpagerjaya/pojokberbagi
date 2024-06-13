@@ -55,7 +55,8 @@ class BuatController extends Controller {
                 'src' => '/assets/main/js/terbilang.js'
             ),
             array(
-                'src' => '/assets/route/default/core/js/bootstrap.min.js'
+                'src' => 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
+                'source' => 'trushworty'
             ),
             array(
                 'src' => '/vendors/crypto-js/js/crypto-js.js'
@@ -145,10 +146,6 @@ class BuatController extends Controller {
         Session::put('donasi', $id_bantuan);
         $this->data['bantuan'] = $data_bantuan;
         $this->data[Config::get('session/token_name')] = Token::generate();
-
-        // Masih dibatasi TB dulu
-        // $dataCP = $this->_home->query("SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar, gambar.nama nama_partner FROM channel_payment cp JOIN channel_account ca USING(id_ca) LEFT JOIN gambar USING(id_gambar) WHERE cp.jenis = 'TB' OR ca.jenis = 'PG'", array());
-        // $this->data['metode_pembayaran'] = $this->_home->getResults();
     }
 
     public function get($params) {
@@ -217,29 +214,29 @@ class BuatController extends Controller {
         return false;
     }
 
-    public function flip() {
-        $secret_key = FLIP_API_KEY;
+    // public function flip() {
+    //     $secret_key = FLIP_API_KEY;
 
-        $encoded_auth = base64_encode($secret_key.":");
+    //     $encoded_auth = base64_encode($secret_key.":");
 
-        $ch = curl_init();
+    //     $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, "https://bigflip.id/big_sandbox_api/v2/pwf/109168/payment");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+    //     curl_setopt($ch, CURLOPT_URL, FLIP_API."/v2/pwf/110202/payment");
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    //     curl_setopt($ch, CURLOPT_HEADER, FALSE);
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Authorization: Basic ".$encoded_auth,
-            "Content-Type: application/x-www-form-urlencoded"
-        ));
+    //     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    //         "Authorization: Basic ".$encoded_auth,
+    //         "Content-Type: application/x-www-form-urlencoded"
+    //     ));
 
-        curl_setopt($ch, CURLOPT_USERPWD, $secret_key.":");
+    //     curl_setopt($ch, CURLOPT_USERPWD, $secret_key.":");
 
-        $response = curl_exec($ch);
-        curl_close($ch);
-        $dataResponse = json_decode($response);
+    //     $response = curl_exec($ch);
+    //     curl_close($ch);
+    //     $dataResponse = json_decode($response);
 
-        Debug::prd($dataResponse);
-        return false;
-    }
+    //     Debug::prd($dataResponse);
+    //     return false;
+    // }
 }

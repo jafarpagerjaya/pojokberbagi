@@ -333,7 +333,7 @@ fetch('/donasi/buat/get/channel-payment', {
     if (result.error == false) {
         // Success
         let data = result.feedback.data;
-        console.log(selectOtionGroupLabel(data));
+        // console.log(selectOtionGroupLabel(data));
         if (data.length > 0) {
             $('.selectpicker').select2({
                 placeholder: "Pilih Metode Pembayaran",
@@ -536,3 +536,15 @@ window.addEventListener('resize', function onResize() {
         });
     }, 50);
 });
+
+const notifikasiModalEl = document.getElementById('notifikasi');
+// Modal BS
+if (notifikasiModalEl != null) {
+    var myModal = new bootstrap.Modal(notifikasiModalEl, {
+        backdrop: 'static', 
+        keyboard: false
+    });
+    setTimeout(()=>{
+        myModal.toggle();
+    }, 500);
+}

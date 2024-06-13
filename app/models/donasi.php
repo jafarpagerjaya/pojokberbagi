@@ -138,11 +138,11 @@ class DonasiModel extends HomeModel {
         return false;
     }
 
-    public function getDataTagihanDonasi($id_donasi) {
-        $this->db->query('SELECT donasi.*, donatur.nama nama_donatur, donatur.email, channel_payment.jenis, 
+    public function getOrderDonasi($id_order_donasi) {
+        $this->db->query('SELECT order_donasi.*, donatur.nama nama_donatur, donatur.email, channel_payment.jenis, 
         channel_payment.nama nama_cp, channel_payment.kode, channel_payment.nomor, channel_payment.atas_nama, gambar.path_gambar path_gambar_cp
-        FROM donasi JOIN donatur USING(id_donatur) JOIN channel_payment USING(id_cp) LEFT JOIN gambar ON(gambar.id_gambar = channel_payment.id_gambar)
-        WHERE donasi.id_donasi = ?', array('donasi.id_donasi' => Sanitize::escape(trim($id_donasi))));
+        FROM order_donasi JOIN donatur USING(id_donatur) JOIN channel_payment USING(id_cp) LEFT JOIN gambar ON(gambar.id_gambar = channel_payment.id_gambar)
+        WHERE order_donasi.id_order_donasi = ?', array('order_donasi.id_order_donasi' => Sanitize::escape2($id_order_donasi)));
         if ($this->db->count()) {
             $this->data = $this->db->result();
             return $this->data;
