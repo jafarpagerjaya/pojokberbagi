@@ -92,18 +92,20 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
         });
     }
 
-    const id_donasi = e.relatedTarget.dataset.id;
+    const id = e.relatedTarget.dataset.id,
+          target = (e.relatedTarget.closest('tr').getAttribute('data-order-id') != null && e.relatedTarget.closest('#list-order-donasi') != null ? 'order_donasi' : 'donasi');
 
-    let dataDonasi = {
-        id_donasi: id_donasi,
+    let dataTarget = {
+        table: target,
         token: body.getAttribute('data-token')
     };
 
-    dataVerivikasi.id_donasi = id_donasi;
+    dataTarget['id_'+target] = id;
+    dataVerivikasi['id_'+target] = id;
 
     modal = $(this);
 
-    fetch('/admin/fetch/get/donasi', {
+    fetch('/admin/fetch/get/'+target, {
         method: "POST",
         cache: "no-cache",
         mode: "same-origin",
@@ -112,11 +114,11 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
             "Content-Type": "application/json",
         },
         referrer: "no-referrer",
-        body: JSON.stringify(dataDonasi)
+        body: JSON.stringify(dataTarget)
     })
     .then(response => response.json())
     .then(function(result) {
-        
+        // console.log(result);
         if (result.error) {
             createNewToast(document.querySelector('[aria-live="polite"]'), result.toast.id, result.toast.data_toast, result.toast);
             $('#'+ invalid.id +'.toast[data-toast="'+ invalid.data_toast +'"]').toast({
@@ -138,7 +140,7 @@ $('#modalValidasiDonasi').on('hidden.bs.modal', function () {
             }
         }
 
-        console.log(result.feedback.data);
+        // console.log(result.feedback.data);
 
         modal.find('img#donatur-avatar').attr('src', result.feedback.data.path_gambar_avatar);
         modal.find('img#donatur-avatar').attr('alt', result.feedback.data.nama_avatar);
@@ -256,11 +258,37 @@ verivikasiBtn.on('click', function (e) {
         return false;
     }
 
-    // console.log(dataVerivikasi);
+    let target;
+    if (dataVerivikasi.id_donasi != null && dataVerivikasi.id_order_donasi == null) {
+        target = 'donasi';
+    } else if (dataVerivikasi.id_donasi == null && dataVerivikasi.id_order_donasi != null) {
+        target = 'order_donasi';
+    } else {
+        let invalid = {
+            error: true,
+            data_toast: 'invalid-donasi',
+            feedback: {
+                message: 'target update verivikasi tidak dikenal'
+            }
+        };
+
+        invalid.id = invalid.data_toast +'-'+ timestamp;
+        
+        createNewToast(document.querySelector('[aria-live="polite"]'), invalid.id, invalid.data_toast, invalid);
+        $('#'+ invalid.id +'.toast[data-toast="'+ invalid.data_toast +'"]').toast({
+            delay: 10000
+        }).toast('show');
+
+        toastLocal = invalid;
+
+        document.getElementById('datepicker').parentElement.classList.add('border','border-warning');
+        e.preventDefault();
+        return false;
+    }
 
     dataVerivikasi.token = body.getAttribute('data-token');
 
-    fetch('/admin/fetch/verivikasi/donasi', {
+    fetch('/admin/fetch/verivikasi/'+target, {
         method: "POST",
         cache: "no-cache",
         mode: "same-origin",
@@ -286,21 +314,29 @@ verivikasiBtn.on('click', function (e) {
             token: body.getAttribute('data-token')
         });
 
-        let elIdDonasi = $('table tbody>tr a[data-id="' + parseInt(result.feedback.data.id_donasi) + '"]').eq(-1);
-        if (elIdDonasi.length) {
-            elIdDonasi.parents('tr').addClass('highlight');
-            elIdDonasi.parents('tr').find('span.badge-warning').text('sudah diverivikasi');
-            elIdDonasi.parents('tr').find('span.badge-warning').addClass('badge-success');
-            elIdDonasi.parents('tr').find('span.badge-success').removeClass('badge-warning');
-            elIdDonasi.text('Sudah Terverivikasi');
-            elIdDonasi.removeAttr('data-id');
-            elIdDonasi.removeAttr('data-toggle');
-            elIdDonasi.removeAttr('data-target');
-            elIdDonasi.attr('class', 'dropdown-item disabled');
+        if (relatedTarget == 'order-donasi') {
+            document.querySelector('tr[data-order-id="'+ dataVerivikasi.id_order_donasi +'"').remove();
+            if (document.querySelector('#list-'+relatedTarget+' tbody>tr') == null) {
+                document.querySelector('#list-'+relatedTarget+' tbody').insertAdjacentHTML('beforeend','<tr><td colspan="4">Data donasi tidak ditemukan...</td></tr>');
+            }
+            document.getElementById('list-donasi').querySelector('.pagination .page-link.active').click();
+        } else {
+            let elIdDonasi = $('table tbody>tr a[data-id="' + parseInt(result.feedback.data.id_donasi) + '"].verivikasi');
+            if (elIdDonasi.length) {
+                elIdDonasi.parents('tr').addClass('highlight');
+                elIdDonasi.parents('tr').find('span.badge-warning').text('sudah diverivikasi');
+                elIdDonasi.parents('tr').find('span.badge-warning').addClass('badge-success');
+                elIdDonasi.parents('tr').find('span.badge-success').removeClass('badge-warning');
+                elIdDonasi.text('Sudah Terverivikasi');
+                elIdDonasi.removeAttr('data-id');
+                elIdDonasi.removeAttr('data-toggle');
+                elIdDonasi.removeAttr('data-target');
+                elIdDonasi.attr('class', 'dropdown-item disabled');
 
-            setTimeout(() => {
-                elIdDonasi.parents('tr').removeClass('highlight');
-            }, 3100);
+                setTimeout(() => {
+                    elIdDonasi.parents('tr').removeClass('highlight');
+                }, 3100);
+            }
         }
 
         modal.modal('hide');

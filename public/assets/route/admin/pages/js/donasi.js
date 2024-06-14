@@ -19,6 +19,11 @@ let fetchData = function(url, data, root) {
     })
     .then(response => response.json())
     .then(function(result) {
+        document.querySelector('body').setAttribute('data-token', result.token);
+        // nameNew.token = result.token;
+        fetchTokenChannel.postMessage({
+            token: body.getAttribute('data-token')
+        });
         let sentData = data;
         if (result.error == false) {
             // Success
@@ -41,22 +46,22 @@ let fetchData = function(url, data, root) {
                 
                 fetchData(url, sentData, root);
                 jumlah_halaman = result.feedback.pages;
-                controlPaginationButton(2, root.find('.pagination'), result.feedback.pages, jumlah_halaman);
+                controlPaginationButton(2, $(root.querySelector('.pagination')), result.feedback.pages, jumlah_halaman);
                 return false;
             }
 
             // Jika jumlah_halaman berganti
             if (jumlah_halaman != result.feedback.pages) {
                 jumlah_halaman = result.feedback.pages;
-                root.find('.pagination').attr('data-pages', result.feedback.pages);
+                root.querySelector('.pagination').setAttribute('data-pages', result.feedback.pages);
                 if (sentData.halaman == undefined) {
-                    controlPaginationButton(0, root.find('.pagination'), result.feedback.pages);
+                    controlPaginationButton(0, $(root.querySelector('.pagination')), result.feedback.pages);
                 } else {
-                    controlPaginationButton(2, root.find('.pagination'), result.feedback.pages);
+                    controlPaginationButton(2, $(root.querySelector('.pagination')), result.feedback.pages);
                 }
             }
 
-            root.find('tbody').children('tr').remove();
+            root.querySelector('tbody').innerHTML = '';
 
             const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
 
@@ -93,96 +98,169 @@ let fetchData = function(url, data, root) {
                         verivikasi_data_modal = ' data-toggle="modal" data-target="#modalValidasiDonasi" data-id="'+ element.id_donasi +'"';
                     }
     
-                    let tr = '<tr><td class="py-2"><a href="#" class="id-donasi text-primary font-weight-bolder" data-id="element.id_donasi">'+ element.id_donasi +'</a><span class="font-weight-bolder"'+ (element.warna.length > 0 ? ' style="color: '+ element.warna +'"' : '') +'> '+ element.nama_bantuan +'</span>'+ (element.nama_sektor != null ? '<span class="text-muted"> ('+ element.nama_sektor +')</span>' : '') +'<div class="time small font-weight-bolder text-black-50">'+ element.create_donasi_at +'</div></td><td class="py-2"><span class="badge '+ badge +'">'+ verivikasi_text +'</span>'+ (waktu_bayar != undefined ? '<div class="small font-weight-bolder text-black-50"> '+ waktu_bayar +' </div>' : '') +'</td><td class="py-2"><div class="media align-items-center"><div class="media-body"><div class="name mb-0 text-black-50 font-weight-bold">'+ element.jumlah_donasi +'</div><div class="small font-weight-bolder text-black-50">'+ keteranganJenisChannelPayment(element.jenis_cp) +'</div>'+ ((element.flip != null) ? '<span class="badge badge-warning">flip</span>':'') +'</div><div class="avatar rounded ml-3 bg-transparent border" data-id-donatur="'+ element.id_donatur +'"><img src="'+ element.path_gambar_cp +'" alt="'+ element.nama_path_gambar_cp +'" class="img-fluid"></div></div></td><td class="text-right auto"><div class="dropdown"><a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="top-end"><a class="dropdown-item" href="/admin/bantuan/data/'+ element.id_bantuan +'">Lihat Program Donasi</a>'+kuitansi_donasi+'<a class="dropdown-item'+ verivikasi_class +'" href="javascript():;"'+ verivikasi_data_modal +'>'+ verivikasi_link_text +'</a></div></div></td></tr>';
-                    root.find('tbody').append(tr);
-                });
-                if (root.find('table thead').width() > root.find('table').parent().width()) {
-                    root.find('table').addClass('table-responsive');
-                } else {
-                    if (root.find('table').hasClass('table-responsive')) {
-                        root.find('table').removeClass('table-responsive');
+                    let tr;
+                    if (result.feedback.target == 'list-donasi') {
+                        tr = '<tr><td class="py-2"><a href="#" class="id-donasi text-primary font-weight-bolder" data-id="element.id_donasi"><span>'+ element.id_donasi +'</span></a><span class="font-weight-bolder"'+ (element.warna.length > 0 ? ' style="color: '+ element.warna +'"' : '') +'> '+ element.nama_bantuan +'</span>'+ (element.nama_sektor != null ? '<span class="text-muted"> ('+ element.nama_sektor +')</span>' : '') +'<div class="time small font-weight-bolder text-black-50"><span>'+ element.create_donasi_at +'</span></div></td><td class="py-2"><span class="badge '+ badge +'">'+ verivikasi_text +'</span>'+ (waktu_bayar != undefined ? '<div class="small font-weight-bolder text-black-50"><span>'+ waktu_bayar +'</span></div>' : '') +'</td><td class="py-2"><div class="media align-items-center"><div class="media-body"><div class="name mb-0 text-black-50 font-weight-bold"><span>'+ element.jumlah_donasi +'</span></div><div class="small font-weight-bolder text-black-50"><span>'+ keteranganJenisChannelPayment(element.jenis_cp) +'</span></div>'+ ((element.flip != null) ? '<span class="badge badge-warning">flip</span>':'') +'</div><div class="avatar rounded ml-3 bg-transparent border" data-id-donatur="'+ element.id_donatur +'"><img src="'+ element.path_gambar_cp +'" alt="'+ element.nama_path_gambar_cp +'" class="img-fluid"></div></div></td><td class="text-right auto"><div class="dropdown"><a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="top-end"><a class="dropdown-item" href="/admin/bantuan/data/'+ element.id_bantuan +'">Lihat Program Donasi</a>'+kuitansi_donasi+'<a class="dropdown-item'+ verivikasi_class +'" href="javascript():;"'+ verivikasi_data_modal +'>'+ verivikasi_link_text +'</a></div></div></td></tr>';
+                    } else {
+                        tr = '<tr'+ (element.id_order_donasi != null ? ' data-order-id="'+ element.id_order_donasi +'"' : '')+'><td><div class="d-flex gap-x-1"><div class="id"><span class="text-primary font-weight-bolder" data-id="'+ element.id_order_donasi+'">#'+ element.id_order_donasi+'</span></div><div class="desc"><a '+ (element.id_bantuan != null ? 'href="/bantuan/data/'+element.id_bantuan+'"' : 'javascript::void(0);')+' class="font-weight-bolder" '+ (element.warna != null ? ' style="color: '+ element.warna + '"' : '') +'><span>'+ element.nama_bantuan +'</span></a>'+ (element.nama_sektor != null ? '<span class="text-muted"> (' + element.nama_sektor + ')</span>' : '')+'<div class="time small text-black-50 font-weight-bolder"><span>'+ element.create_order_at+'</span></div></div></div></td><td><span class="badge '+ badge +'">'+ element.status+'</span>'+ (element.external_id != null ? '<div class="small text-black-50 font-weight-bolder">' +element.external_id+ '</div>' : '')+'</td><td><div class="media align-items-center"><div class="media-body"><div class="name mb-0 text-black-50 font-weight-bold"><span>'+ element.jumlah_donasi +'</span></div><div class="small text-black-50 font-weight-bolder"><span>'+ keteranganJenisChannelPayment(element.jenis_cp)+'</span> '+ (element.flip != null ? '<span class="badge badge-warning">flip</span>':'')+'</div></div><div class="avatar rounded ml-3 bg-transparent border" data-id-donatur="'+ element.id_donatur+'"><img src="'+ element.path_gambar_cp+'" alt="'+ element.nama_path_gambar_cp+'" class="img-fluid"></div></div></td><td><div class="dropdown show"><a class="btn btn-sm btn-icon-only text-light" href="javascript::void(0)" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" x-placement="top-end">'+ (element.id_bantuan != null ? '<a class="dropdown-item" href="/admin/bantuan/data/'+ element.id_bantuan +'">Lihat Campaign</a>' : '')+'</a>'+ (element.flip != null ? '' : '<a class="verivikasi dropdown-item' + (element.status == 'SUCCESFUL' ? ' disabled">Sudah Terverivikasi' : ' text-warning font-weight-bold" data-id="'+element.id_order_donasi+'" href="javascript::void(0);" data-toggle="modal" data-target="#modalValidasiDonasi">Verivikasi') + '</a>')+'</div></div></td></tr>';
                     }
-                }
+                    root.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
+                });
+                // if (root.querySelector('table thead').width() > root.find('table').parent().width()) {
+                //     root.querySelector('table').addClass('table-responsive');
+                // } else {
+                //     if (root.querySelector('table').hasClass('table-responsive')) {
+                //         root.querySelector('table').removeClass('table-responsive');
+                //     }
+                // }
             } else {
                 const tr0 = '<tr><td colspan="4">Data donasi tidak ditemukan...</td></tr>';
-                root.find('tbody').append(tr0);
+                root.querySelector('tbody').insertAdjacentHTML('beforeend', tr0);
             }
 
-            root.find('.card-header .status span').text(result.feedback.data.length);
-            root.find('.card-header .status .counter-card').attr('data-count-up-value', result.feedback.total_record);
-            root.find('.card-header .status .counter-card').text(result.feedback.total_record);
+            root.querySelector('.log-info span').innerText = result.feedback.data.length;
+            root.querySelector('.log-info .counter-card').setAttribute('data-count-up-value', result.feedback.total_record);
+            root.querySelector('.log-info .counter-card').innerText = result.feedback.total_record;
         } else {
             // Failed
-            $('.toast[data-toast="feedback"] .time-passed').text('Baru Saja');
-            $('.toast[data-toast="feedback"] .toast-body').html(data.feedback.message);
-            $('.toast[data-toast="feedback"] .toast-header .small-box').removeClass('bg-success').addClass('bg-danger');
-            $('.toast[data-toast="feedback"] .toast-header strong').text('Peringatan!');
             console.log('there is some error in server side');
-            $('.toast').toast('show');
-        }
+            // tampilkan pesan waktu bayar wajib diisi
+            let currentDate = new Date(),
+                timestamp = currentDate.getTime(); 
 
-        document.querySelector('body').setAttribute('data-token', result.token);
-        // nameNew.token = result.token;
-        fetchTokenChannel.postMessage({
-            token: body.getAttribute('data-token')
-        });
+            let invalid = {
+                error: true,
+                data_toast: 'invalid-fetch-read',
+                feedback: {
+                    message: result.feedback.message
+                }
+            };
+
+            invalid.id = invalid.data_toast +'-'+ timestamp;
+            
+            createNewToast(document.querySelector('[aria-live="polite"]'), invalid.id, invalid.data_toast, invalid);
+            $('#'+ invalid.id +'.toast[data-toast="'+ invalid.data_toast +'"]').toast({
+                delay: 10000
+            }).toast('show');
+        }
+        if (document.querySelector('#'+result.feedback.target+' table.load')) {
+            document.querySelector('#'+result.feedback.target+' table').classList.remove('load');
+        }
     });
 };
 
-$('.pagination').on('click', '.page-link:not(.disabled)[data-id!="?"]:not(.prev):not(.next)', function(e) {
-    const root = $(this).parents('.card');
-    let page = $(this).data('id'),
-        limit = root.find('tbody').data('limit'),
+let clickPageLink = function(e) {
+    const root = document.getElementById(relatedTarget);
+    let page = e.target.getAttribute('data-id'),
+        limit = root.querySelector('#'+relatedTarget+' tbody').getAttribute('data-limit'),
         token = document.querySelector('body').getAttribute('data-token');
             
     let data = {
         'token': token,
         'halaman': page,
-        'limit': limit
+        'limit': limit,
+        'target': relatedTarget
     };
 
-    const search = root.find('input[name="search"]');
+    const search = root.querySelector('#'+relatedTarget+' input[name="search"]');
 
-    if (search.val().length > 0) {
-        data.search = search.val();
+    if (search.value.length > 0) {
+        data.search = search.value;
     }
     
-    fetchData('/admin/fetch/read/donasi/list', data, root);
-
+    // console.log(data);
+    const targetFetch = relatedTarget.split('list-')[1];
+    fetchData('/admin/fetch/read/'+targetFetch+'/list', data, root);
     e.preventDefault();
-});
+}
 
-let delayTimer;
-$('input[name="search"]').on('keyup', function() {
+let oldPage,
+    oldSearchValue = {},
+    relatedTarget,
+    delayTimer;
+
+let clickPagination = function(e) {
+    if (e.target.closest('.tab-pane.active.show') == null) {
+        relatedTarget = e.target.closest('.tab-pane:not(.active):not(.show)').id;
+    } else {
+        relatedTarget = e.target.closest('.tab-pane.active.show').id;
+    }
+    document.querySelector('#'+ relatedTarget + ' table').classList.add('load');
+    if (oldPage == e.target.getAttribute('data-id')) {
+        if (!delayTimer) {
+            clickPageLink(e);
+        }
+        clearTimeout(delayTimer);
+        delayTimer = setTimeout(() => {
+            delayTimer = undefined;
+            if (document.querySelector('#'+ relatedTarget + ' table').classList.contains('load')) {
+                document.querySelector('#'+ relatedTarget + ' table').classList.remove('load');
+            }
+        }, 1000);
+    } else {
+        clickPageLink(e);
+    }
+    oldPage = e.target.getAttribute('data-id');
+    // console.log('click');
+};
+
+$('.pagination').on('click', '.page-link:not(.disabled)[data-id!="?"]:not(.prev):not(.next)', clickPagination);
+
+
+let searchFunction = function(e) {
+    relatedTarget = e.target.closest('.tab-pane.active.show').id;
     let sValue = '';
     if ($(this).val().length > 0) {
         sValue = $(this).val();
         if (isNumber(sValue)) {
             $(this).val(numberToPrice(sValue));
-            // sValue = priceToNumber(sValue); -- jika ingin pakai ini hapus method format di kolumn serach getListDonasi
+            // sValue = priceToNumber(sValue); -- jika ingin pakai ini hapus method format di kolumn serach getListDonasi dan getListOrderDonasi
             sValue = $(this).val();
         }
     }
     clearTimeout(delayTimer);
     delayTimer = setTimeout(() => {
-        const root = $(this).parents('.card');
-        // let page = root.find('.pagination').data('id'),
-        let page = root.find('.pagination .page-link.active').data('id'),
-            limit = root.find('tbody').data('limit'),
+        const root = document.getElementById(relatedTarget);
+        let target = e.target.closest('.tab-pane.active.show').id,
+            limit = root.querySelector('tbody').getAttribute('data-limit'),
             token = document.querySelector('body').getAttribute('data-token');
 
         let data = {
             'token': token,
-            'halaman': page,
-            'limit': limit
+            'limit': limit,
+            'target': target
         };
+
+        if (root.querySelector('.pagination .page-link.active') != null) {
+            data.halaman = root.querySelector('.pagination .page-link.active').getAttribute('data-id');
+        }
 
         if ($(this).val().length > 0) {
             data.search = sValue;
         }
+
+        if (oldSearchValue[relatedTarget] != data.search) {
+            oldSearchValue[relatedTarget] = data.search;
+            document.querySelector('#'+ relatedTarget + ' table').classList.add('load');
+        } else {
+            document.querySelector('#'+ relatedTarget + ' table').classList.remove('load');
+            return false;
+        }
         
         // console.log(data);
-
-        fetchData('/admin/fetch/read/donasi/list', data, root);
+        target = target.split('list-')[1];
+        fetchData('/admin/fetch/read/'+ target +'/list', data, root);
     }, 1000);
-});
+}
+
+$('input[name="search"]').on('keyup', searchFunction);
+
+document.querySelectorAll('button[role="tab"]').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        if (e.target.type == undefined) {
+            relatedTarget = e.target.parentElement.getAttribute('data-target').replace('#list-','')
+        } else {
+            relatedTarget = e.target.getAttribute('data-target').replace('#list-','');
+        }
+    });
+})

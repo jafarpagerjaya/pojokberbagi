@@ -227,14 +227,14 @@ class HomeModel {
         return $this->_order;
     }
 
-    public function setHalaman($params, $table) { 
+    public function setHalaman($params, $table, $offset = false) { 
         $param1 = (($params-1) * $this->getLimit()) + 1;
         if ($param1 < 0) {
             $param1 = 0;
         }
         $param2 = $params * $this->getLimit();
         // Cek apakah OFFSET ATAU SEEK
-        if (is_null($this->getSearch())) {
+        if (is_null($this->getSearch()) && $offset === false) {
             // SEEK
             // Cek Direction
             if ($this->_order_direction == 'DESC') {
@@ -260,5 +260,9 @@ class HomeModel {
 
     public function getHalaman() {
         return $this->_halaman;
+    }
+
+    public function resetHalaman($array) {
+        $this->_halaman = $array;
     }
 }

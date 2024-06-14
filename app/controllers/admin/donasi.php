@@ -47,6 +47,9 @@ class DonasiController extends Controller {
                 'href' => '/assets/main/css/pagination.css'
             ),
             array(
+                'href' => '/assets/route/admin/core/css/form-element.css'
+            ),
+            array(
                 'href' => '/assets/route/admin/pages/css/donasi.css'
             ),
             array(
@@ -142,6 +145,15 @@ class DonasiController extends Controller {
         $this->data['list_donasi'] = $this->model->data();
         $this->data['limit'] = $this->model->getLimit();
         $this->data['pages'] = ceil($this->data['list_donasi']['total_record'] / $this->model->getLimit());
+
+        // order_donasi list
+        $this->model->resetHalaman(array(0, $this->model->getLimit()));
+        $this->model->setOrder('od.create_at');
+        $this->model->getListOrderDonasi();
+
+        $this->data['list_order'] = $this->model->data();
+        $this->data['limit_order'] = $this->model->getLimit();
+        $this->data['pages_order'] = ceil($this->data['list_order']['total_record'] / $this->model->getLimit());
         // Token for fetch
         $this->data[Config::get('session/token_name')] = Token::generate();
     }

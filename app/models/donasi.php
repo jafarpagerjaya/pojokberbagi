@@ -1,5 +1,18 @@
 <?php
 class DonasiModel extends HomeModel {
+
+    public function startTransaction() {
+        $this->db->startTransaction();
+    }
+
+    public function commit() {
+        $this->db->commit();
+    }
+
+    public function rollback() {
+        $this->db->rollback();
+    }
+
     public function isBantuanActive($params) {
         $this->db->query("SELECT tag, id_bantuan, nama, min_donasi, tanggal_akhir, status, blokir FROM bantuan WHERE id_bantuan = ? OR tag = ?", array('id_bantuan' => $params, 'tag' => $params));
         if ($this->db->count()) {
@@ -150,6 +163,19 @@ class DonasiModel extends HomeModel {
         return false;
     }
 
+    public function getDataTagihanOrderDonasiDonatur($id_order_donasi) {
+        $fields = "IF(ca.jenis = 'PG', ca.nama, NULL) pay_gate, dt.nama nama_donatur, dt.email, (CASE WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin IS NULL) THEN '/assets/images/default.png' WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin = 'P') THEN '/assets/images/female-avatar.jpg' WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin = 'L') THEN '/assets/images/male-avatar.jpg' ELSE gad.path_gambar END) path_gambar_akun, (CASE WHEN (gad.nama IS NULL AND dt.jenis_kelamin IS NULL) THEN 'default' WHEN (gad.nama IS NULL AND dt.jenis_kelamin = 'P') THEN 'female-avatar' WHEN (gad.nama IS NULL AND dt.jenis_kelamin = 'L') THEN 'male-avatar' ELSE gad.nama END) nama_path_gambar_akun, b.nama nama_bantuan, FORMAT(od.jumlah_donasi,0,'id_ID') jumlah_donasi, od.doa, od.create_at, cp.jenis, gcp.path_gambar path_gambar_cp, gcp.nama nama_path_gambar_cp";
+        $tables = "order_donasi od JOIN donatur dt USING(id_donatur) LEFT JOIN akun a USING(id_akun) LEFT JOIN gambar gad ON(a.id_gambar = gad.id_gambar) JOIN bantuan b USING(id_bantuan) JOIN channel_payment cp USING(id_cp) LEFT JOIN gambar gcp ON(cp.id_gambar = gcp.id_gambar) LEFT JOIN channel_account ca USING(id_ca)";
+
+        $this->db->get($fields, $tables, array('od.id_order_donasi', '=', $id_order_donasi));
+        
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return $this->data;
+        }
+        return false;
+    }
+
     public function getDataTagihanDonasiDonatur($id_donasi) {
         $fields = "IF(ca.jenis = 'PG', ca.nama, NULL) pay_gate, dt.nama nama_donatur, dt.email, (CASE WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin IS NULL) THEN '/assets/images/default.png' WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin = 'P') THEN '/assets/images/female-avatar.jpg' WHEN (gad.path_gambar IS NULL AND dt.jenis_kelamin = 'L') THEN '/assets/images/male-avatar.jpg' ELSE gad.path_gambar END) path_gambar_akun, (CASE WHEN (gad.nama IS NULL AND dt.jenis_kelamin IS NULL) THEN 'default' WHEN (gad.nama IS NULL AND dt.jenis_kelamin = 'P') THEN 'female-avatar' WHEN (gad.nama IS NULL AND dt.jenis_kelamin = 'L') THEN 'male-avatar' ELSE gad.nama END) nama_path_gambar_akun, b.nama nama_bantuan, FORMAT(dn.jumlah_donasi,0,'id_ID') jumlah_donasi, dn.doa, dn.create_at, cp.jenis, gcp.path_gambar path_gambar_cp, gcp.nama nama_path_gambar_cp";
         $tables = "donasi dn JOIN donatur dt USING(id_donatur) LEFT JOIN akun a USING(id_akun) LEFT JOIN gambar gad ON(a.id_gambar = gad.id_gambar) JOIN bantuan b USING(id_bantuan) JOIN channel_payment cp USING(id_cp) LEFT JOIN gambar gcp ON(cp.id_gambar = gcp.id_gambar) LEFT JOIN channel_account ca USING(id_ca)";
@@ -221,6 +247,38 @@ class DonasiModel extends HomeModel {
             return true;
         }
         return false;
+    }
+
+    public function getListOrderDonasi() {
+        $fields = "od.id_order_donasi, b.nama nama_bantuan, k.nama nama_kategori, IFNULL(k.warna,'#727272') warna, s.nama nama_sektor, od.external_id, formatTanggalFull(od.create_at) create_order_at, od.status, FORMAT(od.jumlah_donasi,0,'id_ID') jumlah_donasi, od.id_bantuan, od.id_donatur, IF(cp.kode = 'LIP','flip',NULL) flip, cp.jenis jenis_cp, IFNULL(gcp.path_gambar,'/assets/images/brand/favicon-pojok-icon.ico') path_gambar_cp, IFNULL(gcp.nama, CONCAT('Gambar ',cp.nama)) nama_path_gambar_cp";
+        $tables = "bantuan b
+        LEFT JOIN sektor s ON(s.id_sektor = b.id_sektor)
+        LEFT JOIN kategori k ON (k.id_kategori = b.id_kategori)
+        RIGHT JOIN order_donasi od ON(od.id_bantuan = b.id_bantuan)
+        LEFT JOIN channel_payment cp ON(cp.id_cp = od.id_cp) 
+        LEFT JOIN gambar gcp ON(gcp.id_gambar = cp.id_gambar)";
+        $data['data'] = array();
+        $filter = null;
+        $where = null;
+        if ($this->getSearch() != null) {
+            $filter = "CONCAT(IFNULL(od.id_order_donasi,''), IFNULL(b.nama,''), IFNULL(k.nama,''), IFNULL(s.nama,''), IFNULL(od.external_id,''), IFNULL(formatTanggalFull(od.create_at),''), IFNULL(od.status,''), CAST(IFNULL(FORMAT(od.jumlah_donasi,0,'id_ID'),'') AS CHAR CHARACTER SET UTF8MB4), IFNULL(IF(cp.kode = 'LIP','flip',NULL),''), IFNULL(cp.nama,''), IFNULL(CASE WHEN UPPER(cp.jenis) = 'TB' THEN 'Transfer Bank' WHEN UPPER(cp.jenis) = 'QR' THEN 'Qris' WHEN UPPER(cp.jenis) = 'VA' THEN 'Virtual Account' WHEN UPPER(cp.jenis) = 'GM' THEN 'Gerai Mart' WHEN UPPER(cp.jenis) = 'EW' THEN 'E-Wallet' WHEN UPPER(cp.jenis) = 'GI' THEN 'Giro' WHEN UPPER(cp.jenis) = 'TN' THEN 'Tunai' ELSE '' END,'')) LIKE '%{$this->getSearch()}%'";
+        }
+        $result = $this->countData($tables, $where, $filter);
+        $data['total_record'] = $result->jumlah_record;
+        if (is_null($filter)) {
+            $filter = '';
+        } else {
+            $filter = 'WHERE '.$filter;
+        }
+        $sql = "SELECT {$fields} FROM {$tables} {$filter} ORDER BY od.id_order_donasi {$this->getDirection()}, {$this->getOrder()} {$this->getDirection()} LIMIT {$this->getHalaman()[0]},{$this->getLimit()}";
+        $this->db->query($sql, array());
+
+        if ($this->db->count()) {
+            $data['data'] = $this->db->results();
+        }
+
+        $this->data = $data;
+        return true;
     }
 
     public function getListDonasi() {

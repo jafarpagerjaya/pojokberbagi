@@ -141,9 +141,10 @@ class PembayaranController extends Controller {
         );
 
         // Sementara pakai condisional tambahan AND jenis = 'TB'
-        $dataCP = $this->model->query("SELECT LOWER(cp.jenis) jenis_payment, cp.kode_paygate_brand FROM channel_payment cp JOIN channel_account ca USING(id_ca) JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp) WHERE cp.id_cp = ? AND cp.kode = 'LIP' OR cp.jenis = 'TB'", 
+        $dataCP = $this->model->query("SELECT LOWER(cp.jenis) jenis_payment, cp.kode_paygate_brand FROM channel_payment cp JOIN channel_account ca USING(id_ca) JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp) WHERE (cp.id_cp = ? AND cp.kode = 'LIP') OR (cp.jenis = 'TB' AND cp.id_cp = ?)", 
             array(
-                'cp.id_cp' => $dataDonasi['id_cp']
+                $dataDonasi['id_cp'],
+                $dataDonasi['id_cp']
             )
         );
         

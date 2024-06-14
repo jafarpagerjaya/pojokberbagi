@@ -59,145 +59,294 @@
 </div>
 <div class="row">
     <div class="col-12">
-        <div class="card" id="list-donasi">
-            <div class="card-header d-flex justify-content-between flex-column flex-md-row"
+        <div class="card position-relative">
+            <ul class="nav nav-tabs gap-2" id="nav-tab" role="tablist">
+                <li class="nav-item d-flex" role="presentation">
+                  <button class="m-0 font-weight-bold nav-link active" id="nav-donasi-tab" data-toggle="pill" data-target="#list-donasi" type="button" role="tab" aria-controls="nav-donasi" aria-selected="true">
+                    Kelola <span class="active">Donasi</span>
+                  </button>
+                </li>
+                <li class="nav-item d-flex" role="presentation">
+                  <button class="m-0 font-weight-bold nav-link" id="nav-order-tab" data-toggle="pill" data-target="#list-order-donasi" type="button" role="tab" aria-controls="nav-order" aria-selected="false">
+                    Kelola <span>Order Donasi</span>
+                  </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="tab-content">
+                <div class="tab-pane fade show active" id="list-donasi" role="tabpanel" aria-labelledby="donasi-tab">
+                    <div class="card-header d-flex justify-content-end flex-column flex-md-row p-0"
                 style="row-gap: 1rem; column-gap: .25rem;">
-                <div class="item">
-                    Kelola
-                    <span class="text-green">List Donasi</span>
-                </div>
-                <div class="right-header d-flex align-items-center gap-x-2 justify-content-between">
-                    <a href="/admin/donasi/buat" class="btn btn-sm btn-outline-primary py-2 px-3">Buat Data Donasi</a>
-                    <div class="status" style="font-size: .75rem; right: 1.25rem;">
-                        <div class="font-weight-bold text-black-50">
-                            Menampilkan
-                            <span class="text-orange">
-                                <?= count(is_countable($data['list_donasi']['data']) ? $data['list_donasi']['data'] : []); ?>
-                            </span>
-                            dari
+                        <div class="right-header d-flex align-items-center gap-x-2 justify-content-between p-4">
+                            <a href="/admin/donasi/buat" class="btn btn-sm btn-outline-primary py-2 px-3">Buat Data Donasi</a>
+                            <div class="log-info" style="font-size: .75rem; right: 1.25rem;">
+                                <div class="font-weight-bold text-black-50">
+                                    Menampilkan
+                                    <span class="text-orange">
+                                        <?= count(is_countable($data['list_donasi']['data']) ? $data['list_donasi']['data'] : []); ?>
+                                    </span>
+                                    dari
+                                </div>
+                                <div class="float-right badge badge-pill badge-primary">
+                                    <span class="counter-card"
+                                        data-count-up-value="<?= $data['list_donasi']['total_record']; ?>"></span>
+                                    Donasi
+                                </div>
+                            </div>
                         </div>
-                        <div class="float-right badge badge-pill badge-primary">
-                            <span class="counter-card"
-                                data-count-up-value="<?= $data['list_donasi']['total_record']; ?>"></span>
-                            Donasi
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="font-weight-bold">Id Donasi</th>
+                                        <th class="font-weight-bold auto">Status</th>
+                                        <th class="font-weight-bold auto">Nominal (Rp)</th>
+                                        <th class="font-weight-bold auto">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody<?= (isset($this->data['limit']) ? ' data-limit="'. $this->data['limit'] .'"' : '') ?>>
+                                    <?php 
+                                        if (count(is_countable($data['list_donasi']['data']) ? $data['list_donasi']['data'] : []) > 0) {
+                                            foreach($data['list_donasi']['data'] as $listDonasi) {
+                                                if ($listDonasi->bayar == '1') {
+                                                    $badge = 'badge-success';
+                                                    $verivikasi = 'Sudah Diverivikasi';
+                                                } else {
+                                                    $badge = 'badge-warning';
+                                                    $verivikasi = 'Belum Diverivikasi';
+                                                }
+                                    ?>
+                                    <tr data-donasi-id="<?= $listDonasi->id_donasi; ?>">
+                                        <td class="py-2">
+                                            <a href="#" class="id-donasi text-primary font-weight-bolder"
+                                                data-id="<?= $listDonasi->id_donasi; ?>">
+                                                <?= (isset($listDonasi->id_donasi) ? '<span>'. $listDonasi->id_donasi .'</span>':''); ?>
+                                            </a><span class="font-weight-bolder" <?=(!empty($listDonasi->warna) ? ' style="color: '
+                                                . $listDonasi->warna . '"' : '') ?>>
+                                                <?= $listDonasi->nama_bantuan; ?>
+                                            </span>
+                                            <?= (!empty($listDonasi->nama_sektor) ? '<span class="text-muted"> (' . $listDonasi->nama_sektor . ')</span>' : ''); ?>
+                                            <div class="time small text-black-50 font-weight-bolder">
+                                                <?= (isset($listDonasi->create_donasi_at) ? '<span>'. $listDonasi->create_donasi_at .'</span>':''); ?>
+                                            </div>
+                                        </td>
+                                        <td class="py-2">
+                                            <span class="badge <?= $badge; ?>">
+                                                <?= $verivikasi; ?>
+                                            </span>
+                                            <?= (!empty($listDonasi->waktu_bayar) ? '<div class="small text-black-50 font-weight-bolder"><span>' . $listDonasi->waktu_bayar . '</span></div>' : ''); ?>
+                                        </td>
+                                        <td class="py-2">
+                                            <div class="media align-items-center">
+                                                <div class="media-body">
+                                                    <div class="name mb-0 text-black-50 font-weight-bold">
+                                                        <?= (isset($listDonasi->jumlah_donasi) ? '<span>'. $listDonasi->jumlah_donasi .'</span>':''); ?>
+                                                    </div>
+                                                    <div class="small text-black-50 font-weight-bolder">
+                                                        <?= (isset($listDonasi->jenis_cp) ? '<span>'.Utility::keteranganJenisChannelPayment($listDonasi->jenis_cp).'</span>':''); ?>
+                                                        <?= (!is_null($listDonasi->flip) ? '<span class="badge badge-warning">flip</span>':''); ?>
+                                                    </div>
+                                                </div>
+                                                <div class="avatar rounded ml-3 bg-transparent border"
+                                                    data-id-donatur="<?= $listDonasi->id_donatur; ?>">
+                                                    <img src="<?= $listDonasi->path_gambar_cp; ?>"
+                                                        alt="<?= $listDonasi->nama_path_gambar_cp; ?>" class="img-fluid">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-right auto">
+                                            <div class="dropdown show">
+                                                <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow"
+                                                    x-placement="top-end">
+                                                    <a class="dropdown-item"
+                                                        href="/admin/bantuan/data/<?= $listDonasi->id_bantuan; ?>">Lihat Program
+                                                        Donasi</a>
+                                                    <?= ($listDonasi->bayar == '1' ? '<a class="dropdown-item" data-id="'.$listDonasi->id_donasi.'" href="javascript():;" data-toggle="modal" data-target="#modalKuitansiDonasi">Kuitansi</a>' : ''); ?>
+                                                    </a>
+                                                    <!-- <a class="dropdown-item" href="#">Lihat Data Donatur</a> -->
+                                                    <a class="verivikasi dropdown-item<?= ($listDonasi->bayar == '1' ? ' disabled">Sudah
+                                                        Terverivikasi' : ' text-warning font-weight-bold"
+                                                        data-id="'.$listDonasi->id_donasi.'" href="javascript():;"
+                                                        data-toggle="modal" data-target="#modalValidasiDonasi">Verivikasi');
+                                                        ?>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php 
+                                            }
+                                        } else {
+                                        
+                                        }
+                                    ?>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th class="font-weight-bold">Id Donasi</th>
+                                            <th class="font-weight-bold">Status</th>
+                                            <th class="font-weight-bold">Nominal (Rp)</th>
+                                            <th class="font-weight-bold">Aksi</th>
+                                        </tr>
+                                    </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row align-items-center gap-y-3">
+                            <div class="col">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Cari.." name="search"
+                                        autocomplete="off" <?=(isset($data['search']) ? 'value="' . $data['search'] . '"' : '' )
+                                        ?>>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <ul class="pagination pagination-sm justify-content-center justify-content-md-end mb-0"
+                                    data-pages="<?= $this->data['pages']; ?>">
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="card-body p-0">
-                <table class="table table-borderless table-hover table-responsive-md">
-                    <thead>
-                        <tr>
-                            <th class="font-weight-bold">Id Donasi</th>
-                            <th class="font-weight-bold auto">Status</th>
-                            <th class="font-weight-bold auto">Nominal (Rp)</th>
-                            <th class="font-weight-bold auto">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody<?= (isset($this->data['limit']) ? ' data-limit="'. $this->data['limit'] .'"' : '') ?>>
-                        <?php 
-                            if (count(is_countable($data['list_donasi']['data']) ? $data['list_donasi']['data'] : []) > 0) {
-                                foreach($data['list_donasi']['data'] as $listDonasi) {
-                                    if ($listDonasi->bayar == '1') {
-                                        $badge = 'badge-success';
-                                        $verivikasi = 'Sudah Diverivikasi';
+                <div class="tab-pane fade" id="list-order-donasi" role="tabpanel" aria-labelledby="order-tab">
+                    <div class="card-header row justify-content-end m-0 border-0">
+                        <div class="col-12 col-md-4 px-0">
+                            <div class="form-label-group">
+                                <input type="text" id="input-search-order-donasi" class="form-control" name="search" placeholder="Judul" autocomplete="off" maxlength="50" spellcheck="false">
+                                <label for="input-search-order-donasi" class="form-control-label"></label>
+                                <span class="input-char-left"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="font-weight-bold">Link Id</th>
+                                        <th class="font-weight-bold auto">Status</th>
+                                        <th class="font-weight-bold auto">Nominal (Rp)</th>
+                                        <th class="font-weight-bold auto">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody<?= (isset($this->data['limit_order']) ? ' data-limit="'. $this->data['limit_order'] .'"' : '') ?>>
+                                    <?php 
+                                    if (count(is_countable($data['list_order']['data']) ? $data['list_order']['data'] : []) > 0) {
+                                        foreach($data['list_order']['data'] as $listOrder) {
+                                            if ($listOrder->status == 'PENDING') {
+                                                $badge = 'badge-warning';
+                                            } else if ($listOrder->status == 'FAILED') {
+                                                $badge = 'badge-danger';
+                                            } else if ($listOrder->status == 'SUCCESFUL') {
+                                                $badge = 'badge-success';
+                                            } else {
+                                                $badge = '';
+                                            }
+                                    ?>
+                                    <tr<?= (isset($listOrder->id_order_donasi) ? ' data-order-id="'. $listOrder->id_order_donasi .'"' : ''); ?>>
+                                        <td>
+                                            <div class="d-flex gap-x-1">
+                                                <div class="id">
+                                                    <span class="text-primary font-weight-bolder"
+                                                        data-id="<?= $listOrder->id_order_donasi; ?>">
+                                                        #<?= $listOrder->id_order_donasi; ?>
+                                                    </span>
+                                                </div>
+                                                <div class="desc">
+                                                    <a <?= (isset($listOrder->id_bantuan) ? 'href="/bantuan/data/'.$listOrder->id_bantuan.'"' : 'javascript::void(0);'); ?> class="font-weight-bolder" <?=(!empty($listOrder->warna) ? ' style="color: '
+                                                        . $listOrder->warna . '"' : '') ?>>
+                                                        <?= (isset($listOrder->nama_bantuan) ? '<span>'. $listOrder->nama_bantuan .'</span>':''); ?>
+                                                    </a>
+                                                    <?= (!empty($listOrder->nama_sektor) ? '<span class="text-muted"> (' . $listOrder->nama_sektor . ')</span>' : ''); ?>
+                                                    <div class="time small text-black-50 font-weight-bolder">
+                                                        <?= (isset($listOrder->create_order_at) ? '<span>'. $listOrder->create_order_at .'</span>':''); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge <?= $badge; ?>">
+                                                <?= $listOrder->status; ?>
+                                            </span>
+                                            <?= (!empty($listDonasi->external_id) ? '<div class="small text-black-50 font-weight-bolder">' . $listDonasi->external_id . '</div>' : ''); ?>
+                                        </td>
+                                        <td>
+                                            <div class="media align-items-center">
+                                                <div class="media-body">
+                                                    <div class="name mb-0 text-black-50 font-weight-bold">
+                                                        <?= (isset($listOrder->jumlah_donasi) ? '<span>'. $listOrder->jumlah_donasi .'</span>':''); ?>
+                                                    </div>
+                                                    <div class="small text-black-50 font-weight-bolder">
+                                                        <?= (isset($listOrder->jenis_cp) ? '<span>'.Utility::keteranganJenisChannelPayment($listOrder->jenis_cp).'</span>':''); ?>
+                                                        <?= (!is_null($listOrder->flip) ? '<span class="badge badge-warning">flip</span>':''); ?>
+                                                    </div>
+                                                </div>
+                                                <div class="avatar rounded ml-3 bg-transparent border"
+                                                    data-id-donatur="<?= $listOrder->id_donatur; ?>">
+                                                    <img src="<?= $listOrder->path_gambar_cp; ?>"
+                                                        alt="<?= $listOrder->nama_path_gambar_cp; ?>" class="img-fluid">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown show">
+                                                <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow"
+                                                    x-placement="top-end">
+                                                    <?= (isset($listOrder->id_bantuan) ? '<a class="dropdown-item" href="/admin/bantuan/data/'. $listOrder->id_bantuan .'">Lihat Campaign</a>' : ''); ?>
+                                                    </a>
+                                                    <?= (isset($listOrder->flip) ? '' : '<a class="verivikasi dropdown-item' . ($listOrder->status == 'SUCCESFUL' ? ' disabled">Sudah Terverivikasi' : ' text-warning font-weight-bold" data-id="'.$listOrder->id_order_donasi.'" href="javascript::void(0);" data-toggle="modal" data-target="#modalValidasiDonasi">Verivikasi') . '</a>');?>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php 
+                                        }
                                     } else {
-                                        $badge = 'badge-warning';
-                                        $verivikasi = 'Belum Diverivikasi';
+                                        echo '<tr><td colspan="4">Sementara belum ada data baru</td></tr>';
                                     }
-                        ?>
-                        <tr>
-                            <td class="py-2">
-                                <a href="#" class="id-donasi text-primary font-weight-bolder"
-                                    data-id="<?= $listDonasi->id_donasi; ?>">
-                                    <?= $listDonasi->id_donasi; ?>
-                                </a><span class="font-weight-bolder" <?=(!empty($listDonasi->warna) ? ' style="color: '
-                                    . $listDonasi->warna . '"' : '') ?>>
-                                    <?= $listDonasi->nama_bantuan; ?>
-                                </span>
-                                <?= (!empty($listDonasi->nama_sektor) ? '<span class="text-muted"> (' . $listDonasi->nama_sektor . ')</span>' : ''); ?>
-                                <div class="time small text-black-50 font-weight-bolder">
-                                    <?= $listDonasi->create_donasi_at; ?>
-                                </div>
-                            </td>
-                            <td class="py-2">
-                                <span class="badge <?= $badge; ?>">
-                                    <?= $verivikasi; ?>
-                                </span>
-                                <?= (!empty($listDonasi->waktu_bayar) ? '<div class="small text-black-50 font-weight-bolder">' . $listDonasi->waktu_bayar . '</div>' : ''); ?>
-                            </td>
-                            <td class="py-2">
-                                <div class="media align-items-center">
-                                    <div class="media-body">
-                                        <div class="name mb-0 text-black-50 font-weight-bold">
-                                            <?= $listDonasi->jumlah_donasi; ?>
-                                        </div>
-                                        <div class="small text-black-50 font-weight-bolder">
-                                            <?= Utility::keteranganJenisChannelPayment($listDonasi->jenis_cp); ?>
-                                            <?= (!is_null($listDonasi->flip) ? '<span class="badge badge-warning">flip</span>':''); ?>
-                                        </div>
-                                    </div>
-                                    <div class="avatar rounded ml-3 bg-transparent border"
-                                        data-id-donatur="<?= $listDonasi->id_donatur; ?>">
-                                        <img src="<?= $listDonasi->path_gambar_cp; ?>"
-                                            alt="<?= $listDonasi->nama_path_gambar_cp; ?>" class="img-fluid">
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-right auto">
-                                <div class="dropdown show">
-                                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow"
-                                        x-placement="top-end">
-                                        <a class="dropdown-item"
-                                            href="/admin/bantuan/data/<?= $listDonasi->id_bantuan; ?>">Lihat Program
-                                            Donasi</a>
-                                        <?= ($listDonasi->bayar == '1' ? '<a class="dropdown-item" data-id="'.$listDonasi->id_donasi.'" href="javascript():;" data-toggle="modal" data-target="#modalKuitansiDonasi">Kuitansi</a>' : ''); ?>
-                                        </a>
-                                        <!-- <a class="dropdown-item" href="#">Lihat Data Donatur</a> -->
-                                        <a class="dropdown-item<?= ($listDonasi->bayar == '1' ? ' disabled">Sudah
-                                            Terverivikasi' : ' text-warning font-weight-bold"
-                                            data-id="'.$listDonasi->id_donasi.'" href="javascript():;"
-                                            data-toggle="modal" data-target="#modalValidasiDonasi">Verivikasi');
-                                            ?>
-                                        </a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <?php 
-                                }
-                            } else {
-                            
-                            }
-                        ?>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th class="font-weight-bold">Id Donasi</th>
-                                <th class="font-weight-bold">Status</th>
-                                <th class="font-weight-bold">Nominal (Rp)</th>
-                                <th class="font-weight-bold">Aksi</th>
-                            </tr>
-                        </tfoot>
-                </table>
-            </div>
-            <div class="card-footer">
-                <div class="row align-items-center gap-y-3">
-                    <div class="col">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Cari.." name="search"
-                                autocomplete="off" <?=(isset($data['search']) ? 'value="' . $data['search'] . '"' : '' )
-                                ?>>
+                                    ?>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th class="font-weight-bold">Link Id</th>
+                                        <th class="font-weight-bold auto">Status</th>
+                                        <th class="font-weight-bold auto">Nominal (Rp)</th>
+                                        <th class="font-weight-bold auto">Aksi</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
-                    <div class="col">
-                        <ul class="pagination pagination-sm justify-content-center justify-content-md-end mb-0"
-                            data-pages="<?= $this->data['pages']; ?>">
-                        </ul>
+                    <div class="card-footer border-0">
+                        <div class="row align-items-center gap-y-3">
+                            <div class="col-12 col-md">
+                                <div class="log-info" style="font-size: .75rem; right: 1.25rem;">
+                                    <div class="font-weight-bold text-black-50">
+                                        Menampilkan
+                                        <span class="text-orange">
+                                            <?= count(is_countable($data['list_order']['data']) ? $data['list_order']['data'] : []); ?>
+                                        </span>
+                                        dari
+                                        <span class="counter-card" data-count-up-value="<?= $data['list_order']['total_record']; ?>"></span>
+                                        Data
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md">
+                                <ul class="pagination pagination-sm justify-content-center justify-content-md-end mb-0"<?= (!isset($this->data['pages_order'])? '':'data-pages="'. $this->data['pages_order'] .'"'); ?>>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

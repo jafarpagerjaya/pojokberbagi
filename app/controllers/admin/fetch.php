@@ -331,6 +331,11 @@ class FetchController extends Controller {
         $this->checkToken($decoded['token']);
 
         switch ($params[0]) {
+            case 'order_donasi':
+                $params[0] = 'orderDonasi';
+                // orderDonasiVerivikasi
+            break;
+
             case 'donasi':
                 // donasiVerivikasi
             break;
@@ -385,6 +390,10 @@ class FetchController extends Controller {
                     // informasiListRead
                     $params[0] .= 'List';
                 }
+            break;
+            case 'order-donasi':
+                // donasi Params
+                $params[0] = 'orderDonasi';
             break;
             case 'donasi':
                 // donasi Params
@@ -485,8 +494,13 @@ class FetchController extends Controller {
                 // kuitansi Params
             break;
 
+            case 'order_donasi':
+                $params[0] = 'orderDonasi';
+                // orderDonasiGet Params
+            break;
+
             case 'donasi':
-                // donasi Params
+                // donasiGet Params
             break;
 
             case 'rencana':
@@ -4268,6 +4282,102 @@ class FetchController extends Controller {
         return false;
     }
 
+    private function orderDonasiVerivikasi($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        unset($decoded['payment_date']);
+        unset($decoded['payment_time']);
+
+        $waktu_bayar = new DateTime(date('Y-m-d', strtotime($decoded['waktu_bayar'])));
+        $decoded['waktu_bayar'] = $waktu_bayar->format('Y-m-d H:i:s');
+
+        $this->model('Auth');
+        $hasil = $this->model->getData('adm.id_pegawai','akun JOIN admin adm USING(id_akun) JOIN pegawai p USING(id_pegawai)',array('id_akun','=', $this->model->data()->id_akun));
+        if ($hasil) {
+            $decoded['id_pegawai'] = $this->model->data()->id_pegawai;
+        }
+
+        $this->model('Donasi');
+        $this->model->startTransaction();
+        $this->model->query("SELECT COUNT(id_donasi)+1 as sequence_donasi FROM donasi");
+        if (!$this->model->affected()) {
+            $this->model->rollback();
+            $this->_result['feedback'] = array(
+                'message' => 'Failed to get sequence donasi'
+            );
+            $this->result();
+            return false;
+        }
+        $sequence_donasi = $this->model->getResult()->sequence_donasi;
+        try {
+            $this->model->query("INSERT INTO donasi(kode_pembayaran,alias,kontak,doa,jumlah_donasi,bayar,waktu_bayar,notifikasi,id_bantuan,id_donatur,id_cp,id_donasi) SELECT kode_pembayaran,alias,kontak,doa,jumlah_donasi,'1',?,notifikasi,id_bantuan,id_donatur,order_donasi.id_cp,? FROM order_donasi JOIN channel_payment cp USING(id_cp) WHERE id_order_donasi = ? AND cp.jenis != 'LIP'", 
+            array(
+                'waktu_bayar' => $decoded['waktu_bayar'],
+                'id_donasi' => $sequence_donasi,
+                'id_order_donasi' => $decoded['id_order_donasi']),
+            );
+        } catch (\Throwable $th) {
+            $this->model->rollback();
+            $pesan = explode(':',$th->getMessage());
+            $this->_result['feedback'] = array(
+                'message' => '<b>'. current($pesan) .'</b> '. end($pesan)
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->model->delete('order_donasi', array('id_order_donasi','=',$decoded['id_order_donasi']));
+
+        if (!$this->model->affected()) {
+            $this->model->rollback();
+            $this->_result['feedback'] = array(
+                'message' => 'Gagal melakukan delete order_donasi'
+            );
+            $this->result();
+            return false;
+        }
+
+        try {
+            $this->model->query("UPDATE kuitansi SET id_pengesah = ? WHERE id_donasi = ?", array('id_pengesah' => $decoded['id_pegawai'], 'id_donasi' => $sequence_donasi));
+        } catch (\Throwable $th) {
+            $this->model->rollback();
+            $pesan = explode(':',$th->getMessage());
+            $this->_result['feedback'] = array(
+                'message' => 'Gagal melakukan update pengesah kuitansi'
+            );
+            $this->result();
+            return false;
+        }
+
+        $this->model->commit();
+
+        $this->model->getData('COALESCE(d.kontak, d2.kontak) kontak, COALESCE(d.alias, d2.samaran, d2.nama) nama, b.nama nama_bantuan','donasi d JOIN donatur d2 USING(id_donatur) JOIN bantuan b USING(id_bantuan)', array('d.id_donasi','=',$sequence_donasi));
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = array(
+                'message' => 'Failed to get data donatur before send Notif WA'
+            );
+            $this->result();
+            return false;
+        }
+
+        if (!is_null($this->model->getResult()->kontak)) {
+            // Kirim Notifikasi WA VIA fonnte
+            $text_pesan = 'Hi, *'. Sanitize::escape2($this->model->getResult()->nama) .'* donasimu telah kami terima, makasih ya kamu berpartisipasi di program *' . Sanitize::escape2($this->model->getResult()->nama_bantuan) . '*. Gunakan akun berbagi di https://pojokberbagi.id untuk melihat perkembangan dari donasimu atau scan QR yang ada di kuitansimu';
+            $response = Fonnte::send(Sanitize::toInt2($this->model->getResult()->kontak), $text_pesan);
+            $this->_result['wa-api'] = $response;
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'message' => 'Donasi berhasil diverivikasi secara manual',
+            'data' => array('id_donasi' => $sequence_donasi)
+        );
+
+        $this->result();
+        Session::delete('toast');
+        return false;
+    }
+
     private function donasiVerivikasi($decoded) {
         $decoded = Sanitize::thisArray($decoded);
 
@@ -4416,6 +4526,63 @@ class FetchController extends Controller {
         return false;
     }
 
+    // Daftar Order Donasi
+    private function orderDonasiListRead($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+
+        if (!isset($decoded['limit'])) {
+            $decoded['limit'] = 1;
+        }
+
+        if (!isset($decoded['halaman'])) {
+            $decoded['halaman'] = 1;
+        }
+
+        $this->model('Donasi');
+
+        if (isset($decoded['search'])) {
+            $this->model->setSearch($decoded['search']);
+        }
+
+        $data = array();
+
+        $this->model->setLimit($decoded['limit']);
+        $this->model->setDirection('DESC');
+        $offset_mode = true;
+        $this->model->setHalaman($decoded['halaman'], 'order_donasi', $offset_mode);
+        $this->model->setOrder('od.create_at');
+        $this->model->getListOrderDonasi();
+
+        if ($this->model->affected()) {
+            $data = $this->model->data();
+        }
+
+        if (!isset($data['data'])) {
+            $data['data'] = array();
+        }
+
+        if (!isset($data['total_record'])) {
+            $data['total_record'] = $this->model->data()['total_record'];
+        }
+
+        $pages = ceil($data['total_record']/$decoded['limit']);
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => $data['data'],
+            'pages' => $pages,
+            'total_record' => $data['total_record'],
+            'target' => $decoded['target']
+        );
+
+        $this->result();
+
+        if ($this->_result['error'] == false) {
+            Session::delete('toast');
+        }
+        return false;
+    }
+
     // Daftar Seluruh Donasi
     private function donasiListRead($decoded) {
         $decoded = Sanitize::thisArray($decoded);
@@ -4461,7 +4628,8 @@ class FetchController extends Controller {
             'data' => $data['data'],
             // 'message' => 'ok',
             'pages' => $pages,
-            'total_record' => $data['total_record']
+            'total_record' => $data['total_record'],
+            'target' => $decoded['target']
         );
 
         $this->result();
@@ -5872,6 +6040,31 @@ class FetchController extends Controller {
         $this->_result['error'] = false;
         $this->_result['feedback'] = array(
             'data' => $data
+        );
+
+        $this->result();
+
+        if ($this->_result['error'] == false) {
+            Session::delete('toast');
+        }
+        return false;
+    }
+
+    private function orderDonasiGet($decoded) {
+        $decoded = Sanitize::thisArray($decoded);
+        
+        $this->model('Donasi');
+        $this->model->getDataTagihanOrderDonasiDonatur($decoded['id_order_donasi']);
+        
+        if (!$this->model->affected()) {
+            $this->_result['feedback']['message'] = 'Terjadi kesalahan saat mengambil data tagihan order donasi donatur';
+            $this->result();
+            return false;
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['feedback'] = array(
+            'data' => $this->model->data()
         );
 
         $this->result();
