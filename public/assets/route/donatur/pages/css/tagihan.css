@@ -1,0 +1,76 @@
+table.table thead th {
+    border-top: 0px !important;
+}
+
+table.table tfoot th {
+    border-bottom: 0px !important;
+}
+
+/* Nav Tab */
+#nav-tab {
+    z-index: 1;
+    border-radius: inherit;
+    border-bottom: 0px;
+    display: flex;
+}
+
+#nav-tab button {
+    padding: 0.75em 1.5em;
+    border: 0px;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #fff !important;
+}
+
+.nav-tabs .nav-link:not(.active) {
+    border-style: solid !important;
+    border-color: var(--lighter) !important;
+}
+
+.nav-tabs .nav-item:first-child .nav-link.active > span {
+    color: var(--green);
+}
+
+.nav-tabs .nav-item:not(:first-child) .nav-link.active > span {
+    color: var(--orange);
+}
+
+.nav-tabs .nav-link:not(.active) {
+    background-color: var(--secondary);
+}
+
+.nav-tabs .nav-item:first-child .nav-link:not(.active) {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: .375rem;
+    border-bottom-width: 1px !important;
+    border-right-width: 1px !important;
+}
+
+.nav-tabs .nav-item:not(:first-child) .nav-link:not(.active) {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: .375rem;
+    border-bottom-right-radius: .375rem;
+    border-bottom-width: 1px !important;
+    border-left-width: 1px !important;
+    border-right-width: 1px !important;
+}
+
+.nav-item button:focus {
+    outline: none !important;
+}
+
+.form-label-group label {
+    left: 1.25em;
+}
+
+.form-label-group input {
+    padding: 1em 1.25em;
+} 
+
+@media (min-width: 768px) {
+    #nav-tab {
+        position: absolute;
+    }
+}

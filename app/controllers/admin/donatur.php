@@ -55,6 +55,11 @@ class DonaturController extends Controller {
                 $this->cr();
                 return VIEW_PATH.'admin'.DS.'donatur'.DS.'cre.html';
             break;
+
+            case 'IT':
+                $this->sys();
+                return VIEW_PATH.'admin'.DS.'donatur'.DS.'sys.html';
+            break;
             
             default:
                 # code...

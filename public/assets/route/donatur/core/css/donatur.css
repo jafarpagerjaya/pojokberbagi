@@ -90,6 +90,28 @@ p {
     z-index: 1000;
 }
 
+.card table .media img[alt*="Bank"],
+.card table .media img[alt="qris"],
+.card table .media img[alt="BJB"],
+.card table .media img[alt="BSI"],
+.card table .media img[alt="BRI"] {
+    margin-top: -0.3rem;
+}
+
+.radio-box img[src*="dana"],
+.radio-box img[src*="gopay"],
+.radio-box img[src*="doku"],
+.radio-box img[src*="linkaja"] {
+    margin-top: 0.5rem;
+}
+
+.radio-box img[alt*="Danamon"],
+.radio-box img[alt*="CIMB"],
+.radio-box img[alt*="BCA"],
+.radio-box img[alt*="BNI"] {
+    margin-top: 0.75rem;
+}
+
 @media (min-width: 360px) {
     p {
         font-size: 0.775rem !important;

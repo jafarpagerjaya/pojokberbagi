@@ -175,14 +175,269 @@ class FetchController extends Controller {
     // Method Update
     private function paymentMethodUpdate($decoded) {
         $this->model('Donasi');
-        $this->model->update('donasi', array('id_cp' => Sanitize::escape2($decoded['id_cp'])), array('id_donasi','=',Sanitize::escape2($decoded['id_donasi'])));
-        if ($this->model->affected()) {
-            $this->_result['error'] = false;
-            $this->_result['feedback'] = 'Metode pembayaran tagihan donasi berhasil diganti';
-        } else {
-            $this->_result['feedback'] = 'Terjadi kegagalan update disisi server';
+        $this->model->getData('od.id_cp, LOWER(cp.jenis) jenis, cp.kode, od.end_at','order_donasi od JOIN channel_payment cp USING(id_cp)',array('id_order_donasi','=',Sanitize::escape2($decoded['id_order_donasi'])));
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = 'Failed to get current jenis channel_payment on update payment method';
+            $this->result();
+            return false;
         }
+        $currentDataCP = $this->model->getResult();
+
+        if (!is_null($currentDataCP->end_at) && $currentDataCP->jenis != 'tb') {
+            $expiry = strtotime($currentDataCP->end_at);
+            if ($expiry > time()) {
+                $this->_result['feedback'] = 'Metode pembayaran lama belum expired sehingga belum boleh diganti';
+                $this->result();
+                return false;
+            }
+        }
+
+        $this->model->query("SELECT b.blokir, b.status, b.nama, b.tag, od.external_id, od.alias, od.jumlah_donasi, d.email FROM order_donasi od JOIN bantuan b USING(id_bantuan) JOIN donatur d USING(id_donatur) WHERE od.id_order_donasi = ?", array(
+            'od.id_order_donasi' => Sanitize::escape2($decoded['id_order_donasi'])
+        ));
+
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = 'Bantuan sudah tidak aktif';
+            $this->result();
+            return false;
+        }
+
+        $data_order_donasi = $this->model->getResult();
+
+        if ($data_order_donasi->blokir == '1') {
+            $this->_result['feedback'] = 'Bantuan <b>'. $data_order_donasi->nama .'</b> dengan ' . Utility::keteranganStatusBantuan($data_order_donasi->status) .' sedang diblokir';
+            $this->result();
+            return false;
+        }
+
+        if ($data_order_donasi->status != 'D') {
+            $this->_result['feedback'] = 'Bantuan <b>'. $data_order_donasi->nama .'</b> ' . Utility::keteranganStatusBantuan($data_order_donasi->status);
+            $this->result();
+            return false;
+        }
+
+        $dataCP = $this->model->query("SELECT LOWER(cp.jenis) jenis_payment, cp.kode_paygate_brand FROM channel_payment cp JOIN channel_account ca USING(id_ca) JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp) WHERE (cp.id_cp = ? AND cp.kode = 'LIP') OR (cp.jenis = 'TB' AND cp.id_cp = ?)", 
+            array(
+                Sanitize::escape2($decoded['id_cp']),
+                Sanitize::escape2($decoded['id_cp'])
+            )
+        );
         
+        if ($dataCP == false) {
+            $this->_result['feedback'] = 'Metode pembayaran tidak aktif, silahkan pilih metode lainnya';
+            $this->result();
+            return false;
+        }
+
+        $dataCP = $this->model->getResult();
+        $jenis_payment = $dataCP->jenis_payment;
+
+        $dataOrderDonasi = array(
+            'id_cp' => Sanitize::escape2($decoded['id_cp']),
+            'external_id' => NULL,
+            'url' => NULL,
+            'kode_pembayaran' => NULL,
+            'end_at' => NULL
+        );
+
+        if ($jenis_payment != 'tb' && $jenis_payment != 'gi' && $jenis_payment != 'tn') {
+
+            $secret_key = FLIP_API_KEY;
+
+            $encoded_auth = base64_encode($secret_key.":");
+
+            $ch = curl_init();
+
+            curl_setopt($ch, CURLOPT_URL, FLIP_API."/v2/pwf/bill");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+            curl_setopt($ch, CURLOPT_POST, TRUE);
+
+            $hash_transaksi = $data_order_donasi->tag . '/' . Hash::unique();
+
+            $payloads = [
+                "title" => "Donasi ". $data_order_donasi->nama,
+                "amount" => $data_order_donasi->jumlah_donasi,
+                "type" => "SINGLE",
+                "expired_date" => date('Y-m-d H:i', strtotime('+ 1 day')),
+                // "redirect_url" => "https://pojokberbagi.id/donasi/pembayaran/transaksi/" . $hash_transaksi,
+                "status" => "ACTIVE",
+                "step" => 3,
+                "is_address_required" => 1,
+                "is_phone_number_required" => 0,
+                "sender_name" => $data_order_donasi->alias,
+                "sender_email" => $data_order_donasi->email,
+                "sender_address" => Config::getHTTPHost(),
+                // Ini untuk Step 3 namun Step 3 hanya bisa untuk VA dan QRIS
+                "sender_bank" => ($dataCP->kode_paygate_brand == 'gopay' ? 'qris' : $dataCP->kode_paygate_brand),
+                "sender_bank_type" => Utility::flipSenderBankType($jenis_payment)
+            ];
+            
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payloads));
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                "Authorization: Basic ".$encoded_auth,
+                "Content-Type: application/x-www-form-urlencoded"
+            ));
+
+            curl_setopt($ch, CURLOPT_USERPWD, $secret_key.":");
+
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $dataResponse = json_decode($response);
+
+            if (property_exists($dataResponse, 'code')) {
+                if ($dataResponse->code == 'VALIDATION_ERROR') {
+                    $this->_result['feedback'] = "Flip Accept Payment [STEP 3] ". $dataResponse->errors[0]->message;
+                    $this->result();
+                    return false;
+                }
+            }
+
+            $dataOrderDonasi['external_id'] = $dataResponse->link_id;
+            $dataOrderDonasi['url'] = $dataResponse->link_url;
+            $dataOrderDonasi['kode_pembayaran'] = $hash_transaksi;
+            $dataOrderDonasi['end_at'] = $dataResponse->expired_date;
+        }
+
+        $this->model->startTransaction();
+        $this->model->update('order_donasi', $dataOrderDonasi, array('id_order_donasi','=',Sanitize::escape2($decoded['id_order_donasi'])));
+        if (!$this->model->affected()) {
+            $this->_result['feedback'] = 'Terjadi kegagalan update order_donasi';
+            $this->result();
+            return false;
+        }
+
+        if ($jenis_payment == 'va') {
+            $dataOrderVA = array(
+                'account_number' => $dataResponse->bill_payment->receiver_bank_account->account_number
+            );
+        }
+
+        if ($jenis_payment == 'qr') {
+            $dataOrderQR = array(
+                'qr_code' => $dataResponse->bill_payment->receiver_bank_account->qr_code_data
+            );
+        }
+
+        if ($currentDataCP->jenis == $jenis_payment) {
+            if ($jenis_payment == 'tb') {
+                $this->model->commit();
+                $this->_result['redirect'] = Config::getHTTPHost() . '/donasi/pembayaran/tagihan/'. $jenis_payment . '/' . Sanitize::escape2($decoded['id_order_donasi']);
+            } else if ($jenis_payment == 'va') {
+                $this->model->update('order_va', $dataOrderVA, array('id_order_donasi','=', Sanitize::escape2($decoded['id_order_donasi'])));
+                if (!$this->model->affected()) {
+                    $this->model->rollback();
+                    $this->_result['feedback'] = 'Gagal mengganti channel_payment VA [update va]';
+                    $this->result();
+                    return false;
+                }
+            } else if ($jenis_payment == 'qr') {
+                $this->model->update('order_qr', $dataOrderVA, array('id_order_donasi','=', Sanitize::escape2($decoded['id_order_donasi'])));
+                if (!$this->model->affected()) {
+                    $this->model->rollback();
+                    $this->_result['feedback'] = 'Gagal mengganti channel_payment QRIS [update QRIS]';
+                    $this->result();
+                    return false;
+                }
+            } else {
+                $this->model->rollback();
+                $this->_result['feedback'] = 'Gagal mengganti channel_payment [unrecognize jenis_payment]';
+                $this->result();
+                return false;
+            }
+        } else {
+            if ($jenis_payment == 'va') {
+                $this->model->query("SELECT MAX(id_order_va)+1 as ov_sequence FROM order_va");
+                if (!$this->model->affected()) {
+                    $this->model->rollback();
+                    $this->_result['feedback'] = 'Update Order Donasi Success But Failed Get Sequence OVA';
+                    $this->result();
+                    return false;
+                } else {
+                    $dataOrderVA['id_order_va'] = $this->model->getResult()->ov_sequence;
+                }
+
+                $dataOrderVA['id_order_donasi'] = Sanitize::escape2($decoded['id_order_donasi']);
+                $this->model->create('order_va', $dataOrderVA);
+                if (!$this->model->affected()) {
+                    $this->model->rollback();
+                    $this->_result['feedback'] = 'Update Order Donasi Success But Failed Create Order VA';
+                    $this->result();
+                    return false;
+                }
+
+                if ($currentDataCP->jenis == 'qr') {
+                    $this->model->delete('order_qr', array('id_order_donasi','=',$dataOrderVA['id_order_donasi']));
+                    if (!$this->model->affected()) {
+                        $this->model->rollback();
+                        $this->_result['feedback'] = 'Update Order Donasi Success But Failed Delete Order QR';
+                        $this->result();
+                        return false;
+                    }
+                }
+            } else if ($jenis_payment == 'qr') {
+                $this->model->query("SELECT MAX(id_order_qr)+1 as oq_sequence FROM order_qr");
+                if (!$this->model->affected()) {
+                    $this->model->rollback();
+                    $this->_result['feedback'] = 'Update Order Donasi Success But Failed Get Sequence OQR';
+                    $this->result();
+                    return false;
+                } else {
+                    $dataOrderQR['id_order_qr'] = $this->model->getResult()->oq_sequence;
+                }
+
+                $dataOrderQR['id_order_donasi'] = Sanitize::escape2($decoded['id_order_donasi']);
+                $this->model->create('order_qr', $dataOrderQR);
+                if (!$this->model->affected()) {
+                    $this->model->rollback();
+                    $this->_result['feedback'] = 'Update Order Donasi Success But Failed Create Order QR';
+                    $this->result();
+                    return false;
+                }
+
+                if ($currentDataCP->jenis == 'va') {
+                    $this->model->delete('order_va', array('id_order_donasi','=',$dataOrderQR['id_order_donasi']));
+                    if (!$this->model->affected()) {
+                        $this->model->rollback();
+                        $this->_result['feedback'] = 'Update Order Donasi Success But Failed Delete Order VA';
+                        $this->result();
+                        return false;
+                    }
+                }
+            } else if ($jenis_payment == 'tb') {
+                if ($currentDataCP->jenis == 'qr') {
+                    $this->model->delete('order_qr', array('id_order_donasi','=',Sanitize::escape2($decoded['id_order_donasi'])));
+                    if (!$this->model->affected()) {
+                        $this->model->rollback();
+                        $this->_result['feedback'] = 'Update Order Donasi Success But Failed Delete Order QR';
+                        $this->result();
+                        return false;
+                    }
+                } else if ($currentDataCP->jenis == 'va') {
+                    $this->model->delete('order_va', array('id_order_donasi','=',Sanitize::escape2($decoded['id_order_donasi'])));
+                    if (!$this->model->affected()) {
+                        $this->model->rollback();
+                        $this->_result['feedback'] = 'Update Order Donasi Success But Failed Delete Order VA';
+                        $this->result();
+                        return false;
+                    }
+                }
+            }
+        }
+
+        $this->model->commit();
+        
+        if ($jenis_payment == 'tb') {
+            $id_update_record = Sanitize::escape2($decoded['id_order_donasi']);
+        } else if ($jenis_payment == 'va' || $jenis_payment == 'qr') {
+            $id_update_record = $dataOrderDonasi['external_id'];
+        }
+
+        $this->_result['error'] = false;
+        $this->_result['redirect'] = Config::getHTTPHost() . '/donasi/pembayaran/tagihan/'. $jenis_payment . '/' . $id_update_record;
+        $this->_result['feedback'] = 'Metode pembayaran berhasil diganti';
         $this->result();
         return false;
     }
@@ -255,8 +510,17 @@ class FetchController extends Controller {
             $decoded['halaman'] = 1;
         }
 
+        $this->model->setLimit(5);
         $this->model->setOffset(($decoded['halaman'] - 1) * $this->model->getLimit());
-        $this->model->dataTagihan($this->_id_donatur, $decoded['tagihan_type']);
+        if ($decoded['tagihan_type'] == '1') {
+            $this->model->dataTagihan($this->_id_donatur, $decoded['tagihan_type']);
+        } else {
+            $this->model->setDirection('DESC');
+            $this->model->setOrder('od.create_at');
+            $offset_mode = true;
+            $this->model->setHalaman($decoded['halaman'], 'order_donasi', $offset_mode);
+            $this->model->getListOrderDonasi($this->_id_donatur);
+        }
         $this->data['donasi_donatur'] = $this->model->data()['data'];
 
         if ($this->model->affected()) {
@@ -277,7 +541,8 @@ class FetchController extends Controller {
         $this->_result['feedback'] = array(
             'data' => $data['data'],
             'pages' => $pages,
-            'total_record' => $data['total_record']
+            'total_record' => $data['total_record'],
+            'target' => $decoded['target']
         );
 
         $this->result();

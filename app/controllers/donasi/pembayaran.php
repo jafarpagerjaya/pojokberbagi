@@ -164,7 +164,7 @@ class PembayaranController extends Controller {
             $samaran = ucwords(strtolower(trim(Input::get('nama'))));
         }
 
-        $dataDonasi['alias'] = (!is_null($samaran) ? Sanitize::escape2($samaran) : Input::get('nama'));
+        $dataDonasi['alias'] = (!is_null($samaran) ? Sanitize::escape2($samaran) : NULL);
 
         // Jika donatur mengisi kontak
         if (strlen(Input::get('kontak')) > 0) {
@@ -216,7 +216,7 @@ class PembayaranController extends Controller {
                 "sender_email" => strtolower(trim(Input::get('email'))),
                 "sender_address" => Config::getHTTPHost(),
                 // Ini untuk Step 3 namun Step 3 hanya bisa untuk VA dan QRIS
-                "sender_bank" => $dataCP->kode_paygate_brand,
+                "sender_bank" => ($dataCP->kode_paygate_brand == 'gopay' ? 'qris' : $dataCP->kode_paygate_brand),
                 "sender_bank_type" => Utility::flipSenderBankType($jenis_payment)
             ];
 
@@ -234,6 +234,9 @@ class PembayaranController extends Controller {
 
             $dataResponse = json_decode($response);
 
+            // Debug::pr($payloads);
+            // Debug::prd($dataResponse);
+
             if (property_exists($dataResponse, 'code')) {
                 if ($dataResponse->code == 'VALIDATION_ERROR') {
                     Session::flash('notifikasi', array(
@@ -250,10 +253,11 @@ class PembayaranController extends Controller {
             $dataDonasi['end_at'] = $dataResponse->expired_date;
         }
 
-        // PR untuk tb wajib via order_donasi tablenya di sesuaikan karena donatur yang input
+        $this->model->startTransaction();
         $order = $this->model->create('order_donasi', $dataDonasi);
         
         if (!$order) {
+            $this->model->rollback();
             Session::put('notifikasi', array(
                 'pesan' => 'Gagal Create Order Donasi',
                 'state' => 'error'
@@ -269,10 +273,43 @@ class PembayaranController extends Controller {
         ));
         
         if ($jenis_payment == 'tb') {
+            $this->model->commit();
             $id_create_record = $this->model->lastIID();
         } else {
             // bill link id from flip
             $id_create_record = $dataResponse->link_id;
+            if ($jenis_payment == 'va') {
+                $dataOrderVA = array(
+                    'id_order_donasi' => $this->model->lastIID(),
+                    'account_number' => $dataResponse->bill_payment->receiver_bank_account->account_number
+                );
+                $this->model->create('order_va', $dataOrderVA);
+                if (!$this->model->affected()) {
+                    $this->model->rollback();
+                    Session::put('notifikasi', array(
+                        'pesan' => 'Create Order Donasi Success But Failed in Create Order VA',
+                        'state' => 'warning'
+                    ));
+                    Redirect::to($redirectLink);
+                }
+                $this->model->commit();
+            } else if ($jenis_payment == 'qr') {
+                $dataOrderQR = array(
+                    'id_order_donasi' => $this->model->lastIID(),
+                    'qr_code' => $dataResponse->bill_payment->receiver_bank_account->qr_code_data
+                );
+                $this->model->startTransaction();
+                $this->model->create('order_qr', $dataOrderQR);
+                if (!$this->model->affected()) {
+                    $this->model->rollback();
+                    Session::put('notifikasi', array(
+                        'pesan' => 'Create Order Donasi Success But Failed in Create Order QR',
+                        'state' => 'warning'
+                    ));
+                    Redirect::to($redirectLink);
+                }
+                $this->model->commit();
+            }
         }
         Redirect::to('donasi/pembayaran/tagihan/' . $jenis_payment . '/' . $id_create_record);
     }
@@ -303,6 +340,7 @@ class PembayaranController extends Controller {
     }
 
     public function tagihan($params) {
+        // Debug::prd($params);
         if (count(is_countable($params) ? $params : []) < 2) {
             Session::flash('notifikasi', array(
                 'pesan' => 'Parameter tidak cocok',
@@ -325,10 +363,10 @@ class PembayaranController extends Controller {
             $donasi = $this->model->getOrderDonasi($params[1]);
         } else {
             // link id 
-            $this->model->query("SELECT 'od',IF(status != 'SUCCESSFUL','0','1') bayar, external_id link_id, notifikasi, STATUS, id_bantuan, order_donasi.kontak, doa, cp.jenis, cp.nama nama_cp, cp.nomor, cp.atas_nama, g.path_gambar path_gambar_cp, d.email
+            $this->model->query("SELECT 'od',IF(status != 'SUCCESSFUL','0','1') bayar, external_id link_id, notifikasi, order_donasi.STATUS, id_bantuan, order_donasi.kontak, doa, cp.jenis, cp.nama nama_cp, cp.nomor, cp.atas_nama, g.path_gambar path_gambar_cp, d.email
             FROM order_donasi LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN donatur d ON (d.id_donatur = order_donasi.id_donatur) LEFT JOIN gambar g ON(g.id_gambar = cp.id_gambar) WHERE external_id = ?
             UNION
-            SELECT 'op', bayar, link_id, notifikasi, STATUS, id_bantuan, d.kontak, doa, cp.jenis, cp.nama nama_cp, cp.nomor, cp.atas_nama, g.path_gambar path_gambar_cp, d.email
+            SELECT 'op', bayar, link_id, notifikasi, order_paygate.STATUS, id_bantuan, d.kontak, doa, cp.jenis, cp.nama nama_cp, cp.nomor, cp.atas_nama, g.path_gambar path_gambar_cp, d.email
             FROM order_paygate JOIN donasi USING(id_order_paygate) LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN donatur d ON (d.id_donatur = donasi.id_donatur) LEFT JOIN gambar g ON(g.id_gambar = cp.id_gambar) WHERE link_id = ?", 
                 array(
                     'external_id' => Sanitize::escape2($params[1]), 
@@ -348,6 +386,12 @@ class PembayaranController extends Controller {
             $donasi = (object) array_merge((array) $donasi, (array) $billPayment);
             $donasi->nama_donatur = $donasi->sender_name;
             $donasi->jumlah_donasi = $donasi->amount;
+            $donasi->atas_nama = $billPayment->sender_name;
+            $donasi->nomor = $billPayment->virtual_account_number;
+            if ($billPayment->sender_bank_type == 'virtual_account') {
+                $donasi->atas_nama = $billPayment->sender_name;
+                $donasi->nomor = $billPayment->virtual_account_number;
+            }
             unset($donasi->amount);
             unset($donasi->sender_name);
             unset($donasi->bill_link);
@@ -423,13 +467,13 @@ class PembayaranController extends Controller {
             )
         );
 
-        // if (!is_null($donasi->notifikasi) && $donasi->notifikasi == 1) {
-        //     if ($donasi->jenis = 'TB') {
-        //         return VIEW_PATH.'donasi'.DS.'pembayaran'. DS . $params[0] . '.html';
-        //     } else {
-        //         header("Location: ". $billPayment->payment_url);
-        //     }
-        // }
+        if (!is_null($donasi->notifikasi) && $donasi->notifikasi == 1) {
+            if ($donasi->jenis == 'TB') {
+                return VIEW_PATH.'donasi'.DS.'pembayaran'. DS . $params[0] . '.html';
+            } else {
+                header("Location: ". $billPayment->payment_url);
+            }
+        }
         
         if ($donasi->jenis == 'TB') {
             $metode_bayar = "Transfer Bank";
@@ -613,6 +657,7 @@ class PembayaranController extends Controller {
                 'message' => 'Token flip salah'
             ));
             echo $result;
+            Redirect::to('home');
             return false;
         }
         $decoded_data = json_decode($data);
@@ -627,7 +672,7 @@ class PembayaranController extends Controller {
         }
 
         $this->model('Donasi');
-        $this->model->query("SELECT order_donasi.status, external_id, url, kode_pembayaran, alias, order_donasi.kontak, doa, notifikasi, jumlah_donasi, end_at, id_bantuan, bantuan.nama nama_bantuan, nama_penerima, id_cp, id_donatur, d.nama, d.email, cp.nama nama_cp FROM order_donasi JOIN donatur d USING(id_donatur) LEFT JOIN bantuan USING(id_bantuan) LEFT JOIN channel_payment cp USING(id_cp) WHERE external_id = ?", array($decoded_data->bill_link_id));
+        $this->model->query("SELECT order_donasi.status, external_id, url, kode_pembayaran, alias, order_donasi.kontak, doa, notifikasi, jumlah_donasi, end_at, id_bantuan, bantuan.nama nama_bantuan, nama_penerima, id_cp, id_donatur, d.nama, d.email, cp.nama nama_cp, gcp.path_gambar path_gambar_cp FROM order_donasi JOIN donatur d USING(id_donatur) LEFT JOIN bantuan USING(id_bantuan) LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN gambar gcp ON(gcp.id_gambar = cp.id_gambar) WHERE external_id = ?", array($decoded_data->bill_link_id));
         if (!$this->model->affected()) {
             $result = json_encode(array(
                 'error' => true,
@@ -638,6 +683,24 @@ class PembayaranController extends Controller {
         }
 
         $dataOrderDonasi = $this->model->getResult();
+
+        if ($decoded_data->status == 'FAILED') {
+            $this->model->update('order_donasi',array('status'=>'FAILED'),array('external_id','=',$dataOrderDonasi->external_id));
+            if (!$this->model->affected()) {
+                $result = json_encode(array(
+                    'error' => true,
+                    'message' => 'CALLBACK CENCELED bill, failed to update status order_donasi'
+                ));
+                echo $result;
+                return false;    
+            }
+            $result = json_encode(array(
+                'error' => true,
+                'message' => 'Payment bill dibatalkan'
+            ));
+            echo $result;
+            return false; 
+        }
 
         // Check Status Payment
         if ($decoded_data->status != 'SUCCESSFUL') {
@@ -684,7 +747,7 @@ class PembayaranController extends Controller {
                     'state' => 'warning'
                 ));
             } else {
-                $text_pesan = 'Hi, *'. Sanitize::escape2($dataOrderDonasi->alias) .'* donasimu telah kami terima, makasih ya kamu berpartisipasi di program *' . Sanitize::escape2($dataOrderDonasi->nama_bantuan) . '*. Gunakan akun berbagi di https://pojokberbagi.id untuk melihat perkembangan dari donasimu atau scan QR yang ada di kuitansimu 🤞';
+                $text_pesan = 'Hi, *'. Sanitize::escape2($dataOrderDonasi->nama) .'* donasimu telah kami terima, makasih ya kamu berpartisipasi di program *' . Sanitize::escape2($dataOrderDonasi->nama_bantuan) . '*. Gunakan akun berbagi di https://pojokberbagi.id untuk melihat perkembangan dari donasimu atau scan QR yang ada di kuitansimu 🙆🏻‍♂️';
                 $waResponse = Fonnte::send(Sanitize::toInt2($dataOrderDonasi->kontak), $text_pesan);
                 // Debug::pr($waResponse);
             }
@@ -716,18 +779,18 @@ class PembayaranController extends Controller {
 
         $billPayment = $this->getBillPayment($dataOrderDonasi->external_id);
         $arrayNotif = array(
-            'nama_donatur' => $dataOrderDonasi->alias,
+            'nama_donatur' => $dataOrderDonasi->nama,
             'jumlah_donasi' => Output::tSparator($dataOrderDonasi->jumlah_donasi),
             'metode_bayar' => str_replace('_',' ',$billPayment->sender_bank_type),
             'nama_cp' => $dataOrderDonasi->nama_cp,
-            'path_gambar_cp' => "/assets/images/partners/". $billPayment->sender_bank .".png",
-            'nomor_tujuan_bayar' => $billPayment->virtual_account_number,
-            'atas_nama_tujuan_bayar' => "PojokBerbagiID",
-            'samaran' => $billPayment->sender_name,
+            'path_gambar_cp' => $dataOrderDonasi->path_gambar_cp,
+            // 'nomor_tujuan_bayar' => $billPayment->virtual_account_number,
+            // 'atas_nama_tujuan_bayar' => "PojokBerbagiID",
+            // 'samaran' => $billPayment->sender_name,
             'nama_bantuan' => $dataOrderDonasi->nama_bantuan,
-            'payment_id' => $billPayment->id,
+            // 'payment_id' => $billPayment->id,
             'waktu_bayar' => $decoded_data->created_at,
-            'total_donatur' => Output::tSparator($resumeDonasi->total_donatur),
+            'jumlah_donatur' => Output::tSparator($resumeDonasi->total_donatur),
             'total_donasi' => Output::tSparator($resumeDonasi->total_donasi),
             'id_kuitansi' => $dataKuitansi->id_kuitansi,
             'link_kuitansi' => Config::getHTTPHost() .'/donasi/cek/kuitansi/'.$dataKuitansi->id_kuitansi

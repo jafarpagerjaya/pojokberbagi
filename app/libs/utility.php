@@ -317,6 +317,10 @@ class Utility {
             case 'ew':
                 $sender_bank_type = 'wallet_account';
             break;
+
+            case 'qr':
+                $sender_bank_type = 'wallet_account';
+            break;
             
             default:
                 $sender_bank_type = NULL;

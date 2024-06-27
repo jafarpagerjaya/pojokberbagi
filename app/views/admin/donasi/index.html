@@ -148,8 +148,7 @@
                                                         <?= (!is_null($listDonasi->flip) ? '<span class="badge badge-warning">flip</span>':''); ?>
                                                     </div>
                                                 </div>
-                                                <div class="avatar rounded ml-3 bg-transparent border"
-                                                    data-id-donatur="<?= $listDonasi->id_donatur; ?>">
+                                                <div class="avatar rounded ml-3 bg-transparent border">
                                                     <img src="<?= $listDonasi->path_gambar_cp; ?>"
                                                         alt="<?= $listDonasi->nama_path_gambar_cp; ?>" class="img-fluid">
                                                 </div>
@@ -274,7 +273,7 @@
                                             <span class="badge <?= $badge; ?>">
                                                 <?= $listOrder->status; ?>
                                             </span>
-                                            <?= (!empty($listDonasi->external_id) ? '<div class="small text-black-50 font-weight-bolder">' . $listDonasi->external_id . '</div>' : ''); ?>
+                                            <?= (!is_null($listOrder->external_id) ? '<span class="small text-black-50 font-weight-bolder d-block">' . $listOrder->external_id . '</span>' : ''); ?>
                                         </td>
                                         <td>
                                             <div class="media align-items-center">

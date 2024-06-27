@@ -53,6 +53,12 @@ class TagihanController extends Controller {
 			),
             array(
                 'href' => '/assets/main/css/kuitansi.css'
+            ),
+            array(
+                'href' => '/assets/route/admin/core/css/form-element.css'
+            ),
+            array(
+                'href' => '/assets/route/donatur/pages/css/tagihan.css'
             )
         );
 
@@ -79,14 +85,18 @@ class TagihanController extends Controller {
         );
 
         $this->_donasi = $this->model('Donasi');
-        $this->_donasi->dataTagihan($this->data['donatur']->id_donatur, '0');
+        $this->_donasi->setLimit(5);
+        $this->_donasi->setDirection('DESC');
+        $this->_donasi->setOrder('od.create_at');
+        $this->_donasi->resetHalaman(array(0, $this->model->getLimit()));
+        $this->_donasi->getListOrderDonasi($this->data['donatur']->id_donatur);
         $dataTagihanUnpaid = $this->_donasi->data();
         // $dataTagihanUnpaidRecord = $this->_donasi->countRecordTagihan($this->data['donatur']->id_donatur, '0')->jumlah_record;
         $this->data['tagihan_unpaid'] = array(
             'halaman' => 1,
             'data' => $dataTagihanUnpaid['data'],
             'record' => $dataTagihanUnpaid['total_record'],
-            'limit' => $this->model->getLimit(),
+            'limit' => $this->_donasi->getLimit(),
             'pages' => ceil($dataTagihanUnpaid['total_record'] / $this->model->getLimit())
         );
 
@@ -97,13 +107,24 @@ class TagihanController extends Controller {
             'halaman' => 1,
             'data' => $dataTagihanPaid['data'],
             'record' => $dataTagihanPaid['total_record'],
-            'limit' => $this->model->getLimit(),
+            'limit' => $this->_donasi->getLimit(),
             'pages' => ceil($dataTagihanPaid['total_record'] / $this->model->getLimit())
         );
 
-        $this->_donasi->query("SELECT cp.id_cp, cp.nama nama_cp, cp.jenis jenis_cp, g.path_gambar path_gambar_cp  FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar)");
+        $this->_donasi->query("SELECT cp.id_cp, cp.nama nama_cp, cp.jenis jenis_cp, g.path_gambar path_gambar_cp  FROM channel_payment cp LEFT JOIN gambar g USING(id_gambar) WHERE cp.jenis = 'TB' OR cp.jenis IN('VA','EW','QR') AND cp.kode = 'LIP'");
         $this->data['channel_payment'] = $this->model->getResults();
-
+        $new_array = array();
+        foreach ($this->data['channel_payment'] as $item) {
+            if (!array_key_exists($item->jenis_cp, $new_array)) {
+                $new_array[$item->jenis_cp] = array(
+                    $item
+                );
+            } else {
+                array_push($new_array[$item->jenis_cp], $item);
+            }
+        }
+        
+        $this->data['channel_payment'] = $new_array;
         // Token for fetch
         $this->data[Config::get('session/token_name')] = Token::generate();
     }

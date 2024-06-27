@@ -221,9 +221,31 @@ class BuatController extends Controller {
 
     //     $ch = curl_init();
 
-    //     curl_setopt($ch, CURLOPT_URL, FLIP_API."/v2/pwf/110202/payment");
+    //     curl_setopt($ch, CURLOPT_URL, FLIP_API."/v2/pwf/112843/payment");
+    //     // curl_setopt($ch, CURLOPT_URL, FLIP_API."/v2/pwf/112835/bill");
     //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     //     curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+        // $payloads = [
+        //     "title" => "Coffee Table 2",
+        //     "amount" => 50000,
+        //     "type" => "SINGLE",
+        //     "expired_date" => date('Y-m-d H:i', strtotime('+ 1 day')),
+        //     "redirect_url" => "https://someurl.com",
+        //     "status" => "ACTIVE",
+        //     "is_address_required" => 1,
+        //     "is_phone_number_required" => 0,
+        //     "sender_name" => 'Jafar',
+        //     "sender_email" => 'jafarpager@gmail.com',
+        //     "sender_address" => Config::getHTTPHost(),
+        //     // Ini untuk Step 3 namun Step 3 hanya bisa untuk VA dan QRIS
+        //     "step" => 3,
+        //     "sender_bank" => 'bca',
+        //     "sender_bank_type" => 'virtual_account'
+        // ];
+
+        // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        // curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payloads));
 
     //     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
     //         "Authorization: Basic ".$encoded_auth,

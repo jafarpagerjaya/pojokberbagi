@@ -896,7 +896,7 @@ class Ui {
                                             <tr>
                                                 <td>
                                                     <p style="margin-bottom: 0px;">NOMOR DONASI</p>
-                                                    <strong>'. (!is_null($data["id_order_donasi"]) ? 'NDPBI-'. strip_tags((string) $data["id_order_donasi"]) : 'ID TRANSAKSI #' . strip_tags((string) $data["id"])) .'</strong>
+                                                    <strong>'. (isset($data["id_order_donasi"]) ? 'NDPBI-'. strip_tags((string) $data["id_order_donasi"]) : 'ID TRANSAKSI #' . strip_tags((string) $data["id"])) .'</strong>
                                                 </td>
                                                 <td id="transfer">
                                                     <p style="margin-bottom: 0px;">Transfer</p>
@@ -1247,7 +1247,7 @@ class Ui {
                                                 <td>Jumlah Donasi</td><td>:</td><td><strong style="color: var(--green-box);">Rp. '. strip_tags((string) $data["jumlah_donasi"]) .'</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Metode Pembayaran</td><td>:</td><td><strong style="display: flex; align-items: center; justify-content: start; gap: .5em;"><div><img src="'. strip_tags((string) $data["path_gambar_cp"]) .'" alt="'. strip_tags((string) $data["nama_cp"]) .'" style="width: 40px; max-width: 40px;"></div><div>'. strip_tags((string) $data["nama_cp"]) .'</div></strong></td>
+                                                <td>Metode Pembayaran</td><td>:</td><td><strong style="display: flex; align-items: center; justify-content: start; gap: .5em;"><div><img src="'. strip_tags((string) $data["path_gambar_ca"]) .'" alt="'. strip_tags((string) $data["nama_cp"]) .'" style="width: 40px; max-width: 40px;"></div><div>'. strip_tags((string) $data["metode_bayar"]) .' - ' . strip_tags((string) $data["nama_cp"]) .'</div></strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Waktu pembayaran</td><td>:</td><td><strong>'. strip_tags((string) $data["waktu_bayar"]) .'</strong></td>

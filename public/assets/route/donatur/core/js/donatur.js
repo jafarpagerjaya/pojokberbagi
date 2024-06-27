@@ -36,7 +36,7 @@ if (body.getAttribute('data-token') != null) {
         // cek data respose
         if (event.data.response != undefined) {
             const response = event.data.response,
-            elDataDonasi = body.querySelector('[data-id-donasi="'+response.id_donasi+'"]');
+            elDataDonasi = body.querySelector('[data-id-order-donasi="'+response.id_order_donasi+'"]');
 
             if (elDataDonasi == null) {
                 return false;
@@ -96,18 +96,19 @@ $('#modalGantiMetodePembayaran').on('hidden.bs.modal', function () {
         $(this).find('[type="button"][data-target]').addClass('disabled');
     }
 
-    if ($(this).find('[type="button"][data-target]:not([data-dismiss])[data-id-donasi]').length) {
-        $(this).find('[type="button"][data-target]:not([data-dismiss])[data-id-donasi]').removeAttr('data-id-donasi');
+    if ($(this).find('[type="button"][data-target]:not([data-dismiss])[data-order-id]').length) {
+        $(this).find('[type="button"][data-target]:not([data-dismiss])[data-order-id]').removeAttr('data-order-id');
     }
 
     if (dataImgCP.elements != undefined) {
         dataImgCP.elements = undefined;
     }
 }).on('show.bs.modal', function(e) {
-    const radioBox = this.querySelector('.radio-box');
+    relatedTarget = e.relatedTarget;
+    const radioBox = e.currentTarget.querySelector('.radio-box');
 
     let id_cp = e.relatedTarget.getAttribute('data-cp'),
-        data_idonasi = e.relatedTarget.closest('tr').querySelector('[data-id-donasi]').getAttribute('data-id-donasi'),
+        data_idonasi = e.relatedTarget.closest('tr').getAttribute('data-order-id'),
         data_nbantuan = e.relatedTarget.closest('tr').querySelector('a[data-nama-bantuan]').getAttribute('data-nama-bantuan'),
         data_hbantuan = e.relatedTarget.closest('tr').querySelector('a[data-nama-bantuan]').getAttribute('href'),
         elCP = e.relatedTarget.closest('tr').querySelector('.channel-payment'),
@@ -115,9 +116,9 @@ $('#modalGantiMetodePembayaran').on('hidden.bs.modal', function () {
         cp_name = elCP.querySelector('img[alt]');
 
     dataImgCP.elements = elCP;
-    this.querySelector('#modalGantiMetodePembayaranLabel a').setAttribute('data-nama-bantuan', data_nbantuan);
-    this.querySelector('#modalGantiMetodePembayaranLabel a').setAttribute('href', data_hbantuan);
-    this.querySelector('#modalGantiMetodePembayaranLabel a').innerText = data_nbantuan;
+    e.currentTarget.querySelector('#modalGantiMetodePembayaranLabel a').setAttribute('data-nama-bantuan', data_nbantuan);
+    e.currentTarget.querySelector('#modalGantiMetodePembayaranLabel a').setAttribute('href', data_hbantuan);
+    e.currentTarget.querySelector('#modalGantiMetodePembayaranLabel a').innerText = data_nbantuan;
 
     let cp_type_value = undefined,
         cp_name_value = '';
@@ -144,7 +145,8 @@ $('#modalGantiMetodePembayaran').on('hidden.bs.modal', function () {
         cp_name_value = 'Partner Payment (Unrecognize)';
     }
 
-    const elPS = this.querySelector('.modal-body .position-sticky');
+
+    const elPS = e.currentTarget.querySelector('.modal-body .position-sticky');
 
     elPS.querySelector('span.jenis-cp').innerText = cp_type_value;
     elPS.querySelector('span.nama-cp').innerText = cp_name_value;
@@ -153,9 +155,9 @@ $('#modalGantiMetodePembayaran').on('hidden.bs.modal', function () {
         return;
     }
 
-    elPS.querySelector('[type="button"][data-target]:not([data-dismiss])').setAttribute('data-id-donasi', data_idonasi);
+    elPS.querySelector('[type="button"][data-target]:not([data-dismiss])').setAttribute('data-id-order-donasi', data_idonasi);
 
-    let inputCP = this.querySelector('.radio-box .item input[value="'+id_cp+'"]'),
+    let inputCP = e.currentTarget.querySelector('.radio-box .item input[value="'+id_cp+'"]'),
         itemSelected = radioBox.querySelector('.item.selected');
     
         if (itemSelected == null) {
@@ -193,11 +195,11 @@ modalGMP.querySelectorAll('.radio-box .item:not(.selected)').forEach(item => {
         e.stopPropagation();
         e.preventDefault();
 
-        if (this.querySelector('input[type="radio"]').checked) {
+        if (e.currentTarget.querySelector('input[type="radio"]').checked) {
             return false;
         }
         
-        this.querySelector('input[type="radio"]').checked = true;
+        e.currentTarget.querySelector('input[type="radio"]').checked = true;
 
         let buttonToConfirm = undefined;
 
@@ -217,20 +219,24 @@ modalGMP.querySelector('[type="button"][data-target]:not([data-dismiss])').addEv
     }
 });
 
-$('#modalKonfirmasiGantiMetodePembayaran').on('show.bs.modal', function (e) {
+$('#modalKonfirmasiGantiMetodePembayaran').on('hidden.bs.modal', function(e) {
+    if (document.getElementById('modalGantiMetodePembayaran').classList.contains('show')) {
+        document.querySelector('body').classList.add('modal-open');
+    }
+}).on('show.bs.modal', function (e) {
     const modalGanti = e.relatedTarget.closest('.modal'),
           newIdCp = modalGanti.querySelector('.radio-box .item:not(.selected) input[type="radio"]:checked');
 
     let newIdValue = undefined,
         nama_bantuan = modalGanti.querySelector('a[data-nama-bantuan]').getAttribute('data-nama-bantuan'),
         href_bantuan = modalGanti.querySelector('a[data-nama-bantuan]').getAttribute('href'),
-        id_donasi = e.relatedTarget.getAttribute('data-id-donasi'),
+        id_order_donasi = e.relatedTarget.getAttribute('data-id-order-donasi'),
         cp_type,
         cp_name;
 
     data = {};
     data.id_cp = newIdCp.value;
-    data.id_donasi = id_donasi;
+    data.id_order_donasi = id_order_donasi;
     data.token = document.querySelector('body').getAttribute('data-token');
 
     if (newIdCp != null) {
@@ -245,10 +251,10 @@ $('#modalKonfirmasiGantiMetodePembayaran').on('show.bs.modal', function (e) {
         cp_name = item.querySelector('img').getAttribute('alt');
         cp_type = jenis_cp(item.querySelector('img').getAttribute('data-jenis-cp'));
     }
-    this.querySelector('.modal-body a#nama-bantuan').innerText = nama_bantuan;
-    this.querySelector('.modal-body a#nama-bantuan').setAttribute('href', href_bantuan);
-    this.querySelector('.modal-body span.jenis-cp').innerText = cp_type;
-    this.querySelector('.modal-body span.nama-cp').innerText = cp_name;
+    e.currentTarget.querySelector('.modal-body a#nama-bantuan').innerText = nama_bantuan;
+    e.currentTarget.querySelector('.modal-body a#nama-bantuan').setAttribute('href', href_bantuan);
+    e.currentTarget.querySelector('.modal-body span.jenis-cp').innerText = cp_type;
+    e.currentTarget.querySelector('.modal-body span.nama-cp').innerText = cp_name;
 
     dataImgCP.src = newIdCp.closest('.item').querySelector('img').getAttribute('src');
     dataImgCP.type = newIdCp.closest('.item').querySelector('img').getAttribute('data-jenis-cp').toUpperCase();
@@ -266,7 +272,7 @@ $('#modalKonfirmasiGantiMetodePembayaran [type="submit"]').on('click', function(
         return false;
     }
 
-    const id_donasi = data.id_donasi,
+    const id_order_donasi = data.id_order_donasi,
           id_cp = data.id_cp;
     // Fetch with token
     fetch('/donatur/fetch/update/payment-method', {
@@ -292,8 +298,12 @@ $('#modalKonfirmasiGantiMetodePembayaran [type="submit"]').on('click', function(
             elCP.querySelector('[data-jenis-cp]').innerText = dataImgCP.typeDesc;
             elCP.querySelector('img').setAttribute('src', dataImgCP.src);
             elCP.querySelector('img').setAttribute('alt', dataImgCP.alt);
-            elCP.parentElement.parentElement.querySelector('a~.dropdown-menu>a').setAttribute('data-cp', id_cp);
+            elCP.parentElement.parentElement.querySelector('a~.dropdown-menu>a[data-target="#modalGantiMetodePembayaran"').setAttribute('data-cp', id_cp);
             elCP.closest('tr').classList.add('highlight');
+
+            if (data.redirect != null) {
+                window.open(data.redirect,'_blank');
+            }
 
             setTimeout(() => {
                 elCP.closest('tr').classList.remove('highlight');
@@ -317,7 +327,7 @@ $('#modalKonfirmasiGantiMetodePembayaran [type="submit"]').on('click', function(
         delete dataImgCP.elements;
 
         dataImgCP.data = data;
-        dataImgCP.id_donasi = id_donasi;
+        dataImgCP.id_order_donasi = id_order_donasi;
 
         document.querySelector('body').setAttribute('data-token', data.token);
         fetchTokenChannel.postMessage({

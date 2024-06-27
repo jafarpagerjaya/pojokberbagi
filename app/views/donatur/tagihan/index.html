@@ -1,217 +1,279 @@
 <div class="row">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-transparent">
-                <div class="nav-wrapper">
-                    <ul class="nav nav-pills justify-content-between" id="tabs-icons-text" role="tablist">
-                        <li class="nav-item align-items-center d-flex mr-4">
-                            <h3 class="mb-0">Tagihan Ku</h3>
-                        </li>
-                        <li class="nav-item d-flex gap-x-3">
-                            <a class="nav-link active" id="unpaid-tab" data-toggle="tab" href="#unpaid" role="tab"
-                                aria-controls="unpaid" aria-selected="true">UNPAID</a>
-                            <a class="nav-link" id="paid-tab" data-toggle="tab" href="#paid" role="tab"
-                                aria-controls="paid" aria-selected="false">PAID</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="unpaid" role="tabpanel" aria-labelledby="unpaid-tab">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th scope="col" class="sort" data-sort="budget">Nama Bantuan</th>
-                                    <th scope="col" class="sort text-right" data-sort="nominal_donasi">Nominal</th>
-                                    <th scope="col" class="sort" data-sort="id_cp">Metode Pembayaran Dipilih</th>
-                                    <th scope="col" class="sort" data-sort="status">Status Bayar</th>
-                                    <th scope="col" class="sort" data-sort="create_at">Dibuat Pada</th>
-                                    <th scope="col"></th>
-                                </tr>
-                            </thead>
-                            <tbody<?= (isset($this->data['tagihan_unpaid']['limit']) ? ' data-limit="'.
-                                $this->data['tagihan_unpaid']['limit'] .'"' : '') ?>>
-                                <?php if (!is_null($data['tagihan_unpaid']['data'])) {
-                                    foreach($data['tagihan_unpaid']['data'] as $data_unpaid) { ?>
-                                <tr>
-                                    <th scope="row">
-                                        <div class="media align-items-center">
-                                            <a target="_blank"
-                                                href="<?= '/bantuan/detil/'. $data_unpaid->id_bantuan; ?>"
-                                                data-nama-bantuan="<?= $data_unpaid->nama_bantuan; ?>">
-                                                <span class="name mb-0 text-sm font-weight-bolder">
-                                                    <?= $data_unpaid->nama_bantuan; ?>
-                                                </span>
-                                            </a>
-                                        </div>
-                                    </th>
-                                    <td class="text-right">
-                                        <b data-id-donasi="<?= $data_unpaid->id_donasi; ?>">
-                                            <?= $data_unpaid->jumlah_donasi; ?>
-                                        </b>
-                                    </td>
-                                    <td>
-                                        <div class="channel-payment d-flex justify-content-between align-items-center">
-                                            <p class="text-info m-0" data-jenis-cp="<?= $data_unpaid->jenis_cp; ?>">
-                                                <?= Utility::keteranganJenisChannelPayment($data_unpaid->jenis_cp); ?>
-                                            </p>
-                                            <img class="img-fluid" src="<?= $data_unpaid->path_gambar_cp; ?>"
-                                                alt="<?= $data_unpaid->nama_cp; ?>">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <?= '<span class="badge badge-pill ' . ($data_unpaid->bayar != 1 ? 'badge-warning">Belum Bayar' : 'badge-success">Sudah Bayar') . '</span>'; ?>
-                                    </td>
-                                    <td>
-                                        <a class="font-weight-bolder" href="javascript:;">
-                                            <?= $data_unpaid->id_donasi; ?>
-                                        </a>
-                                        <div class="font-weight-bold text-black-50">
-                                            <?= $data_unpaid->create_at; ?>
-                                        </div>
-                                    </td>
-                                    <td class="text-right">
-                                        <div class="dropdown">
-                                            <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
-                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                                <!-- <a class="dropdown-item font-weight-600 text-green" href="<?= '/donatur/donasi/data/'. $data_unpaid->id_donasi ?>">Lihat Lebih Detil</a> -->
-                                                <?php if ($data_unpaid->bayar != 1 && isset($data_unpaid->id_cp)) { ?>
-                                                <a href="javascript:;"
-                                                    class="dropdown-item text-warning font-weight-bolder" role="button"
-                                                    data-toggle="modal" data-target="#modalGantiMetodePembayaran"
-                                                    data-cp="<?= $data_unpaid->id_cp; ?>">Ganti Metode Bayar</a>
-                                                <?php } ?>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <?php }} else {
-                                    Ui::tableIsNull(5,'Tagihan (UNPAID)');
-                                } ?>
-                                </tbody>
-                        </table>
-
-                    </div>
-                    <div class="card-footer py-4">
-                        <div class="row align-items-center gap-y-3">
-                            <div class="col-12 col-md-6">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Cari.." name="search"
-                                        autocomplete="off" <?=(isset($data['tagihan_unpaid']['search']) ? 'value="' .
-                                        $data['tagihan_unpaid']['search'] . '"' : '' ) ?>>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <ul class="pagination pagination-sm justify-content-center justify-content-md-end mb-0"
-                                    data-pages="<?= $this->data['tagihan_unpaid']['pages']; ?>" data-tagihan="unpaid">
-                                </ul>
+        <div class="card position-relative">
+            <ul class="nav nav-tabs gap-2" id="nav-tab" role="tablist">
+                <li class="nav-item d-flex" role="presentation">
+                  <button class="m-0 font-weight-bold nav-link active" id="nav-my-donasi-tab" data-toggle="pill" data-target="#list-my-donasi" type="button" role="tab" aria-controls="nav-my-donasi" aria-selected="true">
+                    Data <span class="active">Donasi</span>
+                  </button>
+                </li>
+                <li class="nav-item d-flex" role="presentation">
+                  <button class="m-0 font-weight-bold nav-link" id="nav-my-order-tab" data-toggle="pill" data-target="#list-my-order-donasi" type="button" role="tab" aria-controls="nav-my-order-donasi" aria-selected="false">
+                    Data <span>Order Donasi</span>
+                  </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="tab-content">
+                <div class="tab-pane fade show active" id="list-my-donasi" role="tabpanel" aria-labelledby="my-donasi-tab">
+                    <div class="card-header row justify-content-end m-0 border-0">
+                        <div class="col-12 col-md-4 px-0">
+                            <div class="form-label-group">
+                                <input type="text" id="input-search" class="form-control" name="search" placeholder="Cari ..." autocomplete="off" maxlength="50" spellcheck="false">
+                                <label for="input-search" class="form-control-label"></label>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="tab-pane fade" id="paid" role="tabpanel" aria-labelledby="paid-tab">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th scope="col" class="sort" data-sort="budget">Nama Bantuan</th>
-                                    <th scope="col" class="sort text-right" data-sort="jumlah_donasi">Nominal</th>
-                                    <th scope="col" class="sort" data-sort="status">Status Bayar</th>
-                                    <th scope="col" class="sort" data-sort="id_cp">Metode Pembayaran Terpilih</th>
-                                    <th scope="col" class="sort" data-sort="create_at">Dibuat Pada</th>
-                                    <th scope="col"></th>
-                                </tr>
-                            </thead>
-                            <tbody<?= (isset($this->data['tagihan_paid']['limit']) ? ' data-limit="'.
-                                $this->data['tagihan_paid']['limit'] .'"' : '') ?>>
-                                <?php if (!is_null($data['tagihan_paid']['data'])) {
-                                    foreach($data['tagihan_paid']['data'] as $data_paid) { ?>
-                                <tr>
-                                    <th scope="row">
-                                        <div class="media align-items-center">
-                                            <a href="#">
-                                                <span class="name mb-0 text-sm font-weight-bolder">
-                                                    <?= $data_paid->nama_bantuan; ?>
-                                                </span>
-                                            </a>
-                                        </div>
-                                    </th>
-                                    <td class="text-right">
-                                        <b>
-                                            <?= $data_paid->jumlah_donasi; ?>
-                                        </b>
-                                    </td>
-                                    <td>
-                                        <?= '<div class="channel-payment d-flex justify-content-between align-items-center">
-                                            <p class="text-info m-0">'. Utility::keteranganJenisChannelPayment($data_paid->jenis_cp) .'</p>
-                                            <img class="img-fluid" src="'. $data_paid->path_gambar_cp .'" alt="'. $data_paid->nama_cp .'">
-                                        </div>'; 
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-hover">
+                                <thead class="">
+                                    <tr>
+                                        <th class="font-weight-bold">Id Donasi</th>
+                                        <th class="font-weight-bold auto">Status</th>
+                                        <th class="font-weight-bold auto">Nominal (Rp)</th>
+                                        <th class="font-weight-bold auto">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody<?= (isset($this->data['tagihan_paid']['limit']) ? ' data-limit="'. $this->data['tagihan_paid']['limit'] .'"' : '') ?>>
+                                    <?php 
+                                        if (isset($data['tagihan_paid'])) {
+                                            if (count(is_countable($data['tagihan_paid']['data']) ? $data['tagihan_paid']['data'] : []) > 0) {
+                                                foreach($data['tagihan_paid']['data'] as $listDonasi) {
+                                                    if ($listDonasi->bayar == '1') {
+                                                        $badge = 'badge-success';
+                                                        $verivikasi = 'Sudah Diverivikasi';
+                                                    } else {
+                                                        $badge = 'badge-warning';
+                                                        $verivikasi = 'Belum Diverivikasi';
+                                                    }
                                     ?>
-                                    </td>
-                                    <td>
-                                        <div class="badge badge-success text-black-50 font-weight-bolder px-2">Sudah
-                                            Bayar</div>
-                                        <div class="text-black-50 font-weight-bold ml-2">
-                                            <?= $data_paid->waktu_bayar; ?>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a class="font-weight-bolder" href="javascript:;">
-                                            <?= $data_paid->id_donasi; ?>
-                                        </a>
-                                        <div class="font-weight-bold text-black-50">
-                                            <?= $data_paid->create_at; ?>
-                                        </div>
-                                    </td>
-                                    <td class="text-right">
-                                        <!-- Ini nanti dihilangkan setelah fitur halaman detil donasi dibuat -->
-                                        <div class="dropdown">
-                                            <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
-                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                                <?php if ($data_paid->bayar == 1) { ?>
-                                                <!-- <a class="dropdown-item"
-                                                    href="/donatur/donasi/data/<?= $data_paid->id_donasi; ?>">Lihat
-                                                    Data</a> -->
-                                                <a class="dropdown-item" data-id="<?= $data_paid->id_donasi ?>"
-                                                    href="javascript():;" data-toggle="modal"
-                                                    data-target="#modalKuitansiDonasi">Kuitansi</a>
-                                                <?php } ?>
+                                    <tr data-donasi-id="<?= $listDonasi->id_donasi; ?>">
+                                        <td class="py-2">
+                                            <a href="#" class="id-donasi text-primary font-weight-bolder"
+                                                data-id="<?= $listDonasi->id_donasi; ?>">
+                                                <?= (isset($listDonasi->id_donasi) ? '<span>'. $listDonasi->id_donasi .'</span>':''); ?>
+                                            </a><span class="font-weight-bolder">
+                                                <?= $listDonasi->nama_bantuan; ?>
+                                            </span>
+                                            <?= (!empty($listDonasi->nama_sektor) ? '<span class="text-muted"> (' . $listDonasi->nama_sektor . ')</span>' : ''); ?>
+                                            <div class="time small text-black-50 font-weight-bolder">
+                                                <?= (isset($listDonasi->create_donasi_at) ? '<span>'. $listDonasi->create_donasi_at .'</span>':''); ?>
                                             </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <?php }} else {
-                                    Ui::tableIsNull(5,'Tagihan (PAID)');
-                                } ?>
-                                </tbody>
-                        </table>
+                                        </td>
+                                        <td class="py-2">
+                                            <span class="badge <?= $badge; ?>">
+                                                <?= $verivikasi; ?>
+                                            </span>
+                                            <?= (!empty($listDonasi->waktu_bayar) ? '<div class="small text-black-50 font-weight-bolder"><span>' . $listDonasi->waktu_bayar . '</span></div>' : ''); ?>
+                                        </td>
+                                        <td class="py-2">
+                                            <div class="media align-items-center">
+                                                <div class="media-body">
+                                                    <div class="name mb-0 text-black-50 font-weight-bold">
+                                                        <?= (isset($listDonasi->jumlah_donasi) ? '<span>'. $listDonasi->jumlah_donasi .'</span>':''); ?>
+                                                    </div>
+                                                    <div class="small text-black-50 font-weight-bolder">
+                                                        <?= (isset($listDonasi->jenis_cp) ? '<span>'.Utility::keteranganJenisChannelPayment($listDonasi->jenis_cp).'</span>':''); ?>
+                                                        <?= (!is_null($listDonasi->flip) ? '<span class="badge badge-warning">flip</span>':''); ?>
+                                                    </div>
+                                                </div>
+                                                <div class="avatar rounded ml-3 bg-transparent border">
+                                                    <img src="<?= $listDonasi->path_gambar_cp; ?>"
+                                                        alt="<?= $listDonasi->nama_path_gambar_cp; ?>" class="img-fluid">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-right auto">
+                                            <div class="dropdown show">
+                                                <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow"
+                                                    x-placement="top-end">
+                                                    <a class="dropdown-item"
+                                                        href="/bantuan/<?= (isset($listDonasi->tag) ? $listDonasi->tag : 'detil/'. $listDonasi->id_bantuan); ?>">Lihat Program
+                                                        Donasi</a>
+                                                    <?= ($listDonasi->bayar == '1' ? '<a class="dropdown-item" data-id="'.$listDonasi->id_donasi.'" href="javascript::void(0);" data-toggle="modal" data-target="#modalKuitansiDonasi">Kuitansi</a>' : ''); ?>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php 
+                                                }
+                                            } else {
+                                            
+                                            }
+                                        } else {
+                                            echo '<tr><td colspan="4">Belum ada data Donasi</td></tr>';
+                                        }
+                                    ?>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th class="font-weight-bold">Id Donasi</th>
+                                            <th class="font-weight-bold">Status</th>
+                                            <th class="font-weight-bold">Nominal (Rp)</th>
+                                            <th class="font-weight-bold">Aksi</th>
+                                        </tr>
+                                    </tfoot>
+                            </table>
+                        </div>
                     </div>
-                    <div class="card-footer py-4">
+                    <div class="card-footer border-top-0">
                         <div class="row align-items-center gap-y-3">
-                            <div class="col-12 col-md-6">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Cari.." name="search"
-                                        autocomplete="off" <?=(isset($data['tagihan_paid']['search']) ? 'value="' .
-                                        $data['tagihan_paid']['search'] . '"' : '' ) ?>>
+                            <?php if (isset($this->data['tagihan_paid']['pages'])) { ?>
+                                <div class="col">
+                                    <ul data-tagihan="paid" class="pagination pagination-sm justify-content-center justify-content-md-end mb-0" data-pages="<?= $this->data['tagihan_paid']['pages']; ?>">
+                                    </ul>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="list-my-order-donasi" role="tabpanel" aria-labelledby="my-order-tab">
+                    <div class="card-header row justify-content-end m-0 border-0">
+                        <div class="col-12 col-md-4 px-0">
+                            <div class="form-label-group">
+                                <input type="text" id="input-search-order-donasi" class="form-control" name="search" placeholder="Judul" autocomplete="off" maxlength="50" spellcheck="false">
+                                <label for="input-search-order-donasi" class="form-control-label"></label>
+                                <span class="input-char-left"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="font-weight-bold">Link Id</th>
+                                        <th class="font-weight-bold auto">Status</th>
+                                        <th class="font-weight-bold auto">Nominal (Rp)</th>
+                                        <th class="font-weight-bold auto">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody<?= (isset($this->data['tagihan_unpaid']['limit']) ? ' data-limit="'. $this->data['tagihan_unpaid']['limit'] .'"' : '') ?>>
+                                    <?php 
+                                        if (isset($data['tagihan_unpaid'])) {
+                                            if (count(is_countable($data['tagihan_unpaid']['data']) ? $data['tagihan_unpaid']['data'] : []) > 0) {
+                                                foreach($data['tagihan_unpaid']['data'] as $listOrder) {
+                                                    if ($listOrder->status == 'PENDING') {
+                                                        $badge = 'badge-warning';
+                                                    } else if ($listOrder->status == 'FAILED') {
+                                                        $badge = 'badge-danger';
+                                                    } else if ($listOrder->status == 'SUCCESFUL') {
+                                                        $badge = 'badge-success';
+                                                    } else {
+                                                        $badge = '';
+                                                    }
+                                    ?>
+                                    <tr<?= (isset($listOrder->id_order_donasi) ? ' data-order-id="'. $listOrder->id_order_donasi .'"' : ''); ?>>
+                                        <td>
+                                            <div class="d-flex gap-x-1">
+                                                <div class="id">
+                                                    <span class="text-primary font-weight-bolder"
+                                                        data-id="<?= $listOrder->id_order_donasi; ?>">
+                                                        #<?= $listOrder->id_order_donasi; ?>
+                                                    </span>
+                                                </div>
+                                                <div class="desc">
+                                                    <a <?= (isset($listOrder->id_bantuan) ? 'href="/bantuan/data/'.$listOrder->id_bantuan.'"' : 'javascript::void(0);'); ?> class="font-weight-bolder" <?=(!empty($listOrder->warna) ? ' style="color: '
+                                                        . $listOrder->warna . '"' : ''); ?><?= (isset($listOrder->nama_bantuan) ? ' data-nama-bantuan="'. $listOrder->nama_bantuan .'"':''); ?>>
+                                                        <?= (isset($listOrder->nama_bantuan) ? '<span>'. $listOrder->nama_bantuan .'</span>':''); ?>
+                                                    </a>
+                                                    <?= (!empty($listOrder->nama_sektor) ? '<span class="text-muted"> (' . $listOrder->nama_sektor . ')</span>' : ''); ?>
+                                                    <div class="time small text-black-50 font-weight-bolder">
+                                                        <?= (isset($listOrder->create_order_at) ? '<span>'. $listOrder->create_order_at .'</span>':''); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge <?= $badge; ?>">
+                                                <?= $listOrder->status; ?>
+                                            </span>
+                                            <?= (!is_null($listOrder->external_id) ? '<span class="small text-black-50 font-weight-bolder d-block">' . $listOrder->external_id . '</span>' : ''); ?>
+                                        </td>
+                                        <td>
+                                            <div class="media align-items-center channel-payment">
+                                                <div class="media-body">
+                                                    <div class="name mb-0 text-black-50 font-weight-bold">
+                                                        <?= (isset($listOrder->jumlah_donasi) ? '<span>'. $listOrder->jumlah_donasi .'</span>':''); ?>
+                                                    </div>
+                                                    <div class="small text-black-50 font-weight-bolder">
+                                                        <?= (isset($listOrder->jenis_cp) ? '<span data-jenis-cp="'. $listOrder->jenis_cp .'">'.Utility::keteranganJenisChannelPayment($listOrder->jenis_cp).'</span>':''); ?>
+                                                        <?= (!is_null($listOrder->flip) ? '<span class="badge badge-warning">flip</span>':''); ?>
+                                                    </div>
+                                                </div>
+                                                <div class="avatar rounded ml-3 bg-transparent border">
+                                                    <img src="<?= $listOrder->path_gambar_cp; ?>"
+                                                        alt="<?= $listOrder->nama_path_gambar_cp; ?>" class="img-fluid">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown show">
+                                                <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow"
+                                                    x-placement="top-end">
+                                                    <?= (isset($listOrder->id_bantuan) ? '<a class="dropdown-item" href="/bantuan/'. (isset($listOrder->tag) ? $listOrder->tag : 'detil/'. $listOrder->id_bantuan) .'">Lihat Campaign</a>' : ''); ?>
+                                                    </a>
+                                                    <?= '<a href="/donasi/pembayaran/tagihan/'. $listOrder->jenis_cp .'/'. (isset($listOrder->external_id) ? $listOrder->external_id : $listOrder->id_order_donasi) .'" class="dropdown-item font-weight-bolder" role="button">Cek Pembayaran</a>'; ?>
+                                                    <a href="javascript::void(0);" class="dropdown-item text-warning font-weight-bolder" role="button" data-toggle="modal" data-target="#modalGantiMetodePembayaran" data-cp="<?= $listOrder->id_cp; ?>">Ganti Metode Bayar</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php 
+                                                }
+                                            } else {
+                                                echo '<tr><td colspan="4">Sementara belum ada data baru</td></tr>';
+                                            }
+                                        } else {
+                                            echo '<tr><td colspan="4">Sementara belum ada data baru</td></tr>';
+                                        }
+                                    ?>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th class="font-weight-bold">Link Id</th>
+                                        <th class="font-weight-bold auto">Status</th>
+                                        <th class="font-weight-bold auto">Nominal (Rp)</th>
+                                        <th class="font-weight-bold auto">Aksi</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer border-0">
+                        <div class="row align-items-center gap-y-3">
+                            <?php if (isset($data['tagihan_unpaid']['data'])) { ?>
+                            <div class="col-12 col-md">
+                                <div class="log-info" style="font-size: .75rem; right: 1.25rem;">
+                                    <div class="font-weight-bold text-black-50">
+                                        Menampilkan
+                                        <span class="text-orange">
+                                            <?= count(is_countable($data['tagihan_unpaid']['data']) ? $data['tagihan_unpaid']['data'] : []); ?>
+                                        </span>
+                                        dari
+                                        <span class="counter-card" data-count-up-value="<?= $data['tagihan_unpaid']['record']; ?>"></span>
+                                        Data
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6">
-                                <ul class="pagination pagination-sm justify-content-center justify-content-md-end mb-0"
-                                    data-pages="<?= $this->data['tagihan_paid']['pages']; ?>" data-tagihan="paid">
+                            <?php } ?>
+                            <div class="col-12 col-md">
+                                <ul data-tagihan="unpaid" class="pagination pagination-sm justify-content-center justify-content-md-end mb-0"<?= (!isset($this->data['tagihan_unpaid']['pages'])? '':'data-pages="'. $this->data['tagihan_unpaid']['pages'] .'"'); ?>>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -232,15 +294,13 @@
                     <div class="row m-0 gap-3">
                         <div class="col-12 col-md p-0">
                             <div class="row radio-box p-0 gap-3 m-0">
-                                <div class="col-12 p-0">
-                                    <h5>Transfer manual</h5>
-                                </div>
                                 <?php 
                                     if (!is_null($data['channel_payment'])) {
-                                        foreach($data['channel_payment'] as $data_cp) {
+                                        foreach($data['channel_payment'] as $key_jenis => $jenis_cp) {
+                                            echo '<div class="col-12 p-0"><h5>'. Utility::keteranganJenisChannelPayment($key_jenis) .'</h5></div>';
+                                            foreach($jenis_cp as $data_cp) {
                                         ?>
-                                <div
-                                    class="item p-3 d-flex flex-column justify-content-center align-items-center border rounded border-3">
+                                <div class="item p-3 d-flex flex-column justify-content-center align-items-center border rounded border-3">
                                     <div class="inputGroup">
                                         <input id="radio2" value="<?= $data_cp->id_cp; ?>" name="id_cp" type="radio" />
                                         <label for="radio2">
@@ -256,6 +316,7 @@
                                     </h6>
                                 </div>
                                 <?php
+                                            }
                                         }
                                     }
                                 ?>

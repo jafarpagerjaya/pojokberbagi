@@ -207,6 +207,16 @@
 				"href": "/admin/banner",
 				"title": "Banner",
 				"icon": "ni ni-diamond text-info"
+			},
+			"Donatur": {
+				"href": "/admin/donatur",
+				"title": "Donatur",
+				"icon": "ni ni-satisfied text-info"
+			},
+			"Donasi": {
+				"href": "/admin/donasi",
+				"title": "Donasi",
+				"icon": "ni ni-favourite-28 text-success"
 			}
 		}
 	},
