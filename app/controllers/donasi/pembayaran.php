@@ -141,7 +141,7 @@ class PembayaranController extends Controller {
         );
 
         // Sementara pakai condisional tambahan AND jenis = 'TB'
-        $dataCP = $this->model->query("SELECT LOWER(cp.jenis) jenis_payment, cp.kode_paygate_brand FROM channel_payment cp JOIN channel_account ca USING(id_ca) JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp) WHERE (cp.id_cp = ? AND cp.kode = 'LIP') OR (cp.jenis = 'TB' AND cp.id_cp = ?)", 
+        $dataCP = $this->model->query("SELECT LOWER(cp.jenis) jenis_payment, cp.kode_paygate_brand FROM channel_payment cp JOIN channel_account ca USING(id_ca) JOIN penyelenggara_jasa_pembayaran pjp USING(id_pjp) WHERE (cp.id_cp = ? AND cp.kode = 'LIP') OR (cp.jenis = 'TB' AND cp.id_cp = ?) AND cp.aktif = '1'", 
             array(
                 $dataDonasi['id_cp'],
                 $dataDonasi['id_cp']
@@ -203,6 +203,7 @@ class PembayaranController extends Controller {
 
             $hash_transaksi = $data_bantuan->tag . '/' . Hash::unique();
 
+            // sender_bank sementara khusus e-wallet jadi qris
             $payloads = [
                 "title" => "Donasi ". $data_bantuan->nama,
                 "amount" => $dataDonasi['jumlah_donasi'],
@@ -216,7 +217,7 @@ class PembayaranController extends Controller {
                 "sender_email" => strtolower(trim(Input::get('email'))),
                 "sender_address" => Config::getHTTPHost(),
                 // Ini untuk Step 3 namun Step 3 hanya bisa untuk VA dan QRIS
-                "sender_bank" => ($dataCP->kode_paygate_brand == 'gopay' ? 'qris' : $dataCP->kode_paygate_brand),
+                "sender_bank" => (($dataCP->kode_paygate_brand == 'gopay' || $jenis_payment == 'ew') ? 'qris' : $dataCP->kode_paygate_brand),
                 "sender_bank_type" => Utility::flipSenderBankType($jenis_payment)
             ];
 
@@ -245,6 +246,12 @@ class PembayaranController extends Controller {
                     ));
                     Redirect::to('home');
                 }
+            } else if ($dataResponse->status == '401') {
+                Session::flash('notifikasi', array(
+                    'pesan' => "Flip Accept Payment [STEP 3] ". $dataResponse->message,
+                    'state' => 'warning'
+                ));
+                Redirect::to('home');
             }
 
             $dataDonasi['external_id'] = $dataResponse->link_id;
@@ -293,7 +300,8 @@ class PembayaranController extends Controller {
                     Redirect::to($redirectLink);
                 }
                 $this->model->commit();
-            } else if ($jenis_payment == 'qr') {
+                // Sementara EW dan QR nyatu
+            } else if ($jenis_payment == 'qr' || $jenis_payment == 'ew') {
                 $dataOrderQR = array(
                     'id_order_donasi' => $this->model->lastIID(),
                     'qr_code' => $dataResponse->bill_payment->receiver_bank_account->qr_code_data
