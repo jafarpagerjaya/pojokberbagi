@@ -3,6 +3,8 @@ class Fetch {
     private $_result = array('error' => true),
             $_decoded;
 
+    public $path_gambar;
+
     public function __construct($token = true) {
         if (!isset($_SERVER['HTTP_REFERER']) && !isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
             Redirect::to('/');
@@ -82,4 +84,99 @@ class Fetch {
         }
         echo json_encode($this->_result);
     }
+
+    public function uploadDataUrlIntoServer($params = array(), $path_dir = 'bantuan', $file_name = '') {
+        if (count(is_countable($params) ? $params : []) == 0) {
+            return false;
+        }
+
+        $i = 0;
+
+        $arrayPath = array();
+
+        foreach($params as $directory_name => $fileImg) {
+            $extension = Sanitize::escape2(explode('/', mime_content_type($fileImg))[1]);
+
+            $fileImg = str_replace('data:image/'. $extension .';base64,', '', $fileImg);
+            $fileImg = str_replace(' ', '+', $fileImg);
+            $fileData = base64_decode($fileImg);
+
+            $upload_directory = BASEURL . "uploads" . DS . "images" . DS . "{$path_dir}" . DS . $directory_name;
+
+            if (!is_dir($upload_directory)) {
+                mkdir($upload_directory, 0777, $rekursif = true);
+            }
+
+            $path_gambar = $upload_directory. DS . time() . '-' . $directory_name .''. $file_name . '.jpeg';
+
+            $uploaded = file_put_contents($path_gambar, $fileData);
+
+            if (!$uploaded) {
+                break;
+            } else {
+                $path_gambar = "/uploads/images/{$path_dir}/" . $directory_name . "/" . time() . "-" . $directory_name .''. $file_name . ".jpeg";
+                $arrayPath[$directory_name] = array(
+                    'name' => time() . '-' . $directory_name .''. $file_name,
+                    'path' => $path_gambar
+                );
+                $i++;
+            }
+            
+        }
+
+        $this->path_gambar = $arrayPath;
+
+        if (count(is_countable($params) ? $params : []) != $i) {
+            foreach($this->path_gambar as $key => $path_file) {
+                $this->removeFile(ROOT . DS . 'public' . DS . $path_file['path']);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    public function removeFile($path_gambar = null) {
+        if (is_null($path_gambar)) {
+            return false;
+        }
+
+        if (file_exists($path_gambar)) {
+            unlink($path_gambar);
+        }
+    }
+
+    public function removePathGambar() {
+        if (count(is_countable($this->path_gambar) ? $this->path_gambar : []) > 0) {
+            foreach($this->path_gambar as $key => $path_file) {
+                $this->removeFile(ROOT . DS . 'public' . DS . $path_file['path']);
+            }
+
+            $this->model('home');
+            $j = 0;
+            foreach($this->path_gambar as $key => $path_gambar) {
+                $this->model->delete('gambar', array('nama', '=', Sanitize::escape2($path_gambar['name'])));
+                if (!$this->model->affected()) {
+                    $fetch->addResults(array(
+                        'error' => true,
+                        'feedback' => array(
+                            'massage' => 'Gambar gagal dihapus dari database [$fetch]'
+                        )
+                    ));
+                } else {
+                    $j++;
+                }
+            }
+
+            if ($j == count(is_countable($this->path_gambar) ? $this->path_gambar : [])) {
+                $fetch->addResults(array(
+                    'feedback' => array(
+                        'massage' => 'Gambar berhasil dihapus dari database dan direktory [$fetch]'
+                    )
+                ));
+            }
+        }
+    }
+
+
 }

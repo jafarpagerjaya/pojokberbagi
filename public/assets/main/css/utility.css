@@ -129,6 +129,27 @@
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+.modal .ni-bell-55 {
+    position: relative;
+}
+
+@keyframes scaleRounded {
+    0% {
+        text-shadow: 0px 0px 0px #eee;
+    }
+    50% {
+        text-shadow: 0px 0px 50px #ffbb00;
+        color: #ffbb00;
+    }
+    100% {
+        text-shadow: 0px 0px 0px #eee;
+    }
+}
+
+.modal .ni-bell-55::before {
+    animation: scaleRounded .7s ease infinite;
+}
+
 #keterangan {
     padding-left: 1.6em;
     padding-right: 1.6em;

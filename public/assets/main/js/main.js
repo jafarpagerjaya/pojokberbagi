@@ -13,6 +13,10 @@ signoutButton.forEach((el)=>{
     });
 });
 
+function round(v) {
+    return (v >= 0 || -1) * Math.floor(Math.abs(v));
+}
+
 function timePassed(startTime) {
     const units = {
         year  : 24 * 60 * 60 * 1000 * 365,
@@ -30,7 +34,7 @@ function timePassed(startTime) {
 
         for (let u in units) {
             if (Math.abs(elapsed) > units[u] || u == 'second') {
-                return rtf.format(Math.round(elapsed/units[u]), u);
+                return rtf.format(round(elapsed/units[u]), u);
             }
         }
     }

@@ -9,7 +9,9 @@ class SigninController extends Controller {
 		if ($this->_auth->isSignIn()) {
 			if ($this->_auth->hasPermission('admin')) {
                 Redirect::to('admin');
-            } else {
+            } else if ($this->_auth->hasPermission('marketing')) {
+                Redirect::to('marketing');
+			} else {
                 Redirect::to('donatur');
             }
         }
@@ -71,7 +73,13 @@ class SigninController extends Controller {
 								$route = 'admin';
 								break;
 							default:
-								$route = 'donatur';
+								$this->model('Campaign');
+								$marketer = $this->model->isMarketer($dataAkun->email);
+								if ($marketer) {
+									$route = 'marketing';
+								} else {
+									$route = 'donatur';
+								}
 								break;
 						}
 

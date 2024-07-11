@@ -68,16 +68,6 @@ class PembayaranController extends Controller {
                 'required' => true,
                 'max' => 30
             ),
-            'email' => array(
-                'required' => true,
-                'max' => 96
-            ),
-            'kontak' => array(
-                'digit' => true,
-                'min' => 11,
-                'max' => 13,
-                'unique' => 'donatur'
-            ),
             'pesan_atau_doa' => array(
                 'max' => 200
             )
@@ -87,8 +77,19 @@ class PembayaranController extends Controller {
             Redirect::to($redirectLink);
         }
 
-        $this->model->getData('id_donatur, samaran, kontak','donatur', array('LOWER(email)','=', strtolower(trim(Input::get('email')))));
-        $data = $this->model->getResult();
+        $this->model->query("SELECT id_donatur, samaran, email, kontak FROM donatur WHERE (email = ? AND kontak = ?) OR (kontak = ? AND email IS NULL) OR (email = ? AND kontak IS NULL) OR (email = ? AND kontak != ?) OR (kontak = ? AND email != ?)", array(
+            strtolower(Sanitize::escape2(Input::get('email'))),
+            Sanitize::toInt2(Input::get('kontak')),
+            Sanitize::toInt2(Input::get('kontak')),
+            strtolower(Sanitize::escape2(Input::get('email'))),
+            strtolower(Sanitize::escape2(Input::get('email'))),
+            Sanitize::toInt2(Input::get('kontak')),
+            Sanitize::toInt2(Input::get('kontak')),
+            strtolower(Sanitize::escape2(Input::get('email')))
+        ));
+        // $this->model->getData('id_donatur, samaran, kontak','donatur', array('LOWER(email)','=', strtolower(trim(Input::get('email')))));
+        // $data = $this->model->getResult();
+        $data = $this->model->getResults();
         if (!$data) {
             // Block Yang kemungkinan bisa di hapus karena kontak pasti beda
             // Check data email dan kontak sebelum create donatur
@@ -127,9 +128,19 @@ class PembayaranController extends Controller {
             $id_donatur = $this->model->lastIID();
             $samaran = null;
         } else {
+            if (count(is_countable($data) ? $data : []) > 1) {
+                Session::flash('notifikasi', array(
+                    'pesan' => 'Email dan kontak sudah ada yang menggunakannya',
+                    'state' => 'warning'
+                ));
+                Redirect::to('home');
+            }
+
+            $data = $data[0];
             $id_donatur = $data->id_donatur;
             $samaran = $data->samaran;
             $kontak = $data->kontak;
+            $email = $data->email;
         }
 
         $dataDonasi = array(
@@ -173,6 +184,15 @@ class PembayaranController extends Controller {
         
         if (isset($kontak)) {
             $dataDonasi['kontak'] = $kontak;
+        }
+
+        // Jika email sudah ada
+        if (is_null($email) && strlen(Input::get('email')) > 0) {
+            $email = Sanitize::escape2(Input::get('email'));
+        }
+        
+        if (isset($email)) {
+            $dataDonasi['email'] = $email;
         }
 
         // Cek jika open donasi sudah berakhir
@@ -371,10 +391,10 @@ class PembayaranController extends Controller {
             $donasi = $this->model->getOrderDonasi($params[1]);
         } else {
             // link id 
-            $this->model->query("SELECT 'od',IF(status != 'SUCCESSFUL','0','1') bayar, external_id link_id, notifikasi, order_donasi.STATUS, id_bantuan, order_donasi.kontak, doa, cp.jenis, cp.nama nama_cp, cp.nomor, cp.atas_nama, g.path_gambar path_gambar_cp, d.email
+            $this->model->query("SELECT 'od',IF(status != 'SUCCESSFUL','0','1') bayar, external_id link_id, notifikasi, order_donasi.STATUS, id_bantuan, order_donasi.kontak, doa, cp.jenis, cp.nama nama_cp, cp.nomor, cp.atas_nama, g.path_gambar path_gambar_cp, IFNULL(d.email, order_donasi.email) email
             FROM order_donasi LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN donatur d ON (d.id_donatur = order_donasi.id_donatur) LEFT JOIN gambar g ON(g.id_gambar = cp.id_gambar) WHERE external_id = ?
             UNION
-            SELECT 'op', bayar, link_id, notifikasi, order_paygate.STATUS, id_bantuan, d.kontak, doa, cp.jenis, cp.nama nama_cp, cp.nomor, cp.atas_nama, g.path_gambar path_gambar_cp, d.email
+            SELECT 'op', bayar, link_id, notifikasi, order_paygate.STATUS, id_bantuan, d.kontak, doa, cp.jenis, cp.nama nama_cp, cp.nomor, cp.atas_nama, g.path_gambar path_gambar_cp, IFNULL(d.email, donasi.email) email
             FROM order_paygate JOIN donasi USING(id_order_paygate) LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN donatur d ON (d.id_donatur = donasi.id_donatur) LEFT JOIN gambar g ON(g.id_gambar = cp.id_gambar) WHERE link_id = ?", 
                 array(
                     'external_id' => Sanitize::escape2($params[1]), 
@@ -394,8 +414,6 @@ class PembayaranController extends Controller {
             $donasi = (object) array_merge((array) $donasi, (array) $billPayment);
             $donasi->nama_donatur = $donasi->sender_name;
             $donasi->jumlah_donasi = $donasi->amount;
-            $donasi->atas_nama = $billPayment->sender_name;
-            $donasi->nomor = $billPayment->virtual_account_number;
             if ($billPayment->sender_bank_type == 'virtual_account') {
                 $donasi->atas_nama = $billPayment->sender_name;
                 $donasi->nomor = $billPayment->virtual_account_number;
@@ -485,7 +503,7 @@ class PembayaranController extends Controller {
         
         if ($donasi->jenis == 'TB') {
             $metode_bayar = "Transfer Bank";
-        } else if ($donasi->jenis == 'RQ') {
+        } else if ($donasi->jenis == 'QR') {
             $metode_bayar = "QRIS";
         } else if ($donasi->jenis == 'EW') {
             $metode_bayar = "E-Wallet";
@@ -680,7 +698,7 @@ class PembayaranController extends Controller {
         }
 
         $this->model('Donasi');
-        $this->model->query("SELECT order_donasi.status, external_id, url, kode_pembayaran, alias, order_donasi.kontak, doa, notifikasi, jumlah_donasi, end_at, id_bantuan, bantuan.nama nama_bantuan, nama_penerima, id_cp, id_donatur, d.nama, d.email, cp.nama nama_cp, gcp.path_gambar path_gambar_cp FROM order_donasi JOIN donatur d USING(id_donatur) LEFT JOIN bantuan USING(id_bantuan) LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN gambar gcp ON(gcp.id_gambar = cp.id_gambar) WHERE external_id = ?", array($decoded_data->bill_link_id));
+        $this->model->query("SELECT order_donasi.status, external_id, url, kode_pembayaran, alias, order_donasi.kontak, doa, notifikasi, jumlah_donasi, end_at, id_bantuan, bantuan.nama nama_bantuan, nama_penerima, id_cp, id_donatur, d.nama, IFNULL(d.email, order_donasi.email) email, cp.nama nama_cp, gcp.path_gambar path_gambar_cp FROM order_donasi JOIN donatur d USING(id_donatur) LEFT JOIN bantuan USING(id_bantuan) LEFT JOIN channel_payment cp USING(id_cp) LEFT JOIN gambar gcp ON(gcp.id_gambar = cp.id_gambar) WHERE external_id = ?", array($decoded_data->bill_link_id));
         if (!$this->model->affected()) {
             $result = json_encode(array(
                 'error' => true,

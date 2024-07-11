@@ -352,9 +352,16 @@ let createNewToast = function(toastParentEl, toastId = null, dataToast = 'feedba
 };
 
 let timeAgoRuns = function(target, targetValue, key = '', interval = 60000, targetParent = null, targetParentData = null) {
-    const spanDMVList = document.querySelectorAll(target);
-    let dmvObj = {},
-        i = 0;
+    let spanDMVList,
+        dmvObj = {},
+        i = 0,
+        timeIdentity;
+
+    if (typeof target == 'string') {
+        spanDMVList = document.querySelectorAll(target);
+    } else if (typeof target == 'object') {
+        spanDMVList = target;
+    }
 
     spanDMVList.forEach(el => {
         dmvObj[key + i] = {
@@ -365,33 +372,56 @@ let timeAgoRuns = function(target, targetValue, key = '', interval = 60000, targ
             dmvObj[key + i].id = el.closest(targetParent).getAttribute(targetParentData);
         }
 
+        if (i == 0) {
+            if (el.getAttribute('time-ago-identity') == null) {
+                timeIdentity = Math.random().toString(36).substring(2,7) +''+dmvObj[key + i].id;
+                el.setAttribute('time-ago-identity', timeIdentity);
+            } else {
+                timeIdentity = el.getAttribute('time-ago-identity');
+                clearInterval(timeIntervalList[timeIdentity]);
+            }
+        } else {
+            el.setAttribute('time-ago-identity', timeIdentity);
+        }
+
         i++;
     });
 
-    let oTime = new Date(),
-        secondsLeft = (60 - oTime.getSeconds()) * 1000;
+    // let oTime = new Date(),
+    //     secondsLeft = (60 - oTime.getSeconds()) * 1000;
 
     spanDMVList.forEach(ele => {
         for (const property in dmvObj) {
+            const modified_at_time = new Date(dmvObj[property].modified_at);
+            let secondsLeft = (((60 - new Date().getSeconds()) + modified_at_time.getSeconds()) % 60) * 1000;
             if (ele.closest(targetParent).getAttribute(targetParentData) == dmvObj[property].id) {
-                ele.innerHTML = (timePassed(new Date(dmvObj[property].modified_at)) == 'sekarang' || timePassed(new Date(dmvObj[property].modified_at)) == '1 detik yang lalu' ? 'beberapa saat yang lalu':timePassed(new Date(dmvObj[property].modified_at)));
+                ele.innerHTML = (timePassed(modified_at_time) == 'sekarang' || timePassed(modified_at_time) == '1 detik yang lalu' ? 'beberapa saat yang lalu':timePassed(modified_at_time));
+                setTimeout(() => {
+                    let timeInterval = setInterval(() => {
+                        if (ele.closest(targetParent).getAttribute(targetParentData) == dmvObj[property].id) {
+                            ele.innerHTML = timePassed(modified_at_time);
+                        }
+                    }, interval);
+                    timeIntervalList[timeIdentity] = timeInterval;
+                }, secondsLeft);
             }
         }
     });
 
-    setTimeout(() => {
-        let timeInterval = setInterval(() => {
-            spanDMVList.forEach(ele => {
-                for (const property in dmvObj) {
-                    if (ele.closest(targetParent).getAttribute(targetParentData) == dmvObj[property].id) {
-                        ele.innerHTML = timePassed(new Date(dmvObj[property].modified_at));
-                    }
-                }
-            });
-        }, interval);
+    // setTimeout(() => {
+        // clearInterval(timeIntervalList[timeIdentity]);
+        // let timeInterval = setInterval(() => {
+        //     spanDMVList.forEach(ele => {
+        //         for (const property in dmvObj) {
+        //             if (ele.closest(targetParent).getAttribute(targetParentData) == dmvObj[property].id) {
+        //                 ele.innerHTML = timePassed(new Date(dmvObj[property].modified_at));
+        //             }
+        //         }
+        //     });
+        // }, interval);
 
-        timeIntervalList[targetValue] = timeInterval;
-    }, secondsLeft);
+        // timeIntervalList[timeIdentity] = timeInterval;
+    // }, secondsLeft);
 };
 
 // Diulangn dengan fungsi resize

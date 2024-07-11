@@ -1,0 +1,66 @@
+#input-id-bantuan,
+#input-judul,
+.ql-editor {
+    padding-left: 1.4rem;
+    padding-right: 1.4rem;
+}
+
+.ql-toolbar.ql-snow {
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
+}
+
+.ql-container {
+    font-family: inherit !important;
+}
+
+#wyswyg-area .rounded.ql {
+    border: 1px solid #dee2e6;
+    transition: all .15s ease-in-out;
+}
+
+#wyswyg-area .rounded.ql.focused {
+    border-color: #5e72e4;
+    box-shadow: 0 0 0 0.2rem rgb(94 114 228 / 25%);
+}
+
+#wyswyg-area .quill-editor iframe {
+    pointer-events: none;
+}
+
+.modal#modalKonfirmasiResetDeskripsi a.badge-primary {
+    color: var(--danger) !important;
+}
+
+.modal#modalKonfirmasiResetDeskripsi a.badge-primary:hover,
+.modal#modalKonfirmasiResetDeskripsi a.badge-primary:focus {
+    color: #fff !important;
+}
+
+select.custom-select~.select2>.selection>.select2-selection {
+    padding: 10px 1.4rem;
+}
+
+.select2 label {
+    font-size: .875rem !important;
+}
+
+.select2-search.select2-search--dropdown {
+    padding-left: 1.4rem;
+    padding-right: 1.4rem;
+    padding-bottom: 1rem;
+}
+
+.select2-container--default .select2-results__options {
+    scrollbar-gutter: stable;
+}
+
+.select2-container--default .select2-results__option {
+    padding-left: 1.4rem;
+}
+
+@media (max-width: 991px) {
+    button[data-value="create"] {
+        max-height: 46px;
+    }
+}

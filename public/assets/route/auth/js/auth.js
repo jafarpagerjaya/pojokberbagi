@@ -71,7 +71,9 @@ let authChannelSignout = {
         admin: '/auth',
         pemohon: '/auth',
         akun: '/auth',
-        donasi: ''
+        donasi: '',
+        donatur: '/auth',
+        marketing: '/auth'
     }
 }
 

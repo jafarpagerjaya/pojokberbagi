@@ -192,7 +192,7 @@ class FetchController extends Controller {
             }
         }
 
-        $this->model->query("SELECT b.blokir, b.status, b.nama, b.tag, od.external_id, od.alias, od.jumlah_donasi, d.email FROM order_donasi od JOIN bantuan b USING(id_bantuan) JOIN donatur d USING(id_donatur) WHERE od.id_order_donasi = ?", array(
+        $this->model->query("SELECT b.blokir, b.status, b.nama, b.tag, od.external_id, COALESCE(od.alias, d.samaran, d.nama) alias, od.jumlah_donasi, d.email FROM order_donasi od JOIN bantuan b USING(id_bantuan) JOIN donatur d USING(id_donatur) WHERE od.id_order_donasi = ?", array(
             'od.id_order_donasi' => Sanitize::escape2($decoded['id_order_donasi'])
         ));
 

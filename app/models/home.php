@@ -19,6 +19,18 @@ class HomeModel {
         return (isset($table) && is_array($fields)) ? true : false;
     }
 
+    public function startTransaction() {
+        $this->db->startTransaction();
+    }
+
+    public function commit() {
+        $this->db->commit();
+    }
+
+    public function rollback() {
+        $this->db->rollback();
+    }
+
     public function prepareStmt($sql) {
         if (!$this->db->prepared($sql))  {
             throw new Exception("Error Processing Prepared " . $sql);

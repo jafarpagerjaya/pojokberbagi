@@ -1,18 +1,6 @@
 <?php
 class DonasiModel extends HomeModel {
 
-    public function startTransaction() {
-        $this->db->startTransaction();
-    }
-
-    public function commit() {
-        $this->db->commit();
-    }
-
-    public function rollback() {
-        $this->db->rollback();
-    }
-
     public function isBantuanActive($params) {
         $this->db->query("SELECT tag, id_bantuan, nama, min_donasi, tanggal_akhir, status, blokir FROM bantuan WHERE id_bantuan = ? OR tag = ?", array('id_bantuan' => $params, 'tag' => $params));
         if ($this->db->count()) {
@@ -239,7 +227,7 @@ class DonasiModel extends HomeModel {
         (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'gopay' AND cpew.jenis = 'EW' AND cpew.kode != 'LIP') nomor_gopay,
         (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'dana' AND cpew.jenis = 'EW' AND cpew.kode != 'LIP') nomor_dana,
         (SELECT cpew.nomor FROM channel_payment cpew WHERE LOWER(cpew.nama) = 'shopeepay' AND cpew.jenis = 'EW' AND cpew.kode != 'LIP') nomor_shopeepay,
-        (SELECT DISTINCT(cppg.nomor) FROM channel_payment cppg WHERE LOWER(cppg.kode) = 'LIP') id_flip
+        (SELECT DISTINCT(cppg.atas_nama) FROM channel_payment cppg WHERE LOWER(cppg.kode) = 'LIP') id_flip
         FROM channel_payment cp LEFT JOIN donasi d ON(d.id_cp = cp.id_cp)
         WHERE d.bayar = 1 AND d.id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi)");
         if ($this->db->count()) {
@@ -275,6 +263,9 @@ class DonasiModel extends HomeModel {
                 $filter[0] .= " AND {$where[0]}";
                 $filter[1] = $where[1];
                 array_push($params, $where[1]);
+                $filter = implode(' ', $filter);
+            } else {
+                $filter = $filter[0];
             }
         }
 
@@ -287,8 +278,9 @@ class DonasiModel extends HomeModel {
                 array_push($params, $where[1]);
             }
         } else {
-            $filter = 'WHERE '.$filter[0];
+            $filter = 'WHERE '.$filter;
         }
+        
         $sql = "SELECT {$fields} FROM {$tables} {$filter} ORDER BY od.id_order_donasi {$this->getDirection()}, {$this->getOrder()} {$this->getDirection()} LIMIT {$this->getHalaman()[0]},{$this->getLimit()}";        
         $this->db->query($sql, $params);
         

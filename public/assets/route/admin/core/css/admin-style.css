@@ -98,6 +98,10 @@ body {
     transform: rotate(90deg);
 }
 
+.nav-item .nav-link.active.active-pro {
+    position: relative !important;
+}
+
 .table .tfoot-light th {
     color: #8898aa;
     background-color: #f6f9fc;

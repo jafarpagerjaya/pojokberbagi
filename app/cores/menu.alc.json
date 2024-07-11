@@ -217,6 +217,11 @@
 				"href": "/admin/donasi",
 				"title": "Donasi",
 				"icon": "ni ni-favourite-28 text-success"
+			},
+			"Promosi": {
+				"href": "/admin/campaign",
+				"title": "Landing Campaign",
+				"icon": "ni ni-album-2 text-primary"
 			}
 		}
 	},
@@ -281,6 +286,15 @@
 			"Signout": {
 				"href": "/auth/signout",
 				"title": "Sign Out"
+			}
+		}
+	},
+	"marketing": {
+		"marketing": {	
+			"Campaign": {
+				"href": "/marketing/campaign",
+				"title": "Landing Campaign",
+				"icon": "ni ni-album-2 text-primary"
 			}
 		}
 	}

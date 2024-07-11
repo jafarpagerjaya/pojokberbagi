@@ -1,0 +1,81 @@
+.ql-container {
+    font-family: inherit;
+}
+
+.ql-editor img {
+    border-radius: 15px;
+}
+
+.ql-container p {
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+}
+
+.ql-container p:first-of-type {
+    margin-top: 0px;
+}
+
+.ql-container p:last-of-type {
+    margin-bottom: 0px;
+}
+
+.ql-video {
+    position: relative;
+    width: 100%;
+    height: calc((100vw - 24px) / (16/9));
+    overflow: hidden;
+    max-width: 100%;
+    border-radius: 15px;
+}
+
+#campaign img {
+    margin: 1em auto;
+}
+
+.position-fixed {
+    bottom: 0;
+    z-index: 1;
+    width: 100%;
+    background-color: var(--bs-light);
+    padding-top: 11px;
+    padding-bottom: 11px;
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+    .ql-video {
+        height: calc(690px  / (16/9));
+        max-height: calc(690px  / (16/9));
+    }
+}
+
+@media (min-width: 768px) {
+    .position-fixed {
+        padding-top: 28px;
+        padding-bottom: 28px;
+    }
+
+    section+footer.footer {
+        padding-bottom: 120px;
+    }
+}
+
+@media (min-width: 992px) {
+    .ql-video {
+        height: calc(610px  / (16/9));
+        max-height: calc(610px  / (16/9));
+    }
+}
+
+@media (min-width: 1200px) {
+    .ql-video {
+        height: calc(730px  / (16/9));
+        max-height: calc(730px  / (16/9));
+    }
+}
+
+@media (min-width: 1400px) {
+    .ql-video {
+        height: calc((850px + 16px)  / (16/9));
+        max-height: calc((850px + 16px)  / (16/9));
+    }
+}

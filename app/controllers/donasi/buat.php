@@ -184,7 +184,7 @@ class BuatController extends Controller {
         $this->model("Donasi");
         // Sementara TB dulu 
         // $dataCP = $this->model->query("SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar, gambar.nama nama_partner FROM channel_payment cp JOIN channel_account ca USING(id_ca) LEFT JOIN gambar USING(id_gambar) WHERE cp.jenis = 'TB'", array());
-        $dataCP = $this->model->query("SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar, gambar.nama nama_partner FROM channel_payment cp JOIN channel_account ca USING(id_ca) LEFT JOIN gambar USING(id_gambar) WHERE (cp.jenis = 'TB' OR ca.jenis = 'PG') AND cp.aktif = '1'", array());
+        $dataCP = $this->model->query("SELECT cp.id_cp, cp.nama, cp.jenis, gambar.path_gambar, gambar.nama nama_partner FROM channel_payment cp JOIN channel_account ca USING(id_ca) LEFT JOIN gambar USING(id_gambar) WHERE (cp.jenis = 'TB' OR ca.jenis = 'PG') AND cp.aktif = '1' ORDER BY cp.jenis DESC", array());
         if (!$dataCP) {
             $fetch->addResults(array(
                 'feedback' => array(

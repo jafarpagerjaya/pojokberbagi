@@ -1619,6 +1619,7 @@ class FetchController extends Controller {
                     'id_informasi','=',$id_informasi
                 ), $added_conditional, $another_filter);
             } catch (\Throwable $th) {
+                $this->model->query("ROLLBACK");
                 $pesan = explode(':',$th->getMessage());
                 $this->_result['feedback'] = array(
                     'message' => '<b>'. current($pesan) .'</b> '. end($pesan)

@@ -324,7 +324,7 @@ class View {
 						}
 					}
 					$nav .= '<li class="nav-item'. $dropdown .'">
-						<a href="'. $href .'" class="nav-link' . ((strtolower($items) == strtolower($this->getController())) ? ' active' : (strtolower(DS . $this->getRoute(). DS .$this->getController() . ($this->getAction() != null && $this->getAction() != 'index' ? DS .$this->getAction():'')) == $href ? ' active':'')) . '">'. (($this->_route == 'admin' || $this->_route == 'donatur') ? '<i class="' . $icon . '"></i>' : '') .'
+						<a href="'. $href .'" class="nav-link' . ((strtolower($items) == strtolower($this->getController())) ? ' active' : (strtolower(DS . $this->getRoute(). DS .$this->getController() . ($this->getAction() != null && $this->getAction() != 'index' ? DS .$this->getAction():'')) == $href ? ' active':'')) . '">'. (($this->_route == 'admin' || $this->_route == 'donatur' || $this->_route == 'marketing') ? '<i class="' . $icon . '"></i>' : '') .'
 							<span class="nav-link-inner--text">'. $title .'</span>
 						</a>'. $tree .'</li>';
 					if (strtolower($items) == strtolower($this->getController())) {
@@ -343,7 +343,7 @@ class View {
 				if ($this->getRoute() == $route) {
 					if (is_array($controllers)) {
 						foreach ($controllers as $controller => $menu_key) {
-							if (($this->_route == 'admin') && (strtoupper($controller) == strtoupper($this->data['admin_alias'])) || ($this->_route == 'donatur') && (strtoupper($controller) == strtoupper($this->data['route_alias'])) || ($this->_route != 'admin') && ($this->_route != 'donatur') && strtolower($controller) == $this->getController()) {
+							if (($this->_route == 'admin') && (strtoupper($controller) == strtoupper($this->data['admin_alias'])) || ($this->_route == 'donatur' || $this->_route == 'marketing') && (strtoupper($controller) == strtoupper($this->data['route_alias'])) || ($this->_route != 'admin') && ($this->_route != 'donatur') && ($this->_route != 'marketing') && strtolower($controller) == $this->getController()) {
 								if (is_array($menu_key)) {
 									// Debug::pr($menu_key);
 									$nav = $this->doNav($menu_key);

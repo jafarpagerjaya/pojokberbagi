@@ -1,0 +1,196 @@
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center m-0 gap-3">
+            <div class="px-0 col-12 col-md">
+                <h3 class="mb-0"><i class="fas fa-th-list"></i> Daftar Landing Page</h3>
+            </div>
+            <div class="px-0 col-12 col-md justify-content-between justify-content-md-end">
+                <div class="row align-items-center gap-x-3 m-0">
+                    <div class="px-0 col">
+                        <div class="form-label-group">
+                            <input type="text" id="input-search"
+                                class="form-control" name="search"
+                                placeholder="Cari ..." autocomplete="off"
+                                maxlength="50">
+                            <label for="input-search"
+                                class="form-control-label"></label>
+                        </div>
+                    </div>
+                    <div class="px-0 col-auto">
+                        <button class="btn btn-outline-primary font-weight-bolder m-0" data-toggle="modal" data-target="#modalLandingPage" data-value="create"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover" id="list-informasi">
+            <thead class="thead-light">
+                <th>Campaign</th>
+                <th class="fit">Status</th>
+                <th class="fit">Author</th>
+                <th class="fit"></th>
+            </thead>
+            <tbody<?= (isset($this->data['campaign']['limit']) ? ' data-limit="'. $this->data['campaign']['limit'] .'"' : '') ?>>
+                <?php if (count(is_countable($data['campaign']['data']) ? $data['campaign']['data'] : []) > 0) {
+                    foreach($data['campaign']['data'] as $row => $dataCampaign) {
+                    $status = Utility::statusBantuanClassTextBadge($dataCampaign->status);
+                    $aktif = ($dataCampaign->aktif == '1' ? array('class'=>'badge-success','text'=>'aktif','value'=>'1') : array('class'=>'badge-danger','text'=>'non-aktif','value'=>'0'));
+                 ?>
+                <tr data-id-campaign="<?= strrev(base64_encode($dataCampaign->id_campaign)); ?>">
+                    <td>
+                        <div class="row justify-content-between">
+                            <div class="col-auto">
+                                <a href="<?= (!isset($dataCampaign->tag) ? '/bantuan/detil/'.$dataCampaign->id_bantuan : '/bantuan/'.$dataCampaign->tag); ?>" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span><?= $dataCampaign->nama_bantuan; ?></span></a>
+                            </div>
+                            <?= (isset($dataCampaign->tag) ? '<div class="col-auto"><a href="/campaign/'. $dataCampaign->tag .'"><span class="tag">#'.$dataCampaign->tag.'</span></a></div>' : ''); ?>
+                        </div>
+                        <div class="row justify-content-between">
+                            <div class="col-auto"><span class="badge font-weight-bolder <?= $status['class']; ?>"><?= $status['text']; ?></span></div>
+                            <div class="col-auto">
+                                <span><i class="far fa-clock small"></i></span>
+                                <small><span data-modified-value="<?= $dataCampaign->modified_at; ?>"><?= $dataCampaign->time_ago; ?></span></small>
+                            </div>
+                        </div>
+                    </td>
+                    <td data-status="<?= $aktif['value']; ?>"><?= '<span class="badge '. $aktif['class'] .'" data-aktif="'.$aktif['value'].'">'. $aktif['text'] .'</span>'; ?></td>
+                    <td>
+                        <div class="media align-items-center gap-x-3">
+                            <div class="media-body">
+                                <div class="nama_jabatan mb-0 text-black-50 font-weight-bolder">
+                                    <span><?= $dataCampaign->jabatan_author; ?></span>
+                                </div>
+                                <div class="small text-black-50 font-weight-bolder">
+                                    <span><?= $dataCampaign->nama_author; ?></span>
+                                </div>
+                            </div>
+                        <div class="avatar rounded bg-transparent border overflow-hidden"
+                                data-id-author="<?= strrev(base64_encode($dataCampaign->id_akun_maker ?? '')); ?>">
+                                <img src="<?= $dataCampaign->path_author; ?>" alt="<?= $dataCampaign->nama_author; ?>" class="img-fluid">
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <a class="btn btn-sm btn-icon-only text-light mr-0 d-flex align-items-center justify-content-center" href="#"
+                                role="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false"
+                                aria-label="Drop Down Action Record">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </a>
+                            <div
+                                class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" data-value="<?= base64_decode(strrev($dataCampaign->id_campaign)); ?>">
+                                <?= (!is_null($dataCampaign->tag) ? '<a class="dropdown-item" href="/campaign/'. $dataCampaign->tag. '">Menuju Campaign</a>':''); ?>
+                                <a class="dropdown-item <?= (($dataCampaign->aktif == '1') ? 'text-danger' : 'text-warning') ?> font-weight-light" href="javascript:void(0);" data-toggle="modal"
+                                data-target="#modalKonfirmasiAksiCampaign" data-type="update-aktif"><?= (($dataCampaign->aktif == '1') ? 'Non-akifkan Campaign' : 'Aktifkan Campaign'); ?></a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal"
+                                data-target="#modalLandingPage" data-type="update">Ubah Campaign</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <?php
+                    }
+                } else { ?>
+                <tr>
+                    <td colspan="5"><span>Data landing campaign tidak ditemukan ...</span></td>
+                </tr>
+                <?php } ?>
+            </tbody>
+            <tfoot class="tfoot-light">
+                <th>Campaign</th>
+                <th class="fit">Status</th>
+                <th class="fit">Author</th>
+                <th class="fit"></th>
+            </tfoot>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div class="row m-0 gap-3">
+            <div class="col p-0 d-flex flex-column text-black-50" id="lebel">
+                <small>Menampilkan <span id="jumlah-data" class="text-orange"><?= count($data['campaign']['data']) ?></span> dari <span id="total-data"><?= $data['campaign']['total_record']; ?></span> baris data</small>
+                <?= (isset($data['campaign']['search']) ? '<small id="hasil-penelusuran"><span class="text-orange">'. count($data['campaign']['data']) .' data</span> pencarian ditemukan</small>' : ''); ?>
+            </div>
+            <div class="col px-0">
+                <ul class="pagination justify-content-end mb-0" data-pages="<?= $data['campaign']['pages']; ?>">
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal in" id="modalLandingPage" tabindex="-1" role="dialog"
+    aria-labelledby="modalLandingPage-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container p-0 py-md-3 py-lg-5 px-lg-3 px-3 px-md-0">
+                <div class="row gap-y-4">
+                    <div class="col-12">
+                        <div class="form-group position-relative mb-0">
+                            <span class="font-weight-bolder position-absolute mt-3">
+                                <label for="id-bantuan"
+                                    class="form-control-label m-0">Bantuan</label>
+                            </span>
+                            <select class="custom-select" id="id-bantuan"
+                                name="id-bantuan" required>
+                                <option value="0" disabled selected hidden>Pilih salah satu</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex gap-4 flex-column" id="wyswyg-area">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="rounded ql">
+                                    <div id="editor">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between" id="action-area">
+                        <button class="btn btn-link font-weight-bolder text-warning"
+                            data-dismiss="modal">Batal</button>
+                        <button class="btn btn-outline-primary" id="buat-campaign" type="submit">Simpan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" tabindex="-2" id="modalKonfirmasiAksiCampaign" role="dialog"
+    aria-labelledby="modalKonfirmasiAksiCampaignLabel" aria-hidden="true">
+    <div class="modal-dialog modal-danger modal-dialog-centered fullscreen">
+        <div class="modal-content bg-gradient-danger d-flex justify-content-center">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalKonfirmasiAksiCampaignLabel">Peringatan</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="py-3 text-center">
+                                <i class="ni ni-bell-55 ni-3x"></i>
+                                <h2 class="heading my-4">Anda harus baca ini !</h2>
+                                <p class="font-weight-light mb-1">Anda akan <span id="mode" class="font-weight-bold"></span><a href="/campaign"><span class="badge p-2 mx-1 bg-primary text-white" id="tag">label</span></a></p>
+                            </div>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-link bg-green-box font-weight-bolder" data-dismiss="modal">Batalkan</button>
+                            <button type="submit" class="btn btn-link bg-white text-danger font-weight-bolder">Ya, non-aktifkan.</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div aria-live="polite" aria-atomic="true"
+    class="position-fixed d-flex justify-content-end flex-column align-items-end">
+</div>
