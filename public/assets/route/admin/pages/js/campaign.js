@@ -487,8 +487,12 @@ let fetchUpdateCampaign = function(root, response) {
                         trEl.querySelector('td a span').innerText = response.feedback.data.nama_bantuan;
                     }
                     if (response.feedback.data.tag != null) {
-                        trEl.querySelector('td .tag').parentElement.setAttribute('href','/campaign/'+response.feedback.data.tag);
-                        trEl.querySelector('td .tag').innerText = '#'+response.feedback.data.tag;
+                        if (trEl.querySelector('td .tag') == null) {
+                            trEl.querySelector('td>.row').insertAdjacentHTML('beforeend','<div class="col-auto"><a href="/campaign/'+ response.feedback.data.tag +'"><span class="tag">#'+ response.feedback.data.tag +'</span></a></div>');
+                        } else {
+                            trEl.querySelector('td .tag').parentElement.setAttribute('href','/campaign/'+response.feedback.data.tag);
+                            trEl.querySelector('td .tag').innerText = '#'+response.feedback.data.tag;
+                        }
                     }
                     trEl.querySelector('td span[data-modified-value]').setAttribute('data-modified-value', response.feedback.data.modified_at);
                     stopPassed('data-modified-value');
@@ -541,8 +545,8 @@ let fetchCreateCampaign = function(root, response) {
             $('#'+root.id).modal('hide');
             $('#id-bantuan').val(0).trigger('change');
             setTimeout(() => {
-                if (relatedModal.querySelector('tbody>tr[data-id-campaign="'+ rD.id_campaign +'"]') != null) {
-                    relatedModal.querySelector('tbody>tr[data-id-campaign="'+ rD.id_campaign +'"]').classList.add('highlight');
+                if (relatedModal.querySelector('tbody>tr[data-id-campaign="'+ reverseString(btoa(rD.id_campaign)) +'"]') != null) {
+                    relatedModal.querySelector('tbody>tr[data-id-campaign="'+ reverseString(btoa(rD.id_campaign)) +'"]').classList.add('highlight');
                     setTimeout(()=> {
                         if (relatedModal.querySelector('tbody>tr.highlight') != null) {
                             relatedModal.querySelector('tbody>tr.highlight').classList.remove('highlight');

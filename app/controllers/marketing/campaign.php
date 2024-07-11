@@ -585,7 +585,7 @@ class CampaignController extends Controller {
         // }
 
         $decoded['id_akun_maker'] = $this->_auth->data()->id_akun;
-        $person = $this->_auth->getData("d.nama nama_maker, g.path_gambar path_maker, IF(a.hak_akses = 'A', j.nama, 'Digital Marketing') jabatan_maker",'donatur d JOIN akun a USING(id_akun) LEFT JOIN gambar g USING(id_gambar) LEFT JOIN pegawai p ON(a.email = p.email) LEFT JOIN jabatan j USING(id_jabatan)',array('a.id_akun','=',$decoded['id_akun_maker']));
+        $person = $this->_auth->getData("IFNULL(d.nama, p.nama) nama_maker, g.path_gambar path_maker, IF(a.hak_akses = 'A', j.nama, 'Digital Marketing') jabatan_maker",'akun a LEFT JOIN donatur d USING(id_akun) LEFT JOIN gambar g USING(id_gambar) LEFT JOIN pegawai p ON(a.email = p.email) LEFT JOIN jabatan j USING(id_jabatan)',array('a.id_akun','=',$decoded['id_akun_maker']));
         if (!$person) {
             $person = (object) array(
                 'nama_maker' => 'Tim Digital',
@@ -755,7 +755,7 @@ class CampaignController extends Controller {
                     'id_campaign' => $id_campaign,
                     'nama_bantuan' => Output::decodeEscape($dataCampaign->nama_bantuan),
                     'id_akun_maker' => $decoded['id_akun_maker'],
-                    'nama_author' => $person->nama_maker,
+                    'nama_author' => ucwords(strtolower($person->nama_maker)),
                     'path_author' => $person->path_maker,
                     'jabatan_author' => $person->jabatan_maker,
                     'id_bantuan' => $decoded['id_bantuan'],

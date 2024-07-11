@@ -1,7 +1,7 @@
 <?php
 class CampaignModel extends HomeModel {
     public function readInformasiCampaign() {
-        $fields = "c.id_campaign, c.aktif, c.id_bantuan, b.tag, b.nama nama_bantuan, b.status, c.modified_at, timeAgo(c.modified_at) time_ago, c.id_akun_maker, CASE WHEN a.hak_akses = 'M' THEN 'Digital Marketing' ELSE j.nama END jabatan_author, d.nama nama_author, g.path_gambar path_author";
+        $fields = "c.id_campaign, c.aktif, c.id_bantuan, b.tag, b.nama nama_bantuan, b.status, c.modified_at, timeAgo(c.modified_at) time_ago, c.id_akun_maker, CASE WHEN a.hak_akses = 'M' THEN 'Digital Marketing' ELSE j.nama END jabatan_author, IFNULL(d.nama, p.nama) nama_author, g.path_gambar path_author";
         $tables = "campaign c LEFT JOIN bantuan b USING(id_bantuan) LEFT JOIN akun a ON(a.id_akun = c.id_akun_maker) LEFT JOIN donatur d ON(d.id_akun = a.id_akun) LEFT JOIN gambar g USING(id_gambar) LEFT JOIN admin adm ON(a.id_akun = adm.id_akun) LEFT JOIN pegawai p USING(id_pegawai) LEFT JOIN jabatan j USING(id_jabatan)";
         $params = array();
         $filter = '';
