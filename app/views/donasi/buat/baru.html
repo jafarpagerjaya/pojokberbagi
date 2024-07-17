@@ -19,54 +19,87 @@
 <section class="form">
     <div class="container">
         <div class="row justify-content-center">
-            <form spellcheck="false" class="col col-md-9 col-lg-6" autocomplete="off" method="post" action="/donasi/pembayaran/<?= (!is_null($data['bantuan']->tag) ? $data['bantuan']->tag : 'index/'. $data['bantuan']->id_bantuan); ?>">
+            <form spellcheck="false" class="col col-md-9 col-lg-6" autocomplete="off" method="post" action="/donasi/pembayaran/<?= (!is_null($data['bantuan']->tag) ? $data['bantuan']->tag : 'index/'. $data['bantuan']->id_bantuan). ''.(isset($data['inbound_marketing']) ? '/inbound-marketing' . (!empty($data['nama_marketing']) ? '/'.$data['nama_marketing']:''):''); ?>">
                 <div class="row g-0 g-md-3">
                     <div class="col-12 mb-3">
                         <!-- Ini Nanti pake kondisional jika opsi diset saat create bantuan -->
                         <h5 class="mb-2">Pilihan Donasi</h5>
                         <div class="row m-0 gap-3" id="list-pilihan">
-                            <!-- <div class="form-control col-6 col-md p-0">
-                                <div class="pilihan-donasi inputGroup p-0">
-                                    <input type="radio" name="pilihan_donasi" id="radio1">
-                                    <label for="radio1">2.000</label>
+                            <?php if (!isset($data['inbound_marketing'])) { ?>
+                                <!-- <div class="form-control col-6 col-md p-0">
+                                    <div class="pilihan-donasi inputGroup p-0">
+                                        <input type="radio" name="pilihan_donasi" id="radio1">
+                                        <label for="radio1">2.000</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-control col-6 col-md p-0">
-                                <div class="pilihan-donasi inputGroup p-0">
-                                    <input type="radio" name="pilihan_donasi" id="radio2">
-                                    <label for="radio2">5.000</label>
+                                <div class="form-control col-6 col-md p-0">
+                                    <div class="pilihan-donasi inputGroup p-0">
+                                        <input type="radio" name="pilihan_donasi" id="radio2">
+                                        <label for="radio2">5.000</label>
+                                    </div>
+                                </div> -->
+                                <div class="form-control col-6 col-md p-0">
+                                    <div class="pilihan-donasi inputGroup p-0">
+                                        <input type="radio" name="pilihan_donasi" id="radio3">
+                                        <label for="radio3">10.000</label>
+                                    </div>
                                 </div>
-                            </div> -->
-                            <div class="form-control col-6 col-md p-0">
-                                <div class="pilihan-donasi inputGroup p-0">
-                                    <input type="radio" name="pilihan_donasi" id="radio3">
-                                    <label for="radio3">10.000</label>
+                                <div class="form-control col-6 col-md p-0">
+                                    <div class="pilihan-donasi inputGroup p-0">
+                                        <input type="radio" name="pilihan_donasi" id="radio4">
+                                        <label for="radio4">15.000</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-control col-6 col-md p-0">
-                                <div class="pilihan-donasi inputGroup p-0">
-                                    <input type="radio" name="pilihan_donasi" id="radio4">
-                                    <label for="radio4">15.000</label>
+                                <div class="form-control col-6 col-md p-0">
+                                    <div class="pilihan-donasi inputGroup p-0">
+                                        <input type="radio" name="pilihan_donasi" id="radio5">
+                                        <label for="radio5">25.000</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-control col-6 col-md p-0">
-                                <div class="pilihan-donasi inputGroup p-0">
-                                    <input type="radio" name="pilihan_donasi" id="radio5">
-                                    <label for="radio5">25.000</label>
+                                <div class="form-control col-6 col-md p-0">
+                                    <div class="pilihan-donasi inputGroup p-0">
+                                        <input type="radio" name="pilihan_donasi" id="radio6">
+                                        <label for="radio6">50.000</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-control col-6 col-md p-0">
-                                <div class="pilihan-donasi inputGroup p-0">
-                                    <input type="radio" name="pilihan_donasi" id="radio6">
-                                    <label for="radio6">50.000</label>
+                                <div class="form-control col-6 col-md p-0">
+                                    <div class="pilihan-donasi inputGroup p-0">
+                                        <input type="radio" name="pilihan_donasi" id="radio7">
+                                        <label for="radio7">100.000</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-control col-6 col-md p-0">
-                                <div class="pilihan-donasi inputGroup p-0">
-                                    <input type="radio" name="pilihan_donasi" id="radio7">
-                                    <label for="radio7">100.000</label>
+                            <?php } else { ?>
+                                <div class="form-control col-6 col-md-3 p-0">
+                                    <div class="pilihan-donasi inputGroup p-0">
+                                        <input type="radio" name="pilihan_donasi" id="radio3">
+                                        <label for="radio3">50.000</label>
+                                    </div>
                                 </div>
-                            </div>
+                                <div class="form-control col-6 col-md-3 p-0">
+                                    <div class="pilihan-donasi inputGroup p-0">
+                                        <input type="radio" name="pilihan_donasi" id="radio4">
+                                        <label for="radio4">100.000</label>
+                                    </div>
+                                </div>
+                                <div class="form-control col-6 col-md-3 p-0">
+                                    <div class="pilihan-donasi inputGroup p-0">
+                                        <input type="radio" name="pilihan_donasi" id="radio5">
+                                        <label for="radio5">150.000</label>
+                                    </div>
+                                </div>
+                                <div class="form-control col-6 col-md-3 p-0">
+                                    <div class="pilihan-donasi inputGroup p-0">
+                                        <input type="radio" name="pilihan_donasi" id="radio6">
+                                        <label for="radio6">200.000</label>
+                                    </div>
+                                </div>
+                                <div class="form-control col-6 col-md-3 p-0">
+                                    <div class="pilihan-donasi inputGroup p-0">
+                                        <input type="radio" name="pilihan_donasi" id="radio7">
+                                        <label for="radio7">250.000</label>
+                                    </div>
+                                </div>
+                            <?php } ?>
                         </div>
                     </div>
                     <div class="col-12 col-md-6">

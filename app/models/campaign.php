@@ -45,4 +45,73 @@ class CampaignModel extends HomeModel {
 
         return false;
     }
+
+    public function getInfoCampaign($tag, $marketing) {
+        $this->db->query("SELECT 
+            tdtcs.*, 
+            (
+                SELECT COUNT(id_pengunjung) 
+                FROM kunjungan JOIN halaman USING(id_halaman)
+                WHERE uri LIKE CONCAT('donasi/buat/',?,'%') AND uri LIKE CONCAT('%','inbound-marketing')
+            ) total_cta,
+            (
+                SELECT COUNT(id_pengunjung)  
+                FROM kunjungan JOIN halaman USING(id_halaman)
+                WHERE uri = CONCAT('campaign/',?)
+            ) total_kunjungan
+        FROM 
+        (
+            SELECT IFNULL(SUM(d.jumlah_donasi),0) total_donasi, COUNT(d.id_donasi) total_cta_closing 
+            FROM donasi d JOIN bantuan b ON(d.id_bantuan = b.id_bantuan) LEFT JOIN campaign c ON(c.id_bantuan = b.id_bantuan) LEFT JOIN marketing m ON(m.id_marketing = d.id_marketing)
+            WHERE d.bayar = '1' AND b.tag = ? AND m.id_marketing = ?
+        ) tdtcs", array($tag, $tag, $tag, $marketing));
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getDataCampaign($tag) {
+        $this->db->get(
+            "gw.nama nama_gambar_wide, gw.path_gambar path_gambar_wide, gm.nama nama_gambar_medium, gm.path_gambar path_gambar_medium",
+            "campaign c JOIN bantuan b USING(id_bantuan) LEFT JOIN gambar gw ON(gw.id_gambar = b.id_gambar_wide) LEFT JOIN gambar gm ON(gm.id_gambar = b.id_gambar_medium)",
+            array('b.tag', '=', Sanitize::escape2($tag)));
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return true;
+        }
+
+        return false;
+    }
+
+    public function readCampaignKujungan($tag) {
+        $tag = Sanitize::escape2($tag);
+        $sql = "SELECT pengunjung.device_type, COUNT(id_pengunjung) kunjungan, COUNT(DISTINCT(id_pengunjung)) kunjungan_unik, IFNULL(ROUND(one_time_visit/COUNT(id_pengunjung)*100,2),0) bounch_rate
+        FROM kunjungan JOIN halaman USING(id_halaman) JOIN pengunjung USING(id_pengunjung) LEFT JOIN (
+            SELECT SUM(total_kunjungan) one_time_visit, device_type
+            FROM (
+                SELECT COUNT(k2.id_pengunjung) total_kunjungan, pengunjung.id_pengunjung, pengunjung.device_type
+                FROM kunjungan JOIN halaman USING(id_halaman) JOIN pengunjung USING(id_pengunjung) JOIN kunjungan k2 ON(k2.id_pengunjung = pengunjung.id_pengunjung)
+                WHERE uri = CONCAT('campaign/',?)
+                GROUP BY pengunjung.id_pengunjung, device_type
+                HAVING total_kunjungan < 2
+            ) br
+            GROUP BY device_type
+        ) br_kunjungan ON (br_kunjungan.device_type = pengunjung.device_type)
+        WHERE uri = CONCAT('campaign/',?)
+        GROUP BY pengunjung.device_type, one_time_visit";
+        $this->db->query($sql, array($tag, $tag));
+        // $this->db->query("SELECT device_type, COUNT(id_pengunjung) jumlah_kunjungan, COUNT(DISTINCT(id_pengunjung)) jumlah_pengunjung
+        // FROM kunjungan JOIN halaman USING(id_halaman) JOIN pengunjung USING(id_pengunjung)
+        // WHERE uri = CONCAT('campaign/',?)
+        // GROUP BY device_type", array('uri' => Sanitize::escape2($tag)));
+        if ($this->db->count()) {
+            $this->data = $this->db->results();
+            return true;
+        }
+
+        return false;
+    }
 }

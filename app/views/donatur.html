@@ -106,8 +106,16 @@
                             </a>
                             <div class="dropdown-menu  dropdown-menu-right">
                                 <div class="dropdown-header noti-title">
-                                    <h6 class="text-overflow m-0">Welcome!</h6>
+                                    <h6 class="text-overflow m-0">Atur</h6>
                                 </div>
+                                <?php if (is_array($data['other_role'])) {
+                                    foreach($data['other_role'] as $role => $role_name) {
+                                        echo '<a href="/'. $role .'" class="dropdown-item">
+                                            <i class="ni ni-tv-2"></i>
+                                            <span>Sebagai '. ucfirst($role) .'</span>
+                                        </a>';
+                                    }
+                                } ?>
                                 <?php if ($this->getController() != "profile") {
                                     echo '<a href="/donatur/profile" class="dropdown-item">
                                         <i class="ni ni-single-02"></i>

@@ -146,6 +146,24 @@ class BuatController extends Controller {
         Session::put('donasi', $id_bantuan);
         $this->data['bantuan'] = $data_bantuan;
         $this->data[Config::get('session/token_name')] = Token::generate();
+
+        if (strtolower($params[1] ?? '') == 'inbound-marketing') {
+            $this->data['inbound_marketing'] = true;
+            if (isset($params[2])) {
+                $this->_home->getData('nama','marketing',array('nama','=',Sanitize::escape2(base64_decode($params[2]))));
+                if (!$this->_home->affected()) {
+                    Session::flash('notifikasi', array(
+                        'pesan' => 'Inbound marketing tidak valid',
+                        'state' => 'warning'
+                    ));
+                }
+                $this->data['nama_marketing'] = $params[2];
+            } else {
+                $this->data['nama_marketing'] = '';
+            }
+        }
+
+        $this->setKunjungan2($params);
     }
 
     public function get($params) {

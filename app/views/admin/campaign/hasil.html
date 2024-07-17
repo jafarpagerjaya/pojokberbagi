@@ -1,0 +1,133 @@
+<div class="row">
+    <div class="col-xl col-md-6">
+        <div class="card card-stats">
+            <!-- Card body -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h5 class="card-title text-uppercase text-muted mb-0">Kunjungan</h5>
+                        <span class="h2 font-weight-bold mb-0 counter-card" data-count-up-value="<?= (isset($this->data['info']['card']->total_kunjungan) ? $this->data['info']['card']->total_kunjungan : 0); ?>"></span>
+                    </div>
+                    <div class="col-auto">
+                        <div
+                            class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
+                            <i class="ni ni-badge"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl col-md-6">
+        <div class="card card-stats">
+            <!-- Card body -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h5 class="card-title text-uppercase text-muted mb-0">Call To Action</h5>
+                        <span class="h2 font-weight-bold mb-0 counter-card" data-count-up-value="<?= (isset($this->data['info']['card']->total_cta) ? $this->data['info']['card']->total_cta : 0); ?>"></span>
+                    </div>
+                    <div class="col-auto">
+                        <div
+                            class="icon icon-shape bg-gradient-orange text-white rounded-circle shadow">
+                            <i class="ni ni-active-40"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl col-md-6">
+        <div class="card card-stats">
+            <!-- Card body -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h5 class="card-title text-uppercase text-muted mb-0">Donasi Masuk</h5>
+                        <span class="h2 font-weight-bold mb-0 counter-card" data-count-up-value="<?= (isset($this->data['info']['card']->total_donasi) ? $this->data['info']['card']->total_donasi : 0); ?>"></span>
+                    </div>
+                    <div class="col-auto">
+                        <div
+                            class="icon icon-shape bg-gradient-green text-white rounded-circle shadow">
+                            <i class="ni ni-money-coins"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl col-md-6">
+        <div class="card card-stats">
+            <!-- Card body -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h5 class="card-title text-uppercase text-muted mb-0">Closing</h5>
+                        <span class="h2 font-weight-bold mb-0 counter-card" data-count-up-value="<?= (isset($this->data['info']['card']->total_cta_closing) ? $this->data['info']['card']->total_cta_closing : 0); ?>"></span>
+                    </div>
+                    <div class="col-auto">
+                        <div
+                            class="icon icon-shape bg-gradient-info text-white rounded-circle shadow">
+                            <i class="ni ni-paper-diploma"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-4">
+        <div class="app-image img-wrapper d-flex align-items-center justify-content-center overflow-hidden rounded shadow">
+            <img src="<?= (isset($data['info']['img']->path_gambar_medium) ? $data['info']['img']->path_gambar_medium : ''); ?>"
+                        alt="Gambar <?= (isset($data['info']['img']->nama_gambar_medium) ? $data['info']['img']->nama_gambar_medium : ''); ?>"
+                        class="img-fluid d-flex d-lg-none">
+            <img src="<?= (isset($data['info']['img']->path_gambar_wide) ? $data['info']['img']->path_gambar_wide : ''); ?>"
+                    alt="Gambar <?= (isset($data['info']['img']->nama_gambar_wide) ? $data['info']['img']->nama_gambar_wide : ''); ?>"
+                    class="img-fluid d-none d-lg-flex">
+        </div>
+    </div>
+</div>
+<div class="row mb-4 mt-2">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Kunjungan Halaman</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Device</th>
+                            <th scope="col" class="auto">Kunjungan</th>
+                            <th scope="col" class="auto">Pengunjung</th>
+                            <th scope="col" class="auto">Bounch Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                            if (count(is_countable($data['kunjungan']) ? $data['kunjungan'] : []) > 0) {
+                                foreach($data['kunjungan'] as $key => $dataKunjungan) {
+                                ?>
+                                <tr>
+                                    <th scope="row"><?= $dataKunjungan->device_type; ?></th>
+                                    <td data-count-up-value="<?= $dataKunjungan->kunjungan; ?>"></td>
+                                    <td data-count-up-value="<?= $dataKunjungan->kunjungan_unik; ?>"></td>
+                                    <td data-bounch-rate-prev="0" data-count-up-value="<?= $dataKunjungan->bounch_rate; ?>" data-count-up-percent="true" class="text-right"></td>
+                                </tr>
+                                <?php
+                                }
+                            } else {
+                                ?>
+                                <tr>
+                                    <th scope="row" colspan="4">Belum ada data kunjungan</th>
+                                </tr>
+                                <?php
+                            }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

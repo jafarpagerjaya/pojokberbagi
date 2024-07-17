@@ -405,10 +405,12 @@ CREATE TABLE list_gambar_campaign (
 
 CREATE TABLE marketing (
     id_marketing SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nama VARCHAR(30) NOT NULL,
     id_akun INT UNSIGNED,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT F_ID_AKUN_MARKETING_ODC FOREIGN KEY(id_akun) REFERENCES akun(id_akun) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT F_ID_AKUN_MARKETING_ODC FOREIGN KEY(id_akun) REFERENCES akun(id_akun) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT UN_NAMA_MARKETING UNIQUE(nama)
 )ENGINE=INNODB;
 
 INSERT INTO marketing(id_akun) SELECT id_akun FROM akun WHERE email = 'sule@gmail.com';
@@ -693,11 +695,13 @@ CREATE TABLE order_donasi (
     id_bantuan INT UNSIGNED,
     id_donatur INT UNSIGNED,
     id_cp TINYINT UNSIGNED,
+    id_marketing SMALLINT UNSIGNED,
     CONSTRAINT U_EXTERNAL_ID_ORDER_DONASI UNIQUE(external_id),
     CONSTRAINT U_KODE_PEMBAYARAN_ORDER_DONASI UNIQUE(kode_pembayaran),
     CONSTRAINT F_ID_BANTUAN_ORDER_DONASI_ODR FOREIGN KEY(id_bantuan) REFERENCES bantuan(id_bantuan) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT F_ID_DONATUR_ORDER_DONASI_ODR FOREIGN KEY(id_donatur) REFERENCES donatur(id_donatur) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT F_ID_CP_ORDER_DONASI_ODN FOREIGN KEY(id_cp) REFERENCES channel_payment(id_cp) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT F_ID_CP_ORDER_DONASI_ODN FOREIGN KEY(id_cp) REFERENCES channel_payment(id_cp) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT F_ID_MARKETING_ORDER_DONASI_ODN FOREIGN KEY(id_marketing) REFERENCES marketing(id_marketing) ON DELETE SET NULL ON UPDATE CASCADE
 )ENGINE=INNODB;
 
 CREATE TABLE order_va (
@@ -746,11 +750,13 @@ CREATE TABLE donasi (
     id_donatur INT UNSIGNED,
     id_cp TINYINT UNSIGNED,
     id_order_paygate BIGINT UNSIGNED,
+    id_marketing SMALLINT UNSIGNED,
     CONSTRAINT U_KODE_PEMBAYARAN_DONASI UNIQUE(kode_pembayaran),
     CONSTRAINT F_ID_BANTUAN_DONASI_ODR FOREIGN KEY(id_bantuan) REFERENCES bantuan(id_bantuan) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT F_ID_DONATUR_DONASI_ODR FOREIGN KEY(id_donatur) REFERENCES donatur(id_donatur) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT F_ID_CP_DONASI_ODN FOREIGN KEY(id_cp) REFERENCES channel_payment(id_cp) ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT F_ID_ORDER_PAYGATE_DONASI_ODR FOREIGN KEY(id_order_paygate) REFERENCES order_paygate(id_order_paygate) ON DELETE RESTRICT ON UPDATE CASCADE 
+    CONSTRAINT F_ID_ORDER_PAYGATE_DONASI_ODR FOREIGN KEY(id_order_paygate) REFERENCES order_paygate(id_order_paygate) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT F_ID_MARKETING_DONASI_ODN FOREIGN KEY(id_marketing) REFERENCES marketing(id_marketing) ON DELETE SET NULL ON UPDATE CASCADE
 )ENGINE=INNODB;
 
 -- bayar donasi 0 = pembayaran belum dilakukan, 1 = pembayaran berhasil;
@@ -783,8 +789,8 @@ CREATE TRIGGER AfterInsertOrderPaygate
 AFTER INSERT ON order_paygate FOR EACH ROW
     BEGIN
     	IF NEW.status = 'SUCCESSFUL' THEN
-        	INSERT INTO donasi(id_bantuan, id_donatur, id_cp, kode_pembayaran, alias, kontak, email, doa, jumlah_donasi, bayar, waktu_bayar, notifikasi, id_order_paygate)
-        	SELECT id_bantuan, id_donatur, id_cp, kode_pembayaran, alias, kontak, email, doa, jumlah_donasi, '1', NEW.completed_at, notifikasi, NEW.id_order_paygate
+        	INSERT INTO donasi(id_bantuan, id_donatur, id_cp, kode_pembayaran, alias, kontak, email, doa, jumlah_donasi, bayar, waktu_bayar, notifikasi, id_order_paygate, id_marketing)
+        	SELECT id_bantuan, id_donatur, id_cp, kode_pembayaran, alias, kontak, email, doa, jumlah_donasi, '1', NEW.completed_at, notifikasi, NEW.id_order_paygate, id_marketing
         	FROM order_donasi WHERE external_id = NEW.link_id;
         	IF (ROW_COUNT() != 1) THEN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Failed to insert donasi from paygate';

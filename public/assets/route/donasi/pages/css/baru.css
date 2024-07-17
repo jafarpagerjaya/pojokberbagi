@@ -232,4 +232,14 @@ span.selection {
         width: calc(25% - 0.75rem);
         flex-basis: auto;
     }
+
+    #list-pilihan .col-md-3 {
+        width: calc(33.33% - (2/3)*1rem);
+        flex-basis: auto;
+    }
+
+    #list-pilihan .col-md-3:nth-last-child(2):nth-child(even),
+    #list-pilihan .col-md-3:nth-last-child(1):nth-child(odd) {
+        width: calc(50% - (1/2)*1rem);
+    }
 }

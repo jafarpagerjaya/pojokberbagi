@@ -280,6 +280,22 @@ class PembayaranController extends Controller {
             $dataDonasi['end_at'] = $dataResponse->expired_date;
         }
 
+        if (isset($params[1])) {
+            if ($params[1] == 'inbound-marketing') {
+                if (isset($params[2])) {
+                    $this->model->getData('id_marketing','marketing',array('nama','=',Sanitize::escape2($params[2])));
+                    if ($this->model->affected()) {
+                        $params[2] = $this->model->getResult()->id_marketing;
+                    } else {
+                        $params[2] = 1;
+                    }
+                } else {
+                    $params[2] = 1;
+                }
+                $dataDonasi['id_marketing'] = $params[2];
+            }
+        }
+
         $this->model->startTransaction();
         $order = $this->model->create('order_donasi', $dataDonasi);
         

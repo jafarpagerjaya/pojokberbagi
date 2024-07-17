@@ -25,6 +25,8 @@ class ProfileController extends Controller {
             Redirect::to('home');
         }
 
+        $this->data['other_role'] = $this->_auth->otherPermission('donatur');
+
         $this->data['akun'] = $this->_auth->data();
 
         $this->model("Donatur");

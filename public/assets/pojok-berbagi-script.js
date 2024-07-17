@@ -35,11 +35,53 @@ let formatCount = function(value) {
     return formatObject;
 };
 
+let counterUp = function(counterTarget, counterSpeed) {
+    return counterTarget.forEach(numberElem => {
+        // Initial values
+        counterTarget.innerHTML = '0';
+        const finalValue = parseFloat(numberElem.getAttribute('data-count-up-value')).toFixed(2);
+
+        if (isNaN(finalValue)) {
+            console.log('[data-count-up-value] tidak ditemukan pada ', numberElem);
+            return false;
+        }
+
+        const animTime = counterSpeed,
+              initTime = performance.now();
+        
+        let percent = false;
+
+        if (numberElem.getAttribute('data-count-up-percent') != null) {
+            percent = true;
+        }
+
+        let interval = setInterval(function() {
+            let t = (performance.now() - initTime) / animTime;
+
+            let currentValue = (percent == false ? round(t * finalValue) : (t * finalValue).toFixed(2));
+
+            if (currentValue > finalValue) {
+                currentValue = finalValue;
+            }
+
+            numberElem.innerHTML = '<span>'+currentValue+'</span>';
+
+            if (percent) {
+                numberElem.innerHTML += '%';
+            }
+
+            if (t >= 1) {
+                clearInterval(interval);
+            }
+        }, 50);
+    });
+}
+
 let counterUpSup = function (counterTarget, counterSpeed, date = false) {
     return counterTarget.forEach(numberElem => {
         // Initial values
         counterTarget.innerHTML = '0';
-        const finalValue = parseInt(numberElem.getAttribute('data-count-up-value'), 10);
+        const finalValue = parseInt(numberElem.getAttribute('data-count-up-value'));
 
         if (isNaN(finalValue)) {
             console.log('[data-count-up-value] tidak ditemukan pada ', numberElem);

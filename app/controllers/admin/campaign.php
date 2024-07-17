@@ -19,7 +19,7 @@ class CampaignController extends Controller {
             )
         );
 
-        $this->title = 'Bantuan';
+        $this->title = 'Landing Page';
         $this->_auth = $this->model("Auth");
         if (!$this->_auth->hasPermission('admin')) {
             Redirect::to('donatur');
@@ -43,6 +43,10 @@ class CampaignController extends Controller {
     }
 
     public function index($params = array()) {
+        if (count(is_countable($params) ? $params : []) > 0) {
+            $this->hasil($params[0]);
+            return VIEW_PATH .'admin'.DS.'campaign'.DS.'hasil.html';
+        }
         $this->rel_action = array(
             array(
                 'href' => 'https://cdn.quilljs.com/1.3.6/quill.snow.css'
@@ -127,6 +131,40 @@ class CampaignController extends Controller {
         $this->data['campaign'] = $this->_campaign->data();
 
         // Debug::pr($this->data['campaign']);
+    }
+
+    private function hasil($tag) {
+        $this->rel_action = array(
+            array(
+                'href' => '/assets/route/admin/pages/css/hasil.css'
+            )
+        );
+        $this->script_action = array(
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/pages/js/hasil.js'
+			)
+        );
+        $this->_campaign->countData('campaign JOIN bantuan USING(id_bantuan)',array('bantuan.tag = ?',Sanitize::escape2($tag)));
+        if ($this->_campaign->getResult()->jumlah_record == 0) {
+            Redirect::to('admin/campaign');
+        }
+
+        $dataMarketing = $this->_campaign->isMarketer($this->data['akun']->email);
+        if (!$dataMarketing) {
+            $id_marketing = 1;
+        } else {
+            $id_marketing = $this->_campaign->getResult()->id_marketing;
+        }
+
+        $this->_campaign->getInfoCampaign($tag, $id_marketing);
+        $this->data['info']['card'] = $this->_campaign->getResult();
+
+        $this->_campaign->getDataCampaign($tag);
+        $this->data['info']['img'] = $this->_campaign->getResult();
+
+        $this->_campaign->readCampaignKujungan($tag);
+        $this->data['kunjungan'] = $this->_campaign->getResults();
     }
 
     public function fetch($params) {
@@ -758,7 +796,7 @@ class CampaignController extends Controller {
                     'id_campaign' => $id_campaign,
                     'nama_bantuan' => Output::decodeEscape($dataCampaign->nama_bantuan),
                     'id_akun_maker' => $decoded['id_akun_maker'],
-                    'nama_author' => ucwords(strtolower($person->nama_maker)),
+                    'nama_author' => $person->nama_maker,
                     'path_author' => $person->path_maker,
                     'jabatan_author' => $person->jabatan_maker,
                     'id_bantuan' => $decoded['id_bantuan'],

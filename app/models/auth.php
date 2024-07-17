@@ -64,6 +64,21 @@ class AuthModel {
 			throw new Exception("Error Processing Delete");
 		}
 	}
+
+	public function otherPermission($current_hak_akses = null) {
+		if ($this->isSignIn()) {
+			$data =  $this->_db->get('izin', 'akses', array('hak_akses', '=', $this->data()->hak_akses));
+			$this->_accessRight = $data->result()->izin;
+
+			if ($this->_accessRight) {
+				$permession = json_decode($this->_accessRight, true);
+				if (array_key_exists($current_hak_akses, $permession)) {
+					return array_diff_key($permession, array($current_hak_akses => 1));
+				}
+			}	
+		}
+		return false;
+	}
 	
 	public function hasPermission($hak_akses = null) {
 		if ($this->isSignIn()) {

@@ -80,7 +80,7 @@
                             </a>
                             <div
                                 class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" data-value="<?= base64_decode(strrev($dataCampaign->id_campaign)); ?>">
-                                <?= (!is_null($dataCampaign->tag) ? '<a class="dropdown-item" href="/campaign/'. $dataCampaign->tag. '">Menuju Campaign</a>':''); ?>
+                                <?= (!is_null($dataCampaign->tag) ? '<a class="dropdown-item" href="/admin/campaign/'. $dataCampaign->tag. '">Hasil Campaign</a><a class="dropdown-item" href="/campaign/'. $dataCampaign->tag. '">Menuju Campaign</a>':''); ?>
                                 <a class="dropdown-item <?= (($dataCampaign->aktif == '1') ? 'text-danger' : 'text-warning') ?> font-weight-light" href="javascript:void(0);" data-toggle="modal"
                                 data-target="#modalKonfirmasiAksiCampaign" data-type="update-aktif"><?= (($dataCampaign->aktif == '1') ? 'Non-akifkan Campaign' : 'Aktifkan Campaign'); ?></a>
                                 <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal"

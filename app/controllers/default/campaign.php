@@ -68,6 +68,8 @@ class CampaignController extends Controller {
             ));
             Redirect::to('campaign');
         }
-        $this->data['campaign'] = $this->_campaign->getResult();
+        $dataCampaign = $this->_campaign->getResult();
+        $this->data['campaign'] = $dataCampaign;
+        $this->setKunjungan2($params);
     }
 }

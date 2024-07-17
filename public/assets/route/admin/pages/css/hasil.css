@@ -1,0 +1,102 @@
+.app-image.img-wrapper img {
+    min-height: inherit;
+    width: 100%;
+}
+
+table td[data-bounch-rate-prev]::before {
+    vertical-align: middle;
+    font: normal normal 900 18px/1 'Font Awesome 5 Free';
+    display: inline-block;
+    margin-right: .5em;
+    margin-bottom: .05em;
+}
+
+table td[data-bounch-rate-prev].bounch-rate-inc::before {
+    content: "\f0aa";
+    color: var(--danger);
+}
+
+table td[data-bounch-rate-prev].bounch-rate-dec::before {
+    content: "\f0ab";
+    color: var(--green);
+}
+
+table td[data-bounch-rate-prev].bounch-rate-nor::before {
+    content: "\f0a8";
+}
+
+@media (min-width: 320px) {
+    .app-image.img-wrapper {
+        max-height: 166.5px;
+        min-height: 166.5px;
+    }
+}
+
+@media (min-width: 321px) {
+    .app-image.img-wrapper {
+        max-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
+        min-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
+    }
+}
+
+@media (min-width: 375px) {
+    .app-image.img-wrapper {
+        max-height: 197.62px;
+        min-height: 197.62px;
+    }
+}
+
+@media (min-width: 376px) {
+    .app-image.img-wrapper {
+        max-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
+        min-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
+    }
+}
+
+@media (min-width: 425px) {
+    .app-image.img-wrapper {
+        max-height: 225.748px;
+        min-height: 225.748px;
+    }
+}
+
+@media (min-width: 426px) {
+    .app-image.img-wrapper {
+        max-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
+        min-height: calc((100vw - var(--bs-gutter-x)) / 16 * 9);
+    }
+}
+
+@media (min-width: 480px) {
+    .app-image.img-wrapper {
+        max-height: 239.625px;
+        min-height: 239.625px;
+    }
+}
+
+@media (min-width: 767px) {
+    .app-image.img-wrapper {
+        max-height: 290.25px;
+        min-height: 290.25px;
+    }
+}
+
+@media (min-width: 768px) {
+    .app-image.img-wrapper {
+        max-height: none;
+    }
+}
+
+@media (min-width: 992px) {
+    .app-image.img-wrapper {
+        max-height: calc((569px / 1913) * 936);
+        min-height: calc((569px / 1913) * 936);
+    }
+}
+
+@media (min-width: 1400px) {
+    .app-image.img-wrapper {
+        max-height: calc((569px / 1913) * (1090));
+        min-height: calc((569px / 1913) * (1090));
+    }
+}

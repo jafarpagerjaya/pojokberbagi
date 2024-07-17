@@ -7,6 +7,8 @@ class TagihanController extends Controller {
             Redirect::to('home');
         }
 
+        $this->data['other_role'] = $this->_auth->otherPermission('donatur');
+
         $this->title = 'Tagihan';
         $this->rel_controller = array(
             array(

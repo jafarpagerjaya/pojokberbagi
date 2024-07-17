@@ -36,7 +36,7 @@
     bottom: 0;
     z-index: 1;
     width: 100%;
-    background-color: var(--bs-light);
+    background-color: var(--bs-white);
     padding-top: 11px;
     padding-bottom: 11px;
 }
