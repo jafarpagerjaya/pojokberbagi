@@ -788,12 +788,12 @@ class FetchController extends Controller {
 
         $dataUpdate = array();
         $array_id_gambar = array();
+        $array_video = array();
 
         if (isset($decoded['isi'])) {
             $content = $decoded['isi'];
             $counterImg = 1;
             $path_list = array();
-            $array_video = array();
 
             foreach ($content['ops'] as $key => $value) {
                 if (is_array($value)) {
@@ -1082,6 +1082,10 @@ class FetchController extends Controller {
             ),
             'message' => 'Deskripsi terbaharukan'
         );
+
+        if (isset($decoded['judul'])) {
+            $this->_result['feedback']['data']['judul'] = $decoded['judul'];
+        }
 
         if (isset($dataUpdate['id_bantuan'])) {
             $this->_result['feedback']['data']['id_bantuan'] = $decoded['id_bantuan'];

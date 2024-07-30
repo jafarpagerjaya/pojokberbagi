@@ -64,7 +64,7 @@ let counterUp = function(counterTarget, counterSpeed) {
                 currentValue = finalValue;
             }
 
-            numberElem.innerHTML = '<span>'+currentValue+'</span>';
+            numberElem.innerHTML = '<span>'+ numberToPrice(+currentValue)+'</span>';
 
             if (percent) {
                 numberElem.innerHTML += '%';

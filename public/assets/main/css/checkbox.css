@@ -1,0 +1,40 @@
+button[data-value].singgle:not(.show),
+button[data-value].multi:not(.show) {
+    display: none;
+}
+
+button[data-value]:hover {
+    transform: none;
+}
+
+/* checkbox Inside Table */
+table tbody>tr>td[data-checkbox]:first-child {
+    padding-right: .75em !important;
+}
+
+table tbody>tr>td[data-checkbox]:first-child~td {
+    padding-left: .75em !important;
+}
+
+table tbody>tr>td[data-checkbox]:first-child~td:not(:last-child) {
+    padding-right: .75em !important;
+}
+
+table tbody>tr>td[data-checkbox]>.inputGroup {
+    --inputGroup-size: 20px;
+    width: var(--inputGroup-size);
+    height: var(--inputGroup-size);
+}
+
+table tbody>tr>td[data-checkbox]>.inputGroup input {
+    width: inherit;
+    height: inherit;
+}
+
+table tbody>tr>td[data-checkbox]>.inputGroup label {
+    margin-bottom: 0px;
+}
+
+table tbody>tr>td[data-checkbox]>.inputGroup label::after {
+    --inputGroup-size: 20px;
+}

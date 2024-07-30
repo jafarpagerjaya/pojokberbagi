@@ -316,8 +316,8 @@ class PembayaranController extends Controller {
         ));
         
         if ($jenis_payment == 'tb') {
-            $this->model->commit();
             $id_create_record = $this->model->lastIID();
+            $this->model->commit();
         } else {
             // bill link id from flip
             $id_create_record = $dataResponse->link_id;
@@ -355,6 +355,7 @@ class PembayaranController extends Controller {
                 $this->model->commit();
             }
         }
+
         Redirect::to('donasi/pembayaran/tagihan/' . $jenis_payment . '/' . $id_create_record);
     }
 

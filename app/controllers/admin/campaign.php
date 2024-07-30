@@ -139,7 +139,12 @@ class CampaignController extends Controller {
                 'href' => '/assets/route/admin/pages/css/hasil.css'
             )
         );
+        
         $this->script_action = array(
+            array(
+				'type' => 'text/javascript',
+                'src' => '/assets/route/admin/core/js/form-function.js'
+			),
             array(
 				'type' => 'text/javascript',
                 'src' => '/assets/route/admin/pages/js/hasil.js'
@@ -477,7 +482,7 @@ class CampaignController extends Controller {
                         return false;
                     }
                 } catch (\Throwable $th) {
-                    $this->model->rollback();
+                    $this->_campaign->rollback();
     
                     if (count(is_countable($array_id_gambar) ? $array_id_gambar : []) > 0) {
                         $fetch->path_gambar = Config::recursiveChangeKey($array_id_gambar, array(

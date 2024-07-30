@@ -2,10 +2,6 @@
     font-family: inherit;
 }
 
-.ql-editor img {
-    border-radius: 15px;
-}
-
 .ql-container p {
     margin-top: .5rem;
     margin-bottom: .5rem;
@@ -26,10 +22,6 @@
     overflow: hidden;
     max-width: 100%;
     border-radius: 15px;
-}
-
-#campaign img {
-    margin: 1em auto;
 }
 
 .position-fixed {

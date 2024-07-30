@@ -264,6 +264,14 @@
 }
 
 @media (max-width: 426px) {
+    .form-label-group input {
+        padding: 1em 1.125em;
+    }
+
+    .form-label-group input~label {
+        left: 1rem;
+    }
+
     .form-label-group input[name="search"]:placeholder-shown:not(:focus) {
         width: calc(1.5em + 1.25rem + 5px);
     }

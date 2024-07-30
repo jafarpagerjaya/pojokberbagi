@@ -1,0 +1,267 @@
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header border-0">
+                <div class="row align-items-center m-0 gap-3">
+                    <div class="px-0 col-12 col-md-auto">
+                        <h3 class="mb-0"><i class="fas fa-th-list"></i> Daftar Artikel</h3>
+                    </div>
+                    <div class="px-0 col-12 col-md justify-content-between justify-content-md-end">
+                        <div class="row align-items-center gap-x-3 m-0">
+                            <div class="px-0 col">
+                                <div class="form-label-group">
+                                    <input type="text" id="input-search"
+                                        class="form-control" name="search"
+                                        placeholder="Cari ..." autocomplete="off"
+                                        maxlength="50">
+                                    <label for="input-search"
+                                        class="form-control-label"></label>
+                                </div>
+                            </div>
+                            <div class="px-0 col-auto flex-row d-flex gap-x-1">
+                                <button class="btn btn-outline-primary font-weight-bolder m-0" data-toggle="modal" data-target="#modalFormArtikel" data-value="create"></button>
+                                <button class="btn btn-outline-warning font-weight-bolder m-0 singgle" data-toggle="modal" data-target="#modalFormArtikel" data-value="update"></button>
+                                <button class="btn btn-outline-dark font-weight-bolder m-0 singgle" data-multi="true" data-toggle="modal" data-target="#modalResetArtikel" data-value="reset"></button>
+                                <!-- <button class="btn btn-outline-dark font-weight-bolder m-0 multi" data-toggle="modal" data-target="#modalFormArtikel" data-value="lock"></button> -->
+                                <!-- <button class="btn btn-outline-dark font-weight-bolder m-0 multi" data-toggle="modal" data-target="#modalFormArtikel" data-value="unlock"></button> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <tbody<?= (isset($this->data['campaign']['limit']) ? ' data-limit="'. $this->data['campaign']['limit'] .'"' : '') ?>>
+                        <?php if (isset($data['artikel'])) { 
+                            if (count(is_countable($data['artikel']['data']) ? $data['artikel']['data'] : []) > 0) {
+                                foreach($data['artikel']['data'] as $index => $dataArtikel) {
+                                    $dataArtikel->aktif = ($dataArtikel->aktif == '1' ? array('class'=>'badge-success','text'=>'aktif','value'=>'1') : array('class'=>'badge-danger','text'=>'non-aktif','value'=>'0'));
+                                ?>
+                                <tr data-id-artikel="<?= $dataArtikel->id_artikel; ?>">
+                                    <td class="fit" data-checkbox="row">
+                                        <span class="inputGroup">
+                                            <input type="checkbox" id="<?= 'checkbox-'.$dataArtikel->id_artikel; ?>">
+                                            <label for="<?= 'checkbox-'.$dataArtikel->id_artikel; ?>"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="d-flex flex-column">
+                                                    <a class="title font-weight-bold" href="/artikel/<?= preg_replace('/\s+/', '-', strtolower($dataArtikel->judul)); ?>"><?= '<span>'.$dataArtikel->judul.'</span>'; ?></a>
+                                                    <span><?= $dataArtikel->publish_at; ?></span>
+                                                </div>
+                                            </div>
+                                            <div class="col col-lg-auto viewer-badge">
+                                                <span data-count-up-value="<?= $dataArtikel->jumlah_kunjungan; ?>" class="text-black-50 view small"></span>
+                                                <span data-status="<?= $dataArtikel->aktif['value']; ?>" class="badge <?= $dataArtikel->aktif['class']; ?> small px-2 py-1"><?= $dataArtikel->aktif['text']; ?></span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-author="<?= $dataArtikel->id_author; ?>"<?= (!is_null($dataArtikel->id_editor) ? ' data-editor="'. $dataArtikel->id_editor .'" ':''); ?>class="fit">
+                                        <div class="d-flex gap-x-3 justify-content-end">
+                                            <?php if (isset($dataArtikel->id_editor)) { ?>
+                                            <div class="media gap-3 align-items-center" data-id-editor="<?= $dataArtikel->id_editor; ?>">
+                                                <div class="avatar">
+                                                    <img src="<?= $dataArtikel->path_gambar_editor; ?>" alt="<?= $dataArtikel->nama_editor; ?>">
+                                                </div>
+                                                <div class="font-weight-bold small">
+                                                    Editor
+                                                    <span class="d-block"><?= $dataArtikel->nama_editor; ?></span>
+                                                    <span data-modified-value="<?= $dataArtikel->modified_at; ?>" class="small"><?= $dataArtikel->time_ago; ?></span>
+                                                </div>
+                                            </div>
+                                            <?php } ?>
+                                            <div class="media gap-3 align-items-center justify-content-end" data-id-author="<?= $dataArtikel->id_author; ?>">
+                                                <div class="font-weight-bold text-right">
+                                                    Author
+                                                    <span class="d-block"><?= $dataArtikel->nama_author; ?></span>
+                                                </div>
+                                                <div class="avatar">
+                                                    <img src="<?= $dataArtikel->path_gambar_author; ?>" alt="<?= $dataArtikel->nama_author; ?>">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php
+                                }
+                            } else {
+                                echo '<tr><th colspan="4">Belum ada daftar artikel ...</th></tr>';
+                            } 
+                        } else {
+                            echo '<tr><th colspan="4">Belum ada daftar artikel ...</th></tr>';
+                        } ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php if ($data['artikel']['total_record'] > 0) { ?>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-auto d-flex flex-column text-black-50" id="lebel"></div>
+                    <div class="col">
+                        <ul class="pagination justify-content-end mb-0" data-pages="<?= $data['artikel']['pages']; ?>"></ul>
+                    </div>
+                </div>
+            </div>
+            <?php } ?>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" id="modalFormArtikel" tabindex="-1" role="dialog" aria-labelledby="modalFormArtikel-label"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
+            <div class="modal-content justify-content-center align-items-center scaleIn">
+                <div class="container p-0 py-md-3 py-lg-5 px-lg-3 px-3 px-md-0">
+                    <div class="row gap-y-4">
+                        <div class="col-12">
+                            <div class="modal-header px-4">
+                                <h5 class="modal-title" id="exampleModalLabel">Form Artikel</h5>
+                                <button type="button" class="close p-3" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body py-0">
+                                <div class="row gap-3">
+                                    <div class="col-12">
+                                        <div class="form-label-group">
+                                            <input type="text" id="input-judul" class="form-control"
+                                                name="judul" placeholder="Judul" autocomplete="off" maxlength="100">
+                                            <label for="input-judul" class="form-control-label">Judul</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="rounded ql">
+                                            <div id="editor">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-link ml-auto shadow-none font-weight-bolder text-black-50"
+                                    data-dismiss="modal">Batal</button>
+                                <button class="btn btn-outline-primary" type="submit">Simpan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+<div class="modal fade in " id="modalResetArtikel" tabindex="-1" role="dialog" aria-labelledby="modalResetArtikel-label"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content justify-content-center align-items-center scaleIn">
+                <div class="row gap-y-4 w-100">
+                    <div class="col-12 p-3">
+                        <div class="modal-header px-4">
+                            <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-wrench mr-2"></i>Reset Artikel</h5>
+                            <button type="button" class="close p-3" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body py-0">
+                            <!-- <div class="row my-4" id="multi">
+                                <div class="col d-flex justify-content-between align-items-center">
+                                    <small id="selected-count" data-value="27">artikel dipilih</small>
+                                    <button data-toggle="modal" data-target="#modalSelectedResetList" class="btn btn-sm btn-outline-orange">Detil</button>
+                                </div>
+                            </div> -->
+                            <!-- <div class="row my-4" id="singgle">
+                                <div class="col-12">
+                                    <h5 id="judul" class="font-weight-bolder">Judul Artikel Kucing Birahi malah disiram air dingin</h5>
+                                </div>
+                                <div class="col-12 d-flex justify-content-between">
+                                    <div class="media gap-3 align-items-center">
+                                        <div class="avatar rounded-box">
+                                            <img src="" alt="A">
+                                        </div>
+                                        <div class="font-weight-bolder small">
+                                            Author
+                                            <span class="d-block text-black-50 font-weight-bold mt-1">Nama Ku</span>
+                                        </div>
+                                    </div>
+                                    <div class="item d-flex justify-content-center flex-column align-items-end">
+                                        <span class="small d-flex align-items-center text-black-50">
+                                            <small>1 Jam yang lalu</small>
+                                            <i class="far fa-clock ml-1"></i>
+                                        </span>
+                                        <span class="small d-flex align-items-center text-black-50 mt-2 text-right">
+                                            <small>2.000</small>
+                                            <i class="fas fa-eye ml-1"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="row my-4">
+                                <div class="col">
+                                    <span class="font-weight-bold">Reset</span>
+                                </div>
+                                <div class="col-auto">
+                                    <label class="custom-toggle" for="input-reset">
+                                        <input type="checkbox" id="input-reset" name="reset">
+                                        <span
+                                            class="custom-toggle-slider rounded-circle"
+                                            data-label-off="Jangan"
+                                            data-label-on="Ya"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row my-4">
+                                <div class="col">
+                                    <span class="font-weight-bold">Aktif</span>
+                                </div>
+                                <div class="col-auto">
+                                    <label class="custom-toggle" for="input-aktif">
+                                        <input type="checkbox" id="input-aktif" name="aktif">
+                                        <span
+                                            class="custom-toggle-slider rounded-circle"
+                                            data-label-off="Tidak"
+                                            data-label-on="Ya"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-link ml-auto shadow-none font-weight-bolder text-black-50"
+                                data-dismiss="modal">Batal</button>
+                            <button class="btn btn-outline-primary" id="reset-artikel" type="submit">Simpan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+<div class="modal fade in " id="modalSelectedResetList" tabindex="-1" role="dialog"
+    aria-labelledby="modalSelectedResetList-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content justify-content-center align-items-center overflow-hidden">
+            <div class="container p-0">
+                <div class="row gap-y-4">
+                    <div class="col-12">
+                        <div class="card-body p-0 table-responsive">
+                            <table class="table table-hover mb-0">
+                                <tbody>
+                                    <tr>
+                                        <td data-zero="true">Belum ada data yang terpilih ...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer px-3 py-2 d-flex align-items-center justify-content-between">
+                            <button class="btn btn-sm btn-link p-0" data-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div aria-live="polite" aria-atomic="true"
+    class="position-fixed d-flex justify-content-end flex-column align-items-end">
+</div>

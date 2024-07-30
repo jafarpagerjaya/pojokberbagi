@@ -56,6 +56,13 @@
     border-radius: .25em;
 }
 
+.load .inputGroup input[type="radio"]+label:after,
+.load .inputGroup input[type="checkbox"]+label:after {
+    background-color: transparent;
+    background-image: none;
+    border-color: transparent;
+}
+
 .inputGroup input[type="radio"],
 .inputGroup input[type="checkbox"] {
     visibility: hidden;
@@ -66,6 +73,12 @@
     background-color: #21ba45;
     border-color: #21ba45;
     color: #fff;
+}
+
+.load .inputGroup input[type="radio"]:checked+label:after,
+.load .inputGroup input[type="checkbox"]:checked+label:after {
+    background-color: transparent;
+    border-color: transparent;
 }
 
 .inputGroup.input-file:hover {

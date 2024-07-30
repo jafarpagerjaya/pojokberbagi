@@ -232,7 +232,8 @@ class SigninController extends Controller {
 						));
 
 						if (Session::exists('donasi')) {
-							Redirect::to('donasi/buat/baru/'. Session::flash('donasi'));
+							$flash = Session::flash('donasi');
+							Redirect::to('donasi/buat/'.($flash['name'] == 'id_donasi' ? 'baru/':'').$flash['value']);
 						}
 
 						Redirect::to($route);

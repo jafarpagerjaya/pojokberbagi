@@ -348,8 +348,10 @@ let clickFunction = function(e) {
         data.deskripsi.id_deskripsi = objectDeskripsi.id_deskripsi;
     }
 
-    if (data.deskripsi.isi.ops.slice(-1).insert === '\n') {
-        data.deskripsi.isi.ops.pop();
+    if (data.deskripsi.isi != null) {
+        if (data.deskripsi.isi.ops.slice(-1).insert === '\n') {
+            data.deskripsi.isi.ops.pop();
+        }
     }
 
     // console.log(data);
@@ -389,7 +391,7 @@ let fetchData = function (url, data, root, f) {
                 fetchCreateDeskripsiSelengkapnya(root, response);
                 break;
             case 'read-deskripsi-selengkapnya':
-                fetchReadDeskripsiSelengkapnya(root, response, data);
+                fetchReadDeskripsiSelengkapnya(root, response, data, url);
                 break;
             case 'get-deskripsi':
                 fetchGetDeskripsiSelengkapnya(root, response);
@@ -481,15 +483,23 @@ let fetchUpdateDeskripsiSelengkapnya = function(root, response) {
         return false;
     } else {
         setTimeout(() => {
+            console.log(response.feedback.data);
             $('#'+root.id).modal('hide');
             setTimeout(() => {
                 const trEl = relatedModal.querySelector('tbody>tr[data-id-deskripsi="'+ response.feedback.data.id_deskripsi +'"]');
                 if (trEl != null) {
                     trEl.classList.add('highlight');
-                    trEl.querySelector('th a').setAttribute('href','/admin/bantuan/data/'+ response.feedback.data.id_bantuan);
-                    trEl.querySelector('th a span').innerText = response.feedback.data.nama_bantuan;
+                    if (response.feedback.data.id_bantuan != null) {
+                        trEl.querySelector('th a').setAttribute('href','/admin/bantuan/data/'+ response.feedback.data.id_bantuan);
+                        trEl.querySelector('th a span').innerText = response.feedback.data.nama_bantuan;
+                    }
+                    
                     if (trEl.querySelector('td[data-title="true"] span.badge') != null) {
                         trEl.querySelector('td[data-title="true"] span.badge').remove();
+                    }
+
+                    if (response.feedback.data.judul != null) {
+                        trEl.querySelector('td[data-title="true"] span').innerText = response.feedback.data.judul;
                     }
                     setTimeout(()=> {
                         if (relatedModal.querySelector('tbody>tr.highlight') != null) {
@@ -551,7 +561,7 @@ let fetchCreateDeskripsiSelengkapnya = function(root, response) {
     // root.querySelector('.disabled').classList.remove('disabled');
 };
 
-let fetchReadDeskripsiSelengkapnya = function(root, response, data) {
+let fetchReadDeskripsiSelengkapnya = function(root, response, data, url) {
     if (response.error) {
         return false;
     }

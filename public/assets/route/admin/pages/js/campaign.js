@@ -4,7 +4,6 @@ defaultOptions.modules.toolbar.container = [
 ];
 
 let qEditor = editor('#editor'),
-    relatedModal,
     relatedCard,
     dataBantuan = {},
     route = window.location.pathname.split('/')[1];
@@ -152,7 +151,7 @@ $('#modalLandingPage').on('hidden.bs.modal', function(e) {
     }
     objectCampaign = {};
 }).on('show.bs.modal', function(e) {
-    relatedModal = e.relatedTarget.closest('.card');
+    relatedCard = e.relatedTarget.closest('.card');
     if (e.relatedTarget.getAttribute('data-type') == 'update') {
         if (e.relatedTarget.closest('tr') == null) {
             let currentDate = new Date(),
@@ -395,7 +394,7 @@ let fetchData = function (url, data, root, f) {
                 fetchCreateCampaign(root, response);
                 break;
             case 'gets-campaign':
-                fetchGetsCampaign(root, response, data);
+                fetchGetsCampaign(root, response, data, url);
                 break;
             case 'get-data-campaign':
                 fetchGetDataCampaign(root, response);
@@ -485,7 +484,7 @@ let fetchUpdateCampaign = function(root, response) {
         setTimeout(() => {
             $('#'+root.id).modal('hide');
             setTimeout(() => {
-                const trEl = relatedModal.querySelector('tbody>tr[data-id-campaign="'+ response.feedback.data.id_campaign +'"]');
+                const trEl = relatedCard.querySelector('tbody>tr[data-id-campaign="'+ response.feedback.data.id_campaign +'"]');
                 if (trEl != null) {
                     trEl.classList.add('highlight');
                     if (route == 'admin') {
@@ -511,8 +510,8 @@ let fetchUpdateCampaign = function(root, response) {
                     trEl.querySelector('.badge').innerText = response.feedback.data.status.text;
 
                     setTimeout(()=> {
-                        if (relatedModal.querySelector('tbody>tr.highlight') != null) {
-                            relatedModal.querySelector('tbody>tr.highlight').classList.remove('highlight');
+                        if (relatedCard.querySelector('tbody>tr.highlight') != null) {
+                            relatedCard.querySelector('tbody>tr.highlight').classList.remove('highlight');
                         }
                     }, 3000);
                 }
@@ -541,13 +540,13 @@ let fetchCreateCampaign = function(root, response) {
 
     let rD = response.feedback.data;
 
-    if (relatedModal.querySelector('.card-footer ul.pagination .page-link.page-item.active') != null) {
-        relatedModal.querySelector('.card-footer ul.pagination .page-link.page-item.active').click();
+    if (relatedCard.querySelector('.card-footer ul.pagination .page-link.page-item.active') != null) {
+        relatedCard.querySelector('.card-footer ul.pagination .page-link.page-item.active').click();
     } else {
-        relatedModal.querySelector('tbody').innerHTML = '';
+        relatedCard.querySelector('tbody').innerHTML = '';
         const tr = '<tr data-id-campaign="'+ reverseString(btoa(rD.id_campaign))+'"><td><div class="row justify-content-between"><div class="col-auto"><a href="'+ ((rD.tag == null) ? '/bantuan/detil/'+ rD.id_bantuan : '/bantuan/'+ rD.tag)+'" target="_blank" rel="noopener noreferrer" class="font-weight-bolder"><span>'+ rD.nama_bantuan+'</span></a></div>'+ ((rD.tag != null) ? '<div class="col-auto"><a href="/campaign/' +rD.tag+ '"><span class="tag">#' +rD.tag +'</span></a></div>' : '') +'</div><div class="row justify-content-between"><div class="col-auto"><span class="badge font-weight-bolder '+ rD.status.class +'">'+ rD.status.text +'</span></div><div class="col-auto"><span><i class="far fa-clock small"></i></span><small><span data-modified-value="'+ rD.modified_at +'">'+ rD.time_ago +'</span></small></div></div></td><td data-status="'+ rD.aktif.value +'"><span class="badge '+ rD.aktif.class +'" data-aktif="'+ rD.aktif.value +'">'+ rD.aktif.text +'</span></td><td><div class="media align-items-center gap-x-3"><div class="media-body"><div class="nama_jabatan mb-0 text-black-50 font-weight-bolder"><span>'+ rD.jabatan_author +'</span></div><div class="small text-black-50 font-weight-bolder"><span>'+ rD.nama_author+'</span></div></div><div class="avatar rounded bg-transparent border overflow-hidden" data-id-author="'+ reverseString(btoa(rD.id_akun_maker ?? ''))+'"><img src="'+ rD.path_author+'" alt="'+ rD.nama_author+'" class="img-fluid"></div></div></td><td><div class="dropdown"><a class="btn btn-sm btn-icon-only text-light mr-0 d-flex align-items-center justify-content-center" href="javascript::void(0);" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Drop Down Action Record"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" data-value="'+ reverseString(btoa(rD.id_campaign))+'">'+ ((rD.tag != null) ? '<a class="dropdown-item" href="/'+ route +'/campaign/'+ rD.tag +'">Hasil Campaign</a><a class="dropdown-item" href="/campaign/'+ rD.tag +'">Menuju Campaign</a>':'') +'<a class="dropdown-item '+ ((rD.aktif.value == '1') ? 'text-danger' : 'text-warning') +' font-weight-light" href="javascript:void(0);" data-toggle="modal" data-target="#modalKonfirmasiAksiCampaign" data-type="update-aktif">'+ ((rD.aktif.value == '1') ? 'Non-akifkan Campaign' : 'Aktifkan Campaign')+'</a><a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#modalLandingPage" data-type="update">Ubah Campaign</a></div></div></td></tr>';
-        relatedModal.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
-        controlPaginationButton(0, $(relatedModal.querySelector('.pagination')), response.feedback.pages);
+        relatedCard.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
+        controlPaginationButton(0, $(relatedCard.querySelector('.pagination')), response.feedback.pages);
     }
 
     if (!response.error) {
@@ -555,11 +554,11 @@ let fetchCreateCampaign = function(root, response) {
             $('#'+root.id).modal('hide');
             $('#id-bantuan').val(0).trigger('change');
             setTimeout(() => {
-                if (relatedModal.querySelector('tbody>tr[data-id-campaign="'+ reverseString(btoa(rD.id_campaign)) +'"]') != null) {
-                    relatedModal.querySelector('tbody>tr[data-id-campaign="'+ reverseString(btoa(rD.id_campaign)) +'"]').classList.add('highlight');
+                if (relatedCard.querySelector('tbody>tr[data-id-campaign="'+ reverseString(btoa(rD.id_campaign)) +'"]') != null) {
+                    relatedCard.querySelector('tbody>tr[data-id-campaign="'+ reverseString(btoa(rD.id_campaign)) +'"]').classList.add('highlight');
                     setTimeout(()=> {
-                        if (relatedModal.querySelector('tbody>tr.highlight') != null) {
-                            relatedModal.querySelector('tbody>tr.highlight').classList.remove('highlight');
+                        if (relatedCard.querySelector('tbody>tr.highlight') != null) {
+                            relatedCard.querySelector('tbody>tr.highlight').classList.remove('highlight');
                         }
                     }, 3000);
                 }
@@ -570,7 +569,7 @@ let fetchCreateCampaign = function(root, response) {
     // root.querySelector('.disabled').classList.remove('disabled');
 };
 
-let fetchGetsCampaign = function(root, response, data) {
+let fetchGetsCampaign = function(root, response, data, url) {
     if (response.error) {
         return false;
     }
@@ -624,7 +623,6 @@ let fetchGetsCampaign = function(root, response, data) {
         let tr = '<tr data-zero="true"><td colspan="4"><span>Data pencarian tidak ditemukan ... </span></td></tr>';
         root.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
     } else {
-        console.log(data[0]);
         data.forEach(element => { 
             element.status = statusBantuan(element.status);
             element.aktif = ((element.aktif == '1') ? {class: 'badge-success',text:'aktif',value:'1'}:{class:'badge-danger',text:'non-aktif',value:'0'});
@@ -861,10 +859,10 @@ $('#modalKonfirmasiAksiCampaign').on('show.bs.modal', function(e) {
     } else {
         text = 'Aktifkan';
     }
-    relatedModal.querySelector('[type="submit"]').innerText = text;
+    relatedCard.querySelector('[type="submit"]').innerText = text;
 }).on('hidden.bs.modal', function(e) {
     objectCampaign = {};
-    relatedModal = {};
+    relatedCard = {};
 });
 
 let submitAction = document.querySelector('#modalKonfirmasiAksiCampaign [type="submit"]');
@@ -879,5 +877,5 @@ submitAction.addEventListener('click', function(e) {
 
     // console.log(data);
     // fetchUpdateAktifCampaign
-    fetchData('/'+ route +'/campaign/fetch/update-aktif', data, relatedModal, 'update-aktif-campaign');
+    fetchData('/'+ route +'/campaign/fetch/update-aktif', data, relatedCard, 'update-aktif-campaign');
 });

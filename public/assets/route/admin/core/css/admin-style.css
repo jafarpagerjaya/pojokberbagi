@@ -223,11 +223,14 @@ table.table-responsive.table-absolute-first td:not(.fit):not(.auto):nth-child(2)
 
 /* load animation table */
 
+.modal.load *:not(span),
 .card.load *:not(span),
 table.load *:not(span) {
     border-radius: inherit;
 }
 
+.modal.load a[role="button"],
+.modal.load *:not(span) span:not(span span):not(.input-char-left),
 .card.load a[role="button"],
 .card.load *:not(span) span:not(span span):not(.input-char-left),
 table.load a[role="button"],
@@ -239,17 +242,21 @@ table.load *:not(span) span:not(span span):not(.input-char-left) {
     border-radius: 5px;
 }
 
+.modal.load i[class*="bg"],
 .card.load i[class*="bg"],
 table.load i[class*="bg"] {
     background: transparent !important;
 }
 
+.modal.load a,
 .card.load a,
 table.load a {
     cursor: none !important;
     pointer-events: none !important;
 }
 
+.modal.load span:not(span span):not(.input-char-left),
+.modal.load a i,
 .card.load span:not(span span):not(.input-char-left),
 .card.load a i,
 table.load span:not(span span):not(.input-char-left),
@@ -514,6 +521,12 @@ a[data-action]:hover {
     padding-right: 1.5rem !important;
 } 
 
+/* Lebel */
+#lebel [data-selected-length]::before {
+    content: attr(data-selected-length);
+    color: var(--orange);
+}
+
 @media (min-width: 360px) {
     .form-group label {
         font-size: .75rem;
@@ -578,25 +591,71 @@ a[data-action]:hover {
 
 @media (max-width: 991px) {
 
-    button[data-value="create"] {
+    button[data-value] {
         display: flex;
         align-items: center;
         justify-content: center;
         width: calc(1.5em + 1.25rem + 5px);
+        height: calc(1.5em + 1.25rem + 5px);
     }
-    
-    button[data-value="create"]::after {
-        content: '\f055';
+
+    button[data-value]::after {
         font-family: "Font Awesome 5 Free";
         font-size: 1.5rem;
         display: flex;
         align-self: center;
+    }
+    
+    button[data-value="create"]::after {
+        content: '\f055';
+    }
+
+    button[data-value="update"]::after {
+        content: '\f044';
+        font-weight: 100;
+        margin-left: .5rem;
+    }
+
+    button[data-value="delete"]::after {
+        content: '\f12d';
+    }
+
+    button[data-value="reset"]::after {
+        content: '\f0ad';
+    }
+
+    button[data-value="lock"]::after {
+        content: '\f023';
+    }
+
+    button[data-value="unlock"]::after {
+        content: '\f13e';
     }
 }
 
 @media (min-width: 992px) {
     button[data-value="create"]::after {
         content: 'Tambah';
+    }
+
+    button[data-value="update"]::after {
+        content: 'Ubah';
+    }
+
+    button[data-value="reset"]::after {
+        content: 'Reset';
+    }
+
+    button[data-value="lock"]::after {
+        content: 'Blokir';
+    }
+
+    button[data-value="unlock"]::after {
+        content: 'Buka Blokir';
+    }
+
+    button[data-value="delete"]::after {
+        content: 'Hapus';
     }
 }
 

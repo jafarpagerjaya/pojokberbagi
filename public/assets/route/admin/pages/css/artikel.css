@@ -1,0 +1,82 @@
+button[data-value="create"] {
+    max-height: 46px;
+    height: 46px;
+}
+
+table .viewer-badge {
+    flex-direction: row-reverse;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-toggle {
+    width: 84px !important;
+    height: 28px !important;
+}
+
+.custom-toggle-slider {
+    width: inherit;
+    height: inherit;
+}
+
+#modalResetArtikel .modal-body i {
+    width: 14.9px;
+    height: 14.9px;
+}
+
+#modalResetArtikel .modal-body #multi #selected-count {
+    position: relative;
+    display: flex;
+    gap: .25rem;
+}
+
+#modalResetArtikel .modal-body #multi #selected-count::before {
+    content: attr(data-value);
+    font-weight: 700;
+    color: var(--orange);
+}
+
+.custom-toggle-slider:after {
+    font-size: 1rem !important;
+    top: 2px !important;
+}
+
+.custom-toggle input:not(:checked)+.custom-toggle-slider:before {
+    width: 22px;
+    height: 22px;
+}
+
+.custom-toggle input:checked+.custom-toggle-slider::before {
+    left: 30px;
+    width: 22px;
+    height: 22px;
+}
+
+#modalSelectedResetList .avatar {
+    width: 28px;
+    height: 28px;
+}
+
+#modalSelectedResetList .pagination .page-link:first-of-type {
+    margin-left: 0px;
+}
+
+#modalSelectedResetList .pagination .page-link:last-of-type {
+    margin-right: 0px;
+}
+
+@media (min-width: 992px) {
+    table .viewer-badge {
+        flex-direction: column;
+        justify-content: center;
+        align-items: end;
+    }
+}
+
+td span.view::before {
+    content: '\f06e';
+    font-weight: 900;
+    font-family: "Font Awesome 5 Free";
+    margin-right: .25rem;
+}

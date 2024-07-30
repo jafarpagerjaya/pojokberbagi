@@ -76,7 +76,7 @@ class BuatController extends Controller {
         );
 
         $this->model('Donasi');
-        $this->model->query("SELECT COUNT(id_bantuan) found, id_bantuan FROM bantuan WHERE id_bantuan = ? OR tag = ? AND status IN ('D','S') GROUP BY id_bantuan", array('id_bantuan' => $params[0], 'tag' => $params[0]));
+        $this->model->query("SELECT COUNT(id_bantuan) found, id_bantuan, tag FROM bantuan WHERE id_bantuan = ? OR tag = ? AND status IN ('D','S') GROUP BY id_bantuan", array('id_bantuan' => $params[0], 'tag' => $params[0]));
         if ($this->model->getResult()->found == 0) {
             Session::flash('notifikasi', array(
                 'pesan' => 'Halaman donasi yang anda cari tidak ditemukan',
@@ -85,6 +85,7 @@ class BuatController extends Controller {
             Redirect::to('home');
         }
         $id_bantuan = $this->model->getResult()->id_bantuan;
+        $tag = $this->model->getResult()->tag;
 
         $data_bantuan = $this->model->isBantuanActive($id_bantuan);
         if ($data_bantuan == false) {
@@ -141,9 +142,13 @@ class BuatController extends Controller {
             if ($data) {
                 $this->data['donatur'] = $this->_home->getResult();
             }
+        } else {
+            Session::put('donasi', array(
+                'name' => (!isset($tag) ? 'id_bantuan' : 'tag'),
+                'value' => (!isset($tag) ? $id_bantuan : $tag)
+            ));
         }
 
-        Session::put('donasi', $id_bantuan);
         $this->data['bantuan'] = $data_bantuan;
         $this->data[Config::get('session/token_name')] = Token::generate();
 

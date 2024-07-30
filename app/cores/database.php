@@ -258,15 +258,18 @@ class Database {
 				$xSetCOl++;
 			}
 			if (count(is_countable($where) ? $where : []) === 3) {
-				$operators = array('=', '>', '<', '>=', '<=', '!=', '<>');
+				$filter = $this->filter($where);
 
 				$field    = $where[0];
-				$operator = $where[1];
 				$value    = $where[2];
 
-				if (in_array($operator, $operators)) {
-					$sql = "UPDATE {$table} SET {$set} WHERE {$field} {$operator} ?";
-					$fields = array_merge($fields, array($field => $value));
+				if (!is_array($value)) {
+					$value = array($value);
+				}
+
+				if ($filter[1] == true) {
+					$sql = "UPDATE {$table} SET {$set} WHERE {$filter[0]}";
+					$fields = array_merge($fields, $value);
 					if (!$this->query($sql, $fields)->error()) {
 						return true;
 					}

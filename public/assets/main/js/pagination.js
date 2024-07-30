@@ -290,15 +290,21 @@ rootPagi.each((i, el) => {
     controlPaginationButton(0, $(el), el.dataset.pages);
 });
 
-$('.pagination').on('click', '.page-link:not(.next):not(.prev):not(.disabled)', function () {
-    $(this).addClass('active').siblings().removeClass('active');
-    controlPaginationButton.call( $(this), 1, $(this).closest('.pagination'), $(this).closest('.pagination')[0].dataset.pages);
+$('body').on('click', '.page-link:not(.next):not(.prev):not(.disabled)', function (e) {
+    if (e.target.closest('.pagination')) {
+        $(this).addClass('active').siblings().removeClass('active');
+        controlPaginationButton.call( $(this), 1, $(this).closest('.pagination'), $(this).closest('.pagination')[0].dataset.pages);
+    }
 });
 
-$('.pagination').on('click', '.page-link.next:not(.disabled)', function () {
-    $(this).siblings('.page-link:not(.next):not(.prev):not(.disabled).active').next().click();
+$('body').on('click', '.page-link.next:not(.disabled)', function (e) {
+    if (e.target.closest('.pagination')) {
+        $(this).siblings('.page-link:not(.next):not(.prev):not(.disabled).active').next().click();
+    }
 });
 
-$('.pagination').on('click', '.page-link.prev:not(.disabled)', function () {
-    $(this).siblings('.page-link:not(.next):not(.prev):not(.disabled).active').prev().click();
+$('body').on('click', '.page-link.prev:not(.disabled)', function (e) {
+    if (e.target.closest('.pagination')) {
+        $(this).siblings('.page-link:not(.next):not(.prev):not(.disabled).active').prev().click();
+    }
 });

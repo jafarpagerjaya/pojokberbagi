@@ -169,6 +169,18 @@
 				"href": "/admin/rab",
 				"title": "RAB",
 				"icon": "ni ni-satisfied text-info"
+			},
+			"Publikasi": {
+				"href": "javascript:void(0);",
+				"title": "Publikasi",
+				"icon": "ni ni-archive-2 text-warning",
+				"dropdown": {
+					"Artikel": {
+						"href": "/admin/publikasi/artikel",
+						"title": "Artikel",
+						"icon": "far fa-newspaper text-black-50"
+					}
+				}
 			}
 		},
 		"it": {
@@ -205,6 +217,18 @@
 						"href": "/admin/bantuan/informasi",
 						"title": "Informasi",
 						"icon": "ni ni-watch-time text-gray"
+					}
+				}
+			},
+			"Publikasi": {
+				"href": "javascript:void(0);",
+				"title": "Publikasi",
+				"icon": "ni ni-archive-2 text-warning",
+				"dropdown": {
+					"Artikel": {
+						"href": "/admin/publikasi/artikel",
+						"title": "Artikel",
+						"icon": "far fa-newspaper text-black-50"
 					}
 				}
 			},
