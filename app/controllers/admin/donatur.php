@@ -117,7 +117,23 @@ class DonaturController extends Controller {
             $this->data['token'] = Token::generate();
             // $this->_donatur->setPageLink();
             // $this->data['pageLink'] = json_decode(json_encode($this->_donatur->data()), true);
-            return VIEW_PATH . 'admin' . DS . 'donatur' . DS . 'cre.html';
+            switch (strtoupper($this->data['admin_alias'])) {
+                case 'SYS':
+                    return VIEW_PATH.'admin'.DS.'donatur'.DS.'sys.html';
+                break;
+    
+                case 'CRE':
+                    return VIEW_PATH.'admin'.DS.'donatur'.DS.'cre.html';
+                break;
+    
+                case 'IT':
+                    return VIEW_PATH.'admin'.DS.'donatur'.DS.'sys.html';
+                break;
+                
+                default:
+                    # code...
+                break;
+            }
         }
         Redirect::to('admin/donatur');
     }

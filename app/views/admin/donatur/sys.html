@@ -124,7 +124,7 @@
                                         <a class="dropdown-item"
                                             href="/admin/donatur/formulir/<?= $data_donatur->id_donatur; ?>">Ubah
                                             Data</a>
-                                        <?= (is_null($data_donatur->id_akun)) ? '<a class="dropdown-item" href="/admin/donatur/kaitkan/'.$data_donatur->id_donatur .'/'. $data['token'] .'">Kaitkan Akun</a>' : '' ?>
+                                        <?= (is_null($data_donatur->id_akun) && (!is_null($data_donatur->email || !is_null($data_donatur->kontak)))) ? '<a class="dropdown-item" href="/admin/donatur/kaitkan/'.$data_donatur->id_donatur .'/'. $data['token'] .'">Kaitkan Akun</a>' : '' ?>
                                     </div>
                                 </div>
                             </td>
