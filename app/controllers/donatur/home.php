@@ -40,7 +40,14 @@ class HomeController extends Controller {
         $this->data['akun'] = $this->_auth->data();
 
         $this->model("Donatur");
-        $this->model->getAllData('donatur', array('email','=', $this->data['akun']->email));
+        if (is_null($this->data['akun']->email)) {
+            $akun_value =  $this->data['akun']->kontak; 
+            $akun_field = 'kontak';
+        } else {
+            $akun_value =  $this->data['akun']->email; 
+            $akun_field = 'email';
+        }
+        $this->model->getAllData('donatur', array($akun_field,'=', $akun_value));
         $this->data['donatur'] = $this->model->getResult();
         $this->_id_donatur = $this->data['donatur']->id_donatur;
         $this->data['route_alias'] = 'donatur';

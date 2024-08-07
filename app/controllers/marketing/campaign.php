@@ -29,7 +29,14 @@ class CampaignController extends Controller {
         $this->data['akun'] = $this->_auth->data();
 
         $this->model("Donatur");
-        $this->model->getAllData('donatur d JOIN akun a ON(d.id_akun = a.id_akun) LEFT JOIN marketing m ON(m.id_akun = a.id_akun)', array('d.email','=', $this->data['akun']->email));
+        if (is_null($this->data['akun']->email)) {
+            $akun_value =  $this->data['akun']->kontak; 
+            $akun_field = 'd.kontak';
+        } else {
+            $akun_value =  $this->data['akun']->email; 
+            $akun_field = 'd.email';
+        }
+        $this->model->getAllData('donatur d JOIN akun a ON(d.id_akun = a.id_akun) LEFT JOIN marketing m ON(m.id_akun = a.id_akun)', array($akun_field,'=', $akun_value));
         $this->data['marketing'] = $this->model->getResult();
         $this->_id_donatur = $this->data['marketing']->id_donatur;
         $this->_id_marketing = $this->data['marketing']->id_marketing;

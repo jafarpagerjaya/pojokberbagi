@@ -10,7 +10,10 @@ checkboxForBtn(cbl, bml, bsl, 'data-id-artikel','tr', selectedId);
 defaultOptions.placeholder = 'Isi content artikel ...';
 let qEditor = editor('#editor');
 
-let objectArtikel = {};
+let objectArtikel = {
+    images: {}
+};
+
 let clickFunction = function(e) {
     let c_error = 0,
         nameList = e.target.closest('.modal').querySelectorAll('[name]'),
@@ -69,12 +72,18 @@ let clickFunction = function(e) {
                     }
                 }
             }
-        
-
         });
     }
 
-    if (objectArtikel.mode.toLowerCase() == 'create' || objectArtikel.mode.toLowerCase() == 'update') {
+    if (objectArtikel.mode.toLowerCase() == 'create' || objectArtikel.mode.toLowerCase() == 'update') {        
+        if (objectArtikel.images[document.querySelector('.form-group.inputGroup#thumbnail input').name] == null) {
+            document.querySelector('.form-group.inputGroup#thumbnail').setAttribute('data-toggle','tooltip');
+            document.querySelector('.form-group.inputGroup#thumbnail').setAttribute('title','Thumbnail wajib ada');
+            $('#thumbnail').tooltip('show');
+            document.querySelector('.form-group.inputGroup#thumbnail').classList.add('is-invalid');
+            c_error++;
+        }
+
         Delta = qEditor.getContents();
 
         if (Delta.ops.length === 1) {
@@ -129,6 +138,10 @@ let clickFunction = function(e) {
     };
 
     if (objectArtikel.mode == 'update') {
+        if (cropedFile[targetName] != undefined) {
+            data.artikel.images = objectArtikel.images;
+        }
+
         objectArtikel.isi = new DOMParser().parseFromString(objectArtikel.isi, "text/html").querySelector('body').innerText;
         if (objectArtikel.isi == JSON.stringify(Delta)) {
             delete data.artikel.isi;
@@ -206,7 +219,8 @@ let clickFunction = function(e) {
     } else if (objectArtikel.mode == 'create') {
         data.artikel = {
             judul: root.querySelector('[name="judul"]').value,
-            isi: Delta
+            isi: Delta,
+            images: objectArtikel.images
         };
     }
 
@@ -243,10 +257,45 @@ document.querySelector('#modalResetArtikel .modal-body').addEventListener('click
 
 let relatedGreatGrandParent = {};
 // Modal
+const valueT = '<span class="d-block">Ini adalah contoh</span><span class="d-block" style="margin-top: .125rem; width: 65%;">masih kosong</span>',
+      valueS = '<span>Contoh Nama Judul Artikel Baru</span>';
+
 $('#modalFormArtikel').on('hidden.bs.modal', function(e) {
     $(this).find('input.form-control').val('');
+    if (e.target.querySelector('.form-label-group.is-invalid') != null) {
+        e.target.querySelector('input.is-invalid').classList.remove('is-invalid');
+        e.target.querySelector('.form-label-group.is-invalid label').removeAttribute('data-label-after');
+        e.target.querySelector('.form-label-group.is-invalid').classList.remove('is-invalid');
+    }
     qEditor.deleteText(0, qEditor.getLength());
-    objectArtikel = {};
+    if (e.target.querySelector('.ql.is-invalid') != null) {
+        e.target.querySelector('.ql.is-invalid').classList.remove('is-invalid');
+    }
+    document.querySelectorAll('.form-group.inputGroup').forEach(el => {        
+        if (el.id == 'thumbnail') {            
+            if (el.classList.contains('is-invalid')) {
+                el.classList.remove('is-invalid');
+                el.removeAttribute('title');
+                el.removeAttribute('data-toggle');
+                el.removeAttribute('data-original-title');
+            }
+
+            el.querySelector('.title').innerHTML = valueT;                
+        } else {
+            el.querySelector('.judul').innerHTML = valueS;
+        }
+        
+        el.querySelector('img.'+el.id).setAttribute('src','');
+        el.querySelector('input[type="file"]').value = '';
+        el.querySelector('label .result>.name').innerText = '';
+        el.querySelector('label .result>.size').innerText = '';
+    });
+
+    objectArtikel = {
+        images: {}
+    };
+    
+    cropedFile = {};
 }).on('show.bs.modal', function(e) {
     relatedGreatGrandParent = e.relatedTarget.closest('.card');
     const btnDataValue = e.relatedTarget.getAttribute('data-value');
@@ -294,7 +343,9 @@ $('#modalResetArtikel').on('hidden.bs.modal', function(e) {
     if (elementID != null && (elementID == 'multi' || elementID == 'singgle')) {
         e.target.querySelector('#'+elementID).remove();
     }
-    objectArtikel = {};
+    objectArtikel = {
+        images: {}
+    };
 }).on('show.bs.modal', function(e) {
     if (selectedId.length) {
         let frag;
@@ -339,6 +390,60 @@ $('#modalSelectedResetList').on('hidden.bs.modal', function(e) {
         };
         // fetchGetsPilihanArtikel
         fetchData('/admin/publikasi/fetch/gets/artikel/pilihan', data, e.target, 'gets-pilihan-artikel');
+    }
+});
+
+// Cropper
+let cropper,
+    cropData = {},
+    cropedFile = {};
+    
+$('#imgCanvasCropper').on('show.bs.modal', function () {
+    this.querySelector('.modal-body img').src = src;
+
+    if (targetName == 'wide_img') {
+        cropData.aspectRatio = 468 / 139;
+        cropData.width = 1296;
+        cropData.height = 386;
+    } else {
+        cropData.aspectRatio = 17 / 13;
+        cropData.width = 306;
+        cropData.height = 234;
+    }
+}).on('shown.bs.modal', function () {
+    img = this.querySelector('.modal-body img');
+
+    cropper = new Cropper(img, {
+        aspectRatio: cropData.aspectRatio,
+        viewMode: 3,
+        dragMode: 'move',
+        autoCropArea: 1,
+        minCropBoxWidth: 140,
+        minContainerWidth: 272,
+        minContainerHeight: 81.01
+    });
+}).on('hidden.bs.modal', function () {
+    this.querySelector('.modal-body img').setAttribute('src', '');
+
+    this.querySelectorAll('[data-dismiss]').forEach(el => {
+        el.removeAttribute('data-dismiss-for');
+    });
+
+    cropper.destroy();
+
+    if (cropedFile[targetName] != undefined) {
+        objectArtikel.images[targetName] = cropedFile[targetName].data;
+        
+        let input = document.querySelector('[name="'+targetName+'"]'),
+            label = input.parentNode.querySelector('label'),
+            formGroup = input.closest('.form-group'); 
+
+        formGroup.querySelector('img.'+formGroup.id).setAttribute('src', objectArtikel.images[targetName]);
+
+        label.querySelector('.result .size').innerText = cropedFile[targetName].size + ' MB';
+        label.querySelector('.result .name').innerText = cropedFile[targetName].name;
+
+        doToastForFile(formGroup, input, cropedFile[targetName].name, cropedFile[targetName].size);
     }
 });
 
@@ -554,7 +659,7 @@ let fetchCreateArtikel = function(root, response) {
         relatedGreatGrandParent.querySelector('.card-footer ul.pagination .page-link.page-item.active').click();
     } else {
         relatedGreatGrandParent.querySelector('tbody').innerHTML = '';
-        const tr = '<tr data-id-artikel="'+ rD.id_artikel +'"><td class="fit" data-checkbox="row"><span class="inputGroup"><input type="checkbox" id="checkbox-'+ rD.id_artikel +'"><label for="checkbox-'+ rD.id_artikel +'"></label></span></td><td><div class="row"><div class="col"><div class="d-flex flex-column"><a class="title font-weight-bold" href="/artikel/'+ rD.judul.replace(/\s+/g,'-') +'"><span>'+ rD.judul +'</span></a><span>'+ rD.publish_at +'</span></div></div><div class="col col-lg-auto viewer-badge"><span data-count-up-value="'+ rD.jumlah_kunjungan +'" class="text-black-50 view small"><span>'+ rD.jumlah_kunjungan +'</span></span><span data-status="'+ rD.aktif.value +'" class="badge '+ rD.aktif.class +' small px-2 py-1">'+ rD.aktif.text +'</span></div></div></td><td data-author="'+ rD.id_author +'" class="fit"><div class="d-flex gap-x-3 justify-content-end"><div class="media gap-3 align-items-center justify-content-end" data-id-author="'+rD.id_author+'"><div class="font-weight-bold text-right">Author<span class="d-block">'+ rD.nama_author +'</span></div><div class="avatar"><img src="'+ rD.path_gambar_author +'" alt="'+ rD.nama_gambar_author +'"></div></div></div></td></tr>';
+        const tr = '<tr data-id-artikel="'+ rD.id_artikel +'"><td class="fit" data-checkbox="row"><span class="inputGroup"><input type="checkbox" id="checkbox-'+ rD.id_artikel +'"><label for="checkbox-'+ rD.id_artikel +'"></label></span></td><td><div class="row"><div class="col"><div class="d-flex flex-column"><a class="title font-weight-bold" href="/artikel/'+ rD.judul.replace(/\s+/g,'-') +'"><span>'+ rD.judul +'</span></a><small><span>'+ rD.publish_at +'</span></small></div></div><div class="col col-lg-auto viewer-badge"><span data-count-up-value="'+ rD.jumlah_kunjungan +'" class="text-black-50 view small"><span>'+ rD.jumlah_kunjungan +'</span></span><span data-status="'+ rD.aktif.value +'" class="badge '+ rD.aktif.class +' small px-2 py-1">'+ rD.aktif.text +'</span></div></div></td><td data-author="'+ rD.id_author +'" class="fit"><div class="d-flex gap-x-3 justify-content-end"><div class="media gap-3 align-items-center justify-content-end" data-id-author="'+rD.id_author+'"><div class="font-weight-bold text-right">Author<span class="d-block">'+ rD.nama_author +'</span></div><div class="avatar"><img src="'+ rD.path_gambar_author +'" alt="'+ rD.nama_gambar_author +'"></div></div></div></td></tr>';
         relatedGreatGrandParent.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
         const cardFooter = '<div class="card-footer"><div class="row"><div class="col-auto d-flex flex-column text-black-50" id="lebel"></div><div class="col"><ul class="pagination justify-content-end mb-0" data-pages="'+ response.feedback.pages +'"></ul></div></div></div>';
         relatedGreatGrandParent.insertAdjacentHTML('beforeend', cardFooter);
@@ -650,6 +755,29 @@ let fetchGetDataArtikel = function(root, response) {
 
     root.querySelector('input#input-judul').value = data.judul;
     root.querySelector('.current-length').innerText = data.judul.length;
+    if (data.path_gambar_small != null) {
+        root.querySelector('#thumbnail img.thumbnail').setAttribute('src', data.path_gambar_small);
+        root.querySelector('#thumbnail img.thumbnail').setAttribute('alt', 'Gambar Thumbnail');
+        root.querySelector('#thumbnail input[type="file"]').parentElement.setAttribute('data-file-passed', true);
+        objectArtikel.images.small_img = data.path_gambar_small;
+    }
+
+    if (data.path_gambar_wide != null) {
+        root.querySelector('#sub-hero img.sub-hero').setAttribute('src', data.path_gambar_wide);
+        root.querySelector('#sub-hero img.sub-hero').setAttribute('alt', 'Gambar Sub Hero');
+    }
+
+    let valueThumb, valueWide;
+    if (data.judul.length) {
+        valueThumb = data.judul;
+        valueWide = valueThumb;
+    } else {
+        valueThumb = valueT;
+        valueWide = valueS;
+    }
+
+    root.querySelector('#thumbnail .title').innerHTML = valueThumb;
+    root.querySelector('#sub-hero .judul').innerHTML = valueWide;
 
     if (data.isi != '') {
         qEditor.setContents(JSON.parse(new DOMParser().parseFromString(data.isi, "text/html").querySelector('body').innerText));
@@ -765,7 +893,7 @@ let fetchGetsArtikel = function(root, response, data, url) {
         data.forEach(rD => { 
             rD.aktif = ((rD.aktif == '1') ? {class: 'badge-success',text:'aktif',value:'1'}:{class:'badge-danger',text:'non-aktif',value:'0'});
             let editor = (rD.id_editor != null ? '<div class="media gap-3 align-items-center justify-content-end" data-id-editor="'+ rD.id_editor +'"><div class="avatar"><img src="'+ rD.path_gambar_editor +'" alt="'+ rD.nama_gambar_editor +'"></div><div class="font-weight-bold">Editor<span class="d-block">'+ rD.nama_editor +'</span></div></div>':'');
-            const tr = '<tr data-id-artikel="'+ rD.id_artikel +'"><td class="fit" data-checkbox="row"><span class="inputGroup"><input type="checkbox" id="checkbox-'+ rD.id_artikel +'"><label for="checkbox-'+ rD.id_artikel +'"></label></span></td><td><div class="row"><div class="col"><div class="d-flex flex-column"><a class="title font-weight-bold" href="/artikel/'+ rD.judul.replace(/\s+/g,'-') +'"><span>'+ rD.judul +'</span></a><span>'+ rD.publish_at +'</span></div></div><div class="col col-lg-auto viewer-badge"><span data-count-up-value="'+ rD.jumlah_kunjungan +'" class="text-black-50 view small"><span>'+ rD.jumlah_kunjungan +'</span></span><span data-status="'+ rD.aktif.value +'" class="badge '+ rD.aktif.class +' small px-2 py-1">'+ rD.aktif.text +'</span></div></div></td><td data-author="'+ rD.id_author +'" '+ (rD.id_editor != null ? 'data-editor="'+ rD.id_editor +'" ':'') +'class="fit"><div class="d-flex gap-x-3 justify-content-end">'+editor+'<div class="media gap-3 align-items-center justify-content-end" data-id-author="'+ rD.id_author +'"><div class="font-weight-bold text-right">Author<span class="d-block">'+ rD.nama_author +'</span></div><div class="avatar"><img src="'+ rD.path_gambar_author +'" alt="'+ rD.nama_gambar_author +'"></div></div></div></td></tr>';
+            const tr = '<tr data-id-artikel="'+ rD.id_artikel +'"><td class="fit" data-checkbox="row"><span class="inputGroup"><input type="checkbox" id="checkbox-'+ rD.id_artikel +'"><label for="checkbox-'+ rD.id_artikel +'"></label></span></td><td><div class="row"><div class="col"><div class="d-flex flex-column"><a class="title font-weight-bold" href="/artikel/'+ rD.judul.replace(/\s+/g,'-') +'"><span>'+ rD.judul +'</span></a><small><span>'+ rD.publish_at +'</span></small></div></div><div class="col col-lg-auto viewer-badge"><span data-count-up-value="'+ rD.jumlah_kunjungan +'" class="text-black-50 view small"><span>'+ rD.jumlah_kunjungan +'</span></span><span data-status="'+ rD.aktif.value +'" class="badge '+ rD.aktif.class +' small px-2 py-1">'+ rD.aktif.text +'</span></div></div></td><td data-author="'+ rD.id_author +'" '+ (rD.id_editor != null ? 'data-editor="'+ rD.id_editor +'" ':'') +'class="fit"><div class="d-flex gap-x-3 justify-content-end">'+editor+'<div class="media gap-3 align-items-center justify-content-end" data-id-author="'+ rD.id_author +'"><div class="font-weight-bold text-right">Author<span class="d-block">'+ rD.nama_author +'</span></div><div class="avatar"><img src="'+ rD.path_gambar_author +'" alt="'+ rD.nama_gambar_author +'"></div></div></div></td></tr>';
             root.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
         });
         if (root.querySelector('.card-footer') == null) {
@@ -929,7 +1057,10 @@ let fetchResetArtikel = function(root, response) {
                             trEl.querySelector('.badge').innerText = rD.aktif.text;
                         }
 
-                        trEl.querySelector('[data-checkbox="row"] input[type="checkbox"]#checkbox-'+idA).click();
+                        if (trEl != null) {
+                            trEl.querySelector('[data-checkbox="row"] input[type="checkbox"]#checkbox-'+idA).click();
+                        }
+                        selectedId.splice(selectedId.findIndex(item => item.id == idA), 1);
                         setTimeout(()=> {
                             if (relatedGreatGrandParent.querySelector('tbody>tr.highlight') != null) {
                                 relatedGreatGrandParent.querySelector('tbody>tr.highlight').classList.remove('highlight');
@@ -944,4 +1075,150 @@ let fetchResetArtikel = function(root, response) {
         $('.toast[data-toast="feedback"]').toast('hide');
     }
     $('#'+ response.toast.id +'.toast[data-toast="'+ response.toast.data_toast +'"]').toast('show');
+};
+
+const judulEl = document.querySelector('#input-judul');
+
+judulEl.addEventListener('change', function(e) {
+    let valueThumb, valueWide;
+    if (e.target.value.length > 0) {
+        valueThumb = e.target.value;
+        valueWide = valueThumb;
+    } else {
+        valueThumb = valueT;
+        valueWide = valueS;
+    }
+    document.querySelector('#thumbnail .title').innerHTML = valueThumb;
+    document.querySelector('#sub-hero .judul').innerHTML = valueWide;
+});
+
+$('#imgCanvasCropper').on('click', '.modal-footer [type="button"]', function () {
+    const imgReturnType = "image/jpeg";
+    cropCanvas = cropper.getCroppedCanvas({
+        width: cropData.width,
+        height: cropData.height,
+        maxWidth: 4096,
+        maxHeight: 4096,
+        fillColor: '#fff',
+    }).toDataURL(imgReturnType);
+
+    const head = 'data:'+imgReturnType+';base64,',
+        fileSize = (cropCanvas.length - head.length);
+    let fileSizeInKB = Math.round((fileSize/1000).toFixed(2)),
+        fileSizeInMB = (fileSizeInKB/1000).toFixed(2);
+
+    cropedFile[targetName] = {
+        'data' : cropCanvas,
+        'size' : fileSizeInMB,
+        'name' : targetFileName
+    };
+
+    if (document.querySelector('.form-group.inputGroup#thumbnail.is-invalid') != null) {
+        document.querySelector('.form-group.inputGroup#thumbnail').classList.add('is-invalid');
+    }
+
+    $(this).parents('.modal').modal('hide');
+}).on('click', '[data-dismiss]', function () {
+    const inputFileName = this.getAttribute('data-dismiss-for'),
+          eTarget = document.querySelector('[name="' + inputFileName +'"]');
+          
+    // End if this input file haven't ben crop
+    if (cropedFile[inputFileName] != undefined) {
+        return;
+    }
+
+    eTarget.value = '';
+    eTarget.closest('[data-file-passed]').querySelector('label .result div.name').innerText = '';
+    eTarget.closest('[data-file-passed]').querySelector('label .result div.size').innerText = '';
+    eTarget.closest('[data-file-passed]').removeAttribute('data-file-passed');
+    
+    delete objectArtikel.images[inputFileName];
+});
+
+const fileList = document.querySelectorAll('.inputGroup input[type="file"]'),
+      fileMaxSizeMb = 2;
+
+let src,
+    targetName,
+    targetFileName;
+
+fileList.forEach(file => {
+    file.addEventListener('change', (e) => {
+        // Get the file
+        const [file] = e.target.files,
+            {name: fileName, size} = file;
+        // Open Modal
+        const modal = e.target.closest('[data-target]').getAttribute('data-target');
+
+        src = URL.createObjectURL(file);
+        targetName = e.target.getAttribute('name');
+        targetFileName = fileName;
+
+        $(modal).modal('show');
+
+        e.target.parentElement.setAttribute('data-file-passed', false);
+    });
+
+    file.addEventListener('click', function (e) {
+        let nCanvas = this.nextElementSibling.querySelector('div.rule').innerText,
+            nInput = this.getAttribute('name');
+        
+        document.querySelectorAll('#imgCanvasCropper [data-dismiss]').forEach(el => {
+            el.setAttribute('data-dismiss-for', nInput);
+        });
+        if (nInput == 'wide_img') {
+            nInput = 'wide screen';
+            aspectR = '468 / 139';
+        } else {
+            nInput = 'small screen';
+            aspectR = '17 / 13';
+        }
+        document.querySelector('#imgCanvasCropperLabel .text-orange').innerHTML = nCanvas + ' (' + nInput + ')';
+    });
+});
+
+let doToastForFile = function (formGroup, input, fileName, fileSize) {
+    let rule = formGroup.querySelector('.rule').innerHTML;
+    if (fileMaxSizeMb < fileSize) {
+        if (!formGroup.classList.contains('is-invalid')) {
+            formGroup.classList.add('is-invalid');
+        }
+
+        input.parentElement.setAttribute('data-file-passed', false);
+
+        let currentDate = new Date(),
+            timestamp = currentDate.getTime(),
+            invalid = {
+            error: true,
+            data_toast: 'invalid-images-feedback',
+            feedback: {
+                message: 'Ukuran file tidak boleh melebihi '+fileMaxSizeMb+' MB. '+rule
+            }
+        };
+
+        invalid.id = invalid.data_toast +'-'+ timestamp;
+            
+        createNewToast(document.querySelector('[aria-live="polite"]'), invalid.id, invalid.data_toast, invalid);
+        $('#'+ invalid.id +'.toast[data-toast="'+ invalid.data_toast +'"]').toast({
+            'delay': 10000
+        }).toast('show');
+    } else {
+        if (formGroup.classList.contains('is-invalid')) {
+            formGroup.classList.remove('is-invalid');
+            formGroup.removeAttribute('data-original-title');
+            formGroup.removeAttribute('data-toggle');       
+            formGroup.removeAttribute('title');
+        }
+
+        input.parentElement.setAttribute('data-file-passed', true);
+        input.setAttribute('title', 'Ganti gambar '+fileName+'?');
+
+        if (!$('[data-toast="invalid-images-feedback"]').hasClass('show')) {
+            return false;
+        }
+
+        if (document.querySelectorAll('.toast[data-toast="invalid-images-feedback"]').length) {
+            $('.toast[data-toast="invalid-images-feedback"]').toast('hide');
+        }
+    }
 };

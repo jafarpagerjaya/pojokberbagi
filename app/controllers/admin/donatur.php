@@ -321,57 +321,127 @@ class DonaturController extends Controller {
     }
 
     // Dinon aktifkan karena auth/signup/hook butuh create akun lalu bagaimana dengan data username dan passowrd dari akunnya
-    // public function kaitkan($params) {
-    //     if (!count(is_countable($params) ? $params : []) > 1) {
-    //         Redirect::to('admin/donatur');
-    //     }
-    //     if (Token::check2($params[1])) {
-    //         $this->_donatur->getData('nama, email','donatur',array('id_donatur','=', intval($params[0])),'AND',array('id_akun','IS',NULL));
-    //         if ($this->_donatur->affected()) {
-    //             if (!is_null($this->_donatur->getResult()->email)) {
-    //                 $this->model('Auth');
-    //                 $salt = Hash::salt(32);
-    //                 $akunArray = array(
-    //                     'username' 	=> strtolower($this->_donatur->getResult()->email),
-    //                     'password' 	=> Sanitize::noSpace2(Hash::make(strtolower($this->_donatur->getResult()->email), $salt)),
-    //                     'salt' 		=> $salt,
-    //                     'email' 	=> strtolower($this->_donatur->getResult()->email)
-    //                 );
-    //                 // Check email is staff
-    //                 $staff = $this->_auth->isStaff(Sanitize::noSpace(Input::get('email')), 'email');
+    public function kaitkan($params) {
+        if (!count(is_countable($params) ? $params : []) > 1) {
+            Redirect::to('admin/donatur');
+        }
 
-    //                 if ($staff) {
-    //                     $id_pegawai = $this->_auth->getResult()->id_pegawai;
-    //                     $akunArray['hak_akses'] = 'A';
-    //                 }
+        if (Token::check2($params[1])) {
+            $this->_donatur->getData('nama, email, kontak','donatur',array('id_donatur','=', intval($params[0])),'AND',array('id_akun','IS',NULL));
+            if ($this->_donatur->affected()) {
+                $dataDonatur = $this->_donatur->getResult();
+                $this->model('Auth');
+                $salt = Hash::salt(32);
+
+                if (!is_null($dataDonatur->email)) {     
+                    $akunArray = array(
+                        'username' 	=> str_pad(strtolower($dataDonatur->nama),5,Hash::unique()),
+                        'password' 	=> Sanitize::noSpace2(Hash::make(strtolower($dataDonatur->email), $salt)),
+                        'salt' 		=> $salt,
+                        'email' 	=> strtolower($dataDonatur->email)
+                    );
+
+                    // Check email is staff
+                    $staff = $this->_auth->isStaff(Sanitize::noSpace(Input::get('email')), 'email');
+
+                    if ($staff) {
+                        $id_pegawai = $this->_auth->getResult()->id_pegawai;
+                        $akunArray['hak_akses'] = 'A';
+                    }
+
+                    $this->_donatur->getData('id_akun','akun',array('email','=',$dataDonatur->email));
+                    if ($this->_donatur->affected()) {
+                        $id_akun = $this->_donatur->getResult()->id_akun;
+                    } else {
+                        $this->_auth->create($akunArray);
+                        if (!$this->_auth->affected()) {
+                            Session::put('notifikasi', array(
+                                'pesan' => 'Failed create akun By Email',
+                                'state' => 'warning'
+                            ));
+                            Redirect::to('admin/donatur');
+                        }
+                        $id_akun = $this->_auth->lastIID();
+                    }
+                    $link = Config::getHTTPHost() ."/auth/signup/hook/". $params[0]. DS . $id_akun . DS . "email" . DS . $dataDonatur->email . DS . $salt;
+                    $dataHook = array(
+                        'nama' => $dataDonatur->nama,
+                        'link' => $link,
+                        'username' => $akunArray['username'],
+                        'password' => strtolower($dataDonatur->email)
+                    );
+                    // Send mail Hook
+                    $headers = 'From: Pojok Berbagi <no-replay@pojokberbagi.id>' . "\r\n" . 'Reply-To: No Replay <no-replay@pojokberbagi.id>' . "\r\n";
+                    $headers .= "MIME-Version: 1.0\r\n";
+                    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+                    $message = Ui::emailHookAkun($dataHook);
+                    $penerima = $dataDonatur->email;    
+                    $subjek = "Mengkaitkan Akun Pojok Berbagi";    
+                    mail($penerima,$subjek,$message, $headers);
+                    Session::put('notifikasi', array(
+                        'pesan' => 'Cek email <b>' . $dataDonatur->email . '</b> untuk mengkaitkan akun baru',
+                        'state' => 'success'
+                    ));
+                } else if (!is_null($dataDonatur->kontak) && is_null($dataDonatur->email)) {
+                    $akunArray = array(
+                        'username' 	=> str_pad(strtolower($dataDonatur->nama),5,Hash::unique()),
+                        'password' 	=> Sanitize::noSpace2(Hash::make(Sanitize::escape2($dataDonatur->kontak), $salt)),
+                        'salt' 		=> $salt,
+                        'kontak' 	=> strtolower($dataDonatur->kontak)
+                    );
+
+                    // Check email is staff
+                    $staff = $this->_auth->isStaff(Sanitize::escape2(Sanitize::noSpace2(Input::get('kontak'))), 'kontak');
+
+                    if ($staff) {
+                        $id_pegawai = $this->_auth->getResult()->id_pegawai;
+                        $akunArray['hak_akses'] = 'A';
+                    }
+
+                    $this->_donatur->getData('id_akun','akun',array('kontak','=',$dataDonatur->kontak));
+                    if ($this->_donatur->affected()) {
+                        $id_akun = $this->_donatur->getResult()->id_akun;
+                    } else {
+                        $this->_auth->create($akunArray);
+                        if (!$this->_auth->affected()) {
+                            Session::put('notifikasi', array(
+                                'pesan' => 'Failed create akun By Kontak',
+                                'state' => 'warning'
+                            ));
+                            Redirect::to('admin/donatur');
+                        }
+                        $id_akun = $this->_auth->lastIID();
+                    }
                     
-    //                 $this->_auth->create($akunArray);
-                    
-    //                 $id_akun = $this->_auth->lastIID();
-    //                 // Send Mail here
-    //                 $pengirim = "pojokberbagi.id";    
-    //                 $penerima = $this->_donatur->getResult()->email;    
-    //                 $subjek = "Mengkaitkan Akun Pojok Berbagi";    
-    //                 $pesan = "Klik <a href='https://pojokberbagi.id/auth/signup/hook/". $params[0]. "/" . $id_akun . "/" . $this->_donatur->getResult()->email . "/" . $salt ."'>disini</a> untuk mengkaitkan akunmu.";   
-    //                 $headers = "Dari :" . $pengirim;    
-    //                 mail($penerima,$subjek,$pesan, $headers);
-    //                 Session::put('notifikasi', array(
-    //                     'pesan' => 'Cek email <b>' . $this->_donatur->getResult()->email . '</b> untuk mengkaitkan akun baru',
-    //                     'state' => 'success'
-    //                 ));
-    //             } else {
-    //                 Session::put('notifikasi', array(
-    //                     'pesan' => 'Donatur <b>' . $this->_donatur->getResult()->nama . '</b> belum terdata alamat emailnya sehingga gagal dikaitkan',
-    //                     'state' => 'warning'
-    //                 ));
-    //             }
-    //         } else {
-    //             Session::put('notifikasi', array(
-    //                 'pesan' => 'Akun donatur <b>' . $this->_donatur->getResult()->nama . '</b> tidak ditemukan sehingga gagal dikaitkan',
-    //                 'state' => 'danger'
-    //             ));
-    //         }
-    //     }
-    //     Redirect::to('admin/donatur');
-    // }
+                    // Send WA here
+                    if (json_decode(Fonnte::check($akunArray['kontak']))->status != true) {
+                        Session::put('notifikasi', array(
+                            'pesan' => 'Failed to send WA notification, kontak WA tidak terdaftar',
+                            'state' => 'warning'
+                        ));
+                    } else {
+                        $text_pesan = "Hi *{$dataDonatur->nama}*,
+Terimakasih telah menghubungi kami.
+Berikut ini adalah data akun yang telah dihubungkan dengan donasimu
+`Username: {$akunArray['username']}`
+`Password: {$dataDonatur->kontak}`
+Mohon klik link berikut untuk menyelesaikan proses aktivasi akun
+```".Config::getHTTPHost() ."/auth/signup/hook/". $params[0]. DS . $id_akun . DS . "kontak" . DS . $dataDonatur->kontak . DS . $salt ."```";
+                        $waResponse = Fonnte::send(Sanitize::toInt2($akunArray['kontak']), $text_pesan);
+                    }
+                } else {
+                    Session::put('notifikasi', array(
+                        'pesan' => 'Donatur <b>' . $dataDonatur->nama . '</b> belum terdata alamat emailnya maupun kontak Whatsapp sehingga gagal dikaitkan',
+                        'state' => 'warning'
+                    ));
+                }
+            } else {
+                Session::put('notifikasi', array(
+                    'pesan' => 'Akun donatur <b>' . $dataDonatur->nama . '</b> tidak ditemukan sehingga gagal dikaitkan',
+                    'state' => 'danger'
+                ));
+            }
+        }
+        Redirect::to('admin/donatur');
+    }
 }

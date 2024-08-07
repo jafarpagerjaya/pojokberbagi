@@ -48,9 +48,9 @@ class PublikasiModel extends HomeModel {
                 $filter .= " AND"; 
             }
             $filter .= " LOWER(CONCAT( 
-                IFNULL(cte.viewer,0), IFNULL(a.id_artikel,''), IFNULL(a.judul,''), formatTanggalFull(a.publish_at), IF(a.aktif = '1','aktif','non-aktif'), IFNULL(timeAgo(a.modified_at),''),
+                IFNULL(cte.viewer,0), IFNULL(a.id_artikel,''), IFNULL(a.judul,''), formatTanggalFull(a.publish_at), IF(a.aktif = '1','aktif','non-'), IFNULL(timeAgo(a.modified_at),''),
                 IFNULL(id_author,''), IFNULL(pa.nama,''), IFNULL(ja.nama,''), IFNULL(ga.path_gambar,''),
-                IF(id_editor NOT NULL,'editor',''), IFNULL(pe.nama,''), IFNULL(je.nama,''), IFNULL(ge.path_gambar,'')
+                IF(a.id_editor IS NOT NULL,'editor',''), IFNULL(pe.nama,''), IFNULL(je.nama,''), IFNULL(ge.path_gambar,'')
             )) LIKE LOWER(CONCAT('%',?,'%'))";
             $tables .= " LEFT JOIN (SELECT a.id_artikel, COUNT(DISTINCT(id_pengunjung)) viewer FROM artikel a LEFT JOIN kunjungan_artikel ka USING(id_artikel) GROUP BY a.id_artikel) cte USING(id_artikel)";
             array_push($params, $this->getSearch());
@@ -93,4 +93,13 @@ class PublikasiModel extends HomeModel {
             return false;
         }
     }
+
+    // public function getsCardArtikelList($filter = array()) {
+    //     $sql = "WITH cte AS (
+    //         SELECT id_artikel FROM artikel WHERE status = '1' ORDER BY 1 DESC LIMIT {$this->getOffset()}, {$this->getLimit()}
+    //     ) 
+    //     SELECT cte.id_artikel, judul
+    //     FROM artikel JOIN cte USING(id_artikel) ORDER BY 1 DESC"
+    //     $this->db->query("")
+    // }
 }

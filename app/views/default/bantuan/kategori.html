@@ -54,7 +54,7 @@
 <section class="services section">
     <div class="container">
         <?php $delay_card = 0.2; ?>
-        <div class="row" id="list-kategori-row" data-delay="<?= $delay_card; ?>" <?=(isset($data['list_id'])
+        <div class="row gap-services" id="list-kategori-row" data-delay="<?= $delay_card; ?>" <?=(isset($data['list_id'])
             ? ' data-list-id="' . $data['list_id'] . '"' : '' );?>>
             <?php 
             if (!is_null($data['list_bantuan'])) { $time_card=0.2; foreach($data['list_bantuan']['data'] as

@@ -52,7 +52,7 @@ class PublikasiController extends Controller {
 
         $this->rel_action = array(
             array(
-                'href' => 'https://cdn.quilljs.com/1.3.6/quill.snow.css'
+                'href' => 'https://cdn.quilljs.com/1.3.7/quill.snow.css'
             ),
             array(
                 'href' => '/assets/main/css/utility.css'
@@ -71,6 +71,9 @@ class PublikasiController extends Controller {
             ),
             array(
                 'href' => '/assets/route/admin/core/css/form-element.css'
+            ),
+            array(
+                'href' => VENDOR_PATH.'cropper'.DS.'dist'.DS.'cropper.min.css'
             ),
             array(
                 'href' => '/assets/route/admin/pages/css/artikel.css'
@@ -121,6 +124,10 @@ class PublikasiController extends Controller {
             array(
 				'type' => 'text/javascript',
                 'src' => '/assets/route/admin/core/js/form-function.js'
+			),
+            array(
+				'type' => 'text/javascript',
+                'src' => VENDOR_PATH.'cropper'. DS .'dist'. DS .'cropper.min.js'
 			),
             array(
 				'type' => 'text/javascript',
@@ -216,6 +223,67 @@ class PublikasiController extends Controller {
             $fetch->result();
             return false;
         }
+
+        $decoded['images'] = Config::recursiveChangeKey($decoded['images'], array('small_img' => 'small','wide_img' => 'wide'));
+
+        $uploaded = $fetch->uploadDataUrlIntoServer($decoded['images'], 'publikasi');
+
+        $fetch->addResults(array('uploaded' => $uploaded));
+
+        if (!$uploaded) {
+            $fetch->addResults(array(
+                'feedback' => array(
+                    'message' => 'Terjadi kegagalan upload file'
+                )
+            ));
+            $fetch->result();
+            return false;
+        }
+
+        $array_thumbnail_gambar = array();
+
+        $loop = 1;
+        $this->_publikasi->prepareStmt("INSERT INTO gambar(nama, path_gambar, label) VALUES(?,?,?)");
+        foreach($fetch->path_gambar as $key => $value) {
+            $this->_publikasi->executeStmt(array(
+                'nama' => Sanitize::escape2($value['name']), 
+                'path_gambar' => Sanitize::escape2($value['path']),
+                'label' => 'artikel'
+            ));
+            if ($this->_publikasi->affected()) {
+                $array_thumbnail_gambar[$key] = $this->_publikasi->lastIID();
+                if ($loop == count(is_countable($fetch->path_gambar) ? $fetch->path_gambar : [])) {
+                    $fetch->addResults(array(
+                        'error' => false,
+                        'feedback' => array(
+                            'message' => 'Sucess Insert All path_gambar donasi'
+                        )
+                    ));
+                }
+            } else {
+                $fetch->addResults(array(
+                    'feedback' => array(
+                        'message' => 'Failed to INSERT path_gambar donasi => ' . $value
+                    )
+                ));
+                break;
+            }
+            $loop++;
+        }
+
+        if ($fetch->getResults('error') == true) {
+            $fetch->removePathGambar($this->_publikasi);
+            $fetch->result();
+            return false;
+        }
+
+        if (isset($decoded['card_img'])) {
+            unset($decoded['card_img']);
+        }
+
+        if (isset($decoded['wide_img'])) {
+            unset($decoded['wide_img']);
+        }
         
         $content = $decoded['isi'];
         $counterImg = 1;
@@ -277,6 +345,14 @@ class PublikasiController extends Controller {
                 'publish_at' => date('Y-m-d H-i-s')
             );
 
+            if (isset($array_thumbnail_gambar['small'])) {
+                $params['id_gambar_small'] = $array_thumbnail_gambar['small'];
+            }
+
+            if (isset($array_thumbnail_gambar['wide'])) {
+                $params['id_gambar_wide'] = $array_thumbnail_gambar['wide'];
+            }
+
             $this->_publikasi->create('artikel', $params);
             
             $id_artikel = $this->_publikasi->lastIID();
@@ -309,7 +385,7 @@ class PublikasiController extends Controller {
                                 'nama' => 'name',
                                 'path_gambar' => 'path'
                             ));
-                            $fetch->removePathGambar();
+                            $fetch->removePathGambar($this->_publikasi);
                             $fetch->path_gambar = array();
                         }
     
@@ -328,7 +404,7 @@ class PublikasiController extends Controller {
                             'nama' => 'name',
                             'path_gambar' => 'path'
                         ));
-                        $fetch->removePathGambar();
+                        $fetch->removePathGambar($this->_publikasi);
                         $fetch->path_gambar = array();
                     }
                     
@@ -349,7 +425,7 @@ class PublikasiController extends Controller {
                     'nama' => 'name',
                     'path_gambar' => 'path'
                 ));
-                $fetch->removePathGambar();
+                $fetch->removePathGambar($this->_publikasi);
                 $fetch->path_gambar = array();
             }
             
@@ -431,7 +507,7 @@ class PublikasiController extends Controller {
             'id_artikel' => $id_artikel
         ));
         if ($this->_publikasi->getResult()->jumlah_record == 0) {
-            $fetch->addResult(array(
+            $fetch->addResults(array(
                 'feedback' => array(
                     'message' => 'Id artikel tidak ditemukan'
                 )
@@ -459,7 +535,120 @@ class PublikasiController extends Controller {
                 $decoded['publish_at'] = date('Y-m-d H-i-s');
             }
         }
-        
+
+        if (isset($decoded['images'])) {
+            if (array_key_exists('small_img', $decoded['images'])) {
+                $dataUrl['small'] = $decoded['images']['small_img'];
+                $fieldsGambar['small'] = array(
+                    'artikel.id_gambar_small',
+                    'gs.path_gambar path_gambar_small' 
+                );
+            }
+
+            if (array_key_exists('wide_img', $decoded['images'])) {
+                $dataUrl['wide'] = $decoded['images']['wide_img'];
+                $fieldsGambar['wide'] = array(
+                    'artikel.id_gambar_wide',
+                    'gw.path_gambar path_gambar_wide' 
+                );
+            }
+
+            if (isset($dataUrl)) {
+                $uploaded = $fetch->uploadDataUrlIntoServer($dataUrl, 'publikasi');
+
+                $fetch->addResults(array(
+                    'uploaded' => $uploaded
+                ));
+
+                if (!$uploaded) {
+                    $fetch->addResults(array(
+                        'feedback' => array(
+                            'message' => 'Terjadi kegagalan upload file'
+                        )
+                    ));
+                    $fetch->result();
+                    return false;
+                }
+
+                $fields = array();
+
+                foreach($fieldsGambar as $key => $value) {
+                    foreach($value as $field_name) {
+                        array_push($fields, $field_name);
+                    }
+                }
+
+                $fields = implode(',', $fields);
+
+                 // Get old data gambar
+                $old_id_gambar = array();
+
+                $this->_publikasi->getData($fields, 'artikel LEFT JOIN gambar gs ON(artikel.id_gambar_small = gs.id_gambar) LEFT JOIN gambar gw ON(artikel.id_gambar_wide = gw.id_gambar)', array('artikel.id_artikel', '=', Sanitize::escape2($id_artikel)));
+                if ($this->_publikasi->affected()) {
+                    if (isset($dataUrl['small'])) {
+                        $old_id_gambar['small'] = array(
+                            'id_gambar' => $this->_publikasi->getResult()->id_gambar_small,
+                            'path_gambar' => $this->_publikasi->getResult()->path_gambar_small
+                        );
+                    }
+                    if (isset($dataUrl['wide'])) {
+                        $old_id_gambar['wide'] = array(
+                            'id_gambar' => $this->_publikasi->getResult()->id_gambar_wide,
+                            'path_gambar' => $this->_publikasi->getResult()->path_gambar_wide
+                        );
+                    }
+                }
+
+                if (count(is_countable($old_id_gambar) ? $old_id_gambar : []) > 0) {
+                    $loop = 1;
+                    foreach($old_id_gambar as $key => $value) {
+                        if (is_null($value['id_gambar'])) {
+                            $this->_publikasi->create('gambar', array(
+                                'nama' => Sanitize::escape2($fetch->path_gambar[$key]['name']),
+                                'path_gambar' => Sanitize::escape2($fetch->path_gambar[$key]['path']),
+                                'label' => 'artikel'
+                            ));
+                            $value['id_gambar'] = $this->_publikasi->lastIID();
+                            $decoded['id_gambar_' . $key] = $value['id_gambar'];
+                        } else {
+                            $this->_publikasi->update('gambar', array(
+                                'nama' => Sanitize::escape2($fetch->path_gambar[$key]['name']),
+                                'path_gambar' => Sanitize::escape2($fetch->path_gambar[$key]['path'])
+                            ), array('id_gambar', '=', Sanitize::escape2($value['id_gambar'])));
+                            if ($this->_publikasi->affected()) {
+                                if ($loop == count(is_countable($fetch->path_gambar) ? $fetch->path_gambar : [])) {                                   
+                                    $fetch->addResults(array(
+                                        'error' => false,
+                                        'feedback' => array(
+                                            'message' => 'Path gambar berhasil diupdate'
+                                        )
+                                    ));
+                                }
+                            } else {
+                                $fetch->addResults(array(
+                                    'error' => true,
+                                    'feedback' => array(
+                                        'message' => 'Failed to Update path_gambar artikel => from ' . $value . ' into ' . $fetch->path_gambar[$key]['path']
+                                    )
+                                ));
+                                break;
+                            }
+                        }
+                        if (empty($fetch->path_gambar[$key]['path'])) {
+                            continue;
+                        }
+    
+                        if (empty($value['path_gambar'])) {
+                            continue;
+                        }
+                        // remove old file if update success
+                        $fetch->removeFile(ROOT . DS . 'public' . DS . $value['path_gambar']);
+                        $loop++;
+                    }
+                }
+            }
+            unset($decoded['images']);
+        }
 
         $array_id_gambar = array();
         $label = 'artikel';
@@ -516,7 +705,7 @@ class PublikasiController extends Controller {
                 $this->_publikasi->getData('g.id_gambar, g.nama name, g.path_gambar path', 'gambar g RIGHT JOIN list_gambar_artikel lga USING(id_gambar) RIGHT JOIN artikel a USING(id_artikel)', array('g.path_gambar','NOT IN', $path_list), 'AND', array('a.id_artikel', '=', $id_artikel));
                 if ($this->_publikasi->affected()) {
                     $fetch->path_gambar = json_decode(json_encode($this->_publikasi->data()), true);
-                    $fetch->removePathGambar();
+                    $fetch->removePathGambar($this->_publikasi);
                 }
             } else {
                 // Guarantine delete img if on list_gambar_artikel exists but on isi file not exists
@@ -529,6 +718,8 @@ class PublikasiController extends Controller {
                                 'message' => 'Failed to get list_gambar_artikel, update artikel dibatalkan'
                             )
                         ));
+
+                        $this->removeSmallWide($decoded, $id_artikel, $this->_publikasi, $fetch);
                         $fetch->result();
                         return false;
                     }
@@ -538,6 +729,7 @@ class PublikasiController extends Controller {
                         $fetch->removeFile(ROOT . DS . 'public' . DS . $value->path);
                         $this->_publikasi->executeStmt(array('id_gambar' => Sanitize::toInt2($value->id_gambar)));
                     }
+                    $this->_publikasi->query("ALTER TABLE gambar AUTO_INCREMENT = 1");
                 }
             }
 
@@ -547,7 +739,7 @@ class PublikasiController extends Controller {
                 if (Config::no_dupes($array_video) !== true) {
                     if (count(is_countable($array_id_gambar) ? $array_id_gambar : []) > 0) {
                         $fetch->path_gambar = $array_id_gambar;
-                        $fetch->removePathGambar();
+                        $fetch->removePathGambar($this->_publikasi);
                     }
 
                     $fetch->addResults(array(
@@ -555,6 +747,8 @@ class PublikasiController extends Controller {
                             'message' => "Video deskripsi harus berbeda"
                         )
                     ));
+
+                    $this->removeSmallWide($decoded, $id_artikel, $this->_publikasi, $fetch);
                     $fetch->result();
                     return false;
                 }
@@ -606,8 +800,10 @@ class PublikasiController extends Controller {
                                 'nama' => 'name',
                                 'path_gambar' => 'path'
                             ));
-                            $fetch->removePathGambar();
+                            $fetch->removePathGambar($this->_publikasi);
                             $fetch->path_gambar = array();
+
+                            $this->_publikasi->query("ALTER TABLE gambar AUTO_INCREMENT = 1");
                         }
                         
                         $fetch->addResults(array(
@@ -627,7 +823,7 @@ class PublikasiController extends Controller {
                             'nama' => 'name',
                             'path_gambar' => 'path'
                         ));
-                        $fetch->removePathGambar();
+                        $fetch->removePathGambar($this->_publikasi);
                         $fetch->path_gambar = array();
                     }
     
@@ -671,8 +867,39 @@ class PublikasiController extends Controller {
         return false;
     }
 
+    private function removeSmallWide($decoded, $id_artikel, $objectModel, $fetch) {
+        $updateIdGambar = array();
+        if (isset($decoded['id_gambar_small'])) {
+            $updateIdGambar = array_merge($updateIdGambar, array('id_gambar_small' => $decoded['id_gambar_small']));
+        }
+
+        if (isset($decoded['id_gambar_wide'])) {
+            $updateIdGambar = array_merge($updateIdGambar, array('id_gambar_wide' => $decoded['id_gambar_wide']));
+        }
+        
+        if (count(is_countable($updateIdGambar) ? $updateIdGambar : []) > 0) {
+            $objectModel->_publikasi->update('artikel', $updateIdGambar, array('id_artikel','=',$id_artikel));
+            if (!$objectModel->_publikasi->affected()) {
+                $objectModel->_publikasi->getData('id_gambar, path_gambar path','gambar',array('id_gambar','IN',$updateIdGambar));
+                $dataSmallWideDeleteGambar = $objectModel->_publikasi->getResults();
+                $objectModel->_publikasi->prepareStmt("DELETE FROM gambar WHERE id_gambar = ?");
+                foreach($dataSmallWideDeleteGambar as $index => $value) {
+                    $fetch->removeFile(ROOT . DS . 'public' . $value->path);
+                    $objectModel->_publikasi->executeStmt(array('id_gambar' => Sanitize::toInt2($value->id_gambar)));
+                }
+                $this->_publikasi->query("ALTER TABLE gambar AUTO_INCREMENT = 1");
+            }
+
+            $fetch->addResults(array(
+                'feedback' => array(
+                    'message' => 'Failed to get list_gambar_artikel, update data artikel cenceled except small or wide thumbnail'
+                )
+            ));
+        }
+    }
+
     private function fetchGetArtikel($decoded, $fetch) {
-        $dataArtikel = $this->_publikasi->query("SELECT id_artikel, isi, judul FROM artikel WHERE id_artikel = ?", array('id_artikel' => Sanitize::toInt2($decoded['id_artikel'])));
+        $dataArtikel = $this->_publikasi->query("SELECT id_artikel, isi, judul, gs.path_gambar path_gambar_small, gw.path_gambar path_gambar_wide FROM artikel LEFT JOIN gambar gs ON(gs.id_gambar = artikel.id_gambar_small) LEFT JOIN gambar gw ON(gw.id_gambar = artikel.id_gambar_wide) WHERE id_artikel = ?", array('id_artikel' => Sanitize::toInt2($decoded['id_artikel'])));
         if (!$dataArtikel) {
             $fetch->addResults(array(
                 'feedback' => array(
@@ -818,10 +1045,47 @@ class PublikasiController extends Controller {
                         $fetch->result();
                         return false;
                     }
+                    $this->_publikasi->query("ALTER TABLE gambar AUTO_INCREMENT = 1");
                 }
     
                 $dataReset['isi'] = NULL;
                 unset($dataReset['reset']);
+
+                $questionMarks = '';
+                $xCol = 1;
+
+                foreach ($id_artikel as $index) {
+                    $questionMarks .= "?";
+                    if ($xCol < count(is_countable($id_artikel) ? $id_artikel : [])) {
+                        $questionMarks .= ", ";
+                    }
+                    $xCol++;
+                }
+
+                $this->_publikasi->query("WITH cte AS ( SELECT id_artikel FROM artikel WHERE id_artikel IN ({$questionMarks}) )
+                        SELECT id_gambar, path_gambar FROM gambar g LEFT JOIN artikel a ON(a.id_gambar_small = g.id_gambar) JOIN cte USING(id_artikel)
+                        UNION
+                        SELECT id_gambar, path_gambar FROM gambar g LEFT JOIN artikel a ON(a.id_gambar_wide = g.id_gambar) JOIN cte USING(id_artikel) ORDER BY id_gambar DESC", 
+                        $id_artikel);
+
+                if ($this->_publikasi->affected()) {
+                    $dataGambarSW = $this->_publikasi->getResults();    
+                    $this->_publikasi->delete('gambar',array('id_gambar','IN',array_column($dataGambarSW,'id_gambar')));
+                    if (!$this->_publikasi->affected()) {
+                        $fetch->addResults(array(
+                            'feedback' => array(
+                                'message' => 'Failed to delete gambar on reset'
+                            )
+                        ));
+                        $fetch->result();
+                        return false;
+                    }
+
+                    foreach(array_column($dataGambarSW, 'path_gambar') as $key => $value) {
+                        $fetch->removeFile(ROOT . DS . 'public' . DS . $value);
+                    }
+                    $this->_publikasi->query("ALTER TABLE gambar AUTO_INCREMENT = 1");
+                }
             } else {
                 if (!isset($decoded['aktif']) || $decoded['aktif'] == false) {
                     $hasilCek = $this->_publikasi->isArtikelNotNull($id_artikel);

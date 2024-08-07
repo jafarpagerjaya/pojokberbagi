@@ -49,7 +49,7 @@
                                             <div class="col">
                                                 <div class="d-flex flex-column">
                                                     <a class="title font-weight-bold" href="/artikel/<?= preg_replace('/\s+/', '-', strtolower($dataArtikel->judul)); ?>"><?= '<span>'.$dataArtikel->judul.'</span>'; ?></a>
-                                                    <span><?= $dataArtikel->publish_at; ?></span>
+                                                    <small><span><?= $dataArtikel->publish_at; ?></span></small>
                                                 </div>
                                             </div>
                                             <div class="col col-lg-auto viewer-badge">
@@ -111,44 +111,171 @@
 
 <div class="modal fade in" id="modalFormArtikel" tabindex="-1" role="dialog" aria-labelledby="modalFormArtikel-label"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
-            <div class="modal-content justify-content-center align-items-center scaleIn">
-                <div class="container p-0 py-md-3 py-lg-5 px-lg-3 px-3 px-md-0">
-                    <div class="row gap-y-4">
-                        <div class="col-12">
-                            <div class="modal-header px-4">
-                                <h5 class="modal-title" id="exampleModalLabel">Form Artikel</h5>
-                                <button type="button" class="close p-3" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body py-0">
-                                <div class="row gap-3">
-                                    <div class="col-12">
-                                        <div class="form-label-group">
-                                            <input type="text" id="input-judul" class="form-control"
-                                                name="judul" placeholder="Judul" autocomplete="off" maxlength="100">
-                                            <label for="input-judul" class="form-control-label">Judul</label>
+    <div class="modal-dialog modal-dialog-centered fullscreen" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container p-0 py-md-3 py-lg-5 px-lg-3 px-3 px-md-0">
+                <div class="row gap-y-4 m-0">
+                    <div class="col-12 px-0 px-lg-3">
+                        <div class="modal-header px-0 px-lg-4">
+                            <h5 class="modal-title" id="exampleModalLabel">Form Artikel</h5>
+                            <button type="button" class="close p-3" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body p-0 px-lg-4 py-0 d-flex flex-column gap-3 load">
+                            <div class="row gap-3 m-0">
+                                <!-- Column input file custom utk thumbnail dan sub-hero img in small device -->
+                                <div class="mb-0 form-group col-md-3 border rounded p-0 overflow-hidden inputGroup" id="thumbnail" data-target="#imgCanvasCropper" role="button">
+                                    <div class="p-lg-4 p-3 single-service animation d-block" href="#">
+                                        <div class="app-image img-wrapper top overflow-hidden d-flex justify-content-center align-items-center position-relative mb-3">
+                                            <img src="" alt="" class="img-fluid opacity thumbnail" data-animation-name="zoom-in">
+                                        </div>
+                                        <small class="mt-3 mb-0 overflow-hidden title d-block">
+                                            <span class="d-block">Ini adalah contoh</span><span class="d-block" style="margin-top: .125rem; width: 65%;">masih kosong</span>
+                                        </small>
+                                        <div class="d-flex align-items-center gap-1 text-black-50 mt-1 small">
+                                            <i class="fas fa-clock mr-1"></i>
+                                            <span class="small">Tanggal Publikasi</span>
+                                        </div>
+                                        <div class="input-file">
+                                            <input accept="image/*" type="file" name="small_img" id="small_img"
+                                            class="file" title="Belum ada file terpilih" data-required="true">
+                                            <label for="small_img" class="mx-2 mx-lg-0 desc text-white d-flex flex-column m-0 px-2 py-1 bg-gradient-orange rounded">
+                                                <div class="rule span">Dimensi 306 x 234 pixel (17:13)</div>
+                                                <small class="result">
+                                                    <div class="name d-inline"></div>
+                                                    <div class="size d-inline"></div>
+                                                </small>
+                                            </label>
+                                            <i class="ni ni-image"></i>
                                         </div>
                                     </div>
-                                    <div class="col-12">
-                                        <div class="rounded ql">
-                                            <div id="editor">
+                                </div>
+                                <!-- Column input file costum utk sub-hero med to wide device -->
+                                <div class="mb-0 form-group col border rounded p-0 overflow-hidden inputGroup d-md-block d-none" id="sub-hero" data-target="#imgCanvasCropper" role="button">
+                                    <div class="header-ilustation d-flex justify-content-center flex-column">
+                                        <div class="container px-lg-5 py-2 border-bottom d-flex justify-content-between">
+                                            <div style="width: 40px;" class="d-flex align-items-center">
+                                                <img src="/assets/images/brand/pojok-berbagi-transparent.png" alt="logo" class="img-fluid" style="background: none;">
                                             </div>
+                                            <div class="gap-3">
+                                                <div class="rounded-box small d-inline-block font-weight-bolder text-orange mr-2">Akun</div>
+                                                <div class="rounded-box small d-inline-block font-weight-bolder text-white px-2 py-1" style="background-color: var(--green);">Keluar</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="py-2" style="background-color: hsl(0, 0%, 93.3%);"></div>
+                                    <div class="container px-lg-5 py-0">
+                                        <img src="" alt="" class="sub-hero img-fluid">
+                                        <div class="py-3 row justify-content-center">
+                                            <div class="col-auto">
+                                                <div class="d-flex small flex-column">
+                                                    <b class="small">Bagikan</b>
+                                                    <div class="d-flex border rounded justify-content-center bg-lighter">
+                                                        <div class="item py-1 px-1 small">
+                                                            <i class="fab fa-whatsapp"></i>
+                                                        </div>
+                                                        <div class="item py-0 px-1 small d-flex align-items-center">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+                                                                <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="d-flex gap-x-2 align-items-center justify-content-between">
+                                                    <div class="d-flex align-items-center gap-x-1">
+                                                        <div class="rounded-circle avatar author">
+                                                            <img src="" alt="">
+                                                        </div>
+                                                        <div class="small">
+                                                            <span class="small d-block">Author</span>
+                                                            <span class="small d-block" style="margin-top: 2.5px;">Tanggal Publikasi</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex flex-column text-right justify-content-center">
+                                                        <div class="small"><span class="small">Diperbaharui pada</span></div>
+                                                        <i class="fas fa-eye small"> <span>sekian</span></i>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex flex-column">
+                                                    <b class="judul my-1"><span>Contoh Nama Judul Artikel Baru</span></b>
+                                                    <p class="small"><span class="small">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum in nihil aperiam assumenda deleniti, quod tempore rerum asperiores excepturi atque. Itaque error eveniet cum veritatis rerum excepturi enim, consequuntur eos!</span></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto"></div>
+                                        </div>
+                                    </div>
+                                    <div class="input-file">
+                                        <input accept="image/*" type="file" name="wide_img" id="wide_img"
+                                        class="file" title="Belum ada file terpilih" data-required="true">
+                                        <label for="wide_img" class="desc text-white d-flex flex-column m-0 px-2 py-1 bg-gradient-orange rounded">
+                                            <div class="rule span">Dimensi 1296 x 386 pixel</div>
+                                            <small class="result">
+                                                <div class="name d-inline"></div>
+                                                <div class="size d-inline"></div>
+                                            </small>
+                                        </label>
+                                        <i class="ni ni-image"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row gap-3">
+                                <div class="col-12">
+                                    <div class="form-label-group">
+                                        <input type="text" id="input-judul" class="form-control"
+                                            name="judul" placeholder="Judul" autocomplete="off" maxlength="100">
+                                        <label for="input-judul" class="form-control-label">Judul</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="rounded ql">
+                                        <div id="editor">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-link ml-auto shadow-none font-weight-bolder text-black-50"
-                                    data-dismiss="modal">Batal</button>
-                                <button class="btn btn-outline-primary" type="submit">Simpan</button>
-                            </div>
+                        </div>
+                        <div class="modal-footer px-0 px-md-3 mx-md-1">
+                            <button type="button" class="btn btn-link ml-auto shadow-none font-weight-bolder text-black-50"
+                                data-dismiss="modal">Batal</button>
+                            <button class="btn btn-outline-primary" type="submit">Simpan</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="modal fade in" id="imgCanvasCropper" tabindex="-1" aria-labelledby="imgCanvasCropperLabel"
+    aria-hidden="true" role="dialog">
+    <div class="modal-dialog fullscreen modal-dialog-centered" role="document">
+        <div class="modal-content justify-content-center align-items-center scaleIn">
+            <div class="container p-0 py-md-3 py-lg-5 px-lg-3">
+                <div class="row justify-content-center">
+                    <div class="col col-md-7">
+                        <div class="modal-header px-4">
+                            <div class="modal-title text-primary" id="imgCanvasCropperLabel">Canvas Gambar <span
+                                    class="text-orange"></span></div>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body py-0 px-4">
+                            <div class="img-wrapper rounded overflow-hidden justify-content-center d-flex">
+                                <img src="" class="img-fluid rounded-box" id="image">
+                            </div>
+                        </div>
+                        <div class="modal-footer px-4 justify-content-center">
+                            <button type="button" class="btn btn-outline-primary">Crop</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade in " id="modalResetArtikel" tabindex="-1" role="dialog" aria-labelledby="modalResetArtikel-label"

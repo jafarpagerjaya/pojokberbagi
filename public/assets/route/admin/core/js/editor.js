@@ -47,7 +47,7 @@ let defaultOptions = {
             quality: 0.9,
             maxWidth: 1000, // default
             maxHeight: 1000, // default
-            imageType: 'image/jpeg'
+            imageType: 'image/jpeg' // default
         },
     }
 };

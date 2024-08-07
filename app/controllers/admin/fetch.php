@@ -24,7 +24,7 @@ class FetchController extends Controller {
                 $this->removeFile(ROOT . DS . 'public' . DS . $path_file['path']);
             }
 
-            $this->model('home');
+            $this->model('Home');
             $j = 0;
             foreach($this->path_gambar as $key => $path_gambar) {
                 $this->model->delete('gambar', array('nama', '=', Sanitize::escape2($path_gambar['name'])));

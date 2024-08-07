@@ -6,9 +6,9 @@
 
 /* Utilitas, Reset & Root */
 :root {
-    --orange: #FE5000;
-    --green: #97D700;
-    --green-box : #21ba45;
+    --orange: #FE5000 !important;
+    --green: #97D700 !important;
+    --green-box : #21ba45 !important;
 }
 
 body {

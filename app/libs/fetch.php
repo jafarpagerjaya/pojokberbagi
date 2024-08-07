@@ -62,6 +62,10 @@ class Fetch {
         $this->_result = array_merge($this->_result, $array);
     }
 
+    public function getResults($key = null) {
+        return (!is_null($key) ? $this->_result[$key] : $this->_result);
+    }
+
     public function result() {
         $this->_result[Config::get('session/token_name')] = Token::generate();
         $toast = array(
@@ -128,7 +132,7 @@ class Fetch {
 
         if (count(is_countable($params) ? $params : []) != $i) {
             foreach($this->path_gambar as $key => $path_file) {
-                $this->removeFile(ROOT . DS . 'public' . DS . $path_file['path']);
+                $this->removeFile(ROOT . 'public' . $path_file['path']);
             }
             return false;
         }
@@ -146,18 +150,17 @@ class Fetch {
         }
     }
 
-    public function removePathGambar() {
+    public function removePathGambar($objectModel) {
         if (count(is_countable($this->path_gambar) ? $this->path_gambar : []) > 0) {
             foreach($this->path_gambar as $key => $path_file) {
-                $this->removeFile(ROOT . DS . 'public' . DS . $path_file['path']);
+                $this->removeFile(ROOT . 'public' . $path_file['path']);
             }
 
-            $this->model('home');
             $j = 0;
             foreach($this->path_gambar as $key => $path_gambar) {
-                $this->model->delete('gambar', array('nama', '=', Sanitize::escape2($path_gambar['name'])));
-                if (!$this->model->affected()) {
-                    $fetch->addResults(array(
+                $objectModel->delete('gambar', array('nama', '=', Sanitize::escape2($path_gambar['name'])));
+                if (!$objectModel->affected()) {
+                    $this->addResults(array(
                         'error' => true,
                         'feedback' => array(
                             'massage' => 'Gambar gagal dihapus dari database [$fetch]'
@@ -169,7 +172,7 @@ class Fetch {
             }
 
             if ($j == count(is_countable($this->path_gambar) ? $this->path_gambar : [])) {
-                $fetch->addResults(array(
+                $this->addResults(array(
                     'feedback' => array(
                         'massage' => 'Gambar berhasil dihapus dari database dan direktory [$fetch]'
                     )

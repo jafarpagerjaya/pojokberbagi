@@ -124,7 +124,7 @@ class AuthModel {
 
 	public function getIdBy($data = null, $column_name = null) {
 		if ($data) {
-			$field = (is_numeric($data)) ? 'id_akun' : $column_name;
+			$field = (is_null($column_name)) ? 'id_akun' : $column_name;
 			$data = $this->_db->get('id_akun', 'akun', array($field, '=', $data));
 			if ($data->count()) {
 				$this->_data = $data->result();

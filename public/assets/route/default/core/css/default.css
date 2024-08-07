@@ -25,6 +25,10 @@
     display: inline !important;
 }
 
+.gap-services {
+    row-gap: 24px;
+}
+
 /* Toast */
 div[aria-live="polite"] {
     z-index: 1050;

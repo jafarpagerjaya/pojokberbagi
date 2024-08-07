@@ -378,7 +378,7 @@ class CampaignController extends Controller {
                 $this->_campaign->getData('g.id_gambar, g.nama name, g.path_gambar path', 'gambar g RIGHT JOIN list_gambar_campaign lgc USING(id_gambar) RIGHT JOIN campaign c USING(id_campaign)', array('g.path_gambar','NOT IN', $path_list), 'AND', array('c.id_campaign', '=', $id_campaign));
                 if ($this->_campaign->affected()) {
                     $fetch->path_gambar = json_decode(json_encode($this->_campaign->data()), true);
-                    $fetch->removePathGambar();
+                    $fetch->removePathGambar($this->_campaign);
                 }
             } else {
                 // Guarantine delete img if on list_gambar_campaign exists but on isi file not exists
@@ -409,7 +409,7 @@ class CampaignController extends Controller {
                 if (Config::no_dupes($array_video) !== true) {
                     if (count(is_countable($array_id_gambar) ? $array_id_gambar : []) > 0) {
                         $fetch->path_gambar = $array_id_gambar;
-                        $fetch->removePathGambar();
+                        $fetch->removePathGambar($this->_campaign);
                     }
 
                     $fetch->addResults(array(
@@ -468,7 +468,7 @@ class CampaignController extends Controller {
                                 'nama' => 'name',
                                 'path_gambar' => 'path'
                             ));
-                            $fetch->removePathGambar();
+                            $fetch->removePathGambar($this->_campaign);
                             $fetch->path_gambar = array();
                         }
                         
@@ -489,7 +489,7 @@ class CampaignController extends Controller {
                             'nama' => 'name',
                             'path_gambar' => 'path'
                         ));
-                        $fetch->removePathGambar();
+                        $fetch->removePathGambar($this->_campaign);
                         $fetch->path_gambar = array();
                     }
     
@@ -738,7 +738,7 @@ class CampaignController extends Controller {
                                 'nama' => 'name',
                                 'path_gambar' => 'path'
                             ));
-                            $fetch->removePathGambar();
+                            $fetch->removePathGambar($this->_campaign);
                             $fetch->path_gambar = array();
                         }
     
@@ -757,7 +757,7 @@ class CampaignController extends Controller {
                             'nama' => 'name',
                             'path_gambar' => 'path'
                         ));
-                        $fetch->removePathGambar();
+                        $fetch->removePathGambar($this->_campaign);
                         $fetch->path_gambar = array();
                     }
                     
@@ -778,7 +778,7 @@ class CampaignController extends Controller {
                     'nama' => 'name',
                     'path_gambar' => 'path'
                 ));
-                $fetch->removePathGambar();
+                $fetch->removePathGambar($this->_campaign);
                 $fetch->path_gambar = array();
             }
             

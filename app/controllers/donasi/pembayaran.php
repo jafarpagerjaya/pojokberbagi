@@ -786,7 +786,7 @@ class PembayaranController extends Controller {
         if (isset($dataOrderDonasi->kontak)) {
             if (json_decode(Fonnte::check($dataOrderDonasi->kontak))->status != true) {
                 Session::put('notifikasi', array(
-                    'pesan' => 'Failed to send WA notification kontak WA tidak terdaftar',
+                    'pesan' => 'Failed to send WA notification, kontak WA tidak terdaftar',
                     'state' => 'warning'
                 ));
             } else {

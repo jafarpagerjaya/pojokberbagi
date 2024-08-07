@@ -38,7 +38,7 @@ class CampaignController extends Controller {
 
         $this->rel_action = array(
             array(
-                'href' => 'https://cdn.quilljs.com/1.3.7/quill.snow.css',
+                'href' => 'https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css',
                 'source' => 'trushworty'
             ),
 			array(
@@ -52,7 +52,7 @@ class CampaignController extends Controller {
 			),
             array(
                 'type' => 'text/javascript',
-                'src' => 'https://cdn.quilljs.com/1.3.7/quill.js',
+                'src' => 'https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js',
                 'source' => 'trushworty'
             ),
 			array(

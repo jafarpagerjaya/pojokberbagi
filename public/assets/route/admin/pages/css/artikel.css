@@ -10,6 +10,13 @@ table .viewer-badge {
     align-items: center;
 }
 
+td span.view::before {
+    content: '\f06e';
+    font-weight: 900;
+    font-family: "Font Awesome 5 Free";
+    margin-right: .25rem;
+}
+
 .custom-toggle {
     width: 84px !important;
     height: 28px !important;
@@ -66,17 +73,174 @@ table .viewer-badge {
     margin-right: 0px;
 }
 
+.app-image {
+    background-color: var(--lighter);
+}
+
+.single-service>.app-image.img-wrapper>img[src=""] {
+    max-height: inherit;
+    min-height: inherit;
+    width: 100%;
+}
+
+.single-service>.app-image.img-wrapper {
+    margin: -1.5rem;
+}
+
+#thumbnail .title {
+    height: 40.6px;
+    font-weight: 800;
+}
+
+#sub-hero {
+    max-height: 229.64px;
+    overflow: hidden;
+}
+
+#thumbnail::before,
+#sub-hero::before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+    opacity: .4;
+    background-color: var(--dark);
+}
+
+#thumbnail.is-invalid {
+    border-color: var(--danger) !important;
+}
+
+#thumbnail.is-invalid::before {
+    background-color: var(--danger);
+}
+
+.sub-hero {
+    max-height: calc((569px / 1913) * var(--width-container-sub-hero));
+    min-height: calc((569px / 1913) * var(--width-container-sub-hero));
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.avatar.author {
+    width: 24px;
+    height: 24px;
+}
+
+.tooltip.bs-tooltip-auto[x-placement^=bottom] .arrow::before, .tooltip.bs-tooltip-bottom .arrow::before {
+    margin-left: -3px;
+    content: "";
+    border-width: 0 5px 5px;
+    border-bottom-color: var(--danger);
+}
+
+.tooltip.bs-tooltip-auto[x-placement^=top] .arrow::before, .tooltip.bs-tooltip-top .arrow::before {
+    border-top-color: var(--danger);
+}
+
+.tooltip-inner {background-color: var(--danger) !important;}
+
+
+.form-group.inputGroup:hover {
+    cursor: pointer;
+}
+
+.form-group.inputGroup:hover::before {
+    opacity: 0 !important;
+}
+
+.form-group.inputGroup .input-file {
+    display: flex;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    justify-content: center;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 1em;
+    color: white;
+    z-index: 1;
+}
+
+.modal-body.load .form-group.inputGroup span {
+    color: transparent;
+    background: linear-gradient(-90deg, #eee, #ddd, #ddd, #eee);
+    background-size: 400% 400%;
+    animation: gradient-load 1s ease infinite;
+    border-radius: 5px;
+}
+
+.form-group.inputGroup input[type="file"]~.desc .span {
+    font-size: .6rem;
+}
+
+.col-md-3 .single-service>.app-image.img-wrapper {
+    max-height: calc((234 / 306) * (100vw - 32px));
+    min-height: calc((234 / 306) * (100vw - 32px));
+}
+
+.col-md-3 .single-service>.app-image.img-wrapper img.thumbnail {
+    width: 100%;
+}
+
+@media (max-width: 767px) and (min-width: 426px) {
+    .form-group.inputGroup input[type="file"]~.desc .span {
+        font-size: .5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .single-service>.app-image.img-wrapper {
+        margin: -1em;
+    }
+}
+
+@media (min-width: 768px) {
+    .modal-body {
+        --width-row: 672px;
+        --width-container-sub-hero: 492.4;
+    }
+
+    #sub-hero {
+        max-height: 221.64px;
+    }
+
+    .col-md-3 .single-service>.app-image.img-wrapper {
+        max-height: calc((234 / 306) * (var(--width-row) * 0.25));
+        min-height: calc((234 / 306) * (var(--width-row) * 0.25));
+    }
+}
+
 @media (min-width: 992px) {
     table .viewer-badge {
         flex-direction: column;
         justify-content: center;
         align-items: end;
     }
+
+    .modal-body {
+        --width-row: 848px;
+        --width-container-sub-hero: 522.4;
+    }
+
+    #sub-hero {
+        max-height: 269.78px;
+    }
+
+    .form-group.inputGroup input[type="file"]~.desc .span {
+        font-size: .7rem;
+    }
 }
 
-td span.view::before {
-    content: '\f06e';
-    font-weight: 900;
-    font-family: "Font Awesome 5 Free";
-    margin-right: .25rem;
+@media (min-width: 1200px) {
+    .modal-body {
+        --width-row: 1028px;
+        --width-container-sub-hero: 657.4;
+    }
+    #sub-hero {
+        max-height: 298.08px;
+    }
 }

@@ -187,7 +187,9 @@ class SignupController extends Controller {
 									$link = Config::getHTTPHost().'/auth/signup/hook/'. $this->model->getResult()->id_donatur .'/'. $id_akun .'/'. strtolower(Sanitize::noSpace(Input::get('email'))) .'/'. $salt;
 									$dataHook = array(
 										'nama' => $this->model->getResult()->nama,
-										'link' => $link
+										'link' => $link,
+										'username' => $akunArray['username'],
+										'password' => Sanitize::escape2(Input::get('password'))
 									);
 									// Send mail Hook
 									$subject = "Kaitkan Akun Pojok Berbagi";
@@ -240,37 +242,44 @@ class SignupController extends Controller {
 			Redirect::to('auth/signup');
 		}
 
-		$this->model('Auth');
+		// @param0 = id_donatur
+		// @param1 = id_akun
+		// @param2 = field_name
+		// @param3 = field value
+		// @param4 = salt akun
 
-		$akunAda = $this->model->getIdBy(strtolower(Sanitize::noDblSpace2($params[2])), 'email');
+		$params = Sanitize::thisArray($params);
+
+		$this->model('Auth');
+		$akunAda = $this->model->getIdBy(strtolower(Sanitize::noDblSpace2($params[3])), Sanitize::noDblSpace2($params[2]));
 		if (!$akunAda) {
 			Session::flash('danger','Akun anda tidak ditemukan');
 			Redirect::to('auth/signup');
 		}
 
-		$this->model->query('SELECT COUNT(id_akun) found FROM akun WHERE id_akun = ? AND email = ? AND salt = ? AND aktivasi = "0"', 
+		$this->model->query("SELECT COUNT(id_akun) found FROM akun WHERE id_akun = ? AND {$params[2]} = ? AND salt = ? AND aktivasi = '0'", 
 		array(
-			Sanitize::escape2($params[1]),
-			Sanitize::escape2($params[2]),
-			Sanitize::escape2($params[3])
+			Sanitize::toInt2($params[1]),
+			Sanitize::noDblSpace2($params[3]),
+			Sanitize::noDblSpace2($params[4])
 		));
-		if ($this->model->getResult()->found == 0) {
-			Session::flash('danger','Token Hook anda bermasalah');
+		if ($this->model->data()->found == 0) {
+			Session::flash('warning','Token Hook anda sudah tidak valid');
 			Redirect::to('auth/signup');
 		}
 
-		$this->model->update(array('aktivasi' => 1), Sanitize::escape2($params[1]));
+		$this->model->update(array('aktivasi' => 1), Sanitize::toInt2($params[1]));
 		if (!$this->model->affected()) {
 			Session::flash('error','Gagal aktivasi akun [hook]');
 			Redirect::to('auth/signup');
 		}
 
 		$this->model('Donatur');
-		$hasil = $this->model->update('donatur', array('id_akun' => Sanitize::escape2($params[1])), array('id_donatur','=', Sanitize::escape2($params[0])));
+		$hasil = $this->model->update('donatur', array('id_akun' => $params[1]), array('id_donatur','=', $params[0]));
 		if (!$hasil) {
 			Session::flash('error','Gagal Update ID Akun Donatur [hook]');
 		} else {
-			Session::flash('success', 'Akun ' . Sanitize::escape2($params[2]) . '</span> berhasil dikaitkan');
+			Session::flash('success', 'Akun anda dengan ' . $params[2] .':'. $params[3] . '</span> berhasil dikaitkan');
 		}
 
 		if (Session::exists('success')) {

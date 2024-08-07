@@ -266,6 +266,7 @@ class HomeModel {
         } else {
             // OFFSET USE $param2
             $param1--;
+            $this->setOffset($param1);
         }
         $this->_halaman = array($param1, $param2);
     }

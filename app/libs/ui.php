@@ -1031,6 +1031,12 @@ class Ui {
                                         <p>
                                             Kami menerima permintaan untuk mengkaitkan akun anda!
                                         </p>
+                                        <p style="padding: 5px; background-color: #c0c0c0; color: white; font-weight: 600;">
+                                            Username : '. strip_tags((string) $data["username"]) .'
+                                        </p>
+                                        <p style="padding: 5px; background-color: #c0c0c0; color: white; font-weight: 600;">
+                                            Password : '. strip_tags((string) $data["password"]) .'
+                                        </p>
                                         <p>
                                             Jika anda merasa tidak melakukan permintaan tersebut, lupakan email ini.
                                         </p>
