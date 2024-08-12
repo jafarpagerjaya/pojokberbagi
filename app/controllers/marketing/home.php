@@ -23,7 +23,7 @@ class HomeController extends Controller {
 
         $this->_auth = $this->model("Auth");
         if (!$this->_auth->hasPermission('marketing') && !$this->_auth->hasPermission('admin')) {
-            Redirect::to('home');
+            Redirect::to('');
         }
 
         $this->data['akun'] = $this->_auth->data();

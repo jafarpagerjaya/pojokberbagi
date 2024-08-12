@@ -20,10 +20,10 @@ function windowrReSize() {
 
 function stickyNavbarAbout() {
     header_navbar_height = header_navbar.offsetHeight;
-    if (window.pageYOffset == 0) {
+    if (window.scrollY == 0) {
         header_navbar.style.removeProperty('transition-duration');
         header_navbar.classList.remove("sticky");
-    } else if (window.pageYOffset < navbar_about_sticky - header_navbar_height + 1) {
+    } else if (window.scrollY < navbar_about_sticky - header_navbar_height + 1) {
         header_navbar.classList.add("sticky");
         header_navbar.classList.remove("position-absolute");
         header_navbar.style.removeProperty('top');
@@ -45,8 +45,8 @@ function stickyNavbarAbout() {
             element.classList.remove('active');
             let targetSpy = element.getAttribute('href'),
                 spyElement = document.querySelector(targetSpy);
-                // console.log(window.pageYOffset, spyElement.offsetTop, spyElement.offsetHeight);
-            if ((window.pageYOffset >= spyElement.offsetTop) && (window.pageYOffset < spyElement.offsetHeight + spyElement.offsetTop)) {
+                // console.log(window.scrollY, spyElement.offsetTop, spyElement.offsetHeight);
+            if ((window.scrollY >= spyElement.offsetTop) && (window.scrollY < spyElement.offsetHeight + spyElement.offsetTop)) {
                 element.classList.add('active');
             }
         });

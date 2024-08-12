@@ -1,4 +1,4 @@
-const staticCacheName = 'shell-cache-v4';
+const staticCacheName = 'shell-cache-v4a';
 const dynamicCache = 'dynamic-cache-v4';
 const staticAssets = [
         '/',
@@ -23,15 +23,15 @@ const staticAssets = [
         'https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,300;1,400;1,600;1,700;1,800;1,900&display=swap',
         '/assets/pojok-berbagi-style.css?tw=1',
         '/assets/route/default/core/css/services.css?tw=1',
-        '/assets/route/default/core/css/default.css?v=220124',
+        '/assets/route/default/core/css/default.css?v=110824',
         '/assets/route/default/pages/css/home.css?tw=1',
         '/vendors/jquery/dist/jquery.min.js',
         '/assets/route/default/core/js/wow.min.js?nw=1',
         '/assets/route/default/core/js/main.js?nw=1',
         '/assets/pojok-berbagi-script.js?tw=1',
-        '/assets/route/default/core/js/default.js?v=171123',
+        '/assets/route/default/core/js/default.js?v=110824',
         '/assets/main/js/token.js?tw=1',
-        '/assets/route/auth/js/auth.js?v=220324',
+        '/assets/route/auth/js/auth.js?v=071224',
         '/assets/route/default/pages/js/home.js?tw=1',
         '/assets/main/js/fallback.js?tw=1',
         'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',

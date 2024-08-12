@@ -4,7 +4,7 @@ class TagihanController extends Controller {
 
         $this->_auth = $this->model("Auth");
         if (!$this->_auth->hasPermission('donatur')) {
-            Redirect::to('home');
+            Redirect::to('');
         }
 
         $this->data['other_role'] = $this->_auth->otherPermission('donatur');

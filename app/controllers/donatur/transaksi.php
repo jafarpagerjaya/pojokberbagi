@@ -8,7 +8,7 @@ class TransaksiController extends Controller {
         $this->model("Auth");
         
         if (!$this->model->hasPermission('donatur')) {
-            Redirect::to('home');
+            Redirect::to('');
         }
 
         $this->data['akun'] = $this->model->data();

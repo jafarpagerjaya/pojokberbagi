@@ -1,0 +1,52 @@
+<div class="container">
+    <div class="row gap-4 flex-column m-0">
+        <div class="col">
+            <div data-video="on" class="app-image img-wrapper d-flex align-items-center justify-content-center overflow-hidden rounded-box wow fadeInUp shadow-none" data-wow-delay=".2s" style="visibility: visible; animation-delay: 0.2s; animation-name: fadeInUp;">
+                <img src="/assets/images/artikel-wide.jpeg" alt="Artikel Cover Wide" class="img-fluid d-none d-lg-flex">
+                <img src="" alt="Artikel Cover" class="img-fluid d-flex d-lg-none">
+            </div>
+        </div>
+        <div class="col">
+            <div class="d-flex bg-light p-4 rounded-box justify-content-between align-items-center">
+                <h4 class="mb-0 fw-bold">Artikel</h4>
+                <div class="btn-group" id="filter">
+                    <button type="button" class="btn btn-outline-orange-reverse rounded-box px-4 d-flex align-items-center gap-3 dropdown-toggle" 
+                    aria-expanded="false" 
+                    <?= (count($data['filter_years']) > 0 ? 'data-bs-toggle="dropdown" data-bs-auto-close="false"':'data-bs-toggle="tooltip" data-bs-placement="left"
+                    data-bs-custom-class="custom-tooltip"
+                    data-bs-title="Belum ada artikel yang terbit"'); ?>
+                    >
+                      Filter
+                    </button>
+                    <?php if (count(is_countable($data['filter_years']) ? $data['filter_years'] : []) > 0) { ?>
+                        <ul class="bg-light py-0 dropdown-menu dropdown-menu-end my-3 rounded-box">
+                            <li class="py-3 text-center"><h5 class="mb-0 fw-bolder text-black-50">Tahun</h5></li>
+                            <li class="px-3 py-2" id="list-year">
+                                <?php foreach($data['filter_years'] as $tahun) {
+                                    echo '<div class="inputGroup w-100">
+                                        <input type="checkbox" id="t'. $tahun .'" name="tahun_filter" value="'. $tahun .'">
+                                        <label for="t'. $tahun .'">'. $tahun .'</label>
+                                    </div>';    
+                                } ?>
+                            </li>
+                            <li class="px-3 pt-3 pb-2 pb-md-3 text-center d-flex gap-2 flex-column flex-md-row bg-white border-top">
+                                <button class="btn btn-outline-orange-reverse rounded-box">Terapkan</button>
+                                <button class="btn fw-bold text-black-50 reset">Reset</button>
+                            </li>
+                        </ul>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <section id="card">
+                <div class="row gap-services" id="artikel">
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<div aria-live="polite" aria-atomic="true"
+    class="position-fixed d-flex justify-content-end flex-column align-items-end">
+</div>

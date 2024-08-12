@@ -66,4 +66,8 @@ class Output {
         }
         return false;
     }
+
+    public static function b64encode($sting) {
+        return strrev(base64_encode($string ?? ''));
+    }
 }

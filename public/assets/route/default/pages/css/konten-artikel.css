@@ -1,0 +1,77 @@
+#sticky-sharerer {
+    position: sticky;
+    top: 100px;
+    right: 0px;
+    justify-self: end;
+    display: grid;
+    place-items: center;
+    gap: 1em;
+    grid-auto-flow: column;
+}
+
+#sticky-sharerer button {
+    width: 45px;
+    height: 45px;
+}
+
+.sub-hero {
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.small {
+    font-size: .75em;
+}
+
+.ql-editor {
+    padding: 0px;
+}
+
+.ql-container p {
+    font-size: 1.1rem;
+    line-height: 1.9rem;
+}
+
+.ql-container {
+    font-family: inherit;
+}
+
+.ql-editor img {
+    border-radius: 15px;
+}
+
+.ql-container p {
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+}
+
+footer {
+    background-color: var(--bs-light) !important;
+}
+
+header+section>div#artikel-lainnya {
+    margin-bottom: -80px;
+}
+
+@media (max-width: 768px) {
+    #container-content>#media-share {
+        order: 1;
+    }
+    
+    #container-content>div:not(#media-share) {
+        order: 0;
+    }
+}
+
+@media (min-width: 769px) {
+    #sticky-sharerer {
+        grid-auto-flow: row;
+    }
+}

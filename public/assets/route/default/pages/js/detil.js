@@ -375,7 +375,7 @@ shareButtons.forEach(button => {
         // Get the URL of the current page
         const url = uTarget;
 
-        console.log(url);
+        // console.log(url);
 
         // Get the social media platform from the button's class name
         const platform = button.children[0].classList[1];
@@ -910,7 +910,7 @@ modalDonaturList.querySelector('.modal-body').addEventListener('scroll', functio
         const elDonasi = '<div class="donatur load col-12 bg-light rounded-box p-3 d-flex justify-content-between gap-2" data-id-donasi="'+ 0 +'"><div class="media d-flex gap-3 flex-column"><div class="avatar border rounded"><img src="'+ '' +'" alt="'+ '' +'" class="avatar"></div><div class="media-body"><h5 class="mt-0"><span>' + 'donasi.nama_donatur' + '</span></h5>'+ '<p class="desc"><span>'+ 'donasi.doa' +'</span></p>' +'</div></div><div class="row w-100 g-0 align-items-end"><div class="col"><p class="text-black-50 text-decoration-underline">Donasi</p><span class="fw-bold">'+ 'donasi.jumlah_donasi' +'</span></div><div class="col d-flex justify-content-end align-items-center"><div class="d-flex flex-column align-items-center gap-1">'+ '<span class="heart-animation"></span>' +'<span class="liked text-orange">'+ 'donasi.liked' +' Disukai</span></div></div></div></div>';
         e.target.querySelector('#content').insertAdjacentHTML('beforeend', elDonasi);
 
-        console.log(data);
+        // console.log(data);
 
         setTimeout(() => {
             // fetchReadDonatur()

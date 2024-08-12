@@ -145,6 +145,10 @@ class PublikasiController extends Controller {
 
     public function fetch($params) {
         $fetch = new Fetch();
+        if (!$fetch->tokenPassed()) {
+			$fetch->result();
+			return false;
+		}
 
         switch ($params[0]) {
             case 'get':
@@ -956,10 +960,11 @@ class PublikasiController extends Controller {
         $this->_publikasi->setHalaman(Sanitize::toInt2($decoded['active_page']), 'artikel');
         $this->_publikasi->getsArtikelList();
         $this->data['artikel'] = $this->_publikasi->data();
-            $fetch->addResults(array(
-                'error' => false,
-                'feedback' => $this->data['artikel']
-            ));
+        
+        $fetch->addResults(array(
+            'error' => false,
+            'feedback' => $this->data['artikel']
+        ));
 
         $fetch->result();
     }

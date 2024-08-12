@@ -25,7 +25,7 @@ class CekController extends Controller {
 
     public function kuitansi($params) {
         if (!count(is_countable($params) ? $params : [])) {
-            Redirect::to('home');
+            Redirect::to('');
         }
 
         $this->rel_action = array(
@@ -51,7 +51,7 @@ class CekController extends Controller {
                 'pesan' => 'Nomor kuitansi <b>'. $data_bantuan->nama .'</b> tidak ditemukan',
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         $this->data['resume_kuitansi'] = $resumeKuitansi;
 
@@ -61,7 +61,7 @@ class CekController extends Controller {
                 'pesan' => 'Terjadi kesalahan data nomor kuitansi disisi server',
                 'state' => 'danger'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         $this->data['timeline_kuitansi'] = $timeLineKuitansi;
     }

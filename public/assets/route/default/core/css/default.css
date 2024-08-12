@@ -115,11 +115,13 @@ header.header+* {
 
 /* Akhir Footer */
 
-/* load animation modal */
+/* load animation */
+.load.fadeInUp span,
 .modal.load *:not(span) {
     border-radius: inherit;
 }
 
+.load.fadeInUp span,
 .modal.load a[role="button"],
 .modal.load *:not(span) span {
     color: transparent;
@@ -133,6 +135,7 @@ header.header+* {
     background: transparent !important;
 }
 
+.load.fadeInUp a.single-service,
 .modal.load a {
     cursor: none !important;
     pointer-events: none !important;

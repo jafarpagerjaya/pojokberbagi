@@ -29,13 +29,13 @@ class BuatController extends Controller {
             $this->baru($params);
             return VIEW_PATH.'donasi'.DS.'buat'.DS.'baru.html';
         } else {
-            Redirect::to('home');
+            Redirect::to('');
         }
     }
 
     public function baru($params) {
         if (!count(is_countable($params) ? $params : [])) {
-            Redirect::to('home');
+            Redirect::to('');
         }
         
         $this->rel_action = array(
@@ -82,7 +82,7 @@ class BuatController extends Controller {
                 'pesan' => 'Halaman donasi yang anda cari tidak ditemukan',
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         $id_bantuan = $this->model->getResult()->id_bantuan;
         $tag = $this->model->getResult()->tag;
@@ -93,14 +93,14 @@ class BuatController extends Controller {
                 'pesan' => 'Bantuan tidak ditemukan',
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         if ($data_bantuan->blokir == '1') {
             Session::flash('notifikasi', array(
                 'pesan' => 'Bantuan <b>'. $data_bantuan->nama .'</b> dengan ' . Utility::keteranganStatusBantuan($data_bantuan->status) .' sedang diblokir',
                 'state' => 'danger'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         // Cek jika bantuan masih dibuka
         if ($data_bantuan->status != 'D') {
@@ -108,7 +108,7 @@ class BuatController extends Controller {
                 'pesan' => 'Bantuan <b>'. $data_bantuan->nama .'</b> ' . Utility::keteranganStatusBantuan($data_bantuan->status),
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         // Cek jika open donasi sudah berakhir
         if (!is_null($data_bantuan->tanggal_akhir) && strtotime($data_bantuan->tanggal_akhir) <= time()) {
@@ -119,14 +119,14 @@ class BuatController extends Controller {
                 'pesan' => 'Mohon maaf bantuan sudah berakhir',
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         if (!$data_bantuan) {
             Session::flash('notifikasi', array(
                 'pesan' => 'ID Bantuan <b>'. $id_bantuan .'</b> tidak ditemukan',
                 'state' => 'danger'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
 
         $this->_home = $this->model('Home');
@@ -199,7 +199,7 @@ class BuatController extends Controller {
 			
 			return false;
 		} else {
-			Redirect::to('/fallback/fetch');
+			Redirect::to('fallback/fetch');
 		}
 	}
 

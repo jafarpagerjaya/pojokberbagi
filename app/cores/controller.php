@@ -55,7 +55,7 @@ class Controller {
 		}
 	}
 
-	protected function setKunjungan2($params = null, $js_uri = null, $js_path = null) {
+	protected function setKunjungan2($params = null, $js_uri = null, $js_path = null, $track = true) {
 		$db = Database::getInstance();
 
 		if (!Cookie::exists(Config::get('client/cookie_name'))) {
@@ -146,6 +146,10 @@ class Controller {
 
 		if ($this->_set_cookie) {
 			Cookie::put(Config::get('client/cookie_name'), $this->_client_key, Config::get('client/cookie_expiry'));
+		}
+
+		if ($track == false) {
+			return false;
 		}
 
 		$path = Sanitize::escape(trim($this->getPath($params, $js_path)));

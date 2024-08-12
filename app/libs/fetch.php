@@ -1,6 +1,7 @@
 <?php
 class Fetch {
     private $_result = array('error' => true),
+            $_passed = false,
             $_decoded;
 
     public $path_gambar;
@@ -15,7 +16,7 @@ class Fetch {
 
         // Check Token
         if ($token) {
-            if (!$this->checkToken($this->_decoded['token'])) { return false; }
+            if (!$this->checkToken($this->_decoded['token'])) { return false; } else { $this->_passed = true; }
         }
     }
 
@@ -32,7 +33,7 @@ class Fetch {
             $this->_result['feedback'] = array(
                 'message' => 'You not allowed to use fake token'
             );
-            $this->result();
+            // $this->result();
             return false;
         }
         return true;
@@ -52,6 +53,10 @@ class Fetch {
         $content = trim(file_get_contents("php://input"));
         $decoded = json_decode($content, true);
         return $decoded;
+    }
+
+    public function tokenPassed() {
+        return $this->_passed;
     }
 
     public function getDecoded() {

@@ -47,7 +47,7 @@ class BantuanController extends Controller {
             $this->detil($params);
             return VIEW_PATH.'default'.DS.'bantuan'.DS.'detil.html';
         } else {
-            Redirect::to('home');
+            Redirect::to('');
         }
     }
 
@@ -104,7 +104,7 @@ class BantuanController extends Controller {
                     'pesan' => 'Halaman campaign bantuan yang anda cari tidak ditemukan',
                     'state' => 'warning'
                 ));
-                Redirect::to('home');
+                Redirect::to('');
             }
             $id_bantuan = $this->_bantuan->getResult()->id_bantuan;
             $this->setKunjungan2($params);
@@ -235,7 +235,7 @@ class BantuanController extends Controller {
                 }
             }
         } else {
-            Redirect::to('home');
+            Redirect::to('');
         }
     }
 
@@ -261,7 +261,7 @@ class BantuanController extends Controller {
                 'pesan' => 'Unrecognize category name',
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         
         $this->data['resume_kb'] = $this->_bantuan->data();
@@ -292,7 +292,7 @@ class BantuanController extends Controller {
                 'pesan' => 'Unrecognize category name',
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         $this->data['resume_kb'] = $this->_bantuan->data();
         $this->data['resume_kb']->deskripsi = "Program kepedulian berupa bantuan dibidang ekonomi, kesehatan, dan pendidikan yang bersifat darurat dan <i>charity</i> (pemberian). Biaya Kesehatan kuratif dan preventif, bantuan pangan dan biaya pendidikan.";
@@ -322,7 +322,7 @@ class BantuanController extends Controller {
                 'pesan' => 'Unrecognize category name',
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         $this->data['resume_kb'] = $this->_bantuan->data();
         $this->data['resume_kb']->deskripsi = "Program pembangunan/perbaikan fisik yang kemanfaatannya dalam jangka panjang mulai dari bedah Madrasah dan Sekolah terlantar, Masjid dan Mushola yang makmur desa, pembangunan sanitasi, Asrama Dan Sekolah Yatim Preneur hingga Wakaf Produktif.";
@@ -352,7 +352,7 @@ class BantuanController extends Controller {
                 'pesan' => 'Unrecognize category name',
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         $this->data['resume_kb'] = $this->_bantuan->data();
         $this->data['resume_kb']->deskripsi = "Setiap anak memiliki hak yang sama untuk mendapatkan perlindungan, pemenuhan kebutuhan dan pendidikan yang layak. Namun tidak bagi mereka yang telah kehilangan orang tuanya, oleh sebab itu dalam <b>Pojok Peduli Yatim</b> bagi anak Yatim piatu dan duafa kami dorong mereka dengan pemberian biaya <b>kelangsungan hidup</b>, bantuan <b>biaya pendidikan</b>, dan <b>pembentukan karakter</b> yang tidak dapat mereka dapatkan dari orang tuanya.";
@@ -382,7 +382,7 @@ class BantuanController extends Controller {
                 'pesan' => 'Unrecognize category name',
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         $this->data['resume_kb'] = $this->_bantuan->data();
         $this->data['resume_kb']->deskripsi = "Bantuan <i>emergency</i> respon terhadap kejadian bencana alam dan sosial untuk mengurangi dan meringankan dampak dari terjadinya bencana yang meliputi Edukasi dan Penguatan Kapasitas masyarakat SAR dan Evakuasi (Pra Bencana) dan (Saat Bencana) dapur gizi, hunian sementara, sanitasi serta (Pasca Bencana) Rehabilitasi dan Recovery.";

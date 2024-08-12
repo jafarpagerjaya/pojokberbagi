@@ -1,0 +1,91 @@
+<section id="main">
+    <div class="p-4 bg-light"></div>
+    <div class="container">
+        <div class="row flex-column m-0 align-items-center" style="position: relative;">
+            <div class="col-12 p-0">
+                <div class="container px-0">
+                    <img src="<?=  $data['konten']->path_gambar_wide; ?>" alt="<?=  $data['konten']->nama_gambar_wide; ?>" class="sub-hero">
+                </div>
+            </div>
+            <div class="col-12 px-0 py-3">
+                <div class="row justify-content-lg-center m-0" id="container-content">
+                    <div class="col-lg-2 col-auto px-0 py-3" id="media-share">
+                        <div id="sticky-sharerer" class="d-grid">
+                            <b>Bagikan</b>
+                            <div class="btn-group share">
+                                <button class="btn btn-light medsos-icon">
+                                    <i class="lni lni-whatsapp text-secondary"></i>
+                                </button>
+                                <button class="btn btn-light medsos-icon">
+                                    <i class="bi bi-twitter-x fs-6"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7 col-12 px-lg-4 px-0 py-3">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="d-flex gap-2 align-items-center">
+                                    <div class="avatar">
+                                        <img src="" alt="<?=  substr($data['konten']->nama_author,0,1); ?>">
+                                    </div>
+                                    <div class="desc">
+                                        <b class="d-block"><?=  $data['konten']->nama_author; ?></b>
+                                        <span class="small"><?=  $data['konten']->publish_at; ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <?=  (!is_null($data['konten']->id_editor) ? 
+                                '<p class="small fw-bold">Diperbaharui pada '. Output::strToLocalDate($data['konten']->modified_at) .'</p>':''); ?>
+                                <div class="reader d-flex align-items-center gap-1 justify-content-end">
+                                    <i class="fas fa-eye"></i><span class="small"><?=  Output::tSparator($data['konten']->jumlah_pengunjung); ?></span>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="py-4"><?=  $data['konten']->judul; ?></h3>
+                        <div class="p-0" id="randerer">
+                            <?= $data['konten']->isi; ?>                            
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-auto px-0 py-3 d-lg-block d-none"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php if (isset($data['artikel_lainnya'])) { 
+        if (count(is_countable($data['artikel_lainnya']) ? $data['artikel_lainnya'] : []) > 0) { ?>
+        <div class="row bg-secondary-subtle py-4" id="artikel-lainnya">
+            <div class="col-12 px-0 py-3">
+                <div class="container">
+                    <h5 class="fw-bold mb-4">Artikel Lainnya</h5>
+                    <div class="row mb-3" style="row-gap: 24px;">
+                    <?php 
+                        foreach($data['artikel_lainnya'] as $dataArtikelLain) {
+                            echo '<div class="col-6 col-lg-3">
+                                <!-- Start Single Service -->
+                                <a class="p-4 single-service animation d-block" href="/publikasi/artikel/'. implode('-', explode(' ', strtolower($dataArtikelLain->judul))) .'">
+                                    <div class="app-image img-wrapper rounded-box top overflow-hidden d-flex justify-content-center align-items-center position-relative mb-3">
+                                        <img src="' . $dataArtikelLain->path_gambar . '" alt="'. $dataArtikelLain->nama_gambar .'" class="img-fluid opacity" data-animation-name="zoom-in">
+                                    </div>
+                                    <h6 class="mt-3 overflow-hidden title">
+                                        <span>
+                                            '. $dataArtikelLain->judul .'
+                                        </span>
+                                    </h6>
+                                </a>
+                                <!-- End Single Service -->
+                            </div>';
+                        }
+                    ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php } 
+    } ?>
+</section>
+
+<div aria-live="polite" aria-atomic="true"
+    class="position-fixed d-flex justify-content-end flex-column align-items-end">
+</div>

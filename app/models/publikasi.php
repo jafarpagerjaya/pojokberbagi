@@ -94,12 +94,81 @@ class PublikasiModel extends HomeModel {
         }
     }
 
-    // public function getsCardArtikelList($filter = array()) {
-    //     $sql = "WITH cte AS (
-    //         SELECT id_artikel FROM artikel WHERE status = '1' ORDER BY 1 DESC LIMIT {$this->getOffset()}, {$this->getLimit()}
-    //     ) 
-    //     SELECT cte.id_artikel, judul
-    //     FROM artikel JOIN cte USING(id_artikel) ORDER BY 1 DESC"
-    //     $this->db->query("")
-    // }
+    public function getArtikelYearDateList() {
+        $this->db->get("DISTINCT(YEAR(publish_at)) tahun","artikel",array("aktif","=","1"));
+        return $this->db->results();
+    }
+
+    public function getsCardArtikelList($filter = array(), $newListId = array()) {
+        $params = array();
+        $filters_stmt = '';
+        $questionMarkNew = 'NULL';
+        if (count($filter) > 0) {
+            if (array_key_exists('years', $filter)) {
+                $params = array_merge($params, $filter['years']);
+                $years_question_mark = implode(",", array_map(function($value) { return '?'; }, $filter['years']));
+                $filters_stmt = "AND YEAR(artikel.publish_at) IN ({$years_question_mark})";
+            }
+        }
+
+        if (count(is_countable($newListId) ? $newListId : []) > 0) {
+            $questionMarkNew = implode(",", array_map(function($value) { return '?'; }, $newListId));
+            $params = array_merge($newListId, $params);
+            if (count($filter) > 0) {
+                if (array_key_exists('years', $filter)) {
+                    $params = array_merge($params, $filter['years']);
+                }
+            }
+        }
+
+        $sql = "WITH cte AS (
+            (SELECT id_artikel FROM artikel WHERE aktif = '1' AND id_artikel IN ($questionMarkNew) {$filters_stmt} ORDER BY 1 DESC)
+            UNION
+            (SELECT id_artikel FROM artikel WHERE aktif = '1' {$filters_stmt} ORDER BY 1 DESC LIMIT {$this->getOffset()}, {$this->getLimit()})
+            ORDER BY 1 DESC
+        ) 
+        SELECT cte.id_artikel, judul, LOWER(REPLACE(TRIM(judul), ' ', '-')) link, IFNULL(path_gambar,'') path_gambar, IFNULL(nama, judul) nama_gambar, timeAgo(artikel.publish_at) time_ago
+        FROM artikel JOIN cte USING(id_artikel) LEFT JOIN gambar ON(gambar.id_gambar = artikel.id_gambar_small) ORDER BY 1 DESC";
+
+        $this->db->query($sql, $params);
+        
+        $dataArtikel = $this->db->results();
+
+        $this->db->query("SELECT COUNT(*) jumlah_record FROM artikel WHERE aktif = '1' {$filters_stmt}");
+
+        $jumlah_record = $this->db->result()->jumlah_record;
+
+        $this->data = array(
+            'data' => $dataArtikel,
+            'total_record' => $jumlah_record,
+            'load_more' => ((int) $this->getOffset() + (int) $this->getLimit() < $jumlah_record),
+            'offset' => (int) $this->getOffset() + (int) $this->getLimit()
+        );
+
+        if (!is_null($this->getSearch())) {
+            $this->data['search'] = $this->getSearch();
+        }
+
+        return true;
+    }
+
+    public function setPublikasiKunjungan($table, $deviceId, $id_key) {
+        $this->db->query("SELECT k.id_pengunjung FROM pengunjung JOIN kunjungan_{$table} k USING(id_pengunjung) WHERE pengunjung.device_id = ? AND id_artikel = ? ORDER BY 1 DESC", array($deviceId, $id_key));
+        if (!$this->db->count()) {
+                return false;
+            }
+        return true;
+    }
+
+    public function getDataKontenArtikel($id_artikel) {
+        $this->db->get(
+            'judul, gw.path_gambar path_gambar_wide, gw.nama nama_gambar_wide, pa.nama nama_author, FormatTanggal(publish_at) publish_at, id_editor, artikel.modified_at, COUNT(DISTINCT(k.id_pengunjung)) jumlah_pengunjung, artikel.isi',
+            'artikel LEFT JOIN gambar gw ON(gw.id_gambar = artikel.id_gambar_wide) LEFT JOIN pegawai pa ON(pa.id_pegawai = artikel.id_author) LEFT JOIN kunjungan_artikel k USING(id_artikel)',
+            array('artikel.id_artikel','=',Sanitize::toInt2($id_artikel)), "AND", array('artikel.aktif','=','1'));
+        if ($this->db->count()) {
+            $this->data = $this->db->result();
+            return true;
+        }
+        return false;
+    }
 }

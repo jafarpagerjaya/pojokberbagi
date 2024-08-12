@@ -18,7 +18,7 @@ class PembayaranController extends Controller {
 
     public function index($params) {
         if (count(is_countable($params) ? $params : []) < 1) {
-            Redirect::to('home');
+            Redirect::to('');
         }
 
         if (ctype_digit($params[0])) {
@@ -38,21 +38,21 @@ class PembayaranController extends Controller {
                 'pesan' => 'Bantuan <b>'. $data_bantuan->nama .'</b> dengan ' . Utility::keteranganStatusBantuan($data_bantuan->status) .' sedang diblokir',
                 'state' => 'danger'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         if ($data_bantuan == false) {
             Session::flash('notifikasi', array(
                 'pesan' => 'Bantuan sudah tidak aktif',
                 'state' => 'error'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         if ($data_bantuan->status != 'D') {
             Session::flash('notifikasi', array(
                 'pesan' => 'Bantuan <b>'. $data_bantuan->nama .'</b> ' . Utility::keteranganStatusBantuan($data_bantuan->status),
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
         // Check data input awal
         $vali = new Validate();
@@ -133,7 +133,7 @@ class PembayaranController extends Controller {
                     'pesan' => 'Email dan kontak sudah ada yang menggunakannya',
                     'state' => 'warning'
                 ));
-                Redirect::to('home');
+                Redirect::to('');
             }
 
             $data = $data[0];
@@ -204,7 +204,7 @@ class PembayaranController extends Controller {
                 'pesan' => 'Mohon maaf bantuan sudah berakhir',
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
 
         if ($jenis_payment != 'tb' && $jenis_payment != 'gi' && $jenis_payment != 'tn') {
@@ -264,14 +264,14 @@ class PembayaranController extends Controller {
                         'pesan' => "Flip Accept Payment [STEP 3] ". $dataResponse->errors[0]->message,
                         'state' => 'warning'
                     ));
-                    Redirect::to('home');
+                    Redirect::to('');
                 }
             } else if ($dataResponse->status == '401') {
                 Session::flash('notifikasi', array(
                     'pesan' => "Flip Accept Payment [STEP 3] ". $dataResponse->message,
                     'state' => 'warning'
                 ));
-                Redirect::to('home');
+                Redirect::to('');
             }
 
             $dataDonasi['external_id'] = $dataResponse->link_id;
@@ -391,7 +391,7 @@ class PembayaranController extends Controller {
                 'pesan' => 'Parameter tidak cocok',
                 'state' => 'error'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
 
         if (!file_exists(VIEW_PATH.'donasi'.DS.'pembayaran'. DS . $params[0] . '.html')) {
@@ -399,7 +399,7 @@ class PembayaranController extends Controller {
                 'pesan' => 'Halaman tagihan yang anda cari tidak ditemukan',
                 'state' => 'danger'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
     
         $this->model('Donasi');
@@ -423,7 +423,7 @@ class PembayaranController extends Controller {
                     'pesan' => 'Tagihan yang anda cari tidak ditemukan',
                     'state' => 'danger'
                 ));
-                Redirect::to('home');
+                Redirect::to('');
             }
             $donasi = $this->model->getResult();
             // Get Payment
@@ -447,7 +447,7 @@ class PembayaranController extends Controller {
                 'pesan' => 'Data donasi <b>' . $params[1] . '</b> tidak ditemukan',
                 'state' => 'danger'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
 
         if ($donasi->status == 'SUCCESSFUL' && strtolower($params[0]) == 'tb' || strtolower($params[0]) != 'tb' && $billPayment->status == 'SUCCESSFUL') {
@@ -614,7 +614,7 @@ class PembayaranController extends Controller {
 
     public function transaksi($params) {
         if (count(is_countable($params) ? $params : []) < 1) {
-            Redirect::to('home');
+            Redirect::to('');
         }
 
         $this->model('Donasi');
@@ -625,7 +625,7 @@ class PembayaranController extends Controller {
                     'pesan' => 'Kode Pembayaran tidak ditemukan',
                     'state' => 'warning'
                 ));
-                Redirect::to('home');
+                Redirect::to('');
             }
             $params[0] = $this->model->getResult()->id_donasi;
         }
@@ -637,7 +637,7 @@ class PembayaranController extends Controller {
                 'pesan' => 'Transaksi dengan ID ' . $params[0] . ' tidak ditemukan',
                 'state' => 'warning'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
 
         $this->title = 'Transaksi';
@@ -648,7 +648,7 @@ class PembayaranController extends Controller {
                 'pesan' => 'Donasi anda telah kami terima silahkan cek history transaksi pada akun anda',
                 'state' => 'success'
             ));
-            Redirect::to('home');
+            Redirect::to('');
         }
 
         $now = new DateTime(date('Y-m-d H:i:s'));
@@ -700,7 +700,7 @@ class PembayaranController extends Controller {
                 'message' => 'Token flip salah'
             ));
             echo $result;
-            Redirect::to('home');
+            Redirect::to('');
             return false;
         }
         $decoded_data = json_decode($data);
@@ -758,7 +758,7 @@ class PembayaranController extends Controller {
         if ($dataOrderDonasi->status != 'SUCCESSFUL') {
             $this->model->update('order_donasi',array('status' => 'SUCCESSFUL'), array('external_id','=',$dataOrderDonasi->external_id),'AND',array('kode_pembayaran','=',$dataOrderDonasi->kode_pembayaran));
             if (!$this->model->affected()) {
-                Redirect::to('home');
+                Redirect::to('');
                 $result = json_encode(array(
                     'error' => true,
                     'message' => 'Failed to update callback order status'
