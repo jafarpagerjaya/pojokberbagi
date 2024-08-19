@@ -3755,6 +3755,7 @@ class FetchController extends Controller {
             return false;
         }
 
+        // Ini mungkin akan dihapus karena penghapusan RAB lewat Stored Procedure
         // $this->model->delete('rencana_anggaran_belanja', array('id_rab','=', Sanitize::escape2($decoded['id_rab'])));
         // if (!$this->model->affected()) {
         //     $this->_result['feedback'] = array(

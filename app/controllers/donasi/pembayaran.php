@@ -77,16 +77,19 @@ class PembayaranController extends Controller {
             Redirect::to($redirectLink);
         }
 
+        $kontak = (Sanitize::toInt2(Input::get('kontak')) != '' ? Sanitize::toInt2(Input::get('kontak')) : 'NULL');
+
         $this->model->query("SELECT id_donatur, samaran, email, kontak FROM donatur WHERE (email = ? AND kontak = ?) OR (kontak = ? AND email IS NULL) OR (email = ? AND kontak IS NULL) OR (email = ? AND kontak != ?) OR (kontak = ? AND email != ?)", array(
             strtolower(Sanitize::escape2(Input::get('email'))),
-            Sanitize::toInt2(Input::get('kontak')),
-            Sanitize::toInt2(Input::get('kontak')),
+            $kontak,
+            $kontak,
             strtolower(Sanitize::escape2(Input::get('email'))),
             strtolower(Sanitize::escape2(Input::get('email'))),
-            Sanitize::toInt2(Input::get('kontak')),
-            Sanitize::toInt2(Input::get('kontak')),
+            $kontak,
+            $kontak,
             strtolower(Sanitize::escape2(Input::get('email')))
         ));
+
         // $this->model->getData('id_donatur, samaran, kontak','donatur', array('LOWER(email)','=', strtolower(trim(Input::get('email')))));
         // $data = $this->model->getResult();
         $data = $this->model->getResults();

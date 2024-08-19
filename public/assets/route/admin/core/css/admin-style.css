@@ -192,7 +192,7 @@ table.table-responsive.table-absolute-first tr:not([data-zero="true"])>th:first-
 table.table-responsive.table-absolute-first tr:not([data-zero="true"])>td:first-child {
     position: absolute;
     width: auto;
-    box-shadow: 1px 0px 2px 0px var(--lighter);
+    border-right: 1px solid var(--lighter);
 }
 
 table.table-responsive.table-absolute-first thead tr>th:first-child,
@@ -208,7 +208,7 @@ table.table-responsive.table-absolute-first tbody tr>th:first-child {
 
 table.table-responsive.table-absolute-first tfoot tr>th:first-child,
 table.table-responsive.table-absolute-first tfoot tr>td:first-child {
-    border: 0px !important;
+    border-top: 0px !important;
 }
 
 table.table-responsive.table-absolute-first th:not(.fit):not(.auto),
@@ -219,6 +219,14 @@ table.table-responsive.table-absolute-first td:not(.fit):not(.auto) {
 table.table-responsive.table-absolute-first th:not(.fit):not(.auto):nth-child(2),
 table.table-responsive.table-absolute-first td:not(.fit):not(.auto):nth-child(2) {
     width: 100%;
+}
+
+table.table-responsive.table-absolute-first tr>td:first-child a,
+table.table-responsive.table-absolute-first tr>th:first-child a {
+    text-wrap: nowrap;
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 /* load animation table */

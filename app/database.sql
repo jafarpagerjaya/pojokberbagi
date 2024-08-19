@@ -1053,12 +1053,22 @@ CREATE TABLE pelaksanaan (
     deskripsi VARCHAR(255),
     jumlah_pelaksanaan INT,
     total_anggaran BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    inex_donasi ENUM('IN','EX') DEFAULT NULL,
     status ENUM('P','J','S') NOT NULL DEFAULT 'P',
     id_rencana INT UNSIGNED NOT NULL,
     tanggal_eksekusi DATE,
     create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT F_ID_RENCANA_PELAKSANAAN_ODR FOREIGN KEY(id_rencana) REFERENCES rencana(id_rencana) ON DELETE RESTRICT ON UPDATE CASCADE
+)ENGINE=INNODB;
+
+CREATE TABLE inex_donasi_pelaksanaan (
+    id_pelaksanaan INT UNSIGNED,
+    id_donasi BIGINT UNSIGNED,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT F_ID_PELAKSANAAN_INEX_ODC FOREIGN KEY(id_pelaksanaan) REFERENCES pelaksanaan(id_pelaksanaan) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT F_ID_DONASI_INEX_ODC FOREIGN KEY(id_donasi) REFERENCES donasi(id_donasi) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=INNODB;
 
 CREATE TABLE anggaran_pelaksanaan_donasi (
@@ -1303,9 +1313,9 @@ END $$
 DELIMITER ;
 
 -- Procedur Ini Tidak boleh Langsung Diakses, Pengaksesan Wajib Lewat Procedure TotalAggaranBantuanPelaksanaan
--- DROP PROCEDURE KalkulasiAnggaranPelaksanaanDonasi;
+-- DROP PROCEDURE IF EXISTS KalkulasiAnggaranPelaksanaanDonasi;
 DELIMITER $$
-CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN in_total_ap BIGINT, IN in_id_bantuan INT)
+CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN in_total_ap BIGINT, IN in_id_bantuan INT, IN in_inex VARCHAR(2))
     BlockDonasi:BEGIN
         DECLARE t_nominal_penggunaan_donasi, t_id_rencana INT UNSIGNED;
         DECLARE total_penggunaan_donasi BIGINT DEFAULT 0;
@@ -1323,60 +1333,194 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN
         DECLARE ck_saldo_donasi INT;
         DECLARE ck_saldo_kebutuhan INT;
 
-        DECLARE list_donasi CURSOR FOR
-        (
-            SELECT d.id_donasi, d.saldo_donasi penggunaan_donasi, 0 saldo_donasi FROM (
-                (
-                    SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = in_id_bantuan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-                )
-                UNION
-                (
-                    SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = in_id_bantuan AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = in_id_bantuan)
-                ) 
-            ) sd, 
-            (
-                (
-                    SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = in_id_bantuan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-                )
-                UNION
-                (
-                    SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = in_id_bantuan AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = in_id_bantuan)
-                ) 
-            ) d 
-            WHERE d.id_donasi >= sd.id_donasi
-            GROUP BY d.id_donasi, d.saldo_donasi
-            HAVING SUM(sd.saldo_donasi) < in_total_ap
-            ORDER BY d.id_donasi
-        )
-        UNION
-        (
-            SELECT d.id_donasi, d.saldo_donasi - (SUM(sd.saldo_donasi) - in_total_ap) penggunaan_donasi, (SUM(sd.saldo_donasi) - in_total_ap) saldo_donasi FROM (
-                (
-                    SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = in_id_bantuan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-                )
-                UNION
-                (
-                    SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = in_id_bantuan AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = in_id_bantuan)
-                ) 
-            ) sd, 
-            (
-                (
-                    SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = in_id_bantuan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-                )
-                UNION
-                (
-                    SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = in_id_bantuan AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = in_id_bantuan)
-                ) 
-            ) d 
-            WHERE d.id_donasi >= sd.id_donasi
-            GROUP BY d.id_donasi, d.saldo_donasi
-            HAVING SUM(sd.saldo_donasi) >= in_total_ap
-            ORDER BY d.id_donasi
-            LIMIT 1
-        );
+        DECLARE list_donasi CURSOR FOR SELECT * FROM temp_list_donasi;
 
          -- declare NOT FOUND handler
         DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished_donasi = 1;
+
+        SET @dropQuery = concat("DROP TEMPORARY TABLE IF EXISTS temp_list_donasi");
+        PREPARE stm FROM @dropQuery;
+        EXECUTE stm;
+        DEALLOCATE PREPARE stm;
+
+        SET @in_id_pelaksanaan = in_id_pelaksanaan;
+        SET @in_total_ap = in_total_ap;
+        SET @in_id_bantuan = in_id_bantuan;
+
+        IF in_inex = 'IN' THEN
+            SET @cursorQuery = concat(
+                "CREATE TEMPORARY TABLE temp_list_donasi AS
+                (
+                    SELECT d.id_donasi, d.saldo_donasi penggunaan_donasi, 0 saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE p.id_pelaksanaan = ? AND r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = ? AND bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE p.id_pelaksanaan = ? AND r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = ? AND bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) < ?
+                    ORDER BY d.id_donasi
+                )
+                UNION
+                (
+                    SELECT d.id_donasi, d.saldo_donasi - (SUM(sd.saldo_donasi) - ?) penggunaan_donasi, (SUM(sd.saldo_donasi) - ?) saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE p.id_pelaksanaan = ? AND r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = ? AND bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE p.id_pelaksanaan = ? AND r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = ? AND bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) >= ?
+                    ORDER BY d.id_donasi
+                    LIMIT 1
+                )"
+            );
+
+            PREPARE stm FROM @cursorQuery;
+            EXECUTE stm USING @in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_total_ap,@in_total_ap,@in_total_ap,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_total_ap;
+        ELSEIF in_inex = 'EX' THEN
+            SET @cursorQuery = concat(
+                "CREATE TEMPORARY TABLE temp_list_donasi AS
+                (
+                    SELECT d.id_donasi, d.saldo_donasi penggunaan_donasi, 0 saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?) AND id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?) AND id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) < ?
+                    ORDER BY d.id_donasi
+                )
+                UNION
+                (
+                    SELECT d.id_donasi, d.saldo_donasi - (SUM(sd.saldo_donasi) - ?) penggunaan_donasi, (SUM(sd.saldo_donasi) - ?) saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?) AND id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?) AND id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) >= ?
+                    ORDER BY d.id_donasi
+                    LIMIT 1
+                )"
+            );
+
+            PREPARE stm FROM @cursorQuery;
+            EXECUTE stm USING @in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_total_ap,@in_total_ap,@in_total_ap,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_total_ap;
+        ELSE
+            SET @cursorQuery = concat(
+                "CREATE TEMPORARY TABLE temp_list_donasi AS
+                (
+                    SELECT d.id_donasi, d.saldo_donasi penggunaan_donasi, 0 saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) < ?
+                    ORDER BY d.id_donasi
+                )
+                UNION
+                (
+                    SELECT d.id_donasi, d.saldo_donasi - (SUM(sd.saldo_donasi) - ?) penggunaan_donasi, (SUM(sd.saldo_donasi) - ?) saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) >= ?
+                    ORDER BY d.id_donasi
+                    LIMIT 1
+                )"
+            );
+
+            PREPARE stm FROM @cursorQuery;
+            EXECUTE stm USING @in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_total_ap,@in_total_ap,@in_total_ap,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_total_ap;
+        END IF;
+
+        DEALLOCATE PREPARE stm;
 
         SELECT id_rencana INTO t_id_rencana FROM pelaksanaan WHERE id_pelaksanaan = in_id_pelaksanaan;
 
@@ -1471,12 +1615,15 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN
 
                     IF ck_saldo_donasi IS NULL THEN
                         SET ck_saldo_donasi = cd_nominal_donasi;
+                        IF cd_saldo_donasi > 0 THEN
+                            SET ck_saldo_donasi = ck_saldo_donasi + cd_saldo_donasi;
+                        END IF;
                     END IF;
 
                     IF ck_saldo_donasi >= ck_saldo_kebutuhan THEN
                         SET t_nominal_penggunaan_donasi = ck_saldo_kebutuhan;
                         SET ck_saldo_donasi = ck_saldo_donasi - ck_saldo_kebutuhan;
-                        SET ck_saldo_kebutuhan = 0;		
+                        SET ck_saldo_kebutuhan = 0;	
                     ELSE
                         SET t_nominal_penggunaan_donasi = ck_saldo_donasi;
                         SET ck_saldo_kebutuhan = ck_saldo_kebutuhan - ck_saldo_donasi;
@@ -1541,7 +1688,7 @@ DELIMITER ;
 
 -- DROP PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp;
 DELIMITER $$
-CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp(IN in_id_pelaksanaan INT, IN in_total_ap BIGINT, IN in_id_bantuan INT)
+CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp(IN in_id_pelaksanaan INT, IN in_total_ap BIGINT, IN in_id_bantuan INT, IN in_inex VARCHAR(2))
     BlockDonasi:BEGIN
         DECLARE t_nominal_penggunaan_donasi, t_id_rencana INT UNSIGNED;
         DECLARE total_penggunaan_donasi BIGINT;
@@ -1559,60 +1706,194 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp(IN in_id_pelaksanaan INT
         DECLARE ck_saldo_donasi INT;
         DECLARE ck_saldo_kebutuhan INT;
 
-        DECLARE list_donasi CURSOR FOR
-        (
-            SELECT d.id_donasi, d.saldo_donasi penggunaan_donasi, 0 saldo_donasi FROM (
-                (
-                    SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = in_id_bantuan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-                )
-                UNION
-                (
-                    SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = in_id_bantuan AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = in_id_bantuan)
-                ) 
-            ) sd, 
-            (
-                (
-                    SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = in_id_bantuan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-                )
-                UNION
-                (
-                    SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = in_id_bantuan AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = in_id_bantuan)
-                ) 
-            ) d 
-            WHERE d.id_donasi >= sd.id_donasi
-            GROUP BY d.id_donasi, d.saldo_donasi
-            HAVING SUM(sd.saldo_donasi) < in_total_ap
-            ORDER BY d.id_donasi
-        )
-        UNION
-        (
-            SELECT d.id_donasi, d.saldo_donasi - (SUM(sd.saldo_donasi) - in_total_ap) penggunaan_donasi, (SUM(sd.saldo_donasi) - in_total_ap) saldo_donasi FROM (
-                (
-                    SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = in_id_bantuan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-                )
-                UNION
-                (
-                    SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = in_id_bantuan AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = in_id_bantuan)
-                ) 
-            ) sd, 
-            (
-                (
-                    SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = in_id_bantuan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-                )
-                UNION
-                (
-                    SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = in_id_bantuan AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = in_id_bantuan)
-                ) 
-            ) d 
-            WHERE d.id_donasi >= sd.id_donasi
-            GROUP BY d.id_donasi, d.saldo_donasi
-            HAVING SUM(sd.saldo_donasi) >= in_total_ap
-            ORDER BY d.id_donasi
-            LIMIT 1
-        );
+        DECLARE list_donasi CURSOR FOR SELECT * FROM temp_list_donasi;
 
          -- declare NOT FOUND handler
         DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished_donasi = 1;
+
+        SET @dropQuery = concat("DROP TEMPORARY TABLE IF EXISTS temp_list_donasi");
+        PREPARE stm FROM @dropQuery;
+        EXECUTE stm;
+        DEALLOCATE PREPARE stm;
+
+        SET @in_id_pelaksanaan = in_id_pelaksanaan;
+        SET @in_total_ap = in_total_ap;
+        SET @in_id_bantuan = in_id_bantuan;
+
+        IF in_inex = 'IN' THEN
+            SET @cursorQuery = concat(
+                "CREATE TEMPORARY TABLE temp_list_donasi AS
+                (
+                    SELECT d.id_donasi, d.saldo_donasi penggunaan_donasi, 0 saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE p.id_pelaksanaan = ? AND r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = ? AND bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE p.id_pelaksanaan = ? AND r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = ? AND bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) < ?
+                    ORDER BY d.id_donasi
+                )
+                UNION
+                (
+                    SELECT d.id_donasi, d.saldo_donasi - (SUM(sd.saldo_donasi) - ?) penggunaan_donasi, (SUM(sd.saldo_donasi) - ?) saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE p.id_pelaksanaan = ? AND r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = ? AND bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE p.id_pelaksanaan = ? AND r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = ? AND bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) >= ?
+                    ORDER BY d.id_donasi
+                    LIMIT 1
+                )"
+            );
+
+            PREPARE stm FROM @cursorQuery;
+            EXECUTE stm USING @in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_total_ap,@in_total_ap,@in_total_ap,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_total_ap;
+        ELSEIF in_inex = 'EX' THEN
+            SET @cursorQuery = concat(
+                "CREATE TEMPORARY TABLE temp_list_donasi AS
+                (
+                    SELECT d.id_donasi, d.saldo_donasi penggunaan_donasi, 0 saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?) AND id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?) AND id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) < ?
+                    ORDER BY d.id_donasi
+                )
+                UNION
+                (
+                    SELECT d.id_donasi, d.saldo_donasi - (SUM(sd.saldo_donasi) - ?) penggunaan_donasi, (SUM(sd.saldo_donasi) - ?) saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?) AND id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?) AND id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) >= ?
+                    ORDER BY d.id_donasi
+                    LIMIT 1
+                )"
+            );
+
+            PREPARE stm FROM @cursorQuery;
+            EXECUTE stm USING @in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_total_ap,@in_total_ap,@in_total_ap,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_total_ap;
+        ELSE
+            SET @cursorQuery = concat(
+                "CREATE TEMPORARY TABLE temp_list_donasi AS
+                (
+                    SELECT d.id_donasi, d.saldo_donasi penggunaan_donasi, 0 saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) < ?
+                    ORDER BY d.id_donasi
+                )
+                UNION
+                (
+                    SELECT d.id_donasi, d.saldo_donasi - (SUM(sd.saldo_donasi) - ?) penggunaan_donasi, (SUM(sd.saldo_donasi) - ?) saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) >= ?
+                    ORDER BY d.id_donasi
+                    LIMIT 1
+                )"
+            );
+
+            PREPARE stm FROM @cursorQuery;
+            EXECUTE stm USING @in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_total_ap,@in_total_ap,@in_total_ap,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_total_ap;
+        END IF;
+
+        DEALLOCATE PREPARE stm;
 
         SELECT id_rencana INTO t_id_rencana FROM pelaksanaan WHERE id_pelaksanaan = in_id_pelaksanaan;
 
@@ -1639,10 +1920,13 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp(IN in_id_pelaksanaan INT
                 ListRabLoop:WHILE NOT finished_rab DO
                     FETCH list_rab INTO cr_nominal_kebutuhan, cr_id_kebutuhan, cr_keterangan;
 
+                    IF total_penggunaan_donasi = in_total_ap THEN
+                        SET finished_rab = 1;
+                    END IF;
+
                     IF finished_rab = 1 THEN
                         LEAVE ListRabLoop;
                     END IF;
-
 
                     IF ck_saldo_kebutuhan IS NULL THEN
                         SET ck_saldo_kebutuhan = cr_nominal_kebutuhan;
@@ -1652,6 +1936,9 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp(IN in_id_pelaksanaan INT
 
                     IF ck_saldo_donasi IS NULL THEN
                         SET ck_saldo_donasi = cd_nominal_donasi;
+                        IF cd_saldo_donasi > 0 THEN
+                            SET ck_saldo_donasi = ck_saldo_donasi + cd_saldo_donasi;
+                        END IF;
                     END IF;
 
                     IF ck_saldo_donasi >= ck_saldo_kebutuhan THEN
@@ -1691,6 +1978,8 @@ CREATE PROCEDURE KalkulasiAnggaranPelaksanaanDonasiTemp(IN in_id_pelaksanaan INT
                         LEAVE BlockDonasi;
                     END IF;
 
+                    SET total_penggunaan_donasi = total_penggunaan_donasi + t_nominal_penggunaan_donasi;
+
                     IF ck_saldo_kebutuhan = 0 AND ck_saldo_donasi > 0 THEN
                         SET ck_saldo_kebutuhan = NULL;
                         ITERATE ListRabLoop;
@@ -1720,7 +2009,7 @@ DELIMITER ;
 
 -- DROP PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi;
 DELIMITER $$
-CREATE PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN in_total_ap BIGINT, IN in_id_bantuan INT)
+CREATE PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, IN in_total_ap BIGINT, IN in_id_bantuan INT, IN in_inex VARCHAR(2))
     BlockDonasi:BEGIN
         DECLARE t_nominal_penggunaan_donasi, t_id_rencana INT UNSIGNED;
         DECLARE total_penggunaan_donasi BIGINT DEFAULT 0;
@@ -1738,60 +2027,194 @@ CREATE PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, 
         DECLARE ck_saldo_donasi INT;
         DECLARE ck_saldo_kebutuhan INT;
 
-        DECLARE list_donasi CURSOR FOR
-        (
-            SELECT d.id_donasi, d.saldo_donasi penggunaan_donasi, 0 saldo_donasi FROM (
-                (
-                    SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = in_id_bantuan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-                )
-                UNION
-                (
-                    SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = in_id_bantuan AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = in_id_bantuan)
-                ) 
-            ) sd, 
-            (
-                (
-                    SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = in_id_bantuan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-                )
-                UNION
-                (
-                    SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = in_id_bantuan AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = in_id_bantuan)
-                ) 
-            ) d 
-            WHERE d.id_donasi >= sd.id_donasi
-            GROUP BY d.id_donasi, d.saldo_donasi
-            HAVING SUM(sd.saldo_donasi) < in_total_ap
-            ORDER BY d.id_donasi
-        )
-        UNION
-        (
-            SELECT d.id_donasi, d.saldo_donasi - (SUM(sd.saldo_donasi) - in_total_ap) penggunaan_donasi, (SUM(sd.saldo_donasi) - in_total_ap) saldo_donasi FROM (
-                (
-                    SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = in_id_bantuan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-                )
-                UNION
-                (
-                    SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = in_id_bantuan AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = in_id_bantuan)
-                ) 
-            ) sd, 
-            (
-                (
-                    SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = in_id_bantuan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-                )
-                UNION
-                (
-                    SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = in_id_bantuan AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = in_id_bantuan)
-                ) 
-            ) d 
-            WHERE d.id_donasi >= sd.id_donasi
-            GROUP BY d.id_donasi, d.saldo_donasi
-            HAVING SUM(sd.saldo_donasi) >= in_total_ap
-            ORDER BY d.id_donasi
-            LIMIT 1
-        );
+        DECLARE list_donasi CURSOR FOR SELECT * FROM temp_list_donasi;
 
          -- declare NOT FOUND handler
         DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished_donasi = 1;
+
+        SET @dropQuery = concat("DROP TEMPORARY TABLE IF EXISTS temp_list_donasi");
+        PREPARE stm FROM @dropQuery;
+        EXECUTE stm;
+        DEALLOCATE PREPARE stm;
+
+        SET @in_id_pelaksanaan = in_id_pelaksanaan;
+        SET @in_total_ap = in_total_ap;
+        SET @in_id_bantuan = in_id_bantuan;
+
+        IF in_inex = 'IN' THEN
+            SET @cursorQuery = concat(
+                "CREATE TEMPORARY TABLE temp_list_donasi AS
+                (
+                    SELECT d.id_donasi, d.saldo_donasi penggunaan_donasi, 0 saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE p.id_pelaksanaan = ? AND r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = ? AND bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE p.id_pelaksanaan = ? AND r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = ? AND bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) < ?
+                    ORDER BY d.id_donasi
+                )
+                UNION
+                (
+                    SELECT d.id_donasi, d.saldo_donasi - (SUM(sd.saldo_donasi) - ?) penggunaan_donasi, (SUM(sd.saldo_donasi) - ?) saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE p.id_pelaksanaan = ? AND r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = ? AND bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE p.id_pelaksanaan = ? AND r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = ? AND bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) >= ?
+                    ORDER BY d.id_donasi
+                    LIMIT 1
+                )"
+            );
+
+            PREPARE stm FROM @cursorQuery;
+            EXECUTE stm USING @in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_total_ap,@in_total_ap,@in_total_ap,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_total_ap;
+        ELSEIF in_inex = 'EX' THEN
+            SET @cursorQuery = concat(
+                "CREATE TEMPORARY TABLE temp_list_donasi AS
+                (
+                    SELECT d.id_donasi, d.saldo_donasi penggunaan_donasi, 0 saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?) AND id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?) AND id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) < ?
+                    ORDER BY d.id_donasi
+                )
+                UNION
+                (
+                    SELECT d.id_donasi, d.saldo_donasi - (SUM(sd.saldo_donasi) - ?) penggunaan_donasi, (SUM(sd.saldo_donasi) - ?) saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?) AND id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?) AND id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) >= ?
+                    ORDER BY d.id_donasi
+                    LIMIT 1
+                )"
+            );
+
+            PREPARE stm FROM @cursorQuery;
+            EXECUTE stm USING @in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_total_ap,@in_total_ap,@in_total_ap,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_pelaksanaan,@in_id_bantuan,@in_id_bantuan,@in_id_pelaksanaan,@in_total_ap;
+        ELSE
+            SET @cursorQuery = concat(
+                "CREATE TEMPORARY TABLE temp_list_donasi AS
+                (
+                    SELECT d.id_donasi, d.saldo_donasi penggunaan_donasi, 0 saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) < ?
+                    ORDER BY d.id_donasi
+                )
+                UNION
+                (
+                    SELECT d.id_donasi, d.saldo_donasi - (SUM(sd.saldo_donasi) - ?) penggunaan_donasi, (SUM(sd.saldo_donasi) - ?) saldo_donasi FROM (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) sd, 
+                    (
+                        (
+                            SELECT au.id_donasi, MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = ? GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+                        )
+                        UNION
+                        (
+                            SELECT id_donasi, jumlah_donasi as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = ? AND id_donasi NOT IN (SELECT id_donasi FROM anggaran_pelaksanaan_donasi JOIN pelaksanaan USING(id_pelaksanaan) WHERE id_bantuan = ?)
+                        ) 
+                    ) d 
+                    WHERE d.id_donasi >= sd.id_donasi
+                    GROUP BY d.id_donasi, d.saldo_donasi
+                    HAVING SUM(sd.saldo_donasi) >= ?
+                    ORDER BY d.id_donasi
+                    LIMIT 1
+                )"
+            );
+
+            PREPARE stm FROM @cursorQuery;
+            EXECUTE stm USING @in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_total_ap,@in_total_ap,@in_total_ap,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_id_bantuan,@in_total_ap;
+        END IF;
+
+        DEALLOCATE PREPARE stm;
 
         SELECT id_rencana INTO t_id_rencana FROM pelaksanaan WHERE id_pelaksanaan = in_id_pelaksanaan;
 
@@ -1871,6 +2294,10 @@ CREATE PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, 
                 ListRabLoop:WHILE NOT finished_rab DO
                     FETCH list_rab INTO cr_nominal_kebutuhan, cr_id_kebutuhan, cr_keterangan;
 
+                    IF total_penggunaan_donasi = in_total_ap THEN
+                        SET finished_rab = 1;
+                    END IF;
+
                     IF finished_rab = 1 THEN
                         LEAVE ListRabLoop;
                     END IF;
@@ -1883,6 +2310,9 @@ CREATE PROCEDURE ReKalkulasiAnggaranPelaksanaanDonasi(IN in_id_pelaksanaan INT, 
 
                     IF ck_saldo_donasi IS NULL THEN
                         SET ck_saldo_donasi = cd_nominal_donasi;
+                        IF cd_saldo_donasi > 0 THEN
+                            SET ck_saldo_donasi = ck_saldo_donasi + cd_saldo_donasi;
+                        END IF;
                     END IF;
 
                     IF ck_saldo_donasi >= ck_saldo_kebutuhan THEN
@@ -1954,18 +2384,37 @@ TABPLabel:BEGIN
     DECLARE t_total_ap, t_saldo_donasi, t_total_penggunaan_donasi BIGINT;
     DECLARE t_id_bantuan INT;
     DECLARE temp_exists TINYINT;
+    DECLARE t_inex VARCHAR(2) DEFAULT NULL;
 
     START TRANSACTION;
     -- SET AUTOCOMMIT = 0;
     
-    SELECT p.total_anggaran, r.id_bantuan INTO t_total_ap, t_id_bantuan FROM pelaksanaan p JOIN rencana r USING(id_rencana) WHERE p.id_pelaksanaan = in_id_pelaksanaan;
-    SELECT SUM(saldo_donasi) FROM (
-        (
-            SELECT SUM(jumlah_donasi) as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = t_id_bantuan AND id_donasi NOT IN (SELECT DISTINCT(id_donasi) FROM pelaksanaan)
-        ) UNION (
-            SELECT MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = t_id_bantuan AND au.id_pelaksanaan = in_id_pelaksanaan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
-        )
-    ) sdba INTO t_saldo_donasi;
+    SELECT p.total_anggaran, r.id_bantuan, inex_donasi INTO t_total_ap, t_id_bantuan, t_inex FROM pelaksanaan p JOIN rencana r USING(id_rencana) WHERE p.id_pelaksanaan = in_id_pelaksanaan;
+    IF t_inex = 'IN' THEN
+        SELECT SUM(saldo_donasi) FROM (
+            (
+                SELECT SUM(jumlah_donasi) as saldo_donasi FROM donasi JOIN inex_donasi_pelaksanaan USING(id_donasi) WHERE id_pelaksanaan = in_id_pelaksanaan AND bayar = 1 AND id_bantuan = t_id_bantuan AND id_donasi NOT IN (SELECT DISTINCT(id_donasi) FROM anggaran_pelaksanaan_donasi)
+            ) UNION (
+                SELECT MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) JOIN inex_donasi_pelaksanaan ix USING(id_donasi) WHERE au.id_pelaksanaan = ix.id_pelaksanaan AND r.id_bantuan = t_id_bantuan AND au.id_pelaksanaan = in_id_pelaksanaan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+            )
+        ) sdba INTO t_saldo_donasi;
+    ELSEIF t_inex = 'EX' THEN
+        SELECT SUM(saldo_donasi) FROM (
+            (
+                SELECT SUM(jumlah_donasi) as saldo_donasi FROM donasi WHERE id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = in_id_pelaksanaan) AND bayar = 1 AND id_bantuan = t_id_bantuan AND id_donasi NOT IN (SELECT DISTINCT(id_donasi) FROM anggaran_pelaksanaan_donasi)
+            ) UNION (
+                SELECT MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = t_id_bantuan AND au.id_pelaksanaan = in_id_pelaksanaan AND au.id_donasi NOT IN (SELECT id_donasi FROM inex_donasi_pelaksanaan WHERE id_pelaksanaan = in_id_pelaksanaan) GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+            )
+        ) sdba INTO t_saldo_donasi;
+    ELSE
+        SELECT SUM(saldo_donasi) FROM (
+            (
+                SELECT SUM(jumlah_donasi) as saldo_donasi FROM donasi WHERE bayar = 1 AND id_bantuan = t_id_bantuan AND id_donasi NOT IN (SELECT DISTINCT(id_donasi) FROM anggaran_pelaksanaan_donasi)
+            ) UNION (
+                SELECT MIN(au.saldo_donasi) as saldo_donasi FROM pelaksanaan p JOIN rencana r USING(id_rencana) JOIN anggaran_pelaksanaan_donasi au ON(au.id_pelaksanaan = p.id_pelaksanaan) WHERE r.id_bantuan = t_id_bantuan AND au.id_pelaksanaan = in_id_pelaksanaan GROUP BY au.id_donasi HAVING MIN(au.saldo_donasi)
+            )
+        ) sdba INTO t_saldo_donasi;
+    END IF;
 
     IF t_saldo_donasi < t_total_ap THEN
         ROLLBACK;
@@ -1976,9 +2425,9 @@ TABPLabel:BEGIN
     CALL check_table_exists('tempSelectedRAB', @tempSelect);
     SELECT @tempSelect INTO temp_exists;
     IF temp_exists = 0 THEN
-        CALL KalkulasiAnggaranPelaksanaanDonasi(in_id_pelaksanaan, t_total_ap, t_id_bantuan);
+        CALL KalkulasiAnggaranPelaksanaanDonasi(in_id_pelaksanaan, t_total_ap, t_id_bantuan, t_inex);
     ELSE
-        CALL KalkulasiAnggaranPelaksanaanDonasiTemp(in_id_pelaksanaan, t_total_ap, t_id_bantuan);
+        CALL KalkulasiAnggaranPelaksanaanDonasiTemp(in_id_pelaksanaan, t_total_ap, t_id_bantuan, t_inex);
     END IF;
 
     SELECT IFNULL(SUM(nominal_penggunaan_donasi), 0) FROM anggaran_pelaksanaan_donasi WHERE id_pelaksanaan = in_id_pelaksanaan INTO t_total_penggunaan_donasi;
@@ -2022,6 +2471,7 @@ AFTER UPDATE ON rencana FOR EACH ROW
 BEGIN
     DECLARE t_total_ap BIGINT UNSIGNED;
     DECLARE t_id_pelaksanaan, t_id_bantuan INT UNSIGNED;
+    DECLARE t_inex VARCHAR(2) DEFAULT NULL;
     DECLARE c_pelaksanaan, c_penarikan TINYINT UNSIGNED DEFAULT 0;
     IF OLD.total_anggaran <> NEW.total_anggaran THEN
         SELECT COUNT(p.id_pelaksanaan) INTO c_pelaksanaan FROM pelaksanaan p WHERE p.status != 'TD' AND p.id_rencana = NEW.id_rencana;
@@ -2029,11 +2479,11 @@ BEGIN
         IF c_pelaksanaan >= 1 AND c_penarikan = 0 THEN
             UPDATE pelaksanaan SET total_anggaran = (SELECT total_anggaran FROM rencana WHERE id_rencana = NEW.id_rencana) WHERE id_rencana = NEW.id_rencana;
             IF ROW_COUNT() > 0 THEN
-                SELECT id_pelaksanaan INTO t_id_pelaksanaan FROM pelaksanaan WHERE id_rencana = NEW.id_rencana;
+                SELECT id_pelaksanaan, inex_donasi INTO t_id_pelaksanaan, t_inex FROM pelaksanaan WHERE id_rencana = NEW.id_rencana;
                 DELETE FROM anggaran_pelaksanaan_donasi WHERE id_pelaksanaan = t_id_pelaksanaan;
                 IF ROW_COUNT() > 0 THEN
                     SELECT p.total_anggaran, r.id_bantuan INTO t_total_ap, t_id_bantuan FROM pelaksanaan p JOIN rencana r USING(id_rencana) WHERE p.id_pelaksanaan = t_id_pelaksanaan;
-                    CALL ReKalkulasiAnggaranPelaksanaanDonasi(t_id_pelaksanaan, t_total_ap, t_id_bantuan);
+                    CALL ReKalkulasiAnggaranPelaksanaanDonasi(t_id_pelaksanaan, t_total_ap, t_id_bantuan, t_inex);
                 END IF;
             END IF;
         END IF;

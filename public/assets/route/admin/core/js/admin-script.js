@@ -106,7 +106,7 @@ function doAbsoluteFirstAdd(table) {
     if (theadThFW > tableHW) {
         theadThFW = tableHW;
         tbodyTFW = tableHW;
-    }
+    }    
 
     if (tbodyTFW == 0) {
         let i = 0;
@@ -115,13 +115,12 @@ function doAbsoluteFirstAdd(table) {
                 tbodyTFW = tableHW;
                 theadThFW = tableHW;
                 return false;
-            }
+            }            
             if (el.offsetWidth > theadThFW) {
                 theadThFW = el.offsetWidth;
             } else {
                 tbodyTFW = theadThFW;
                 if (i == 0) {
-                    el.removeAttribute('style');
                     theadThFW = el.offsetWidth;
                 }
             }
@@ -134,42 +133,19 @@ function doAbsoluteFirstAdd(table) {
 
     if (table.querySelector('tbody tr[data-zero="true"]') == null) {
         theadThEl.setAttribute('style', 'width: ' + theadThFW + 'px');
-        theadThEl.nextElementSibling.setAttribute('style', 'padding-left: calc(' + theadThFW + 'px + 1rem)');
-        // theadThEl.parentElement.setAttribute('style', 'height: ' + theadThEl.offsetHeight + 'px');
+        theadThEl.nextElementSibling.setAttribute('style', 'padding-left: calc(' + theadThFW + 'px + 1rem) !important;');
         table.classList.add('table-responsive');
     }
 
     table.querySelectorAll('tbody tr:not([data-zero="true"]) > *:first-child').forEach(el => {
-        el.setAttribute('style', 'width:' + tbodyTFW + 'px');
-        el.nextElementSibling.setAttribute('style', 'padding-left: calc(' + tbodyTFW + 'px + 1rem)');
-        if (el.children[0] != null) {
-            const computedStyle = getComputedStyle(el);
-            let elementWidth = el.clientWidth;
-            elementWidth -= parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
-            if (el.children[0].offsetWidth > elementWidth || elementWidth - el.children[0].offsetWidth <= 1) {
-                el.parentElement.setAttribute('style', '');
-                setTimeout(() => {
-                    el.parentElement.setAttribute('style', 'height: ' + el.offsetHeight + 'px');
-                }, 0)
-            }
-        } else if (el.children[0] == undefined) {
-            const computedStyle = getComputedStyle(el);
-            let elementWidth = el.clientWidth;
-            elementWidth -= parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
-            if (el.offsetWidth > elementWidth || elementWidth - el.offsetWidth <= 1) {
-                el.parentElement.setAttribute('style', '');
-                setTimeout(() => {
-                    el.setAttribute('style', 'height: ' + el.nextElementSibling.offsetHeight + 'px; width: '+ tbodyTFW +'px');
-                }, 0)
-            }
-        }
+        el.setAttribute('style', 'width:' + tbodyTFW + 'px;');
+        el.nextElementSibling.setAttribute('style', 'padding-left: calc(' + tbodyTFW + 'px + 1rem) !important;');
     });
 
     if (tfootThEl != null) {
         if (table.querySelector('tbody tr[data-zero="true"]') == null) {
             tfootThEl.setAttribute('style', 'width: ' + theadThFW + 'px');
             tfootThEl.nextElementSibling.setAttribute('style', 'padding-left: calc(' + theadThFW + 'px + 1rem)');
-            // tfootThEl.parentElement.setAttribute('style', 'height: ' + tfootThEl.offsetHeight + 'px');
         }
     }
 
@@ -231,11 +207,24 @@ let tableAblsoluteFirstScroll = function() {
         tAL.forEach(table => {
             table.querySelectorAll('tbody tr>*:not(:first-child').forEach(element => {
                 element.addEventListener('mousewheel', function(e) {
-                    if ((table.scrollLeft + e.deltaY > e.deltaY && e.deltaY < 0) || (Math.round(table.scrollLeft + table.clientWidth) != element.parentElement.clientWidth && Math.round(table.scrollLeft + table.clientWidth) + 1 != element.parentElement.clientWidth && e.deltaY > 0)) {
-                        e.preventDefault();
-                        table.scrollLeft += e.deltaY;
-                        table.scrollLeft = Math.round(table.scrollLeft);
+                                         
+                    if (table.scrollLeft === 0 && e.deltaY < 0) {
+                        return false;
+                    }                               
+
+                    if (Math.ceil(table.offsetWidth + table.scrollLeft) >= element.parentElement.offsetWidth && e.deltaY > 0) {
+                        return false;
                     }
+                    
+                    e.preventDefault();
+                    table.scrollLeft += e.deltaY;
+
+                    let penyesuaian = element.parentElement.offsetWidth - (table.offsetWidth + table.scrollLeft);
+
+                    if (penyesuaian < 100 && e.deltaY > 0) {
+                        table.scrollLeft += penyesuaian;
+                    }
+
                 });
             });
         });

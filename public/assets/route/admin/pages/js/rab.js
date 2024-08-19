@@ -248,7 +248,7 @@ $('#modalRincianRAB').on('show.bs.modal', function (e) {
     fetchData('/admin/fetch/get/rencana', data, e.currentTarget, 'get-rencana');
 }).on('shown.bs.modal', function (e) {
     let tableAbsoluteFirstList = e.target.querySelectorAll('table[table-absolute-first="on"]');
-    if (tableAbsoluteFirstList.length > 0) {
+    if (tableAbsoluteFirstList.length > 0) {     
         tableAbsoluteFirstList.forEach(table => {
             if (table.classList.contains('table-responsive')) {
                 doAbsoluteFirstAdd(table);
@@ -277,7 +277,7 @@ $('#modalRincianRAB').on('show.bs.modal', function (e) {
 }).on('show.bs.modal', function(e) {
     let tableAbsoluteFirstList = e.target.querySelectorAll('table.table-absolute-first');
     if (tableAbsoluteFirstList.length > 0) {
-        tableAbsoluteFirstList.forEach(table => {
+        tableAbsoluteFirstList.forEach(table => {            
             if (table.classList.contains('table-responsive')) {
                 table.classList.remove('table-absolute-first');
                 table.setAttribute('table-absolute-first','on');
@@ -2544,7 +2544,7 @@ let fetchListRAB = function(url, data, root, result) {
     });
 };
 
-let fetchGetRencana = function(url, inputData, root, result) {
+let fetchGetRencana = function(url, inputData, root, result) {    
     let data;
     if (result.error == false) {
         data = result.feedback.data;
@@ -2566,7 +2566,7 @@ let fetchGetRencana = function(url, inputData, root, result) {
                 tafon.classList.add('table-responsive');
             }
             data.rab_list.forEach(field => {
-                let tr = '<tr style="height: 0px"><td class="fit" style="width:0px"><span>'+ field.nama_kebutuhan +'</span></td><td style="padding-left: calc(0px + 1rem)">'+ field.keterangan +'</td><td class="text-right">'+ field.harga_satuan +'</td><td class="text-right">'+ field.jumlah +'</td><td class="text-right">'+ field.nominal_kebutuhan +'</td></tr>';
+                let tr = '<tr><td class="fit"><span>'+ field.nama_kebutuhan +'</span></td><td>'+ field.keterangan +'</td><td class="text-right">'+ field.harga_satuan +'</td><td class="text-right">'+ field.jumlah +'</td><td class="text-right">'+ field.nominal_kebutuhan +'</td></tr>';
                 root.querySelector('tbody').insertAdjacentHTML('beforeend', tr);
             });
         } else {
