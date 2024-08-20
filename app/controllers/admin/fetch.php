@@ -2992,7 +2992,7 @@ class FetchController extends Controller {
         $this->model->getData('nama nama_donatur, email email_donatur','donatur',array('id_donatur','=',$decoded['id_donatur']));
         $dataDonatur = $this->model->getResult();
 
-        $this->model->getData('cp.nama nama_cp, cp.jenis jenis_cp, ca.nama nama_ca, gcp.path_gambar','channel_payment cp LEFT JOIN channel_account ca USING(id_ca) LEFT JOIN gambar gcp USING(id_gambar)',array('cp.id_cp','=',$decoded['id_cp']));
+        $this->model->getData('cp.nama nama_cp, cp.jenis jenis_cp, gcp.path_gambar','channel_payment cp LEFT JOIN gambar gcp USING(id_gambar)',array('cp.id_cp','=',$decoded['id_cp']));
         $dataCP = $this->model->getResult();
 
         // create donasi
@@ -3051,12 +3051,13 @@ class FetchController extends Controller {
                 'nama_donatur' => $dataDonatur->nama_donatur,
                 'nama_bantuan' => $dataBantuan->nama_bantuan,
                 'jumlah_donasi' => Output::tSparator($decoded['jumlah_donasi']),
-                'path_gambar_ca' => 'https://pojokberbagi.id/' . $dataCP->path_gambar,
-                'nama_ca' => $dataCP->nama_ca,
+                'metode_bayar' => Utility::keteranganJenisChannelPayment($dataCP->jenis_cp),
+                'path_gambar_cp' => 'https://pojokberbagi.id/' . $dataCP->path_gambar,
+                'nama_cp' => $dataCP->nama_cp,
                 'waktu_bayar' => $decoded['waktu_bayar'],
-                'link_check_donasi' => Config::getHTTPHost() . '/donasi/cek/kuitansi/' . $dataKuitansi->id_kuitansi,
+                'link_kuitansi' => Config::getHTTPHost() . '/donasi/cek/kuitansi/' . $dataKuitansi->id_kuitansi,
                 'id_kuitansi' => $dataKuitansi->id_kuitansi,
-                'total_donatur' => Output::tSparator($dataBantuan->total_donatur),
+                'jumlah_donatur' => Output::tSparator($dataBantuan->total_donatur),
                 'total_donasi' => Output::tSparator($dataBantuan->total_donasi)
             );
 

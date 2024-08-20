@@ -788,10 +788,19 @@ class PembayaranController extends Controller {
         
         if (isset($dataOrderDonasi->kontak)) {
             if (json_decode(Fonnte::check($dataOrderDonasi->kontak))->status != true) {
+                $this->model->getData('id_donasi','donasi',array('id_order_paygate','=',$last));
+                if ($this->model->affected()) {
+                    $id_donasi = $this->model->getResult()->id_donasi;
+                }
                 Session::put('notifikasi', array(
                     'pesan' => 'Failed to send WA notification, kontak WA tidak terdaftar',
                     'state' => 'warning'
                 ));
+                Fonnte::send(Sanitize::toInt2(preg_replace('/\s+/', '', KONTAK_WA)), "
+Failed to send WA successfull payment
+```Kontak Donatur : {$dataOrderDonasi->kontak}```
+".(isset($id_donasi) ? "```ID Donasi      : #{$id_donasi}```"
+:"```ID Order PG    : #{$last}```"));
             } else {
                 $text_pesan = 'Hi, *'. Sanitize::escape2($dataOrderDonasi->nama) .'* donasimu telah kami terima, makasih ya kamu berpartisipasi di program *' . Sanitize::escape2($dataOrderDonasi->nama_bantuan) . '*. Gunakan akun berbagi di https://pojokberbagi.id untuk melihat perkembangan dari donasimu atau scan QR yang ada di kuitansimu 🙆🏻‍♂️';
                 $waResponse = Fonnte::send(Sanitize::toInt2($dataOrderDonasi->kontak), $text_pesan);
@@ -811,7 +820,7 @@ class PembayaranController extends Controller {
 
         $resumeDonasi = $this->model->getResult();
 
-        $this->model->getData('id_kuitansi','kuitansi',array('id_donasi','=',$last));
+        $this->model->getData('id_kuitansi','kuitansi JOIN donasi USING(id_donasi)',array('id_order_paygate','=',$last));
         if (!$this->model->affected()) {
             $result = json_encode(array(
                 'error' => true,

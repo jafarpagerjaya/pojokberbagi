@@ -386,7 +386,7 @@ class Ui {
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td align="left" style="font-size:0px;padding:15px 15px 15px 15px;word-break:break-word;">
-                                                                                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;text-align:left;color:#000000;"><p style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;">Alhamdullilah <strong>'. strip_tags((string) $params["penerima_bantuan"]) .'</strong> akan menapatkan bantuan dari anda, berikut adalah rincian sekilas pembayaran yang dapat anda lakukan melalui <strong>'. strip_tags((string) $params["metode_bayar"]) .'</strong> <strong>'. strip_tags((string) $params["nama_cp"]) .'</strong>.&nbsp;</p></div>
+                                                                                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;text-align:left;color:#000000;"><p style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial;">Alhamdullilah <strong> anda ikut berkontribusi dalam <strong>'. strip_tags((string) $params["nama_bantuan"]) .'</strong> , berikut adalah rincian sekilas pembayaran yang dapat anda lakukan melalui <strong>'. strip_tags((string) $params["metode_bayar"]) .'</strong>'. (strip_tags((string) $params["nama_cp"]) == "QRIS" ? '':'<strong>'. strip_tags((string) $params["nama_cp"]).'</strong>') .'.&nbsp;</p></div>
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr>
@@ -575,7 +575,7 @@ class Ui {
                                                                         <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
                                                                             <tr>
                                                                                 <td align="left" style="font-size:0px;padding:15px 15px 15px 15px;word-break:break-word;">
-                                                                                    <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;text-align:left;color:#000000;"><p style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial; text-align: left;"><span style="font-size: 14px;"><strong>Wahai '. strip_tags((string) $params["samaran"]) .', terima kasih sudah mempercayakan dana donasi untuk '. strip_tags((string) $params["nama_bantuan"]) .' anda kepada kami.&nbsp;</strong>Semoga doa, harapan anda dan '. strip_tags((string) $params["penerima_bantuan"]) .' dapat terwujud dalam bentuk yang terbaik.</span></p></div>
+                                                                                    <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;text-align:left;color:#000000;"><p style="font-size: 11px; font-family: Ubuntu, Helvetica, Arial; text-align: left;"><span style="font-size: 14px;"><strong>'. strip_tags((string) $params["samaran"]) .', terima kasih sudah mempercayakan dana donasi untuk '. strip_tags((string) $params["nama_bantuan"]) .' anda kepada kami.&nbsp;</strong>Semoga doa, harapan anda dan '. strip_tags((string) $params["penerima_bantuan"]) .' dapat terwujud dalam bentuk yang terbaik.</span></p></div>
                                                                                 </td>
                                                                             </tr>
                                                                         </table>
@@ -1253,7 +1253,7 @@ class Ui {
                                                 <td>Jumlah Donasi</td><td>:</td><td><strong style="color: var(--green-box);">Rp. '. strip_tags((string) $data["jumlah_donasi"]) .'</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Metode Pembayaran</td><td>:</td><td><strong style="display: flex; align-items: center; justify-content: start; gap: .5em;"><div><img src="'. strip_tags((string) $data["path_gambar_ca"]) .'" alt="'. strip_tags((string) $data["nama_cp"]) .'" style="width: 40px; max-width: 40px;"></div><div>'. strip_tags((string) $data["metode_bayar"]) .' - ' . strip_tags((string) $data["nama_cp"]) .'</div></strong></td>
+                                                <td>Metode Pembayaran</td><td>:</td><td><strong style="display: flex; align-items: center; justify-content: start; gap: .5em;"><div><img src="'. strip_tags((string) $data["path_gambar_cp"]) .'" alt="'. strip_tags((string) $data["nama_cp"]) .'" style="width: 40px; max-width: 40px;"></div><div>'. strip_tags((string) $data["metode_bayar"]) .' - ' . strip_tags((string) $data["nama_cp"]) .'</div></strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Waktu pembayaran</td><td>:</td><td><strong>'. strip_tags((string) $data["waktu_bayar"]) .'</strong></td>
@@ -1277,7 +1277,7 @@ class Ui {
                                         <div style="display: flex; flex-direction: row; gap: 1em;">
                                             <div style="display: flex; flex-direction: column; border: solid 1px var(--orange); border-bottom: 0px; padding: .75em 1em; border-top-left-radius: 10px; border-top-right-radius: 10px;">
                                                 <p style="font-size: .75rem; margin: 0px;">Jumlah Donatur</p>
-                                                <span style="font-weight: bold;">'. strip_tags((string) $data["total_donatur"]) .'</span>
+                                                <span style="font-weight: bold;">'. strip_tags((string) $data["jumlah_donatur"]) .'</span>
                                             </div>
                                             <div style="display: flex; flex-direction: column; border: solid 1px var(--orange); border-bottom: 0px; padding: .75em 1em; border-top-left-radius: 10px; border-top-right-radius: 10px;">
                                                 <p style="font-size: .75rem; margin: 0px;">Dana Terkumpul</p>
