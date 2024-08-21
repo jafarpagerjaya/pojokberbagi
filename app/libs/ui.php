@@ -1157,7 +1157,7 @@ class Ui {
                 <title>Kaitkan Akun</title>
                 <style>
                     @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap");
-                    * {
+                    table {
                         font-family: "Nunito", sans-serif;
                         --orange: #FE5000;
                         --green: #97D700;
@@ -1180,32 +1180,25 @@ class Ui {
                         padding: 0 .5em;
                     }
             
-                    #notice .item:last-child {
+                    [id*="notice"] .item:last-child {
                         justify-content: center;
+                    }
+
+                    p {
+                        display: block;
                     }
             
                     #cert {
-                        background-image: url("'. Config::getHTTPHost() .'/assets/svg/certificate.svg");
-                        background-position: center;
+                        background-image: url("https://pojokberbagi.id/assets/images/certificate.png");
+                        background-position-x: center;
+                        background-position-y: center;
                         background-repeat: no-repeat;
-                        background-size: 83%;
+                        background-size: 100%;
                         width: 100px;
                         height: 100px;
-                        margin-top: 1em;
                         margin-left: auto;
                         margin-right: 0;
                         flex: none;
-                    }
-            
-                    #box::after {
-                        position: absolute;
-                        content: "";
-                        bottom: 0;
-                        left: 0;
-                        right: 0;
-                        height: 1.5em;
-                        background-color: var(--orange);
-                        color: white;
                     }
             
                     @media screen and (min-width: 499px) {
@@ -1233,17 +1226,17 @@ class Ui {
                     </tr>
                     <tr>
                         <td>
-                            <div style="padding: 1.5em; border-radius: 20px; background-color: aliceblue; position: relative; overflow: hidden;" id="box">
-                                <p>
+                            <div style="padding-top: 1.5em; border-radius: 20px; background-color: aliceblue; position: relative; overflow: hidden;" id="box">
+                                <p style="padding-left: 1.5em; padding-right: 1.5em;">
                                     Hallo kak <b>'. strip_tags((string) $data["nama_donatur"]) .'</b>, 
                                 </p>
-                                <strong>
+                                <strong style="padding-left: 1.5em; padding-right: 1.5em; text-wrap: wrap; display: block;">
                                     Donasimu telah kami terima, terima kasih telah mempercayakan donasimu kepada kami.
                                 </strong>
-                                <p style="color: #FE5000; font-weight: 600;">
+                                <p style="color: #FE5000; font-weight: 600; padding-left: 1.5em; padding-right: 1.5em;">
                                     Berikut ini adalah rincian donasimu :
                                 </p>
-                                <div style="background-color: #ddddddd6; padding: 1em 1.25em; border-radius: 10px;">
+                                <div style="background-color: #ddddddd6; padding: 1em 1.25em; border-radius: 10px; padding-left: 1.5em; padding-right: 1.5em; margin-left: 1.5em; margin-right: 1.5em;">
                                     <table style="width: 100%; font-size: .9rem; color: dimgray;">
                                         <tbody>
                                             <tr>
@@ -1253,7 +1246,7 @@ class Ui {
                                                 <td>Jumlah Donasi</td><td>:</td><td><strong style="color: var(--green-box);">Rp. '. strip_tags((string) $data["jumlah_donasi"]) .'</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Metode Pembayaran</td><td>:</td><td><strong style="display: flex; align-items: center; justify-content: start; gap: .5em;"><div><img src="'. strip_tags((string) $data["path_gambar_cp"]) .'" alt="'. strip_tags((string) $data["nama_cp"]) .'" style="width: 40px; max-width: 40px;"></div><div>'. strip_tags((string) $data["metode_bayar"]) .' - ' . strip_tags((string) $data["nama_cp"]) .'</div></strong></td>
+                                                <td>Metode Pembayaran</td><td>:</td><td><strong style="display: flex; align-items: center; justify-content: start; gap: .5em;"><div><img src="'. Config::getHTTPHost() . strip_tags((string) $data["path_gambar_cp"]) .'" alt="'. strip_tags((string) $data["nama_cp"]) .'" style="width: 40px; max-width: 40px;"></div><div>'. strip_tags((string) $data["metode_bayar"]) .' - ' . strip_tags((string) $data["nama_cp"]) .'</div></strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Waktu pembayaran</td><td>:</td><td><strong>'. strip_tags((string) $data["waktu_bayar"]) .'</strong></td>
@@ -1261,33 +1254,38 @@ class Ui {
                                         </tbody>
                                     </table>
                                 </div>
-                                <div id="notice" style="background-color: #ddddddd6; padding: 1em 1.25em; border-radius: 10px; margin-top: 1em; display: flex; gap: 1em;">
+                                <div id="notice" style="background-color: #ddddddd6; padding: 1em 1.25em; border-radius: 10px; margin-top: 1em; display: flex; gap: 1em; padding-left: 1.5em; padding-right: 1.5em; margin-left: 1.5em; margin-right: 1.5em;">
                                     <div class="item">
                                         <small style="color: dimgray;">
                                             Anda dapat mengecek perkembangan dari donasimu dengan mengscan <strong>kode QR</strong> yang ada di kuitansi elektronik yang kami kirimkan atau dengan menekan tombol berikut
                                         </small>
                                     </div>
                                     <div class="item" style="display: flex; align-items: center;">
-                                        <a href="' . strip_tags((string) $data["link_kuitansi"]) . '" style="padding: 1em; background-color: var(--orange); color: white; font-weight: bold; border-radius: 10px;">Cek Perkembangan</a>
+                                        <center><a href="' . strip_tags((string) $data["link_kuitansi"]) . '" style="padding: 1em; background-color: #FE5000; color: white; font-weight: bold; border-radius: 10px;text-decoration: underline; margin-left: 1em; height: 20px; display: inline-block;">Cek Perkembangan</a></center>
                                     </div>
                                 </div>
-                                <div style="display: flex;">
-                                    <div style="display: flex; flex-direction: column; justify-content: space-between;">
-                                        <p>No Kuitansi : <a href="'. (isset($data["link_kuitansi"]) ? strip_tags((string) $data["link_kuitansi"]) : '') .'" style="color: var(--orange); font-weight: bold; text-decoration: none;">#'. strip_tags((string) $data["id_kuitansi"]) .'</a></p>
-                                        <div style="display: flex; flex-direction: row; gap: 1em;">
-                                            <div style="display: flex; flex-direction: column; border: solid 1px var(--orange); border-bottom: 0px; padding: .75em 1em; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                                                <p style="font-size: .75rem; margin: 0px;">Jumlah Donatur</p>
-                                                <span style="font-weight: bold;">'. strip_tags((string) $data["jumlah_donatur"]) .'</span>
-                                            </div>
-                                            <div style="display: flex; flex-direction: column; border: solid 1px var(--orange); border-bottom: 0px; padding: .75em 1em; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                                                <p style="font-size: .75rem; margin: 0px;">Dana Terkumpul</p>
-                                                <span style="font-weight: bold;">'. strip_tags((string) $data["total_donasi"]) .'</span>
-                                            </div>
-                                        </div>
+                                <div style="display: flex; align-items: end; margin-top: 1em; margin-bottom: -2px; position: relative; overflow: hidden; padding-left: 1.5em; padding-right: 1.5em;">
+                                    <div style="display: flex; justify-content: space-between; width: 80%;">
+                                        <table>
+                                            <tr><td style="padding: 0px;"><p style="width: 100%;">No Kuitansi : <a href="'. (isset($data["link_kuitansi"]) ? strip_tags((string) $data["link_kuitansi"]) : '') .'" style="color: #FE5000; font-weight: bold; text-decoration: none;">#'. strip_tags((string) $data["id_kuitansi"]) .'</a></p></td></tr>
+                                            <tr><td style="padding: 0px;">
+                                                <div style="display: flex; flex-direction: row;">
+                                                    <table style="margin-right: .5em; display: flex; flex-direction: column; border: solid 1px #FE5000; border-bottom: 0px; padding: .75em 1em; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                                                        <tr><td><p style="font-size: .75rem; margin: 0px;">Jumlah Donatur</p></td></tr>
+                                                        <tr><td><span style="font-weight: bold; display: block;">'. strip_tags((string) $data["jumlah_donatur"]) .'</span></td></tr>
+                                                    </table>
+                                                    <table style="margin-left: .5em; display: flex; flex-direction: column; border: solid 1px #FE5000; border-bottom: 0px; padding: .75em 1em; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                                                        <tr><td><p style="font-size: .75rem; margin: 0px;">Dana Terkumpul</p></td></tr>
+                                                        <tr><td><span style="font-weight: bold; display: block;">'. strip_tags((string) $data["total_donasi"]) .'</span></td></tr>
+                                                    </table>
+                                                </div>
+                                            </td></tr>
+                                        </table>
                                     </div>
-                                    <div id="cert">
+                                    <div id="cert" style="margin-bottom: -10px; position: absolute; right: 25px;">
                                     </div>
                                 </div>
+                                <span style="display: block; width: 100%; height: 24px; background-color: #FE5000; z-index: 1; position: relative;"></span>
                             </div>
                         </td>
                     </tr>
@@ -1296,7 +1294,7 @@ class Ui {
                             <small>
                                 <span>'. strip_tags((string) HQ_ADDRESS) .'</span>
                                 <div style="color: lightslategrey; display: flex; gap: 0.5rem; justify-content: center;">
-                                    <span>WA '. strip_tags((string) KONTAK_WA) .'</span>
+                                    <a href="https://bit.ly/pojok-berbagi-indonesia" style="text-decoration: none; font-weight: 600;">WA '. strip_tags((string) KONTAK_WA) .'</a>
                                 </div>
                             </small>
                         </td>
