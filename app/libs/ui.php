@@ -1198,7 +1198,8 @@ class Ui {
                         height: 100px;
                         margin-left: auto;
                         margin-right: 0;
-                        flex: none;
+                        bottom: -35px;
+                        position: relative;
                     }
             
                     @media screen and (min-width: 499px) {
@@ -1246,7 +1247,7 @@ class Ui {
                                                 <td>Jumlah Donasi</td><td>:</td><td><strong style="color: var(--green-box);">Rp. '. strip_tags((string) $data["jumlah_donasi"]) .'</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Metode Pembayaran</td><td>:</td><td><strong style="display: flex; align-items: center; justify-content: start; gap: .5em;"><div><img src="'. Config::getHTTPHost() . strip_tags((string) $data["path_gambar_cp"]) .'" alt="'. strip_tags((string) $data["nama_cp"]) .'" style="width: 40px; max-width: 40px;"></div><div>'. strip_tags((string) $data["metode_bayar"]) .' - ' . strip_tags((string) $data["nama_cp"]) .'</div></strong></td>
+                                                <td>Metode Pembayaran</td><td>:</td><td><strong style="display: flex; align-items: center; justify-content: start; gap: .5em;"><div><img src="https://pojokberbagi.id' . strip_tags((string) $data["path_gambar_cp"]) .'" alt="'. strip_tags((string) $data["nama_cp"]) .'" style="width: 40px; max-width: 40px;"></div><div>'. strip_tags((string) $data["metode_bayar"]) .' - ' . strip_tags((string) $data["nama_cp"]) .'</div></strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Waktu pembayaran</td><td>:</td><td><strong>'. strip_tags((string) $data["waktu_bayar"]) .'</strong></td>
