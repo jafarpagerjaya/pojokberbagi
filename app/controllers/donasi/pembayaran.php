@@ -802,7 +802,7 @@ Failed to send WA successfull payment
 ".(isset($id_donasi) ? "```ID Donasi      : #{$id_donasi}```"
 :"```ID Order PG    : #{$last}```"));
             } else {
-                $text_pesan = 'Hi, *'. Sanitize::escape2($dataOrderDonasi->nama) .'* donasimu telah kami terima, makasih ya kamu berpartisipasi di program *' . Sanitize::escape2($dataOrderDonasi->nama_bantuan) . '*. Gunakan akun berbagi di https://pojokberbagi.id untuk melihat perkembangan dari donasimu atau scan QR yang ada di kuitansimu 🙆🏻‍♂️';
+                $text_pesan = 'Hi, *'. Sanitize::escape2($dataOrderDonasi->nama) .'* donasimu telah kami terima, makasih ya kamu berpartisipasi di program *' . Output::decodeEscape($dataOrderDonasi->nama_bantuan) . '*. Gunakan akun berbagi di https://pojokberbagi.id untuk melihat perkembangan dari donasimu atau scan QR yang ada di kuitansimu 🙆🏻‍♂️';
                 $waResponse = Fonnte::send(Sanitize::toInt2($dataOrderDonasi->kontak), $text_pesan);
                 // Debug::pr($waResponse);
             }
